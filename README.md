@@ -1,5 +1,7 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+Use Gitmoji to add emoji to a commit :sparkles:
+
 ## Available Scripts
 
 In the project directory, you can run:
