@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './AlertView.css';
+import Header from '../header/Header'
 
 const AlertView: React.FC = () => {
   const [items, setItem] = useState([
@@ -12,11 +13,18 @@ const AlertView: React.FC = () => {
     'Peik Ove'
   ]);
   return (
+    <div>
+    <header>
+      <Header></Header>
+    </header>
     <div className='container'>
+    <div className='alertbox'>
       {items.map(item => (
         <p>{item}</p>
-      ))}
+        ))}
+      </div>
     </div>
+        </div>
   );
 };
 
