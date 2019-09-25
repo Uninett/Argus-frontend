@@ -1,11 +1,11 @@
 import React from 'react';
+import AlertView from './components/alertView/AlertView';
+import './variables.css'
 
 const App: React.FC = () => {
   return (
-    <div style={{verticalAlign: "middle"}}>
-      <h1 style={{color: "lightBlue", textAlign: "center"}}>Hello AAS-FRONTEND!</h1>
-    </div>
+    <AlertView></AlertView>
   );
-}
+};
 
 export default App;

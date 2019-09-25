@@ -1,0 +1,15 @@
+.header {
+    background-color: var(--uninett-dark-blue);
+    height: var(--header-height);
+}
+
+.header p {
+    margin: 0;
+}
+
+.navlogo {
+    --logomargin: 1.7vh;
+    height: calc(var(--header-height) - calc(var(--logomargin) * 2));
+    margin-top: calc(var(--logomargin));
+    margin-left: calc(var(--logomargin) * 2);
+}
