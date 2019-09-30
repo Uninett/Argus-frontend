@@ -1,0 +1,8 @@
+.login-container{
+    text-align: center;
+    margin: 20% 30%;
+    border: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 20px;
+}
