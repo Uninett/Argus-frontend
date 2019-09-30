@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import "./LoginView.css";
 import Axios from "axios";
+import Header from '../../components/header/Header';
 import {Redirect} from "react-router-dom";
 
 const LoginView: React.FC = () => {
@@ -41,7 +42,11 @@ const LoginView: React.FC = () => {
         return <Redirect to="/"/>
     }
     return (
-        
+        <div>
+             <header>
+        <Header></Header>
+      </header>
+      <div className='container'>
         <div className="login-container">
             <h1>Login</h1>
             <form onSubmit={onSubmit}>
@@ -53,8 +58,12 @@ const LoginView: React.FC = () => {
                 </div>
                 <button type="submit"> Log in</button>
             </form>
-            <a href={"www.pornhub.com"}>login with feide</a>
+            <a href={"feide"}>login with feide</a>
         </div>
+        </div>
+      </div>
+
+
     );
 };
 
