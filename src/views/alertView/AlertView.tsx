@@ -1,7 +1,6 @@
 import React from 'react';
 import './AlertView.css';
-import Header from '../header/Header';
-
+import Header from '../../components/header/Header';
 const AlertView: React.FC = () => {
   const items = [
     'Andreas',
