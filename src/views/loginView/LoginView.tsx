@@ -1,72 +1,68 @@
-import React, { useState } from 'react';
-import './LoginView.css';
-import Axios from 'axios';
-import Header from '../../components/header/Header';
-import { Redirect } from 'react-router-dom';
+import React, { useState } from "react";
+import "./LoginView.css";
+import Axios from "axios";
+import Header from "../../components/header/Header";
+import { Redirect } from "react-router-dom";
 
 const LoginView: React.FC = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [redirect, setRedirect] = useState(false);
 
   const onSubmit = () => {
-    console.log('username: ' + username);
-    console.log('password: ' + password);
     setRedirect(true);
   };
 
   const getMoney = async () => {
     //get feideshit
     await Axios({
-      url: 'få opp farta Anders',
-      method: 'GET'
+      url: "få opp farta Anders",
+      method: "GET"
     });
-    return <Redirect to='/' />;
+    return <Redirect to="/" />;
   };
 
   const handleUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     setUsername(e.target.value);
-    console.log(username);
   };
 
   const handlePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     setPassword(e.target.value);
-    console.log(password);
   };
 
   if (redirect) {
-    return <Redirect to='/' />;
+    return <Redirect to="/" />;
   }
   return (
     <div>
       <header>
         <Header></Header>
       </header>
-      <div className='container'>
-        <div className='login-container'>
+      <div className="container">
+        <div className="login-container">
           <h1>Login</h1>
           <form onSubmit={onSubmit}>
             <div>
               <input
-                name={'username'}
+                name={"username"}
                 value={username}
-                placeholder={'Email'}
+                placeholder={"Email"}
                 onChange={handleUsername}
               />
             </div>
             <div>
               <input
-                name={'password'}
+                name={"password"}
                 value={password}
-                placeholder={'Password'}
+                placeholder={"Password"}
                 onChange={handlePassword}
               />
             </div>
-            <button type='submit'> Log in</button>
+            <button type="submit"> Log in</button>
           </form>
-          <a href={'feide'}>login with feide</a>
+          <a href={"feide"}>login with feide</a>
         </div>
       </div>
     </div>

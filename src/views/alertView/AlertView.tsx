@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import './AlertView.css';
-import axios from 'axios';
-import Header from '../../components/header/Header';
+import React, { useState, useEffect } from "react";
+import "./AlertView.css";
+import axios from "axios";
+import Header from "../../components/header/Header";
 
 const AlertView: React.FC = () => {
   const [alerts, setAlerts] = useState<Object[]>([]);
@@ -12,7 +12,7 @@ const AlertView: React.FC = () => {
 
   const getAlert = async () => {
     axios
-      .get('http://localhost:8000/alert/all')
+      .get("http://localhost:8000/alert/all")
       .then(response => {
         const alertList = fixAlert(response.data);
         setAlerts(alertList);
@@ -36,12 +36,12 @@ const AlertView: React.FC = () => {
       <header>
         <Header />
       </header>
-      <div className='container'>
-        <div className='alertbox'>
+      <div className="container">
+        <div className="alertbox">
           <ul>
             {alerts.map((alert: any) => {
-              const s: string = JSON.stringify(alert).replace(/['"{}]+/g, '');
-              return <li key={alert.alert_id}>{s.replace(/[,]+/g, ' ')}</li>;
+              const s: string = JSON.stringify(alert).replace(/['"{}]+/g, "");
+              return <li key={alert.alert_id}>{s.replace(/[,]+/g, " ")}</li>;
             })}
           </ul>
         </div>
