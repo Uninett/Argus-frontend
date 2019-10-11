@@ -1,25 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import "./LoginView.css";
 import Axios from "axios";
 import Header from "../../components/header/Header";
 import { Redirect } from "react-router-dom";
+import { Store } from "../../store";
 
 const LoginView: React.FC = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [redirect, setRedirect] = useState(false);
+  const { state, dispatch } = useContext(Store);
 
   const onSubmit = () => {
-    setRedirect(true);
+    dispatch({ type: "setUser", payload: "theodor" });
+    console.log("submitty");
+    getMoney();
+    if (redirect == true) {
+      return <Redirect to="/" />;
+    } else {
+    }
   };
 
   const getMoney = async () => {
     //get feideshit
+    console.log("getmoney");
     await Axios({
-      url: "få opp farta Anders",
-      method: "GET"
+      url: "http://127.0.0.1:8000/login/",
+      method: "GET",
+      params: { username, password }
+    }).then(result => {
+      console.log(result);
     });
-    return <Redirect to="/" />;
   };
 
   const handleUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
