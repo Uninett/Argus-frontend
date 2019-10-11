@@ -1,15 +1,24 @@
 .header {
-    background-color: var(--uninett-dark-blue);
-    height: var(--header-height);
+  background-color: var(--uninett-dark-blue);
+  height: var(--header-height);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .header p {
-    margin: 0;
+  margin: 0;
 }
 
 .navlogo {
-    --logomargin: 1.7vh;
-    height: calc(var(--header-height) - calc(var(--logomargin) * 2));
-    margin-top: calc(var(--logomargin));
-    margin-left: calc(var(--logomargin) * 2);
+  --logomargin: 1.7vh;
+  height: calc(var(--header-height) - calc(var(--logomargin) * 2));
+
+  padding-left: 2%;
+}
+
+.user {
+  text-align: end;
+  padding-right: 2%;
+  color: white;
 }
