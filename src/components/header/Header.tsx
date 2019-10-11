@@ -7,6 +7,7 @@ import aaslogo from '../../Media/img//logo/logo (4).svg'
 const Header: React.FC = () => {
   const { state } = React.useContext(Store);
   console.log(state.user);
+
   return (
     <div className='header' >
       <img src={aaslogo} alt="" className='logo'/>
