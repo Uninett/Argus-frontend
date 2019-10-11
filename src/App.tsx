@@ -3,6 +3,7 @@ import AlertView from './views/alertView/AlertView';
 import LoginView from './views/loginView/LoginView';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import './variables.css';
+import './colorscheme.css'
 
 const App: React.SFC = () => {
   return (
