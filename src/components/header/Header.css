@@ -1,6 +1,10 @@
 .header {
+    display: grid;
+    grid-template-columns: 20vw auto 10vw 10vw;
+    grid-template-areas: "logo . about login";
     background-color: var(--primary);
     height: var(--header-height);
+    box-shadow: 0px 1px 3px 1px #B6B6B6;
 }
 
 .header p {
@@ -8,9 +12,33 @@
 }
 
 .logo {
+    grid-area: logo;
     --logomargin: 0.6vh;
-    color: var(--primary-darker);
     height: calc(var(--header-height) - calc(var(--logomargin) * 2));
     margin-top: calc(var(--logomargin));
     margin-left: calc(var(--logomargin) * 2);
+}
+
+.header a {
+    text-decoration: none;
+    margin-top: 3vh;
+    height: 5vh;
+    width: 7vw;
+    border: none;
+    background-color: var(--primary)
+}
+
+.header a p {
+    font-weight: 00;
+    font-size: 1.2rem;
+    color: white;
+}
+
+#loginbutton {
+    grid-area: login;
+}
+
+
+#aboutbutton {
+    grid-area: about;
 }
