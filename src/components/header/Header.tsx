@@ -2,7 +2,7 @@ import React from "react";
 import "./Header.css";
 import navlogo from "../../Media/img/nav-logo.svg";
 import { Store } from "../../store";
-import aaslogo from '../../Media/img//logo/logo (4).svg'
+import aaslogo from '../../Media/img//logo/logo.svg'
 
 const Header: React.FC = () => {
   const { state } = React.useContext(Store);

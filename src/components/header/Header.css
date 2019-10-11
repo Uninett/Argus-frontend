@@ -4,7 +4,6 @@
     grid-template-areas: "logo . about login";
     background-color: var(--primary);
     height: var(--header-height);
-    box-shadow: 0px 1px 3px 1px #B6B6B6;
 }
 
 .header p {
@@ -25,13 +24,12 @@
     height: 5vh;
     width: 7vw;
     border: none;
-    background-color: var(--primary)
 }
 
-.header a p {
-    font-weight: 00;
+
+.header a p, .user {
+    font-weight: 500;
     font-size: 1.2rem;
-    color: white;
 }
 
 #loginbutton {
@@ -43,8 +41,3 @@
     grid-area: about;
 }
 
-.user {
-    text-align: end;
-    padding-right: 2%;
-    color: white;
-  }
