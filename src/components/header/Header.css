@@ -8,7 +8,7 @@
 }
 
 .header p {
-    margin: 0;
+  margin: 0;
 }
 
 .logo {
@@ -42,3 +42,9 @@
 #aboutbutton {
     grid-area: about;
 }
+
+.user {
+    text-align: end;
+    padding-right: 2%;
+    color: white;
+  }
