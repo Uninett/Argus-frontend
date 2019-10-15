@@ -12,7 +12,7 @@ const AlertView: React.FC = () => {
 
   const getAlert = async () => {
     axios
-      .get("http://localhost:8000/alert/all")
+      .get("http://localhost:8000/alert/all/")
       .then(response => {
         const alertList = fixAlert(response.data);
         setAlerts(alertList);
@@ -38,16 +38,18 @@ const AlertView: React.FC = () => {
       </header>
       <div className="container">
         <div className="alertbox">
-          <ul>
-            {alerts.map((alert: any) => {
-              const s: string = JSON.stringify(alert).replace(/['"{}]+/g, "");
-              return <li key={alert.alert_id}>{s.replace(/[,]+/g, " ")}</li>;
-            })}
-          </ul>
+
         </div>
       </div>
     </div>
   );
 };
+
+/**
+ {alerts.map((alert: any) => {
+              const s: string = JSON.stringify(alert).replace(/['"{}]+/g, "");
+              return <li key={alert.alert_id}>{s.replace(/[,]+/g, " ")}</li>;
+            })}
+ **/
 
 export default AlertView;

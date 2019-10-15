@@ -10,44 +10,46 @@ const LoginView: React.FC = () => {
   const [password, setPassword] = useState("");
   const [redirect, setRedirect] = useState(false);
   const { state, dispatch } = useContext(Store);
+  const [token, setToken]  = useState("");
 
   const onSubmit = () => {
-    dispatch({ type: "setUser", payload: "theodor" });
     console.log("submitty");
     getMoney();
-    if (redirect == true) {
-      return <Redirect to="/" />;
-    } else {
-    }
+    setRedirect(true)
   };
 
   const getMoney = async () => {
     //get feideshit
     console.log("getmoney");
     await Axios({
-      url: "http://127.0.0.1:8000/login/",
-      method: "GET",
-      params: { username, password }
+      url: "http://127.0.0.1:8000/api-token-auth/",
+      method: "POST",
+      data: { username: username, password: password }
     }).then(result => {
       console.log(result);
+      setToken(result.data.token);
+      dispatch({ type: "setUser", payload: username });
     });
   };
 
-  const handleUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUsername = (e: any) => {
     e.preventDefault();
     setUsername(e.target.value);
   };
 
-  const handlePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePassword = (e: any) => {
     e.preventDefault();
     setPassword(e.target.value);
   };
 
-  if (redirect) {
-    return <Redirect to="/" />;
-  }
+  const renderRedirect = () => {
+    if (redirect) {
+      return <Redirect to="/" />;
+    }
+  };
   return (
     <div>
+      {renderRedirect()}
       <header>
         <Header></Header>
       </header>
@@ -73,7 +75,7 @@ const LoginView: React.FC = () => {
             </div>
             <button type="submit"> Log in</button>
           </form>
-          <a href={"feide"}>login with feide</a>
+          <a href={"http://localhost:8000/login/dataporten/"}>login with feide</a>
         </div>
       </div>
     </div>
