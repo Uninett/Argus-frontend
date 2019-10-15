@@ -4,18 +4,19 @@ import Axios from "axios";
 import Header from "../../components/header/Header";
 import { Redirect } from "react-router-dom";
 import { Store } from "../../store";
+import { useCookies } from "react-cookie";
 
 const LoginView: React.FC = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [redirect, setRedirect] = useState(false);
+  const [cookies, setCookie, removeCookie] = useCookies(["Authorization"]);
   const { state, dispatch } = useContext(Store);
-  const [token, setToken]  = useState("");
 
   const onSubmit = () => {
     console.log("submitty");
     getMoney();
-    setRedirect(true)
+    setRedirect(true);
   };
 
   const getMoney = async () => {
@@ -26,9 +27,12 @@ const LoginView: React.FC = () => {
       method: "POST",
       data: { username: username, password: password }
     }).then(result => {
-      console.log(result);
-      setToken(result.data.token);
-      dispatch({ type: "setUser", payload: username });
+      console.log(result.data.token);
+      setCookie("Authorization", "token " + result.data.token, { path: "/" });
+      dispatch({ type: "setUser", payload: result.data.token });
+      dispatch({ type: "setToken", payload: result.data.token });
+      console.log(state.token + " etter dispatch");
+      //dispatch({ type: "setUser", payload: username });
     });
   };
 
@@ -75,7 +79,9 @@ const LoginView: React.FC = () => {
             </div>
             <button type="submit"> Log in</button>
           </form>
-          <a href={"http://localhost:8000/login/dataporten/"}>login with feide</a>
+          <a href={"http://localhost:8000/login/dataporten/"}>
+            login with feide
+          </a>
         </div>
       </div>
     </div>

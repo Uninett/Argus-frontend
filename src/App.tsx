@@ -4,6 +4,7 @@ import LoginView from "./views/loginView/LoginView";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import "./variables.css";
 import { Store } from "./store";
+import { withCookies } from "react-cookie";
 
 const App: React.SFC = () => {
   const { user } = React.useContext(Store);
@@ -20,4 +21,4 @@ const App: React.SFC = () => {
   );
 };
 
-export default App;
+export default withCookies(App);

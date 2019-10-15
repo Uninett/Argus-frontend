@@ -1,25 +1,32 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import "./AlertView.css";
 import axios from "axios";
 import Header from "../../components/header/Header";
+import { Store } from "../../store";
+import { useCookies } from "react-cookie";
 
 const AlertView: React.FC = () => {
   const [alerts, setAlerts] = useState<Object[]>([]);
+  const { state, dispatch } = useContext(Store);
+
+  const [cookies, setCookie, removeCookie] = useCookies(["Authorization"]);
 
   useEffect(() => {
     getAlert();
   }, []);
 
   const getAlert = async () => {
-    axios
-      .get("http://localhost:8000/alert/all/")
-      .then(response => {
-        const alertList = fixAlert(response.data);
-        setAlerts(alertList);
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    console.log(cookies + " her er token");
+    await axios({
+      url: "http://localhost:8000/alert/all/",
+      method: "GET",
+      headers: {
+        Authorization: "Token " + cookies.Authorization
+      }
+    }).then((response: any) => {
+      const alertList = fixAlert(response.data);
+      setAlerts(alertList);
+    });
   };
 
   const fixAlert = (e: any) => {
@@ -37,9 +44,7 @@ const AlertView: React.FC = () => {
         <Header />
       </header>
       <div className="container">
-        <div className="alertbox">
-
-        </div>
+        <div className="alertbox"></div>
       </div>
     </div>
   );
