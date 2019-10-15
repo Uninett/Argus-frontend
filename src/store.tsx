@@ -1,11 +1,12 @@
 import React from "react";
 
+// eslint-disable-next-line @typescript-eslint/interface-name-prefix
 interface IState {
   user: string;
   token: string;
 }
 
-const initialState: IState = { user: "tjalve", token: "token" };
+const initialState: IState = { user: "tjalve", token: "" };
 
 export const Store = React.createContext<IState | any>(initialState);
 

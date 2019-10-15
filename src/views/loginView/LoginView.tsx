@@ -4,9 +4,10 @@ import Axios from "axios";
 import Header from "../../components/header/Header";
 import { Redirect } from "react-router-dom";
 import { Store } from "../../store";
-import { useCookies } from "react-cookie";
+import { useCookies, Cookies } from "react-cookie";
 
-const LoginView: React.FC = () => {
+const LoginView: React.FC = (props) => {
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [redirect, setRedirect] = useState(false);
@@ -26,12 +27,12 @@ const LoginView: React.FC = () => {
       url: "http://127.0.0.1:8000/api-token-auth/",
       method: "POST",
       data: { username: username, password: password }
-    }).then(result => {
+    }).then(async result => {
       console.log(result.data.token);
-      setCookie("Authorization", "token " + result.data.token, { path: "/" });
-      dispatch({ type: "setUser", payload: result.data.token });
       dispatch({ type: "setToken", payload: result.data.token });
-      console.log(state.token + " etter dispatch");
+      dispatch({ type: "setUser", payload: result.data.user });
+      localStorage.setItem("token", result.data.token);
+      console.log(state.user + " etter dispatch");
       //dispatch({ type: "setUser", payload: username });
     });
   };
@@ -48,14 +49,16 @@ const LoginView: React.FC = () => {
 
   const renderRedirect = () => {
     if (redirect) {
-      return <Redirect to="/" />;
+      return <Redirect to={{
+        pathname:"/",
+      }} />;
     }
   };
   return (
     <div>
       {renderRedirect()}
       <header>
-        <Header></Header>
+        <Header/>
       </header>
       <div className="container">
         <div className="login-container">

@@ -5,7 +5,7 @@ import Header from "../../components/header/Header";
 import { Store } from "../../store";
 import { useCookies } from "react-cookie";
 
-const AlertView: React.FC = () => {
+const AlertView: React.FC = (props:any) => {
   const [alerts, setAlerts] = useState<Object[]>([]);
   const { state, dispatch } = useContext(Store);
 
@@ -16,12 +16,12 @@ const AlertView: React.FC = () => {
   }, []);
 
   const getAlert = async () => {
-    console.log(cookies + " her er token");
+    console.log(state.token + " her er token");
     await axios({
       url: "http://localhost:8000/alert/all/",
       method: "GET",
       headers: {
-        Authorization: "Token " + cookies.Authorization
+        Authorization: "Token " + localStorage.getItem("token"),
       }
     }).then((response: any) => {
       const alertList = fixAlert(response.data);
@@ -44,7 +44,7 @@ const AlertView: React.FC = () => {
         <Header />
       </header>
       <div className="container">
-        <div className="alertbox"></div>
+        <div className="alertbox"/>
       </div>
     </div>
   );
