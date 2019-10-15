@@ -1,12 +1,16 @@
 import React from "react";
 
-// eslint-disable-next-line @typescript-eslint/interface-name-prefix
 interface IState {
-  user: string;
-  token: string;
+  user: string | null;
+  token: string | null;
+  loggedIn: boolean;
 }
 
-const initialState: IState = { user: "tjalve", token: "" };
+const initialState: IState = {
+  user: localStorage.getItem("user"),
+  token: localStorage.getItem("token"),
+  loggedIn: localStorage.getItem("user") ? true : false
+};
 
 export const Store = React.createContext<IState | any>(initialState);
 
@@ -18,6 +22,8 @@ function reducer(
     case "setUser":
       return { ...state, user: action.payload };
     case "setToken":
+      return { ...state, token: action.payload };
+    case "setLogin":
       return { ...state, token: action.payload };
     default:
       return initialState;

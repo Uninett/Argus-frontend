@@ -5,7 +5,7 @@ import Header from "../../components/header/Header";
 import { Store } from "../../store";
 import { useCookies } from "react-cookie";
 
-const AlertView: React.FC = (props:any) => {
+const AlertView: React.FC = (props: any) => {
   const [alerts, setAlerts] = useState<Object[]>([]);
   const { state, dispatch } = useContext(Store);
 
@@ -21,7 +21,7 @@ const AlertView: React.FC = (props:any) => {
       url: "http://localhost:8000/alert/all/",
       method: "GET",
       headers: {
-        Authorization: "Token " + localStorage.getItem("token"),
+        Authorization: "Token " + localStorage.getItem("token")
       }
     }).then((response: any) => {
       const alertList = fixAlert(response.data);
@@ -44,7 +44,7 @@ const AlertView: React.FC = (props:any) => {
         <Header />
       </header>
       <div className="container">
-        <div className="alertbox"/>
+        <div className="alertbox" />
       </div>
     </div>
   );
