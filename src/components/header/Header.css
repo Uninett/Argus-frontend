@@ -41,3 +41,7 @@
     grid-area: about;
 }
 
+#loginbutton:hover, #aboutbutton:hover {
+    color: var(--secondary);
+}
+
