@@ -32,7 +32,7 @@
 
 
 
-#loginbutton {
+#loginbutton, #userbutton {
     grid-area: login;
 }
 
@@ -41,7 +41,7 @@
     grid-area: about;
 }
 
-#loginbutton:hover, #aboutbutton:hover {
+#loginbutton:hover, #aboutbutton:hover, #userbutton:hover {
     color: var(--secondary);
 }
 

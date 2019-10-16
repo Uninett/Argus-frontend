@@ -6,11 +6,11 @@ import aaslogo from '../../Media/img//logo/logo_white.svg'
 function Userbutton() {
   const { state } = React.useContext(Store);
   if (state.user!='' ) {
-    return (<a id="loginbutton" className='headerbutton' href="/login">
+    return (<div id="userbutton" className='headerbutton' >
     <p>
     {state.user}
       </p>
-    </a>);
+    </div>);
   }
   else {
     return (<a id="loginbutton" className='headerbutton' href="/login">
@@ -21,10 +21,6 @@ function Userbutton() {
 }
 
 const Header: React.FC = () => {
-  const { state } = React.useContext(Store);
-  console.log(state.user);
-  console.log(state);
-  
   return (
     <div className='header' >
       <a href="/">
