@@ -1,9 +1,9 @@
 .login-container{
-    color: var(--uninett-dark-blue);
+    color: var(--primary);
     --loginbox-width: 30vw;
     --loginbox-height: 30vh;
     text-align: center;
-    background-color: white;
+    background-color: var(--primary-light);
     display: flex;
     flex-direction: column;
     padding-bottom: 5vh;
@@ -31,5 +31,5 @@
     color: white;
     border: none;
     padding: 5px;
-    background-color: var(--uninett-dark-blue)
+    background-color: var(--primary)
 }

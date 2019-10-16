@@ -1,24 +1,43 @@
 .header {
-  background-color: var(--uninett-dark-blue);
-  height: var(--header-height);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+    display: grid;
+    grid-template-columns: 20vw auto 10vw 10vw;
+    grid-template-areas: "logo . about login";
+    background-color: var(--primary);
+    height: var(--header-height);
 }
 
 .header p {
   margin: 0;
 }
 
-.navlogo {
-  --logomargin: 1.7vh;
-  height: calc(var(--header-height) - calc(var(--logomargin) * 2));
-
-  padding-left: 2%;
+.logo {
+    grid-area: logo;
+    --logomargin: 0.6vh;
+    height: calc(var(--header-height) - calc(var(--logomargin) * 2));
+    margin-top: calc(var(--logomargin));
+    margin-left: calc(var(--logomargin) * 2);
 }
 
-.user {
-  text-align: end;
-  padding-right: 2%;
-  color: white;
+.headerbutton {
+    text-decoration: none;
+    margin-top: 3vh;
+    height: 5vh;
+    width: 7vw;
+    border: none;
+    background-color: var(--primary);
+    color: white;
+    font-weight: 00;
+    font-size: 1.2rem;
 }
+
+
+
+#loginbutton {
+    grid-area: login;
+}
+
+
+#aboutbutton {
+    grid-area: about;
+}
+
