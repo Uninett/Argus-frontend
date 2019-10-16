@@ -1,15 +1,12 @@
-import React from "react";
-import "./Header.css";
-import navlogo from "../../Media/img/nav-logo.svg";
-import { Store } from "../../store";
+import React from 'react';
+import './Header.css';
+import navlogo from '../../Media/img/nav-logo.svg';s
 
 const Header: React.FC = () => {
-  const { state } = React.useContext(Store);
-  console.log(state.user);
   return (
-    <div className="header">
-      <img src={navlogo} alt="" className="navlogo" />
-      <p className="user">{state.user}</p>
+    <div className='header'>
+      <img src={navlogo} alt='' className='navlogo' />
+      <p className='user'>{localStorage.getItem('user')}</p>
     </div>
   );
 };
