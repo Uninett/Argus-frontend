@@ -4,11 +4,14 @@ import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { StoreProvider } from "./store";
+import { CookiesProvider } from "react-cookie";
 
 ReactDOM.render(
-  <StoreProvider>
-    <App />
-  </StoreProvider>,
+  <CookiesProvider>
+    <StoreProvider>
+      <App />
+    </StoreProvider>
+  </CookiesProvider>,
   document.getElementById("root")
 );
 

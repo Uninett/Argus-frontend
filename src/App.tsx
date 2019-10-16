@@ -7,14 +7,12 @@ import './colorscheme.css'
 import { Store } from "./store";
 
 const App: React.SFC = () => {
-  const { user } = React.useContext(Store);
-  console.log(user);
   return (
     <Router>
       <Switch>
         <React.Fragment>
-          <Route exact path={"/"} component={AlertView}></Route>
-          <Route path={"/login"} component={LoginView}></Route>
+          <Route exact path={'/'} component={AlertView} />
+          <Route path={'/login'} component={LoginView} />
         </React.Fragment>
       </Switch>
     </Router>
