@@ -32,12 +32,16 @@
 
 
 
-#loginbutton {
+#loginbutton, #userbutton {
     grid-area: login;
 }
 
 
 #aboutbutton {
     grid-area: about;
+}
+
+#loginbutton:hover, #aboutbutton:hover, #userbutton:hover {
+    color: var(--secondary);
 }
 
