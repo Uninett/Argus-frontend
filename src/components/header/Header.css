@@ -18,19 +18,19 @@
     margin-left: calc(var(--logomargin) * 2);
 }
 
-.header a {
+.headerbutton {
     text-decoration: none;
     margin-top: 3vh;
     height: 5vh;
     width: 7vw;
     border: none;
-}
-
-
-.header a p, .user {
-    font-weight: 500;
+    background-color: var(--primary);
+    color: white;
+    font-weight: 00;
     font-size: 1.2rem;
 }
+
+
 
 #loginbutton {
     grid-area: login;

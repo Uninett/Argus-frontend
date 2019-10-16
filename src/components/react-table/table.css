@@ -1,0 +1,36 @@
+
+.ReactTable {
+    --table-height: 70vh;
+    margin: auto;
+    margin-top: calc(calc(calc(100vh - var(--header-height)) - var(--table-height)) / 2);
+    width: 80vw;
+    background-color: white;
+    height: var(--table-height);
+    box-shadow: 0px 1px 3px 1px #B6B6B6;
+
+}
+
+.-btn {
+    border-radius: 10px;
+    color: blue;
+}
+
+.ReactTable .rt-thead.-header {
+    color: var(--text);
+    font-weight: 500;
+    background-color: var(--primary-light);
+}
+
+
+.ReactTable .-pagination .-btn {
+    height: 5vh;
+    width: 10vw;
+    margin: auto;
+    border-radius: 10px;
+}
+
+.ReactTable .-pagination .-btn[enabled] {
+    height: 5vh;
+    width: 10vw;
+    background-color: var(--primary-light)
+}

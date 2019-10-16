@@ -1,8 +1,7 @@
 import React from "react";
 import "./Header.css";
-import navlogo from "../../Media/img/nav-logo.svg";
 import { Store } from "../../store";
-import aaslogo from '../../Media/img//logo/logo.svg'
+import aaslogo from '../../Media/img//logo/logo_white.svg'
 
 const Header: React.FC = () => {
   const { state } = React.useContext(Store);
@@ -10,14 +9,16 @@ const Header: React.FC = () => {
 
   return (
     <div className='header' >
-      <img src={aaslogo} alt="" className='logo'/>
+      <a href="/">
+      <img src={aaslogo} alt="AAS logo" className='logo'/>
+      </a>
       <p className="user">{state.user}</p>
-      <a id="aboutbutton" href="/about">
+      <a id="aboutbutton" className='headerbutton' href="/about">
         <p>
         About
           </p>
         </a>
-      <a id="loginbutton" href="/login">
+      <a id="loginbutton" className='headerbutton' href="/login">
         <p>
         Login
           </p>
