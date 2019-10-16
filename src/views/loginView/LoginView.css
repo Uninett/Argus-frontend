@@ -1,5 +1,5 @@
 .login-container{
-    color: var(--uninett-dark-blue);
+    color: var(--primary);
     --loginbox-width: 30vw;
     --loginbox-height: 30vh;
     text-align: center;
@@ -31,5 +31,5 @@
     color: white;
     border: none;
     padding: 5px;
-    background-color: var(--uninett-dark-blue)
+    background-color: var(--primary)
 }
