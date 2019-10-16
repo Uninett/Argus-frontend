@@ -10,18 +10,18 @@ const Table: React.FC = () => {
     getAlert();
   }, []);
 
-  //fetch data
+  //fetches alerts and sets state
   const getAlert = async () => {
-    axios
-      .get('http://localhost:8000/alert/all/')
-      .then(response => {
-        const alertList = fixAlert(response.data);
-        setAlerts(alertList);
-        console.log('dette får vi:', alertList);
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    await axios({
+      url: 'http://localhost:8000/alert/all/',
+      method: 'GET',
+      headers: {
+        Authorization: 'Token ' + localStorage.getItem('token')
+      }
+    }).then((response: any) => {
+      const alertList = fixAlert(response.data);
+      setAlerts(alertList);
+    });
   };
   //format JSON
   const fixAlert = (e: any) => {
