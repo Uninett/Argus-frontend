@@ -1,21 +1,23 @@
 import React, { useState, useContext } from 'react';
 import './LoginView.css';
 import Axios from 'axios';
-import Header from '../../components/header/Header';
-import { Redirect } from 'react-router-dom';
 import { Store } from '../../store';
+import auth from '../../auth';
 
 const LoginView: React.FC<any> = props => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [redirect, setRedirect] = useState(false);
-  const { state, dispatch } = useContext(Store);
+  const { dispatch } = useContext(Store);
 
   //runs when the form is submitted. GetToken() will run and then it will redirect to AlertView
   const onSubmit = async (e: any) => {
     e.preventDefault();
     await getToken();
-    setRedirect(true);
+    if (localStorage.getItem('token')) {
+      auth.login(() => {
+        props.history.push('/');
+      });
+    }
   };
 
   //get Token and set localStorage with token, username and isloggedin
@@ -37,24 +39,8 @@ const LoginView: React.FC<any> = props => {
     });
   };
 
-  //Does the redirecting
-  const renderRedirect = () => {
-    if (redirect) {
-      return (
-        <Redirect
-          to={{
-            pathname: '/'
-          }}
-        />
-      );
-    }
-  };
   return (
     <div>
-      {renderRedirect()}
-      <header>
-        <Header />
-      </header>
       <div className='container'>
         <div className='login-container'>
           <h1>Login</h1>
@@ -70,6 +56,7 @@ const LoginView: React.FC<any> = props => {
             <div>
               <input
                 name='password'
+                type='password'
                 value={password}
                 placeholder='Password'
                 onChange={e => setPassword(e.target.value)}
