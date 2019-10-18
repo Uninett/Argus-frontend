@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import './AlertView.css';
-import axios from 'axios';
 import Header from '../../components/header/Header';
 import Table from '../../components/react-table/Table';
 import '../../components/react-table/table.css';
+import { withRouter } from 'react-router-dom';
+type PropType = {
+  history: any;
+};
 
-const AlertView: React.FC = () => {
+const AlertView: React.FC<PropType> = props => {
   return (
     <div>
       <header>
@@ -18,4 +21,4 @@ const AlertView: React.FC = () => {
   );
 };
 
-export default AlertView;
+export default withRouter(AlertView);

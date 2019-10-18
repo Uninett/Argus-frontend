@@ -1,35 +1,35 @@
-.login-container{
-    color: var(--primary);
-    --loginbox-width: 30vw;
-    --loginbox-height: 30vh;
-    text-align: center;
-    background-color: var(--primary-light);
-    display: flex;
-    flex-direction: column;
-    padding-bottom: 5vh;
-    box-shadow: 0px 1px 3px 1px #B6B6B6;
-    width: var(--loginbox-width);
-    height: var(--loginbox-height);
-    margin: auto;
-    border-radius: 3px;
-
+.login-container {
+  color: var(--primary);
+  --loginbox-width: 30vw;
+  --loginbox-height: 30vh;
+  text-align: center;
+  background-color: var(--primary-light);
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 5vh;
+  box-shadow: 0px 1px 3px 1px #b6b6b6;
+  width: var(--loginbox-width);
+  height: var(--loginbox-height);
+  margin: auto;
+  border-radius: 3px;
 }
 
 .login-container a {
-    padding: 3vh;
+  padding: 3vh;
 }
 
-.login-container input, button {
-    margin: 0.7vh;
-    border-radius: 3px;
+.login-container input,
+button {
+  margin: 0.7vh;
+  border-radius: 3px;
 }
 
 .login-container button {
-    width: 7vw;
-    margin: 1vh;
-    border-radius: 3px;
-    color: white;
-    border: none;
-    padding: 5px;
-    background-color: var(--primary)
+  width: 7vw;
+  margin: 1vh;
+  border-radius: 3px;
+  color: white;
+  border: none;
+  padding: 5px;
+  background-color: var(--primary);
 }
