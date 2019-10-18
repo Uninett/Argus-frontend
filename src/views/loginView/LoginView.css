@@ -1,21 +1,23 @@
 .login-container {
-  color: var(--primary);
-  --loginbox-width: 30vw;
-  --loginbox-height: 30vh;
+  display: grid;
+  color: var(--white);
+  --loginbox-width: 40vw;
+  --loginbox-height: 40vh;
   text-align: center;
-  background-color: var(--primary-light);
-  display: flex;
-  flex-direction: column;
-  padding-bottom: 5vh;
+  background-color: var(--primary);
+  grid-template-areas:
+  ". logo ."
+  ". header ."
+  ". form ."
+  ". feide .";
+  grid-template-rows: 30% 20% 30% 20%;
+  grid-template-columns: 10% 80% 10%;
+  padding: 20px;
   box-shadow: 0px 1px 3px 1px #b6b6b6;
   width: var(--loginbox-width);
   height: var(--loginbox-height);
   margin: auto;
   border-radius: 3px;
-}
-
-.login-container a {
-  padding: 3vh;
 }
 
 .login-container input,
@@ -32,4 +34,27 @@ button {
   border: none;
   padding: 5px;
   background-color: var(--primary);
+}
+
+.login-logo {
+  margin: auto;
+  height: 100%;
+  grid-area: logo;
+}
+
+.login-feide {
+  height: 2em;
+  grid-area: feide;
+  padding-top: 2em;
+}
+
+.login-form{
+  grid-area: form;
+}
+
+.login-header {
+  font-weight: 200;
+  margin-top: 0;
+  margin-bottom: 0;
+  grid-area: header;
 }
