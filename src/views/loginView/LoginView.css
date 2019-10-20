@@ -9,8 +9,9 @@
   ". logo ."
   ". header ."
   ". form ."
+  ". warning ."
   ". feide .";
-  grid-template-rows: 30% 20% 30% 20%;
+  grid-template-rows: 30% 20% 25% 5% 20%;
   grid-template-columns: 10% 80% 10%;
   padding: 20px;
   box-shadow: 0px 1px 3px 1px #b6b6b6;
@@ -57,4 +58,9 @@ button {
   margin-top: 0;
   margin-bottom: 0;
   grid-area: header;
+}
+
+#login-warning {
+  color: var(--secondary-light);
+  grid-area: warning;
 }

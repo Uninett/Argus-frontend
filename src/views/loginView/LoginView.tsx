@@ -8,6 +8,7 @@ import aaslogo from '../../Media/img/logo/logo_white.svg'
 const LoginView: React.FC<any> = props => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [loginAttemptFailed, setLoginAttemptFailed] = useState(false);
   const { dispatch } = useContext(Store);
 
   //runs when the form is submitted. GetToken() will run and then it will redirect to AlertView
@@ -37,8 +38,12 @@ const LoginView: React.FC<any> = props => {
         type: 'setLoggedin',
         payload: result.data.token ? true : false
       });
-    });
+    }).catch(error => {
+      setLoginAttemptFailed(true);
+  });
+    
   };
+
 
   return (
     <div>
@@ -66,6 +71,9 @@ const LoginView: React.FC<any> = props => {
             </div>
             <button type='submit'> Log in</button>
           </form>
+          <p id="login-warning">
+          {loginAttemptFailed ? "Username and/or password is incorrect" : ""}
+          </p>
           <a className="login-feide" href={'http://localhost:8000/login/dataporten/'}>
             login with feide
           </a>
