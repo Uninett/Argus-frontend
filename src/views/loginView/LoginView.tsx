@@ -66,7 +66,7 @@ const LoginView: React.FC<any> = props => {
             </div>
             <button type='submit'> Log in</button>
           </form>
-          <a className="login-feide" href={'http://localhost:8000/login/dataporten/'}>
+          <a className="login-feide" href={'http://localhost:8000/login/dataporten_feide/'}>
             login with feide
           </a>
         </div>
