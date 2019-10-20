@@ -1,0 +1,18 @@
+.profile-container {
+  display: flex;
+  flex-direction: column;
+}
+.item-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 580px;
+  height: 50px;
+  border: 1px solid lightblue;
+  margin: auto;
+  margin-top: 10px;
+  padding-left: 5px;
+  text-align: center;
+
+  border-radius: 5px;
+}
