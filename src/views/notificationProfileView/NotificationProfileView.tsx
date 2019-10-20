@@ -3,6 +3,7 @@ import Header from "../../components/header/Header";
 import "../../components/react-table/table.css";
 import { withRouter } from "react-router-dom";
 import CalendarScheduler from "../../components/scheduler/CalendarScheduler";
+import ActiveProfile from "../../components/active-profiles/ActiveProfile";
 
 import appointments from "./../../components/scheduler/data_copy";
 
@@ -14,19 +15,9 @@ const NotificationProfileView: React.FC<PropType> = props => {
   return (
     <div>
       <Header />
-      <h1>Notification Profile View</h1>
+      <h1>My Active Notficiation Profiles</h1>
+      <ActiveProfile />
       <div>
-        {" "}
-        {appointments.map(a => (
-          <div key={a.id}>
-            <h2>{a.title}</h2>
-            <p style={{ fontSize: "14px" }}>
-              {"" + a.startDate + " " + a.endDate}
-            </p>
-          </div>
-        ))}{" "}
-      </div>
-      <div style={{ maxWidth: "75%" }}>
         <CalendarScheduler />
       </div>
     </div>
