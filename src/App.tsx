@@ -5,6 +5,7 @@ import {Route, Switch } from 'react-router-dom';
 import { ProtectedRoute } from './protected.route';
 import './variables.css';
 import './colorscheme.css';
+import Header from '../src/components/header/Header';
 
 
 const App: React.SFC = () => {
@@ -13,7 +14,7 @@ const App: React.SFC = () => {
       <Switch>
         <ProtectedRoute exact path='/' component={AlertView} />
         <Route path='/login' component={LoginView} />
-        <Route path='*' component={() => <h1>404 not found</h1>} />
+        <Route path='*' component={() => <div> <Header/><h1>404 not found</h1> </div>} />
       </Switch>
     </div>
   );
