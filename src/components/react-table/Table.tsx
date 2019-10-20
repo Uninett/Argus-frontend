@@ -38,7 +38,7 @@ const Table: React.FC = () => {
     { Header: 'Netbox', accessor: 'netbox' }
   ];
 
-  return <ReactTable columns={columns} data={alerts}></ReactTable>;
+  return <ReactTable columns={columns} data={alerts} showPaginationBottom={false}></ReactTable>;
 };
 
 export default Table;
