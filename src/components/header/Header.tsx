@@ -1,13 +1,22 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import './Header.css';
 import auth from '../../auth';
 import aaslogo from '../../Media/img//logo/logo_white.svg';
 import { withRouter } from 'react-router-dom';
 
 const Userbutton: React.FC<{ history: any }> = props => {
+    const [headerField, setUser] = useState<{ user: null | string}>({ user: ''});
+    const newUser = localStorage.getItem('user');
+    useEffect(() => {
+
+            setUser(user => {
+                return{...user, user: newUser}
+            })
+    }, [newUser]);
+
     return (
       <div id='header-user' className='headerbutton dropdown'>
-        <p>{localStorage.getItem('user')}</p>
+        <p>{headerField.user}</p>
           <div className='dropdown-content'>
             <a href="/settings" id="header-settings" className="headerbutton dropdown-button"> 
             <p id="header-settings" className="headerbutton dropdown-button">
