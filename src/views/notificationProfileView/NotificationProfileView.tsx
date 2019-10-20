@@ -26,8 +26,9 @@ const NotificationProfileView: React.FC<PropType> = props => {
           </div>
         ))}{" "}
       </div>
-
-      <CalendarScheduler />
+      <div style={{ maxWidth: "75%" }}>
+        <CalendarScheduler />
+      </div>
     </div>
   );
 };
