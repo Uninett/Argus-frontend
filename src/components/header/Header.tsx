@@ -4,21 +4,31 @@ import auth from '../../auth';
 import aaslogo from '../../Media/img//logo/logo_white.svg';
 import { withRouter } from 'react-router-dom';
 
-function Userbutton() {
-  if (localStorage.getItem('user')) {
+const Userbutton: React.FC<{ history: any }> = props => {
     return (
-      <div id='userbutton' className='headerbutton'>
+      <div id='header-user' className='headerbutton dropdown'>
         <p>{localStorage.getItem('user')}</p>
+          <div className='dropdown-content'>
+            <a href="/settings" id="header-settings" className="headerbutton dropdown-button"> 
+            <p id="header-settings" className="headerbutton dropdown-button">
+              Settings
+              </p>
+              </a>
+            <button
+            className='headerbutton dropdown-button'
+            id="header-logout"
+            onClick={() => {
+              auth.logout(() => {
+                props.history.push('/login');
+              });
+            }}>
+            Logout
+          </button>
+        </div>
       </div>
     );
-  } else {
-    return (
-      <a id='loginbutton' className='headerbutton' href='/login'>
-        <p>Login</p>
-      </a>
-    );
-  }
-}
+  } 
+
 
 const Header: React.FC<{ history: any }> = props => {
   return (
@@ -26,19 +36,10 @@ const Header: React.FC<{ history: any }> = props => {
       <a href='/'>
         <img src={aaslogo} alt='AAS logo' className='logo' />
       </a>
-      <a id='aboutbutton' className='headerbutton' href='/about'>
+      <a id='header-about' className='headerbutton' href='/about'>
         <p>About</p>
       </a>
-      <button
-        className='headerbutton'
-        onClick={() => {
-          auth.logout(() => {
-            props.history.push('/login');
-          });
-        }}>
-        Logout
-      </button>
-      <Userbutton />
+      <Userbutton history={props.history} />
     </div>
   );
 };

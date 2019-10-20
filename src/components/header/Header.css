@@ -1,9 +1,11 @@
 .header {
+    text-align: center;
     display: grid;
     grid-template-columns: 20vw auto 10vw 10vw;
-    grid-template-areas: "logo . about login";
+    grid-template-areas: "logo . about user";
     background-color: var(--primary);
     height: var(--header-height);
+    align-items: center;
 }
 
 .header p {
@@ -20,28 +22,64 @@
 
 .headerbutton {
     text-decoration: none;
-    margin-top: 3vh;
+    margin-top: auto;
     height: 5vh;
     width: 7vw;
     border: none;
-    background-color: var(--primary);
     color: white;
-    font-weight: 00;
+    font-weight: 400;
     font-size: 1.2rem;
 }
-
-
-
-#loginbutton, #userbutton {
-    grid-area: login;
+ #header-user {
+    grid-area: user;
 }
 
 
-#aboutbutton {
+#header-about {
     grid-area: about;
 }
 
-#loginbutton:hover, #aboutbutton:hover, #userbutton:hover {
+#header-user:hover, #header-about:hover, #header-logout:hover, #header-settings:hover {
     color: var(--secondary);
 }
 
+
+/* Dropdown Menu */
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    border-radius: 10px;
+    padding-top: 20px;
+    display: none;
+    position: absolute;
+    background-color: var(--primary);
+    z-index: 1;
+
+}
+
+.dropdown-button {
+    margin: 0.7vh;
+    height: 2em;
+    display: block;
+    background-color: var(--primary);
+    text-align: center;
+    padding: 0;
+}
+
+/* Responsive Design */
+
+@media only screen and (max-width: 600px) {
+
+    .header {
+        grid-template-columns: 30vw auto auto;
+        grid-template-areas: "logo about user";
+    }
+  }
