@@ -4,7 +4,6 @@ import {
   Scheduler,
   WeekView,
   Appointments,
-  AllDayPanel,
   AppointmentTooltip,
   AppointmentForm
 } from "@devexpress/dx-react-scheduler-material-ui";
@@ -13,55 +12,56 @@ import appointments from "./data_copy";
 import { ViewState, EditingState } from "@devexpress/dx-react-scheduler";
 import { useState } from "react";
 
+type NotificationProfilesTypes = {
+  title: string;
+  startDate: Date;
+  endDate: Date;
+  id: number;
+}[];
+
 type PropType = {};
 
 const CalendarScheduler: React.FC<PropType> = props => {
-  const [notificationProfiles, setNotificationsProfiles] = useState<Object[]>(
-    []
-  );
+  const [notificationProfiles, setNotificationsProfiles] = useState<
+    NotificationProfilesTypes
+  >(appointments);
 
   React.useEffect(() => {
     fetchNotificationProfiles();
-  }, []);
+  }, [notificationProfiles]);
 
   const fetchNotificationProfiles = async () => {
-    // Do axios fetch to API
+    // TODO: Do axios fetch to API
+    const prof = notificationProfiles;
+    setNotificationsProfiles(prof);
   };
 
   function onCommitChanges({ added, changed, deleted }: any) {
-    console.log(
-      "commit changes",
-      "added",
-      added,
-      "changed",
-      changed,
-      "deleted",
-      deleted
-    );
+    if (typeof added !== "undefined") {
+      const profiles = notificationProfiles;
+      profiles.push(added);
+      setNotificationsProfiles(profiles);
+
+      // TODO: Save new profile to backend
+    }
   }
 
   function onAddedAppointmentChange(addedAppointment: any) {
     console.log("Added appointment", addedAppointment);
   }
 
-  function onAppointmentChangesChange(changedAppointment: any) {
-    console.log("Changed appointment", changedAppointment);
-  }
-
   return (
     <Paper>
-      <Scheduler data={appointments} height={660}>
+      <Scheduler data={notificationProfiles} height={660}>
         <EditingState
           onCommitChanges={onCommitChanges}
           onAddedAppointmentChange={onAddedAppointmentChange}
-          onAppointmentChangesChange={onAppointmentChangesChange}
         />
         <ViewState defaultCurrentDate={new Date(2018, 5, 25, 9, 30)} />
         <WeekView startDayHour={0} endDayHour={24} cellDuration={60} />
         <Appointments />
         <AppointmentTooltip />
         <AppointmentForm />
-        <AllDayPanel />
       </Scheduler>
     </Paper>
   );
