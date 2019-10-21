@@ -51,8 +51,14 @@ const LoginView: React.FC<any> = props => {
     <div>
       <div className='container'>
         <div className='login-container'>
+<<<<<<< HEAD
           <img id='login-logo' src={aaslogo} alt='logo' />
           <form onSubmit={onSubmit} id='login-form'>
+=======
+          <img className='login-logo' src={aaslogo} alt='logo' />
+          <h1 className='login-header'>Login</h1>
+          <form onSubmit={onSubmit} className='login-form'>
+>>>>>>> 399c9697fe60ad79a64deb24b344845f00a59a60
             <div>
               <input
                 name={'username'}
@@ -72,10 +78,14 @@ const LoginView: React.FC<any> = props => {
             </div>
             <button type='submit' id="login-button"> Log in</button>
           </form>
+<<<<<<< HEAD
           <p id="login-warning">
           {loginAttemptFailed ? "Username and/or password is incorrect" : ""}
           </p>
           <a id='login-feide' href={'http://localhost:8000/login/dataporten_feide/'}>
+=======
+          <a className='login-feide' href={'/login/dataporten_feide/'}>
+>>>>>>> 399c9697fe60ad79a64deb24b344845f00a59a60
             login with feide
           </a>
         </div>
