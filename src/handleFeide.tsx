@@ -19,7 +19,7 @@ class HandleFeide {
                     Authorization: 'Token ' + token
                 }
             }).then(async (response: any) => {
-               await localStorage.setItem('user', response.data[0].fields.first_name.split(' ')[0]);
+                await localStorage.setItem('user', response.data.first_name.split(' ')[0]);
             });
         }
     }
