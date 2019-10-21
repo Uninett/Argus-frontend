@@ -14,7 +14,7 @@ const Table: React.FC = () => {
   //fetches alerts and sets state
   const getAlert = async () => {
     await axios({
-      url: '/alerts/all/',
+      url: 'http://localhost:8000/alert/all/',
       method: 'GET',
       headers: {
         Authorization: 'Token ' + localStorage.getItem('token')

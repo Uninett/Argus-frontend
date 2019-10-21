@@ -1,3 +1,6 @@
+import { Cookies } from "react-cookie";
+
+const cookies = new Cookies();
 class Auth {
   authenticated: boolean;
   constructor() {
@@ -10,6 +13,7 @@ class Auth {
   }
   logout(cb: any) {
     localStorage.clear();
+    cookies.remove('token'); 
     this.authenticated = false;
     cb();
   }
