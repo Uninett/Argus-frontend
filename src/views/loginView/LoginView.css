@@ -1,17 +1,17 @@
 .login-container {
   display: grid;
   color: var(--white);
-  --loginbox-width: 40vw;
-  --loginbox-height: 40vh;
+  --loginbox-width: 25vw;
+  --loginbox-height: 50vh;
   text-align: center;
   background-color: var(--primary);
   grid-template-areas:
-  ". logo ."
-  ". header ."
-  ". form ."
-  ". feide .";
-  grid-template-rows: 30% 20% 30% 20%;
-  grid-template-columns: 10% 80% 10%;
+  "logo"
+  "form"
+  "warning"
+  "feide";
+  grid-template-rows: 35% auto auto auto;
+  grid-template-columns: 100%;
   padding: 20px;
   box-shadow: 0px 1px 3px 1px #b6b6b6;
   width: var(--loginbox-width);
@@ -36,25 +36,78 @@ button {
   background-color: var(--primary);
 }
 
-.login-logo {
-  margin: auto;
+#login-logo {
   height: 100%;
+  margin: auto;
   grid-area: logo;
 }
 
-.login-feide {
-  height: 2em;
+#login-feide {
+  color: white;
   grid-area: feide;
-  padding-top: 2em;
+  padding: 10px;
 }
 
-.login-form{
+#login-form{
+  margin-top: 50px;
+  border: none;
   grid-area: form;
 }
 
-.login-header {
+#login-header {
   font-weight: 200;
-  margin-top: 0;
   margin-bottom: 0;
   grid-area: header;
+}
+
+#login-warning {
+  color: var(--secondary-light);
+  grid-area: warning;
+}
+
+#login-button {
+  font-size: 1em;
+  box-shadow: #b6b6b6;
+  background-color: var(--primary-dark);
+  margin-top: 10px;
+  color: var(--white);
+  width: max-content;
+}
+
+#login-form input {
+  padding-left: 5px;
+  padding-right: 5px;
+  height: 1.5em;
+  border: none;
+  text-align: left;
+}
+
+#login-form input::placeholder {
+  text-align: center;
+}
+
+/* Responsive Design */
+
+@media only screen and (max-height: 550px) {
+
+
+  .login-container {
+    grid-template-areas:
+    "form"
+    "warning"
+    "feide";
+    grid-template-rows: 70% 15% 15%;
+    grid-template-columns: 100%;
+
+  }
+
+  #login-logo {
+    display: none;
+  }
+
+  #login-form{
+    margin: auto;
+    border: none;
+    grid-area: form;
+  }
 }

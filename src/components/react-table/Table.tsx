@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ReactTable from 'react-table';
-import 'react-table/react-table.css';
+import './table.css';
+import 'react-table/react-table.css'
 import axios from 'axios';
 
 const Table: React.FC = () => {
