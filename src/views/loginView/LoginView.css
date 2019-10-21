@@ -1,8 +1,8 @@
 .login-container {
   display: grid;
   color: var(--white);
-  --loginbox-width: 40vw;
-  --loginbox-height: 40vh;
+  --loginbox-width: 30vw;
+  --loginbox-height: 50vh;
   text-align: center;
   background-color: var(--primary);
   grid-template-areas:

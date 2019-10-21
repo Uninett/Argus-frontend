@@ -69,7 +69,7 @@ const LoginView: React.FC<any> = props => {
                 onChange={e => setPassword(e.target.value)}
               />
             </div>
-            <button type='submit'> Log in</button>
+            <button type='submit' id="login-button"> Log in</button>
           </form>
           <p id="login-warning">
           {loginAttemptFailed ? "Username and/or password is incorrect" : ""}
