@@ -24,7 +24,7 @@ const LoginView: React.FC<any> = props => {
   //get Token and set localStorage with token, username and isloggedin
   const getToken = async () => {
     await Axios({
-      url: '/api-token-auth/',
+      url: 'http://localhost:8000/api-token-auth/',
       method: 'POST',
       data: { username: username, password: password }
     }).then(result => {
@@ -66,7 +66,9 @@ const LoginView: React.FC<any> = props => {
             </div>
             <button type='submit'> Log in</button>
           </form>
-          <a className='login-feide' href={'/login/dataporten_feide/'}>
+          <a
+            className='login-feide'
+            href={'http://localhost:8000/login/dataporten_feide/'}>
             login with feide
           </a>
         </div>
