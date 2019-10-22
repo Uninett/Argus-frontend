@@ -42,3 +42,23 @@
 .-odd {
   background-color: var(--primary-lighter);
 }
+
+/* width */
+.rt-body::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+.rt-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+.rt-body::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+.rt-body::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
