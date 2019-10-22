@@ -1,11 +1,12 @@
-import React, { useState, useContext } from 'react';
-import './LoginView.css';
-import Axios from 'axios';
-import { Store } from '../../store';
-import auth from '../../auth';
-import aaslogo from '../../Media/img/logo/logo_white.svg';
+import React, { useState, useContext } from "react";
+import "./LoginView.css";
+import Axios from "axios";
+import { Store } from "../../store";
+import auth from "../../auth";
+import aaslogo from "../../Media/img/logo/logo_white.svg";
 
 const LoginView: React.FC<any> = props => {
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loginAttemptFailed, setLoginAttemptFailed] = useState(false);
@@ -15,9 +16,9 @@ const LoginView: React.FC<any> = props => {
   const onSubmit = async (e: any) => {
     e.preventDefault();
     await getToken();
-    if (localStorage.getItem('token')) {
+    if (localStorage.getItem("token")) {
       auth.login(() => {
-        props.history.push('/');
+        props.history.push("/");
       });
     }
   };
@@ -29,13 +30,13 @@ const LoginView: React.FC<any> = props => {
       method: 'POST',
       data: { username: username, password: password }
     }).then(result => {
-      localStorage.setItem('token', result.data.token);
-      localStorage.setItem('user', result.data.token ? username : 'null');
-      localStorage.setItem('loggedin', result.data.token ? 'true' : 'false');
-      dispatch({ type: 'setUser', payload: username });
-      dispatch({ type: 'setToken', payload: result.data.token });
+      localStorage.setItem("token", result.data.token);
+      localStorage.setItem("user", result.data.token ? username : "null");
+      localStorage.setItem("loggedin", result.data.token ? "true" : "false");
+      dispatch({ type: "setUser", payload: username });
+      dispatch({ type: "setToken", payload: result.data.token });
       dispatch({
-        type: 'setLoggedin',
+        type: "setLoggedin",
         payload: result.data.token ? true : false
       });
     }).catch(error => {
@@ -49,33 +50,37 @@ const LoginView: React.FC<any> = props => {
 
   return (
     <div>
+
       <div className='container'>
         <div className='login-container'>
           <img id='login-logo' src={aaslogo} alt='logo' />
           <form onSubmit={onSubmit} id='login-form'>
+
             <div>
               <input
-                name={'username'}
+                name={"username"}
                 value={username}
-                placeholder={'Email'}
+                placeholder={"Email"}
                 onChange={e => setUsername(e.target.value)}
               />
             </div>
             <div>
               <input
-                name='password'
-                type='password'
+                name="password"
+                type="password"
                 value={password}
-                placeholder='Password'
+                placeholder="Password"
                 onChange={e => setPassword(e.target.value)}
               />
             </div>
+
             <button type='submit' id="login-button"> Log in</button>
           </form>
           <p id="login-warning">
           {loginAttemptFailed ? "Username and/or password is incorrect" : ""}
           </p>
           <a id='login-feide' href={'http://localhost:8000/login/dataporten_feide/'}>
+
             login with feide
           </a>
         </div>
