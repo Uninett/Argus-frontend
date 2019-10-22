@@ -1,16 +1,15 @@
-import React, { useState, useEffect } from "react";
-import "./ActiveProfile.css";
-import { makeStyles } from "@material-ui/core/styles";
-import Button from "@material-ui/core/Button";
-import axios from "axios";
-import moment from "moment";
+import React, { useState, useEffect } from 'react';
+import './ActiveProfile.css';
+import { makeStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import axios from 'axios';
 
 const useStyles = makeStyles(theme => ({
   button: {
     margin: theme.spacing(1)
   },
   input: {
-    display: "none"
+    display: 'none'
   }
 }));
 
@@ -20,101 +19,51 @@ type NotificationProfileType = {
   endDate: Date;
   id: number;
 };
+type NotificationProps = {
+  notificationProfiles: any;
+  removeItem: any;
+};
 
 // returns "cards" of all the active profiles
-const ActiveProfile: React.FC = () => {
+const ActiveProfile: React.FC<NotificationProps> = props => {
   const classes = useStyles();
-  const [profiles, setProfiles] = useState<any>([]);
+  const [profiles, setProfiles] = useState<any>(props.notificationProfiles);
 
   useEffect(() => {
-    fetchProfiles();
-  }, []);
-
-  const fetchProfiles = async () => {
-    await axios({
-      url: "http://localhost:8000/notificationprofiles/",
-      method: "GET",
-      headers: {
-        Authorization: "Token " + localStorage.getItem("token")
-      }
-    }).then((response: any) => {
-      const data = response.data;
-      console.log(data);
-      const profilesList = serializeData(data);
-      setProfiles(profilesList);
-    });
-  };
+    setProfiles(props.notificationProfiles);
+  }, [props.notificationProfiles]);
 
   const handleRemoveProfile = (itemToRemove: NotificationProfileType) => {
-    setProfiles(
-      profiles.filter(
-        (item: NotificationProfileType) => item.id !== itemToRemove.id
-      )
-    );
+    props.removeItem(itemToRemove);
   };
 
   const deleteProfile = async (item: any) => {
-    console.log("Delete profile", item.id);
     await axios({
-      url: "http://localhost:8000/notificationprofiles/" + item.id,
-      method: "DELETE",
+      url: 'http://localhost:8000/notificationprofiles/' + item.id,
+      method: 'DELETE',
       headers: {
-        Authorization: "Token " + localStorage.getItem("token")
+        Authorization: 'Token ' + localStorage.getItem('token')
       }
     }).then((response: any) => {
       handleRemoveProfile(item);
     });
   };
 
-  // Helper function: Format JSON from API
-  const serializeData = (dataFromAPI: any) => {
-    const profilesList: any = [];
-    for (let i = 0; i < dataFromAPI.length; i++) {
-      let profile = dataFromAPI[i];
-      let startDate = moment(dataFromAPI[i].interval_start)
-        .format("YYYY MM DD HH mm")
-        .split(" ")
-        .map(function(item) {
-          return parseInt(item, 10);
-        });
-      let endDate = moment(dataFromAPI[i].interval_stop)
-        .format("YYYY MM DD HH mm")
-        .split(" ")
-        .map(function(item) {
-          return parseInt(item, 10);
-        });
-      //Creating a javascript object to fit the mapping of rendered items
-      let object = {
-        id: dataFromAPI[i].pk,
-        title: profile.name,
-        startDate: new Date(
-          startDate[0],
-          startDate[1],
-          startDate[2],
-          startDate[3]
-        ),
-        endDate: new Date(endDate[0], endDate[1], endDate[2], endDate[3])
-      };
-      profilesList.push(object);
-    }
-    return profilesList;
-  };
-
   const weekList = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday"
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday'
   ];
 
   return (
-    <div className="profile-container">
+    <div className='profile-container'>
       {profiles.map((item: any) => {
         return (
-          <div className="item-container" key={item.id}>
+          <div className='item-container' key={item.id}>
             <h3>{item.title}</h3>
             <h4>{`${
               weekList[item.startDate.getDay()]
@@ -122,11 +71,10 @@ const ActiveProfile: React.FC = () => {
               weekList[item.endDate.getDay()]
             } ${item.endDate.getHours()}`}</h4>
             <Button
-              variant="contained"
-              color="secondary"
+              variant='contained'
+              color='secondary'
               className={classes.button}
-              onClick={() => deleteProfile(item)}
-            >
+              onClick={() => deleteProfile(item)}>
               Delete
             </Button>
           </div>
