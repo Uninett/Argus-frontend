@@ -13,7 +13,7 @@ const Table: React.FC = () => {
   //fetches alerts and sets state
   const getAlert = async () => {
     await axios({
-      url: 'http://localhost:8000/alert/all/',
+      url: '/alert/all/',
       method: 'GET',
       headers: {
         Authorization: 'Token ' + localStorage.getItem('token')
@@ -32,13 +32,29 @@ const Table: React.FC = () => {
     return list;
   };
   const columns: any = [
-    { Header: 'Timestamp', accessor: 'start_time' },
-    { Header: 'Alert ID', accessor: 'alert_id' },
+    {
+      Header: 'Timestamp',
+      accessor: 'timestamp'
+    },
+    {
+      Header: 'Alert ID',
+      accessor: 'alert_id'
+    },
     { Header: 'Source', accessor: 'source' },
-    { Header: 'Netbox', accessor: 'netbox' }
+    { Header: 'Description', accessor: 'description' },
+    { Header: 'Details URL', accessor: 'details_url' },
+    { Header: 'Object', accessor: 'object' },
+    { Header: 'Parent object', accessor: 'parent_object' },
+    { Header: 'Problem type', accessor: 'problem_type' }
   ];
 
-  return <ReactTable columns={columns} data={alerts}></ReactTable>;
+  return (
+    <ReactTable
+      columns={columns}
+      data={alerts}
+      pageSize={alerts.length}
+      showPaginationBottom={false}></ReactTable>
+  );
 };
 
 export default Table;

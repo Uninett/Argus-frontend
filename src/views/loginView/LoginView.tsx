@@ -3,6 +3,7 @@ import './LoginView.css';
 import Axios from 'axios';
 import { Store } from '../../store';
 import auth from '../../auth';
+import aaslogo from '../../Media/img/logo/logo_white.svg';
 
 const LoginView: React.FC<any> = props => {
   const [username, setUsername] = useState('');
@@ -23,7 +24,7 @@ const LoginView: React.FC<any> = props => {
   //get Token and set localStorage with token, username and isloggedin
   const getToken = async () => {
     await Axios({
-      url: 'http://127.0.0.1:8000/api-token-auth/',
+      url: '/api-token-auth/',
       method: 'POST',
       data: { username: username, password: password }
     }).then(result => {
@@ -43,8 +44,9 @@ const LoginView: React.FC<any> = props => {
     <div>
       <div className='container'>
         <div className='login-container'>
-          <h1>Login</h1>
-          <form onSubmit={onSubmit}>
+          <img className='login-logo' src={aaslogo} alt='logo' />
+          <h1 className='login-header'>Login</h1>
+          <form onSubmit={onSubmit} className='login-form'>
             <div>
               <input
                 name={'username'}
@@ -64,7 +66,7 @@ const LoginView: React.FC<any> = props => {
             </div>
             <button type='submit'> Log in</button>
           </form>
-          <a href={'http://localhost:8000/login/dataporten/'}>
+          <a className='login-feide' href={'/login/dataporten_feide/'}>
             login with feide
           </a>
         </div>
