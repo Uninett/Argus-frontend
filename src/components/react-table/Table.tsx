@@ -14,24 +14,16 @@ const Table: React.FC = () => {
   //fetches alerts and sets state
   const getAlert = async () => {
     await axios({
-      url: 'http://localhost:8000/alert/all/',
+      url: 'http://localhost:8000/alerts/',
       method: 'GET',
       headers: {
         Authorization: 'Token ' + localStorage.getItem('token')
       }
     }).then((response: any) => {
-      const alertList = fixAlert(response.data);
-      setAlerts(alertList);
+      setAlerts(response.data);
     });
   };
-  //format JSON
-  const fixAlert = (e: any) => {
-    let list: any = [];
-    for (let i = 0; i < e.length; i++) {
-      list.push(e[i].fields);
-    }
-    return list;
-  };
+
   const columns: any = [
     {
       Header: 'Timestamp',
