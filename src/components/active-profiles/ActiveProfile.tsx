@@ -14,6 +14,13 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+type NotificationProfileType = {
+  title: string;
+  startDate: Date;
+  endDate: Date;
+  id: number;
+};
+
 // returns "cards" of all the active profiles
 const ActiveProfile: React.FC = () => {
   const classes = useStyles();
@@ -35,6 +42,27 @@ const ActiveProfile: React.FC = () => {
       console.log(data);
       const profilesList = serializeData(data);
       setProfiles(profilesList);
+    });
+  };
+
+  const handleRemoveProfile = (itemToRemove: NotificationProfileType) => {
+    setProfiles(
+      profiles.filter(
+        (item: NotificationProfileType) => item.id !== itemToRemove.id
+      )
+    );
+  };
+
+  const deleteProfile = async (item: any) => {
+    console.log("Delete profile", item.id);
+    await axios({
+      url: "http://localhost:8000/notificationprofiles/" + item.id,
+      method: "DELETE",
+      headers: {
+        Authorization: "Token " + localStorage.getItem("token")
+      }
+    }).then((response: any) => {
+      handleRemoveProfile(item);
     });
   };
 
@@ -72,7 +100,15 @@ const ActiveProfile: React.FC = () => {
     return profilesList;
   };
 
-  const weekList = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+  const weekList = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday"
+  ];
 
   return (
     <div className="profile-container">
@@ -82,13 +118,14 @@ const ActiveProfile: React.FC = () => {
             <h3>{item.title}</h3>
             <h4>{`${
               weekList[item.startDate.getDay()]
-            } ${item.startDate.getHours()} - ${
+            } ${item.startDate.getHours()} – ${
               weekList[item.endDate.getDay()]
             } ${item.endDate.getHours()}`}</h4>
             <Button
               variant="contained"
               color="secondary"
               className={classes.button}
+              onClick={() => deleteProfile(item)}
             >
               Delete
             </Button>
