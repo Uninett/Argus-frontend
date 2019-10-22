@@ -21,6 +21,13 @@ type NotificationProfilesTypes = {
   id: number;
 }[];
 
+type NotificationProfileType = {
+  title: string;
+  startDate: Date;
+  endDate: Date;
+  id: number;
+};
+
 type PropType = {};
 
 const CalendarScheduler: React.FC<PropType> = props => {
@@ -80,42 +87,56 @@ const CalendarScheduler: React.FC<PropType> = props => {
     return profilesList;
   };
 
+  const serializeDataToBeSent = (item: NotificationProfileType) => {
+    const start = moment(item.startDate).format("YYYY-MM-DD HH:mm:ss");
+    const stop = moment(item.endDate).format("YYYY-MM-DD HH:mm:ss");
+
+    const profile = {
+      name: item.title,
+      interval_start: start,
+      interval_stop: stop
+    };
+    return profile;
+  };
+
   function onCommitChanges({ added, changed, deleted }: any) {
     if (typeof added !== "undefined") {
-      console.log("added", added);
-
-      // TODO: Save new profile to backend
+      const item = serializeDataToBeSent(added);
+      postNotificationProfile(item);
+      // TODO: Serialize the new object and
+      // TODO: Add to state so that it is updated
+      // const newItem = postNotificationProfile(iten);
+      // const serializedNewItem = serialiace(newItem)
+      // Add serializedNewItem to notificationProfiles in state
     }
   }
 
-  const postNotificationProfile = async () => {
+  const postNotificationProfile = async (item: any) => {
     await axios({
       url: "http://localhost:8000/notificationprofiles/",
       method: "POST",
       headers: {
-        Authorization: "Token " + localStorage.getItem("token")
+        Authorization: "Token " + localStorage.getItem("token"),
+        "content-type": "application/json"
       },
-      data: {
-        name: "torsdag",
-        interval_start: "2018-06-12 09:55:22",
-        interval_stop: "2018-06-12 09:55:22"
-      }
+      data: `{
+        "name": "${item.name}",
+        "interval_start": "${item.interval_start}",
+        "interval_stop": "${item.interval_stop}"
+      }`
+    }).then((response: any) => {
+      console.log(response.data);
+      // Must return the new object
     });
   };
 
-  function onAddedAppointmentChange(addedAppointment: any) {
-    console.log("Added appointment", addedAppointment);
-  }
   return (
     <div>
       <div className="calendar-container">
         <Paper>
           <Scheduler data={notificationProfiles} height={660}>
-            <EditingState
-              onCommitChanges={onCommitChanges}
-              onAddedAppointmentChange={onAddedAppointmentChange}
-            />
-            <ViewState defaultCurrentDate={new Date(2018, 7, 12, 0, 0)} />
+            <EditingState onCommitChanges={onCommitChanges} />
+            <ViewState defaultCurrentDate={new Date(2018, 8, 12, 0, 0)} />
             <WeekView startDayHour={0} endDayHour={24} cellDuration={60} />
             <Appointments />
             <AppointmentTooltip />

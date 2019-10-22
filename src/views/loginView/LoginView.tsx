@@ -1,22 +1,22 @@
-import React, { useState, useContext } from 'react';
-import './LoginView.css';
-import Axios from 'axios';
-import { Store } from '../../store';
-import auth from '../../auth';
-import aaslogo from '../../Media/img/logo/logo_white.svg';
+import React, { useState, useContext } from "react";
+import "./LoginView.css";
+import Axios from "axios";
+import { Store } from "../../store";
+import auth from "../../auth";
+import aaslogo from "../../Media/img/logo/logo_white.svg";
 
 const LoginView: React.FC<any> = props => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const { dispatch } = useContext(Store);
 
   //runs when the form is submitted. GetToken() will run and then it will redirect to AlertView
   const onSubmit = async (e: any) => {
     e.preventDefault();
     await getToken();
-    if (localStorage.getItem('token')) {
+    if (localStorage.getItem("token")) {
       auth.login(() => {
-        props.history.push('/');
+        props.history.push("/");
       });
     }
   };
@@ -24,17 +24,17 @@ const LoginView: React.FC<any> = props => {
   //get Token and set localStorage with token, username and isloggedin
   const getToken = async () => {
     await Axios({
-      url: '/api-token-auth/',
-      method: 'POST',
+      url: "http://localhost:8000/api-token-auth/",
+      method: "POST",
       data: { username: username, password: password }
     }).then(result => {
-      localStorage.setItem('token', result.data.token);
-      localStorage.setItem('user', result.data.token ? username : 'null');
-      localStorage.setItem('loggedin', result.data.token ? 'true' : 'false');
-      dispatch({ type: 'setUser', payload: username });
-      dispatch({ type: 'setToken', payload: result.data.token });
+      localStorage.setItem("token", result.data.token);
+      localStorage.setItem("user", result.data.token ? username : "null");
+      localStorage.setItem("loggedin", result.data.token ? "true" : "false");
+      dispatch({ type: "setUser", payload: username });
+      dispatch({ type: "setToken", payload: result.data.token });
       dispatch({
-        type: 'setLoggedin',
+        type: "setLoggedin",
         payload: result.data.token ? true : false
       });
     });
@@ -42,31 +42,31 @@ const LoginView: React.FC<any> = props => {
 
   return (
     <div>
-      <div className='container'>
-        <div className='login-container'>
-          <img className='login-logo' src={aaslogo} alt='logo' />
-          <h1 className='login-header'>Login</h1>
-          <form onSubmit={onSubmit} className='login-form'>
+      <div className="container">
+        <div className="login-container">
+          <img className="login-logo" src={aaslogo} alt="logo" />
+          <h1 className="login-header">Login</h1>
+          <form onSubmit={onSubmit} className="login-form">
             <div>
               <input
-                name={'username'}
+                name={"username"}
                 value={username}
-                placeholder={'Email'}
+                placeholder={"Email"}
                 onChange={e => setUsername(e.target.value)}
               />
             </div>
             <div>
               <input
-                name='password'
-                type='password'
+                name="password"
+                type="password"
                 value={password}
-                placeholder='Password'
+                placeholder="Password"
                 onChange={e => setPassword(e.target.value)}
               />
             </div>
-            <button type='submit'> Log in</button>
+            <button type="submit"> Log in</button>
           </form>
-          <a className='login-feide' href={'/login/dataporten_feide/'}>
+          <a className="login-feide" href={"/login/dataporten_feide/"}>
             login with feide
           </a>
         </div>
