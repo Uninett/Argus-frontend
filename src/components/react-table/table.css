@@ -1,35 +1,44 @@
 .ReactTable {
+  --table-background-color: var(--white);
+  --table-header-color: var(--white);
+  --table-header-font-color: var(--primary);
+  --table-sorting-color: var(--secondary);
+  --table-active-font-color: var(--primary);
   --table-height: 70vh;
+  background-color: var(--table-background-color);
   margin: auto;
   margin-top: calc(
-    calc(calc(100vh - var(--header-height)) - var(--table-height)) / 2
+    calc(calc(95vh - var(--header-height)) - var(--table-height)) / 2
   );
   width: 80vw;
-  background-color: white;
   height: var(--table-height);
-  box-shadow: 0px 1px 3px 1px #b6b6b6;
+  box-shadow: 0px 1px 5px 1px #b6b6b6;
+  border: none !important;
+  border-radius: 5px;
+  z-index: 0;
 }
 
-.-btn {
-  border-radius: 10px;
-  color: blue;
-}
 
 .ReactTable .rt-thead.-header {
-  color: var(--text);
+  color: var(--table-header-font-color);
+  background-color: var(--table-header-color);
   font-weight: 500;
-  background-color: var(--primary-light);
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  z-index: 1;
 }
 
-.ReactTable .-pagination .-btn {
-  height: 5vh;
-  width: 10vw;
-  margin: auto;
-  border-radius: 10px;
+.ReactTable .rt-thead .rt-th.-sort-asc, .ReactTable .rt-thead .rt-td.-sort-asc {
+  color: var(--table-active-font-color);
+  box-shadow: inset 0 3px 0 0 var(--table-sorting-color) !important;
 }
 
-.ReactTable .-pagination .-btn[enabled] {
-  height: 5vh;
-  width: 10vw;
-  background-color: var(--primary-light);
+.ReactTable .rt-thead .rt-th.-sort-desc, .ReactTable .rt-thead .rt-td.-sort-asc {
+  color: var(--table-active-font-color);
+  box-shadow: inset 0 -3px 0 0 var(--table-sorting-color) !important;
+
+}
+
+.-odd {
+  background-color: var(--primary-lighter);
 }

@@ -39,8 +39,8 @@ const LoginView: React.FC<any> = props => {
         payload: result.data.token ? true : false
       });
     }).catch(error => {
-      console.log(error);
-      
+      console.log("en feil skjedde");
+      console.log(error.type);
       setLoginAttemptFailed(true);
   });
     
