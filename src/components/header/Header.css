@@ -39,7 +39,7 @@
     grid-area: about;
 }
 
-#header-user:hover, #header-about:hover, #header-logout:hover, #header-settings:hover {
+#header-user:hover, #header-about:hover, #header-logout:hover, #header-profiles:hover {
     color: var(--secondary);
 }
 
@@ -57,7 +57,8 @@
 
 .dropdown-content {
     min-width: 100px;
-    border-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px ;
     padding-top: 20px;
     display: none;
     position: absolute;

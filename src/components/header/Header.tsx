@@ -18,11 +18,11 @@ const Userbutton: React.FC<{ history: any }> = props => {
       <p>{user}</p>
       <div className='dropdown-content'>
         <a
-          href='/settings'
-          id='header-settings'
+          href='/notification-profile'
+          id='header-profiles'
           className='headerbutton dropdown-button'>
-          <p id='header-settings' className='headerbutton dropdown-button'>
-            Settings
+          <p id='header-profiles' className='headerbutton dropdown-button'>
+            Profiles
           </p>
         </a>
         <button
