@@ -14,7 +14,7 @@ const App: React.SFC = () => {
       <Switch>
         <ProtectedRoute exact path='/' component={AlertView} />
         <Route path='/login' component={LoginView} />
-        <Route path='*' component={() => <div> <Header/><h1>404 not found</h1> </div>} />
+        <Route path='*' component={() => <div> <Header/><div id="not-found"> <h1 >404 not found</h1> </div> </div>} />
       </Switch>
     </div>
   );
