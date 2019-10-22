@@ -15,7 +15,7 @@ const NotificationProfileView: React.FC<PropType> = props => {
   return (
     <div>
       <Header />
-      <h1>My Active Notficiation Profiles</h1>
+      <h1>My Active Notificiation Profiles</h1>
       <ActiveProfile />
       <div>
         <CalendarScheduler />
