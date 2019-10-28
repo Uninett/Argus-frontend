@@ -7,6 +7,7 @@ import "./variables.css";
 import "./colorscheme.css";
 import NotificationProfileView from "./views/notificationProfileView/NotificationProfileView";
 import ActiveProfile from "./components/active-profiles/ActiveProfile";
+import FilterBuildingView from "./components/filterDropDown/filterBuildingView/filterBuildingView";
 
 const App: React.SFC = () => {
   return (
@@ -19,6 +20,7 @@ const App: React.SFC = () => {
         />
         <Route path="/login" component={LoginView} />
         <Route path="/profile" component={ActiveProfile} />
+        <Route path="/customFilter" component={FilterBuildingView} />
         <Route path="*" component={() => <h1>404 not found</h1>} />
       </Switch>
     </div>
