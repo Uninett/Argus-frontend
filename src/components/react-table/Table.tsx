@@ -5,7 +5,7 @@ import 'react-table/react-table.css'
 import axios from 'axios';
 
 const Table: React.FC = () => {
-  const [alerts, setAlerts] = useState<Object[]>([]);
+  const [alerts, setAlerts] = useState<any>([]);
 
   useEffect(() => {
     getAlert();
@@ -33,12 +33,12 @@ const Table: React.FC = () => {
       Header: 'Alert ID',
       accessor: 'alert_id'
     },
-    { Header: 'Source', accessor: 'source' },
+    { Header: 'Source', accessor: 'source.type' },
     { Header: 'Description', accessor: 'description' },
     { Header: 'Details URL', accessor: 'details_url' },
-    { Header: 'Object', accessor: 'object' },
-    { Header: 'Parent object', accessor: 'parent_object' },
-    { Header: 'Problem type', accessor: 'problem_type' }
+    { Header: 'Object', accessor: 'object.name' },
+    { Header: 'Parent object', accessor: 'parent_object.name' },
+    { Header: 'Problem type', accessor: 'problem_type.name' }
   ];
 
   return (
