@@ -12,14 +12,32 @@ const FilterBuildingView: React.FC = () => {
   const [netWorkSystemTypes, setNetworkSystemTypes] = useState<Metadata>(
     defaultResponse
   );
+  const [netWorkSystems, setNetworkSystems] = useState<Metadata>(
+    defaultResponse
+  );
 
   useEffect(() => {
     fetchProblemTypes();
   }, []);
 
+  const postNewFilter = async () => {
+    await axios({
+      url: "http://localhost:8000/notificationProfile/filters",
+      method: "POST",
+      headers: {
+        Authorization: "Token " + localStorage.getItem("token")
+      },
+      data: {
+        name: "filter1",
+        filter: JSON.stringify(selectedProblemTypes)
+      }
+    });
+  };
+
   const fetchProblemTypes = async () => {
     let objectTypesResponse: Metadata = [];
     let networkTypesResponse: Metadata = [];
+    let networkSystemsResponse: Metadata = [];
     let problemTypesResponse: Metadata = [];
 
     await axios({
@@ -47,10 +65,17 @@ const FilterBuildingView: React.FC = () => {
           value: networks.name
         });
       });
+      result.data.networkSystems.map((networks: any) => {
+        networkSystemsResponse.push({
+          label: networks.name,
+          value: networks.name
+        });
+      });
     });
     setProblemTypes(problemTypesResponse);
     setNetworkSystemTypes(networkTypesResponse);
     setobjectTypes(objectTypesResponse);
+    setNetworkSystems(networkSystemsResponse);
   };
 
   type OptionsType = [{ label: string; value: string }];
@@ -58,8 +83,13 @@ const FilterBuildingView: React.FC = () => {
     setSelectedProblemTypes(options);
   };
 
+  const handleCreate = () => {
+    postNewFilter();
+  };
+
   return (
     <div>
+      <h1>Build your custom filter here for only 9.99$!!! </h1>
       <p>Select alarm type</p>
       <Select
         isMulti
@@ -84,6 +114,15 @@ const FilterBuildingView: React.FC = () => {
         options={netWorkSystemTypes}
         onChange={handleChange}
       ></Select>
+      <p>Select netWorkSystems</p>
+      <Select
+        key="3"
+        isMulti
+        name="boisss"
+        options={netWorkSystems}
+        onChange={handleChange}
+      ></Select>
+      <button onClick={handleCreate}>create</button>
     </div>
   );
 };
