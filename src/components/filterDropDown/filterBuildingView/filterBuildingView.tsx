@@ -1,18 +1,45 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, SetStateAction } from "react";
 import Select from "react-select";
 import axios from "axios";
 
 type Metadata = { label: string; value: string }[];
 const defaultResponse = [{ label: "none", value: "none" }];
 
+type Filter = {
+  problemTypes: string[];
+  objectTypes: string[];
+  networkSystemTypes: string[];
+  networkSystems: string[];
+};
+
+const defaultFilter = {
+  problemTypes: [],
+  objectTypes: [],
+  networkSystemTypes: [],
+  networkSystems: []
+};
+
+let objectTypesResponse: Metadata = [];
+let networkTypesResponse: Metadata = [];
+let networkSystemsResponse: Metadata = [];
+let problemTypesResponse: Metadata = [];
+
+let properties = [
+  { propertyName: "objectTypes", list: objectTypesResponse },
+  { propertyName: "networkSystems", list: networkSystemsResponse },
+  { propertyName: "networkSystemTypes", list: networkTypesResponse },
+  { propertyName: "problemTypes", list: problemTypesResponse }
+];
+
 const FilterBuildingView: React.FC = () => {
-  const [selectedProblemTypes, setSelectedProblemTypes] = useState([]);
+  const [filter, setFilter] = useState<Filter>(defaultFilter);
+
   const [objectTypes, setobjectTypes] = useState<Metadata>(defaultResponse);
   const [problemTypes, setProblemTypes] = useState<Metadata>(defaultResponse);
-  const [netWorkSystemTypes, setNetworkSystemTypes] = useState<Metadata>(
+  const [networkSystemTypes, setNetworkSystemTypes] = useState<Metadata>(
     defaultResponse
   );
-  const [netWorkSystems, setNetworkSystems] = useState<Metadata>(
+  const [networkSystems, setNetworkSystems] = useState<Metadata>(
     defaultResponse
   );
 
@@ -22,24 +49,19 @@ const FilterBuildingView: React.FC = () => {
 
   const postNewFilter = async () => {
     await axios({
-      url: "http://localhost:8000/notificationProfile/filters",
+      url: "http://localhost:8000/notificationprofiles/filters",
       method: "POST",
       headers: {
         Authorization: "Token " + localStorage.getItem("token")
       },
       data: {
         name: "filter1",
-        filter: JSON.stringify(selectedProblemTypes)
+        filter: JSON.stringify(filter)
       }
     });
   };
 
   const fetchProblemTypes = async () => {
-    let objectTypesResponse: Metadata = [];
-    let networkTypesResponse: Metadata = [];
-    let networkSystemsResponse: Metadata = [];
-    let problemTypesResponse: Metadata = [];
-
     await axios({
       url: "http://localhost:8000/alerts/metaData",
       method: "GET",
@@ -47,28 +69,12 @@ const FilterBuildingView: React.FC = () => {
         Authorization: "Token " + localStorage.getItem("token")
       }
     }).then(result => {
-      result.data.objectTypes.map((obj: any) => {
-        objectTypesResponse.push({
-          label: obj.name,
-          value: obj.name
-        });
-      });
-      result.data.networkSystemTypes.map((networks: any) => {
-        networkTypesResponse.push({
-          label: networks.name,
-          value: networks.name
-        });
-      });
-      result.data.problemTypes.map((networks: any) => {
-        problemTypesResponse.push({
-          label: networks.name,
-          value: networks.name
-        });
-      });
-      result.data.networkSystems.map((networks: any) => {
-        networkSystemsResponse.push({
-          label: networks.name,
-          value: networks.name
+      properties.map(p => {
+        result.data[p.propertyName].map((obj: any) => {
+          p.list.push({
+            label: obj.name,
+            value: obj.name
+          });
         });
       });
     });
@@ -79,8 +85,14 @@ const FilterBuildingView: React.FC = () => {
   };
 
   type OptionsType = [{ label: string; value: string }];
-  const handleChange = (options: any) => {
-    setSelectedProblemTypes(options);
+  const handleChange = (value: any, property: string) => {
+    let newFilter: any = filter;
+    newFilter[property] = value
+      ? value.map((obj: any) => {
+          return obj.value;
+        })
+      : [];
+    setFilter(newFilter);
   };
 
   const handleCreate = () => {
@@ -93,34 +105,30 @@ const FilterBuildingView: React.FC = () => {
       <p>Select alarm type</p>
       <Select
         isMulti
-        key="1"
         name="bois"
         options={problemTypes}
-        onChange={handleChange}
+        onChange={value => handleChange(value, "problemTypes")}
       ></Select>
       <p>Select objectTypes</p>
       <Select
-        key="2"
         isMulti
         name="boiss"
         options={objectTypes}
-        onChange={handleChange}
+        onChange={value => handleChange(value, "objectTypes")}
       ></Select>
       <p>Select netWorkSystemTypes</p>
       <Select
-        key="3"
         isMulti
         name="boisss"
-        options={netWorkSystemTypes}
-        onChange={handleChange}
+        options={networkSystemTypes}
+        onChange={value => handleChange(value, "networkSystemTypes")}
       ></Select>
       <p>Select netWorkSystems</p>
       <Select
-        key="3"
         isMulti
-        name="boisss"
-        options={netWorkSystems}
-        onChange={handleChange}
+        name="boissss"
+        options={networkSystems}
+        onChange={value => handleChange(value, "networkSystems")}
       ></Select>
       <button onClick={handleCreate}>create</button>
     </div>

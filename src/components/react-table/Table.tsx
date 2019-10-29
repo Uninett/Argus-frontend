@@ -34,21 +34,12 @@ const Table: React.FC = () => {
       Header: "Alert ID",
       accessor: "alert_id"
     },
-<<<<<<< HEAD
-    { Header: "Source", accessor: "source" },
+    { Header: "Source", accessor: "source.type" },
     { Header: "Description", accessor: "description" },
     { Header: "Details URL", accessor: "details_url" },
-    { Header: "Object", accessor: "object" },
-    { Header: "Parent object", accessor: "parent_object" },
-    { Header: "Problem type", accessor: "problem_type" }
-=======
-    { Header: 'Source', accessor: 'source.type' },
-    { Header: 'Description', accessor: 'description' },
-    { Header: 'Details URL', accessor: 'details_url' },
-    { Header: 'Object', accessor: 'object.name' },
-    { Header: 'Parent object', accessor: 'parent_object.name' },
-    { Header: 'Problem type', accessor: 'problem_type.name' }
->>>>>>> origin/dev
+    { Header: "Object", accessor: "object.name" },
+    { Header: "Parent object", accessor: "parent_object.name" },
+    { Header: "Problem type", accessor: "problem_type.name" }
   ];
 
   return (
