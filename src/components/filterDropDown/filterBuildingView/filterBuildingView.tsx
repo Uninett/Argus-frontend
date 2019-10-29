@@ -2,32 +2,57 @@ import React, { useState, useEffect } from "react";
 import Select from "react-select";
 import axios from "axios";
 
+type Metadata = { label: string; value: string }[];
+const defaultResponse = [{ label: "none", value: "none" }];
+
 const FilterBuildingView: React.FC = () => {
   const [selectedProblemTypes, setSelectedProblemTypes] = useState([]);
-  const [problemTypes, setProblemTypes] = useState([]);
+  const [objectTypes, setobjectTypes] = useState<Metadata>(defaultResponse);
+  const [problemTypes, setProblemTypes] = useState<Metadata>(defaultResponse);
+  const [netWorkSystemTypes, setNetworkSystemTypes] = useState<Metadata>(
+    defaultResponse
+  );
 
   useEffect(() => {
     fetchProblemTypes();
   }, []);
 
   const fetchProblemTypes = async () => {
-    const l: any = [];
+    let objectTypesResponse: Metadata = [];
+    let networkTypesResponse: Metadata = [];
+    let problemTypesResponse: Metadata = [];
+
     await axios({
-      url: "http://localhost:8000/alerts/problem_types",
+      url: "http://localhost:8000/alerts/metaData",
       method: "GET",
       headers: {
         Authorization: "Token " + localStorage.getItem("token")
       }
     }).then(result => {
-      result.data.map((obj: any) => {
-        l.push({
-          label: obj.fields.name,
-          value: obj.fields.name.replace(" ", "_")
+      result.data.objectTypes.map((obj: any) => {
+        objectTypesResponse.push({
+          label: obj.name,
+          value: obj.name
+        });
+      });
+      result.data.networkSystemTypes.map((networks: any) => {
+        networkTypesResponse.push({
+          label: networks.name,
+          value: networks.name
+        });
+      });
+      result.data.problemTypes.map((networks: any) => {
+        problemTypesResponse.push({
+          label: networks.name,
+          value: networks.name
         });
       });
     });
-    setProblemTypes(l);
+    setProblemTypes(problemTypesResponse);
+    setNetworkSystemTypes(networkTypesResponse);
+    setobjectTypes(objectTypesResponse);
   };
+
   type OptionsType = [{ label: string; value: string }];
   const handleChange = (options: any) => {
     setSelectedProblemTypes(options);
@@ -43,8 +68,22 @@ const FilterBuildingView: React.FC = () => {
         options={problemTypes}
         onChange={handleChange}
       ></Select>
-      <p>Select alarm source</p>
-      <Select key="2" isMulti name="boiss" options={problemTypes}></Select>
+      <p>Select objectTypes</p>
+      <Select
+        key="2"
+        isMulti
+        name="boiss"
+        options={objectTypes}
+        onChange={handleChange}
+      ></Select>
+      <p>Select netWorkSystemTypes</p>
+      <Select
+        key="3"
+        isMulti
+        name="boisss"
+        options={netWorkSystemTypes}
+        onChange={handleChange}
+      ></Select>
     </div>
   );
 };
