@@ -1,0 +1,49 @@
+.body {
+  font-family: 'Muli', sans-serif;
+}
+.notification-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  width: 85%;
+  height: 50px;
+  margin: auto;
+  margin-top: 10px;
+  border: 1px solid lightgrey;
+  border-radius: 5px;
+  box-shadow: 0px 1px 5px 1px #b6b6b6;
+}
+.dropdown {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.check-box {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.timeslot-dropdown {
+  margin-left: 5px;
+  width: 30vw;
+}
+.buttons-container {
+  display: flex;
+  justify-content: space-around;
+}
+.filtername-box {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.filter-dropdown {
+  width: 14vw;
+  margin-left: 5px;
+}
+
+.button-delete {
+  margin-left: 10px;
+  width: 100%;
+}
