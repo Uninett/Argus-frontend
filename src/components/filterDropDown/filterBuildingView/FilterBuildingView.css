@@ -1,0 +1,40 @@
+.WrappingDiv {
+  display: flex;
+  flex-direction: row;
+}
+
+.filterBuilding-div {
+  border: 1px solid lightgrey;
+  border-radius: 5px;
+  box-shadow: 0px 1px 5px 1px #b6b6e6;
+  margin: 15px 5px 100px 5px;
+  width: 40vw;
+}
+
+.ButtonDiv {
+  margin: 10px 0px 10px 0px;
+  display: flex;
+  justify-content: center;
+}
+
+.InputWrapperDiv {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 90%;
+  margin: auto;
+}
+
+.FilterTableDiv {
+  width: 40% !important;
+}
+
+.NameFieldDiv {
+  display: flex;
+  flex-direction: column;
+  padding: 0px;
+}
+
+TextField {
+  padding: 0px;
+}

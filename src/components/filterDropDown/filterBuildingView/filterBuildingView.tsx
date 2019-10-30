@@ -1,6 +1,12 @@
 import React, { useState, useEffect, SetStateAction } from "react";
 import Select from "react-select";
 import axios from "axios";
+import "./FilterBuildingView.css";
+
+import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
+import SaveIcon from "@material-ui/icons/Save";
+import Table from "../../react-table/Table";
 
 type Metadata = { label: string; value: string }[];
 const defaultResponse = [{ label: "none", value: "none" }];
@@ -33,7 +39,7 @@ let properties = [
 
 const FilterBuildingView: React.FC = () => {
   const [filter, setFilter] = useState<Filter>(defaultFilter);
-
+  const [name, setName] = useState("");
   const [objectTypes, setobjectTypes] = useState<Metadata>(defaultResponse);
   const [problemTypes, setProblemTypes] = useState<Metadata>(defaultResponse);
   const [networkSystemTypes, setNetworkSystemTypes] = useState<Metadata>(
@@ -55,7 +61,7 @@ const FilterBuildingView: React.FC = () => {
         Authorization: "Token " + localStorage.getItem("token")
       },
       data: {
-        name: "filter1",
+        name: name,
         filter: JSON.stringify(filter)
       }
     });
@@ -84,7 +90,6 @@ const FilterBuildingView: React.FC = () => {
     setNetworkSystems(networkSystemsResponse);
   };
 
-  type OptionsType = [{ label: string; value: string }];
   const handleChange = (value: any, property: string) => {
     let newFilter: any = filter;
     newFilter[property] = value
@@ -95,42 +100,82 @@ const FilterBuildingView: React.FC = () => {
     setFilter(newFilter);
   };
 
+  const handleName = (e: any) => {
+    setName(e.target.value);
+    console.log(name);
+  };
+
   const handleCreate = () => {
-    postNewFilter();
+    if (name == "") {
+      alert("Please enter a name for this filter :3");
+    } else {
+      postNewFilter();
+    }
   };
 
   return (
-    <div>
-      <h1>Build your custom filter here for only 9.99$!!! </h1>
-      <p>Select alarm type</p>
-      <Select
-        isMulti
-        name="bois"
-        options={problemTypes}
-        onChange={value => handleChange(value, "problemTypes")}
-      ></Select>
-      <p>Select objectTypes</p>
-      <Select
-        isMulti
-        name="boiss"
-        options={objectTypes}
-        onChange={value => handleChange(value, "objectTypes")}
-      ></Select>
-      <p>Select netWorkSystemTypes</p>
-      <Select
-        isMulti
-        name="boisss"
-        options={networkSystemTypes}
-        onChange={value => handleChange(value, "networkSystemTypes")}
-      ></Select>
-      <p>Select netWorkSystems</p>
-      <Select
-        isMulti
-        name="boissss"
-        options={networkSystems}
-        onChange={value => handleChange(value, "networkSystems")}
-      ></Select>
-      <button onClick={handleCreate}>create</button>
+    <div className="WrappingDiv">
+      <div className="filterBuilding-div">
+        <div className="InputWrapperDiv">
+          <h1>Build your custom filter here for only 9.99$!!! </h1>
+
+          <div className="NameFieldDiv">
+            <p>Name</p>
+            <TextField
+              required
+              id="standard-required"
+              label="Required"
+              defaultValue=""
+              placeholder="name"
+              onChange={handleName}
+              margin="dense"
+            />
+          </div>
+
+          <p>Select alarm type</p>
+          <Select
+            isMulti
+            name="bois"
+            options={problemTypes}
+            onChange={value => handleChange(value, "problemTypes")}
+          ></Select>
+          <p>Select objectTypes</p>
+          <Select
+            isMulti
+            name="boiss"
+            options={objectTypes}
+            onChange={value => handleChange(value, "objectTypes")}
+          ></Select>
+          <p>Select netWorkSystemTypes</p>
+          <Select
+            isMulti
+            name="boisss"
+            options={networkSystemTypes}
+            onChange={value => handleChange(value, "networkSystemTypes")}
+          ></Select>
+          <p>Select netWorkSystems</p>
+          <Select
+            isMulti
+            name="boissss"
+            options={networkSystems}
+            onChange={value => handleChange(value, "networkSystems")}
+          ></Select>
+          <div className="ButtonDiv">
+            <Button
+              onClick={handleCreate}
+              variant="contained"
+              color="primary"
+              size="large"
+              startIcon={<SaveIcon />}
+            >
+              create
+            </Button>
+          </div>
+        </div>
+      </div>
+      <div className="FilterTableDiv">
+        <Table />
+      </div>
     </div>
   );
 };
