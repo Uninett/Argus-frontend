@@ -7,7 +7,7 @@ import './variables.css';
 import './colorscheme.css';
 import NotificationProfileView from './views/notificationProfileView/NotificationProfileView';
 import ActiveProfile from './components/active-profiles/ActiveProfile';
-import Profile from './components/profile/Profile';
+import ProfileList from './components/profileList/ProfileList';
 
 const App: React.SFC = () => {
   return (
@@ -18,7 +18,7 @@ const App: React.SFC = () => {
           path='/notification-profile'
           component={NotificationProfileView}
         />
-        <Route path='/real-profile' component={Profile} />
+        <Route path='/real-profile' component={ProfileList} />
         <Route path='/login' component={LoginView} />
         <Route path='/profile' component={ActiveProfile} />
         <Route path='*' component={() => <h1>404 not found</h1>} />

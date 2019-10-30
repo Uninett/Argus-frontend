@@ -5,22 +5,20 @@ import Button from '@material-ui/core/Button';
 import SaveIcon from '@material-ui/icons/Save';
 import Dialogue from '../dialogue/Dialogue';
 import Spinner from '../spinners/Spinner';
-
 import './Profile.css';
 
-const Profile: React.SFC = () => {
-  const [filterName, setFilterName] = useState(null);
-  const [timeOptions, setTimeOptions] = useState<any>(null);
-  const [selectedOptions, setSelectedOptions] = useState(null);
+type ProfileProps = {
+  profileNames?: { value: string; label: string }[];
+  timeslots?: { value: string; label: string }[];
+};
+
+const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
+  const [filterNameOption, setFilterNameOption] = useState(props.profileNames);
+  const [selectedFilterName, setSelectedFilterName] = useState(null);
+  const [timeOptions, setTimeOptions] = useState(props.timeslots);
+  const [selectedOptions, setSelectedOptions] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [checkBox, setCheckBox] = useState(false);
-
-  useEffect(() => {
-    setTimeOptions([
-      { value: 'per', label: 'Per' },
-      { value: 'bjarne', label: 'bjarne' }
-    ]);
-  }, []);
 
   const handleChange = (event: any) => {
     setCheckBox(event.target.checked);
@@ -44,7 +42,13 @@ const Profile: React.SFC = () => {
           <h4>Filtername:</h4>
         </div>
         <div className='filter-dropdown'>
-          <Select label='Single select' options={timeOptions} />
+          <Select
+            isMulti
+            onChange={onChange}
+            name='filters'
+            label='Single select'
+            options={filterNameOption}
+          />
         </div>
       </div>
       <div className='dropdown'>
