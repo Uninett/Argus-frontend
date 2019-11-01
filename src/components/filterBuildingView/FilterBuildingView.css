@@ -11,6 +11,10 @@
   width: 40vw;
 }
 
+.filterHeader {
+  color: rgb(82, 79, 79);
+}
+
 .ButtonDiv {
   margin: 10px 0px 10px 0px;
   display: flex;

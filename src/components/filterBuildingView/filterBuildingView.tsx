@@ -117,7 +117,7 @@ const FilterBuildingView: React.FC = () => {
     <div className="WrappingDiv">
       <div className="filterBuilding-div">
         <div className="InputWrapperDiv">
-          <h1>Build your custom filter here for only 9.99$!!! </h1>
+          <h1 className={"filterHeader"}>Build custom filter </h1>
 
           <div className="NameFieldDiv">
             <p>Name</p>
