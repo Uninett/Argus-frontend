@@ -7,7 +7,7 @@ import "./variables.css";
 import "./colorscheme.css";
 import NotificationProfileView from "./views/notificationProfileView/NotificationProfileView";
 import ActiveProfile from "./components/active-profiles/ActiveProfile";
-import FilterBuildingView from "./components/filterDropDown/filterBuildingView/filterBuildingView";
+import FilterBuildingView from "./components/filterBuildingView/filterBuildingView";
 
 const App: React.SFC = () => {
   return (
