@@ -7,6 +7,7 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import SaveIcon from "@material-ui/icons/Save";
 import Table from "../react-table/Table";
+import { Tab } from "@material-ui/core";
 
 type Metadata = { label: string; value: string }[];
 const defaultResponse = [{ label: "none", value: "none" }];
@@ -48,6 +49,7 @@ const FilterBuilder: React.FC = () => {
   const [networkSystems, setNetworkSystems] = useState<Metadata>(
     defaultResponse
   );
+  const [previewAlerts, setPreviewAlerts] = useState<any>([]);
 
   useEffect(() => {
     fetchProblemTypes();
@@ -68,9 +70,10 @@ const FilterBuilder: React.FC = () => {
   };
 
   const preview = async () => {
+    console.log(filter);
     await axios({
       url: "http://localhost:8000/alerts/preview",
-      method: "GET",
+      method: "POST",
       headers: {
         Authorization: "Token " + localStorage.getItem("token")
       },
@@ -80,11 +83,8 @@ const FilterBuilder: React.FC = () => {
         networkSystems: filter.networkSystems
       }
     }).then(result => {
-      let previewTable = <Table></Table>;
+      setPreviewAlerts(result.data);
     });
-
-    let q =
-      "select * from alerts a where a.problemType in [] and a.objectTypes in [] and a.netWorkSource in []";
   };
 
   const fetchProblemTypes = async () => {
@@ -203,6 +203,7 @@ const FilterBuilder: React.FC = () => {
           </div>
         </div>
       </div>
+      <Table alerts={previewAlerts}></Table>
     </div>
   );
 };
