@@ -1,7 +1,7 @@
 import React, { useState, useEffect, SetStateAction } from "react";
 import Select from "react-select";
 import axios from "axios";
-import "./FilterBuildingView.css";
+import "./FilterBuilder.css";
 
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
@@ -37,7 +37,7 @@ let properties = [
   { propertyName: "problemTypes", list: problemTypesResponse }
 ];
 
-const FilterBuildingView: React.FC = () => {
+const FilterBuilder: React.FC = () => {
   const [filter, setFilter] = useState<Filter>(defaultFilter);
   const [name, setName] = useState("");
   const [objectTypes, setobjectTypes] = useState<Metadata>(defaultResponse);
@@ -65,6 +65,26 @@ const FilterBuildingView: React.FC = () => {
         filter: JSON.stringify(filter)
       }
     });
+  };
+
+  const preview = async () => {
+    await axios({
+      url: "http://localhost:8000/alerts/preview",
+      method: "GET",
+      headers: {
+        Authorization: "Token " + localStorage.getItem("token")
+      },
+      data: {
+        problemTypes: filter.problemTypes,
+        objectTypes: filter.objectTypes,
+        networkSystems: filter.networkSystems
+      }
+    }).then(result => {
+      let previewTable = <Table></Table>;
+    });
+
+    let q =
+      "select * from alerts a where a.problemType in [] and a.objectTypes in [] and a.netWorkSource in []";
   };
 
   const fetchProblemTypes = async () => {
@@ -132,7 +152,7 @@ const FilterBuildingView: React.FC = () => {
             />
           </div>
 
-          <p>Select alarm type</p>
+          <p>Select problem type</p>
           <Select
             isMulti
             name="bois"
@@ -171,13 +191,20 @@ const FilterBuildingView: React.FC = () => {
               create
             </Button>
           </div>
+          <div className="ButtonDiv">
+            <Button
+              onClick={preview}
+              variant="contained"
+              color="primary"
+              size="large"
+            >
+              Preview Alerts
+            </Button>
+          </div>
         </div>
-      </div>
-      <div className="FilterTableDiv">
-        <Table />
       </div>
     </div>
   );
 };
 
-export default FilterBuildingView;
+export default FilterBuilder;

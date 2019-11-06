@@ -3,8 +3,8 @@
     display: grid;
     grid-template-columns: 20vw auto 10vw 10vw;
     grid-template-areas: "logo . about user";
+    grid-template-rows: minmax(70px, var(--header-height));
     background-color: var(--primary);
-    height: var(--header-height);
     align-items: center;
 }
 
@@ -16,6 +16,7 @@
     grid-area: logo;
     --logomargin: 0.6vh;
     height: calc(var(--header-height) - calc(var(--logomargin) * 2));
+    height: 10%;
     margin-top: calc(var(--logomargin));
     margin-left: calc(var(--logomargin) * 2);
 }
@@ -23,7 +24,6 @@
 .headerbutton {
     text-decoration: none;
     margin-top: auto;
-    height: 5vh;
     width: 7vw;
     border: none;
     color: white;
