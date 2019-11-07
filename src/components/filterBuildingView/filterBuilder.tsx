@@ -7,7 +7,6 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import SaveIcon from "@material-ui/icons/Save";
 import Table from "../react-table/Table";
-import { Tab } from "@material-ui/core";
 
 type Metadata = { label: string; value: string }[];
 const defaultResponse = [{ label: "none", value: "none" }];
