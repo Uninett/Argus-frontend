@@ -1,7 +1,7 @@
-import React from 'react';
-import ReactTable from 'react-table';
-import './table.css';
-import 'react-table/react-table.css';
+import React from "react";
+import ReactTable from "react-table";
+import "./table.css";
+import "react-table/react-table.css";
 
 type AlertsProps = {
   alerts: any;
@@ -10,29 +10,30 @@ type AlertsProps = {
 const Table: React.FC<AlertsProps> = props => {
   const columns: any = [
     {
-      Header: 'Timestamp',
-      accessor: 'timestamp'
+      Header: "Timestamp",
+      accessor: "timestamp"
     },
     {
-      Header: 'Alert ID',
-      accessor: 'alert_id'
+      Header: "Alert ID",
+      accessor: "alert_id"
     },
-    { Header: 'Source', accessor: 'source.type' },
-    { Header: 'Description', accessor: 'description' },
-    { Header: 'Details URL', accessor: 'details_url' },
-    { Header: 'Object', accessor: 'object.name' },
-    { Header: 'Parent object', accessor: 'parent_object.name' },
-    { Header: 'Problem type', accessor: 'problem_type.name' }
+    { Header: "Source", accessor: "source.type" },
+    { Header: "Description", accessor: "description" },
+    { Header: "Details URL", accessor: "details_url" },
+    { Header: "Object", accessor: "object.name" },
+    { Header: "Parent object", accessor: "parent_object.name" },
+    { Header: "Problem type", accessor: "problem_type.name" }
   ];
 
   return (
     <ReactTable
       columns={columns}
       loading={false}
-      noDataText='Loading...'
+      noDataText="Loading..."
       data={props.alerts}
       pageSize={props.alerts.length}
-      showPaginationBottom={false}></ReactTable>
+      showPaginationBottom={false}
+    ></ReactTable>
   );
 };
 
