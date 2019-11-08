@@ -63,7 +63,7 @@ const FilterBuilder: React.FC = () => {
       },
       data: {
         name: name,
-        filter: JSON.stringify(filter)
+        filter_string: JSON.stringify(filter)
       }
     });
   };
@@ -71,7 +71,7 @@ const FilterBuilder: React.FC = () => {
   const preview = async () => {
     console.log(filter);
     await axios({
-      url: "http://localhost:8000/alerts/preview",
+      url: "http://localhost:8000/alerts/preview/",
       method: "POST",
       headers: {
         Authorization: "Token " + localStorage.getItem("token")
@@ -88,7 +88,7 @@ const FilterBuilder: React.FC = () => {
 
   const fetchProblemTypes = async () => {
     await axios({
-      url: "http://localhost:8000/alerts/metaData",
+      url: "http://localhost:8000/alerts/metadata/",
       method: "GET",
       headers: {
         Authorization: "Token " + localStorage.getItem("token")
