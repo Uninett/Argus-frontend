@@ -45,13 +45,17 @@ const Userbutton: React.FC<{ history: any }> = props => {
 const Header: React.FC<{ history: any }> = props => {
   return (
     <div className="header">
-      <a href="/" >
-        <img src={aaslogo} alt="AAS logo" id="logo"  />
+      <a href="/">
+        <img src={aaslogo} alt="AAS logo" id="logo" />
       </a>
       <a id="header-filters" className="headerbutton" href="/customfilter">
         <p>Filters</p>
       </a>
-      <a id="header-notificationProfiles" className="headerbutton" href="/customfilter">
+      <a
+        id="header-notificationProfiles"
+        className="headerbutton"
+        href="/real-profile"
+      >
         <p>Notification profiles</p>
       </a>
 
