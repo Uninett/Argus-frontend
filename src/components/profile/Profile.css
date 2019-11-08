@@ -6,19 +6,27 @@
   flex-direction: row;
   justify-content: space-around;
   align-items: center;
-  width: 90%;
+  width: 95%;
   margin: auto;
   margin-top: 10px;
   border: 1px solid lightgrey;
   border-radius: 5px;
   box-shadow: 0px 1px 5px 1px #b6b6b6;
 }
-.dropdown {
+.dropdown-media {
   display: flex;
   flex-direction: row;
   align-items: center;
   width: 30vw;
   margin-right: 5px;
+  margin-left: 5px;
+}
+.dropdown-timeslots {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 30vw;
+  padding-left: 10px;
   margin-left: 5px;
 }
 .check-box {
