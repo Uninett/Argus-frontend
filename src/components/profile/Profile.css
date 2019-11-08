@@ -6,7 +6,7 @@
   flex-direction: row;
   justify-content: space-around;
   align-items: center;
-  width: 85%;
+  width: 90%;
   margin: auto;
   margin-top: 10px;
   border: 1px solid lightgrey;
@@ -18,6 +18,8 @@
   flex-direction: row;
   align-items: center;
   width: 30vw;
+  margin-right: 5px;
+  margin-left: 5px;
 }
 .check-box {
   display: flex;
@@ -27,7 +29,7 @@
 }
 .timeslot-dropdown {
   margin-left: 5px;
-  width: 28vw;
+  width: 15vw;
 }
 .buttons-container {
   display: flex;
@@ -40,7 +42,7 @@
   width: 30vw;
 }
 .filter-dropdown {
-  min-width: 25vw;
+  min-width: 22vw;
   max-width: 30vw;
   margin-left: 5px;
 }
@@ -48,4 +50,7 @@
 .button-delete {
   margin-left: 10px;
   width: 100%;
+}
+.media-dropdown {
+  width: 12vw;
 }
