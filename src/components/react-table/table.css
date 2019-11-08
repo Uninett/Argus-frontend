@@ -12,16 +12,17 @@
   );
   width: 80vw;
   height: var(--table-height);
-  box-shadow: 0px 1px 5px 1px #b6b6b6;
+  box-shadow: 0px 1px 5px 1px #c5c5df;
   border: none !important;
   border-radius: 5px;
   z-index: 0;
 }
 
 
-.ReactTable .rt-thead.-header {
+#root .ReactTable .rt-thead.-header {
   color: var(--table-header-font-color);
   background-color: var(--table-header-color);
+  box-shadow: 0 2px 15px 0 #c5c5df;
   font-weight: 500;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;

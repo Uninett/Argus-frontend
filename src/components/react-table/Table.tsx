@@ -17,7 +17,7 @@ const Table: React.FC<AlertsProps> = props => {
       Header: "Alert ID",
       accessor: "alert_id"
     },
-    { Header: "Source", accessor: "source.type" },
+    { Header: "Source", accessor: "source.type.name" },
     { Header: "Description", accessor: "description" },
     { Header: "Details URL", accessor: "details_url" },
     { Header: "Object", accessor: "object.name" },
