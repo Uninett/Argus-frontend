@@ -37,6 +37,10 @@
   background-color: var(--primary);
 }
 
+.ButtonDiv .MuiButton-containedPrimary:hover {
+  background-color: var(--primary-dark);
+}
+
 .preview {
   grid-area: preview;
 }
