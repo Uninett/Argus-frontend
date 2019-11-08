@@ -131,7 +131,7 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
           />
         </div>
       </div>
-      <div className='dropdown'>
+      <div className='dropdown-timeslots'>
         <h5>Timeslots:</h5>
         <div className='timeslot-dropdown'>
           <Select
@@ -144,7 +144,7 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
           />
         </div>
       </div>
-      <div className='dropdown'>
+      <div className='dropdown-media'>
         <h5>Media:</h5>
         <div className='media-dropdown'>
           <Select
