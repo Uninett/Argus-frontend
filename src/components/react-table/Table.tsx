@@ -1,52 +1,39 @@
-import React, { useState, useEffect } from 'react';
-import ReactTable from 'react-table';
-import './table.css';
-import 'react-table/react-table.css'
-import axios from 'axios';
+import React from "react";
+import ReactTable from "react-table";
+import "./table.css";
+import "react-table/react-table.css";
 
-const Table: React.FC = () => {
-  const [alerts, setAlerts] = useState<any>([]);
+type AlertsProps = {
+  alerts: any;
+};
 
-  useEffect(() => {
-    getAlert();
-  }, []);
-
-  //fetches alerts and sets state
-  const getAlert = async () => {
-    await axios({
-      url: 'http://localhost:8000/alerts/',
-      method: 'GET',
-      headers: {
-        Authorization: 'Token ' + localStorage.getItem('token')
-      }
-    }).then((response: any) => {
-      setAlerts(response.data);
-    });
-  };
-
+const Table: React.FC<AlertsProps> = props => {
   const columns: any = [
     {
-      Header: 'Timestamp',
-      accessor: 'timestamp'
+      Header: "Timestamp",
+      accessor: "timestamp"
     },
     {
-      Header: 'Alert ID',
-      accessor: 'alert_id'
+      Header: "Alert ID",
+      accessor: "alert_id"
     },
-    { Header: 'Source', accessor: 'source.type' },
-    { Header: 'Description', accessor: 'description' },
-    { Header: 'Details URL', accessor: 'details_url' },
-    { Header: 'Object', accessor: 'object.name' },
-    { Header: 'Parent object', accessor: 'parent_object.name' },
-    { Header: 'Problem type', accessor: 'problem_type.name' }
+    { Header: "Source", accessor: "source.type.name" },
+    { Header: "Description", accessor: "description" },
+    { Header: "Details URL", accessor: "details_url" },
+    { Header: "Object", accessor: "object.name" },
+    { Header: "Parent object", accessor: "parent_object.name" },
+    { Header: "Problem type", accessor: "problem_type.name" }
   ];
 
   return (
     <ReactTable
       columns={columns}
-      data={alerts}
-      pageSize={alerts.length}
-      showPaginationBottom={false}></ReactTable>
+      loading={false}
+      noDataText="Loading..."
+      data={props.alerts}
+      pageSize={props.alerts.length}
+      showPaginationBottom={false}
+    ></ReactTable>
   );
 };
 
