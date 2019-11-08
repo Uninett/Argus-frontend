@@ -137,9 +137,10 @@ const FilterBuilder: React.FC = () => {
       <div className="filterBuilding-div">
         <div className="InputWrapperDiv">
           <h1 className={"filterHeader"}>Build custom filter </h1>
+          <div className="filterSelect">
 
-          <div className="NameFieldDiv">
             <p>Name</p>
+          <div className="NameFieldDiv">
             <TextField
               required
               id="standard-required"
@@ -148,61 +149,82 @@ const FilterBuilder: React.FC = () => {
               placeholder="name"
               onChange={handleName}
               margin="dense"
-            />
+              />
           </div>
-
+              </div>
+          <div className="filterSelect">
           <p>Select problem type</p>
           <Select
+            className="selector"
             isMulti
             name="bois"
             options={problemTypes}
             onChange={value => handleChange(value, "problemTypes")}
           ></Select>
+          </div>
+          <div className="filterSelect">
+
           <p>Select objectTypes</p>
           <Select
+            className="selector"
             isMulti
             name="boiss"
             options={objectTypes}
             onChange={value => handleChange(value, "objectTypes")}
-          ></Select>
+            ></Select>
+            </div>
+            <div className="filterSelect">
+
           <p>Select netWorkSystemTypes</p>
           <Select
+            className="selector"
             isMulti
             name="boisss"
             options={networkSystemTypes}
             onChange={value => handleChange(value, "networkSystemTypes")}
-          ></Select>
+            ></Select>
+            </div>
+            <div className="filterSelect">
+
           <p>Select netWorkSystems</p>
           <Select
+            className="selector"
             isMulti
             name="boissss"
             options={networkSystems}
             onChange={value => handleChange(value, "networkSystems")}
-          ></Select>
+            ></Select>
+            </div>
           <div className="ButtonDiv">
+            <div className="create">
+
             <Button
               onClick={handleCreate}
               variant="contained"
               color="primary"
               size="large"
               startIcon={<SaveIcon />}
-            >
+              >
               create
             </Button>
-          </div>
-          <div className="ButtonDiv">
+              </div>
+              <div className="preview">
+
             <Button
               onClick={preview}
               variant="contained"
               color="primary"
               size="large"
-            >
+              >
               Preview Alerts
             </Button>
+              </div>
           </div>
         </div>
       </div>
+      <div className="previewList">
       <Table alerts={previewAlerts}></Table>
+      </div>
     </div>
   );
 };

@@ -1,24 +1,44 @@
 .WrappingDiv {
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-areas: "filter"
+  "preview";
 }
 
 .filterBuilding-div {
+  color: var(--primary-darker);
+  width: 60vw;
+  height: auto;
+  margin: auto;
+  grid-area: filter;
   border: 1px solid lightgrey;
   border-radius: 5px;
   box-shadow: 0px 1px 5px 1px #b6b6e6;
-  margin: 15px 5px 100px 5px;
-  width: 40vw;
+  margin-top: 5vh;
 }
 
 .filterHeader {
-  color: #19647e;
+  color:var(--primary);
 }
 
 .ButtonDiv {
-  margin: 10px 0px 10px 0px;
-  display: flex;
-  justify-content: center;
+  display: grid;
+  grid-template-areas: ". preview create";
+  grid-template-columns: 30% auto auto;
+  margin-bottom: 20px;
+}
+
+.create {
+  align-items: flex-end;
+  grid-area: create;
+  margin-left: auto;
+}
+.ButtonDiv .MuiButton-containedPrimary {
+  color: #fff;
+  background-color: var(--primary);
+}
+
+.preview {
+  grid-area: preview;
 }
 
 .InputWrapperDiv {
@@ -39,6 +59,24 @@
   padding: 0px;
 }
 
-TextField {
-  padding: 0px;
+.ReactTable {
+  grid-area: preview;
+  margin-bottom: 30px;
+}
+
+.filterSelect {
+  display: grid;
+  grid-template-areas: "intruction selector";
+  grid-template-columns: 30% auto;
+}
+.filterSelect p {
+  grid-area: intruction;
+}
+
+.filterSelect div div {
+  grid-area: selector;
+}
+
+.selector {
+  margin-top: 10px;
 }

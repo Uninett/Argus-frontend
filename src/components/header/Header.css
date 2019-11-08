@@ -1,8 +1,8 @@
 .header {
     text-align: center;
     display: grid;
-    grid-template-columns: 20vw auto 10vw 10vw;
-    grid-template-areas: "logo . about user";
+    grid-template-columns: 20vw auto 13vw 13vw 13vw;
+    grid-template-areas: "logo . notificationProfiles filters user";
     grid-template-rows: minmax(70px, var(--header-height));
     background-color: var(--primary);
     align-items: center;
@@ -12,19 +12,22 @@
   margin: 0;
 }
 
-.logo {
+#logo {
     grid-area: logo;
-    --logomargin: 0.6vh;
-    height: calc(var(--header-height) - calc(var(--logomargin) * 2));
-    height: 10%;
+    --logomargin: 0.7vh;
     margin-top: calc(var(--logomargin));
     margin-left: calc(var(--logomargin) * 2);
 }
 
+#logo{
+    height: 60px;
+}
+
 .headerbutton {
+    text-align: center;
     text-decoration: none;
     margin-top: auto;
-    width: 7vw;
+    width: 90%;
     border: none;
     color: white;
     font-weight: 400;
@@ -32,14 +35,18 @@
 }
  #header-user {
     grid-area: user;
+    position: relative;
 }
 
-
-#header-about {
-    grid-area: about;
+#header-filters {
+    grid-area: filters;
 }
 
-#header-user:hover, #header-about:hover, #header-logout:hover, #header-profiles:hover {
+#header-notificationProfiles {
+    grid-area: notificationProfiles;
+}
+
+#header-user:hover, #header-notificationProfiles:hover, #header-logout:hover, #header-filters:hover, #header-profiles:hover {
     color: var(--secondary);
 }
 
@@ -51,11 +58,13 @@
 }
 
 .dropdown {
-    position: relative;
+    position: absolute;
+    align-items: center;
     display: inline-block;
 }
 
 .dropdown-content {
+    margin-left: calc(calc(13vw - 100px) / 2);
     min-width: 100px;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px ;
@@ -76,12 +85,14 @@
     padding: 0;
 }
 
+
+
 /* Responsive Design */
 
 @media only screen and (max-width: 600px) {
 
     .header {
-        grid-template-columns: 30vw auto auto;
-        grid-template-areas: "logo about user";
+        grid-template-columns: 20vw auto auto auto;
+        grid-template-areas: "logo notificationProfiles filters user";
     }
   }
