@@ -56,7 +56,7 @@ const FilterBuilder: React.FC = () => {
 
   const postNewFilter = async () => {
     await axios({
-      url: "http://localhost:8000/notificationprofiles/filters",
+      url: "http://localhost:8000/notificationprofiles/filters/",
       method: "POST",
       headers: {
         Authorization: "Token " + localStorage.getItem("token")
