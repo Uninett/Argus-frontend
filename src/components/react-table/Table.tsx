@@ -27,6 +27,12 @@ const Table: React.FC<AlertsProps> = props => {
 
   return (
     <ReactTable
+      defaultSorted={[
+      {
+        id: "timestamp",
+        desc: true
+      }
+      ]}
       columns={columns}
       loading={false}
       noDataText="Loading..."

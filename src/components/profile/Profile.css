@@ -1,64 +1,80 @@
-.body {
-  font-family: 'Muli', sans-serif;
-}
+
 .notification-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  align-items: center;
-  width: 95%;
+  display: grid;
+  grid-template-areas: "activeBox filter timeslot media  buttons";
+  grid-template-columns: auto 20vw 20vw 20vw 130px;
   margin: auto;
   margin-top: 10px;
-  border: 1px solid lightgrey;
   border-radius: 5px;
   box-shadow: 0px 1px 5px 1px #b6b6b6;
+  padding: 0 10px 0 10px;
 }
-.dropdown-media {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  width: 30vw;
-  margin-right: 5px;
-  margin-left: 5px;
-}
-.dropdown-timeslots {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  width: 30vw;
-  padding-left: 10px;
-  margin-left: 5px;
-}
-.check-box {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-}
-.timeslot-dropdown {
-  margin-left: 5px;
-  width: 15vw;
-}
-.buttons-container {
-  display: flex;
-  justify-content: space-around;
-}
-.filtername-box {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  width: 30vw;
-}
-.filter-dropdown {
-  min-width: 22vw;
-  max-width: 30vw;
-  margin-left: 5px;
+.notification-container h4 {
+  margin: 5px 0 5px 0;
 }
 
-.button-delete {
-  margin-left: 10px;
-  width: 100%;
+.dropdown-media {
+  margin: 0 10px 10px 10px;
+  grid-area: media;
 }
-.media-dropdown {
-  width: 12vw;
+.dropdown-timeslots {
+  margin: 0 10px 10px 10px;
+  grid-area: timeslot;
+}
+.check-box {
+  margin: 0 10px 10px 10px;
+  grid-area: activeBox;
+}
+
+.buttons-container {
+  margin: 0 10px 0 10px;
+  position: relative;
+  grid-area: buttons;
+}
+.filtername-box {
+  margin: 0 10px 10px 10px;
+  grid-area: filter;
+}
+
+
+.buttons-container .MuiButton-containedPrimary {
+  background-color: var(--primary);
+  top: calc(calc(100% - 60px) / 3);
+
+
+}
+
+
+.buttons-container .MuiButton-containedSecondary {
+  background-color: var(--warning);
+  top: calc(calc(200% - 30px) / 3);
+  
+}
+
+.buttons-container .MuiButton-containedSecondary, .buttons-container .MuiButton-containedPrimary {
+  color: #fff;
+  height: 30px;
+  width: 100px;
+  position: absolute;
+}
+
+
+
+.check-box .MuiCheckbox-colorPrimary.Mui-checked {
+  color: var(--primary);
+}
+.add-button .MuiFab-primary {
+  color: #fff;
+  background-color: var(--secondary); 
+}
+
+.buttons-container .MuiButton-containedPrimary:hover {
+  background-color: var(--primary);
+}
+.buttons-container .MuiButton-containedSecondary:hover {
+  background-color: var(--warning);
+}
+.buttons-container .button-save, .buttons-container .button-delete {
+  background-color: aqua;
+  margin: auto;
 }

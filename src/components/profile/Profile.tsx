@@ -116,9 +116,21 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
 
   return (
     <div className='notification-container'>
+      <div className='check-box'>
+        <h4 className='activate-box'>Active:</h4>
+        <Checkbox
+          checked={checkBox}
+          onChange={handleChange}
+          value='checkBox'
+          color='primary'
+          inputProps={{
+            'aria-label': 'secondary checkbox'
+          }}
+        />
+      </div>
       <div className='filtername-box'>
         <div className='filtername'>
-          <h5>Filtername:</h5>
+          <h4>Filtername:</h4>
         </div>
         <div className='filter-dropdown'>
           <Select
@@ -132,7 +144,7 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
         </div>
       </div>
       <div className='dropdown-timeslots'>
-        <h5>Timeslots:</h5>
+        <h4>Timeslots:</h4>
         <div className='timeslot-dropdown'>
           <Select
             onChange={onChangeTimeslots}
@@ -145,7 +157,7 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
         </div>
       </div>
       <div className='dropdown-media'>
-        <h5>Media:</h5>
+        <h4>Media:</h4>
         <div className='media-dropdown'>
           <Select
             onChange={onChangeMedia}
@@ -156,18 +168,6 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
             classNamePrefix='select'
           />
         </div>
-      </div>
-      <div className='check-box'>
-        <h4 className='activate-box'>active:</h4>
-        <Checkbox
-          checked={checkBox}
-          onChange={handleChange}
-          value='checkBox'
-          color='primary'
-          inputProps={{
-            'aria-label': 'secondary checkbox'
-          }}
-        />
       </div>
       <div className='buttons-container'>
         <div className='button-save'>
