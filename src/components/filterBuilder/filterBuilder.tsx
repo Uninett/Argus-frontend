@@ -8,6 +8,7 @@ import Button from "@material-ui/core/Button";
 import SaveIcon from "@material-ui/icons/Save";
 import Dialog from "@material-ui/core/Dialog";
 import Table from "../react-table/Table";
+import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 
 type Metadata = { label: string; value: string }[];
 const defaultResponse = [{ label: "none", value: "none" }];
@@ -69,9 +70,9 @@ const FilterBuilder: React.FC = () => {
       }
     }).then(result => {
       if (result.status == 201) {
-        setShowDialog([true, "Successfully saved filter :3"]);
+        setShowDialog([true, " Successfully saved filter "]);
       } else {
-        setShowDialog([true, "couldn't save filter :/"]);
+        setShowDialog([true, " couldn't save filter "]);
       }
     });
   };
@@ -134,7 +135,7 @@ const FilterBuilder: React.FC = () => {
 
   const handleCreate = () => {
     if (name == "") {
-      alert("Please enter a name for this filter :3");
+      alert("Please enter a name for this filter");
     } else {
       postNewFilter();
     }
@@ -146,7 +147,10 @@ const FilterBuilder: React.FC = () => {
   return (
     <div className="WrappingDiv">
       <Dialog open={showDialog[0]} onClose={handleClose}>
-        <h1>{showDialog[1]}</h1>
+        <h1 className="dialogHeader">{showDialog[1]}</h1>
+        <div className="dialogDiv">
+          <CheckCircleIcon color={"primary"} />
+        </div>
       </Dialog>
       <div className="filterBuilding-div">
         <div className="InputWrapperDiv">

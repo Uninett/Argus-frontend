@@ -1,7 +1,8 @@
 .WrappingDiv {
   display: grid;
-  grid-template-areas: "filter"
-  "preview";
+  grid-template-areas:
+    "filter"
+    "preview";
 }
 
 .filterBuilding-div {
@@ -17,7 +18,11 @@
 }
 
 .filterHeader {
-  color:var(--primary);
+  color: var(--primary);
+}
+.dialogHeader {
+  color: var(--primary);
+  margin: 5px 5px 5px 5px;
 }
 
 .ButtonDiv {
@@ -83,4 +88,9 @@
 
 .selector {
   margin-top: 10px;
+}
+
+.dialogDiv {
+  display: inline;
+  margin-left: 50%;
 }
