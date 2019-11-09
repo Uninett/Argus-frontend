@@ -65,7 +65,12 @@
 }
 .add-button .MuiFab-primary {
   color: #fff;
-  background-color: var(--secondary); 
+  background-color: var(--primary); 
+}
+
+.add-button .MuiFab-primary:hover {
+  color: #fff;
+  background-color: var(--primary-dark); 
 }
 
 .buttons-container .MuiButton-containedPrimary:hover {
