@@ -6,6 +6,7 @@ import '../../components/react-table/table.css';
 import axios from 'axios';
 import { withRouter } from 'react-router-dom';
 import { getEnabledCategories } from 'trace_events';
+import moment from 'moment';
 type PropType = {
   history: any;
 };
@@ -27,6 +28,12 @@ const AlertView: React.FC<PropType> = props => {
         Authorization: 'Token ' + localStorage.getItem('token')
       }
     }).then((response: any) => {
+      for(let item of response.data) {
+        item.timestamp = moment(item.timestamp).format('YYYY.MM.DD  hh:mm:ss')
+      }
+
+
+      
       setAlerts(response.data);
     });
   };
