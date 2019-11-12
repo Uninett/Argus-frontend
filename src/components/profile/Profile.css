@@ -40,10 +40,12 @@
 .buttons-container .MuiButton-containedPrimary {
   background-color: var(--primary);
   top: calc(calc(100% - 60px) / 3);
-
-
 }
 
+.buttons-container .button-save {
+  top: calc(calc(100% - 60px) / 3);
+
+}
 
 .buttons-container .MuiButton-containedSecondary {
   background-color: var(--warning);
@@ -51,7 +53,7 @@
   
 }
 
-.buttons-container .MuiButton-containedSecondary, .buttons-container .MuiButton-containedPrimary {
+.buttons-container .MuiButton-containedSecondary, .buttons-container .MuiButton-containedPrimary, .buttons-container .button-save {
   color: #fff;
   height: 30px;
   width: 100px;
@@ -79,7 +81,19 @@
 .buttons-container .MuiButton-containedSecondary:hover {
   background-color: var(--warning);
 }
-.buttons-container .button-save, .buttons-container .button-delete {
-  background-color: aqua;
+
+.filtername-box [class*="multiValue"] {
+  color: white;
+  background-color: var(--primary);
+}
+.filtername-box [class*="multiValue"] div {
+  color: white;
+}
+.filtername-box [class*="multiValue"] div:hover {
+  color: white;
+}
+
+[class*="makeStyles"] .MuiCircularProgress-colorPrimary {
   margin: auto;
+  color: var(--primary);
 }

@@ -2,10 +2,3 @@
   padding-top: 20px;
   margin: auto;
 }
-.filtername-box [class*="multiValue"] {
-  color: white;
-  background-color: var(--primary);
-}
-.filtername-box [class*="multiValue"] div {
-  color: white;
-}
