@@ -8,6 +8,7 @@ import './colorscheme.css';
 import NotificationProfileView from './views/notificationProfileView/NotificationProfileView';
 import ActiveProfile from './components/active-profiles/ActiveProfile';
 import ProfileList from './components/profileList/ProfileList';
+import Timeslots from "./components/timeslots/Timeslots";
 
 const App: React.SFC = () => {
   return (
@@ -21,6 +22,7 @@ const App: React.SFC = () => {
         <Route path='/real-profile' component={ProfileList} />
         <Route path='/login' component={LoginView} />
         <Route path='/profile' component={ActiveProfile} />
+        <Route path='/timeslots' component={Timeslots} />
         <Route path='*' component={() => <h1>404 not found</h1>} />
       </Switch>
     </div>
