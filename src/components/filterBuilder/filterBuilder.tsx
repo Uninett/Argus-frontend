@@ -68,13 +68,15 @@ const FilterBuilder: React.FC = () => {
         name: name,
         filter_string: JSON.stringify(filter)
       }
-    }).then(result => {
-      if (result.status == 201) {
-        setShowDialog([true, " Successfully saved filter "]);
-      } else {
-        setShowDialog([true, " couldn't save filter "]);
-      }
-    });
+    })
+      .then(result => {
+        if (result.status == 201) {
+          setShowDialog([true, " Successfully saved filter "]);
+        }
+      })
+      .catch(response => {
+        setShowDialog([true, "oops, something went wrong :("]);
+      });
   };
 
   const preview = async () => {
@@ -149,7 +151,11 @@ const FilterBuilder: React.FC = () => {
       <Dialog open={showDialog[0]} onClose={handleClose}>
         <h1 className="dialogHeader">{showDialog[1]}</h1>
         <div className="dialogDiv">
-          <CheckCircleIcon color={"primary"} />
+          {showDialog[1] == " Successfully saved filter " ? (
+            <CheckCircleIcon color={"primary"} />
+          ) : (
+            ""
+          )}
         </div>
       </Dialog>
       <div className="filterBuilding-div">
