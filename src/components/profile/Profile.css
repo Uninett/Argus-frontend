@@ -39,7 +39,6 @@
 
 .buttons-container .MuiButton-containedPrimary {
   background-color: var(--primary);
-  top: calc(calc(100% - 60px) / 3);
 }
 
 .buttons-container .button-save {
