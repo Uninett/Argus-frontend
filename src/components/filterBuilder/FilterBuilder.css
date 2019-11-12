@@ -94,3 +94,7 @@
   display: inline;
   margin-left: 50%;
 }
+
+.dialogDiv .MuiSvgIcon-colorPrimary {
+  color: var(--primary);
+}

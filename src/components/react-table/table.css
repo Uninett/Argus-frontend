@@ -40,6 +40,13 @@
 
 }
 
+.ReactTable a {
+  color: var(--text);
+}
+.ReactTable a:visited {
+  color: var(--primary);
+}
+
 .-odd {
   background-color: var(--primary-lighter);
 }

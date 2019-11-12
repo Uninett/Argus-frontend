@@ -26,7 +26,7 @@ const Table: React.FC<AlertsProps> = props => {
     { Header: "Source", accessor: "source.type.name" },
     { Header: "Description", accessor: "description" },
     { Header: "Details URL", accessor: "details_url",
-      Cell: (row: { value: string; }) => (<a href={row.value}> {row.value} </a>)
+      Cell: (row: { value: string; }) => (<a href={row.value} target="_blank"> {row.value} </a>)
         },
     { Header: "Object", accessor: "object.name" },
     { Header: "Parent object", accessor: "parent_object.name" },
