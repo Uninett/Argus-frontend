@@ -7,6 +7,10 @@ import axios from 'axios';
 
 const ProfileList: React.FC = () => {
   const [notificationprofiles, setNotificationprofiles] = useState([]);
+  const [addedNotificationprofiles, setaddedNotificationprofiles] = useState(
+    []
+  );
+  const [newProfileCounter, setNewProfileCounter] = useState(0);
   const [filters, setFilters] = useState<any>([]);
   const [timeslots, setTimeslots] = useState<any>([]);
   const [mediaOptions, setMediaOptions] = useState([
@@ -30,7 +34,6 @@ const ProfileList: React.FC = () => {
         Authorization: 'Token ' + localStorage.getItem('token')
       }
     }).then((response: any) => {
-      console.log(response.data);
       setNotificationprofiles(response.data);
     });
   };
@@ -43,7 +46,6 @@ const ProfileList: React.FC = () => {
         Authorization: 'Token ' + localStorage.getItem('token')
       }
     }).then((response: any) => {
-      console.log('dette er filterene vi får:', response.data);
       setFilters(formatData(response.data));
     });
   };
@@ -57,7 +59,6 @@ const ProfileList: React.FC = () => {
         Authorization: 'Token ' + localStorage.getItem('token')
       }
     }).then((response: any) => {
-      console.log('dette er timeslots vi får:', response.data);
       setTimeslots(formatData(response.data));
     });
   };
@@ -74,55 +75,102 @@ const ProfileList: React.FC = () => {
     return formattedList;
   };
 
-  const deleteProfile = (num: number) => {
-    const prof: any = notificationprofiles;
-    console.log('Dette er orginallista', notificationprofiles);
-    prof.splice(num, 1);
-    console.log('Dette er listen uten elementet', prof);
-    setNotificationprofiles(prof);
+  const deleteProfile = (num: number, isNew: boolean) => {
+    if (isNew) {
+      const prof: any = [...addedNotificationprofiles];
+      const index: number = prof.indexOf(num);
+      prof.splice(index, 1);
+
+      setaddedNotificationprofiles(prof);
+    } else {
+      const prof: any = [...notificationprofiles];
+      for (let i = 0; i < prof.length; i++) {
+        const element: any = prof[i];
+        if (element.pk === num) {
+          prof.splice(i, 1);
+        }
+      }
+      setNotificationprofiles(prof);
+    }
   };
 
-  const addNotificationprofile = () => {
-    const profiles: any = notificationprofiles;
-    const object: any = { active: false, filters: [], time_slot_group: [] };
-    profiles.push();
-  };
-  const formatMedia = (media: string) => {
+  const formatMedia = (media: string[]) => {
+    const matchedMedia: any = [];
     for (let i = 0; i < mediaOptions.length; i++) {
       const item = mediaOptions[i];
-      if (item.value === media) {
-        return {
-          value: item.value,
-          label: item.label
-        };
+      for (let j = 0; j < media.length; j++) {
+        if (item.value === media[j]) {
+          const object: any = {
+            value: item.value,
+            label: item.label
+          };
+          matchedMedia.push(object);
+        }
       }
     }
+    return matchedMedia;
+  };
+
+  const addProfileClick = () => {
+    const newProfiles: number[] = addedNotificationprofiles;
+    newProfiles.push(newProfileCounter);
+    setNewProfileCounter(newProfileCounter + 1);
   };
 
   return (
     <div className='profile-container'>
-      <h1>Profiler:</h1>
-      {notificationprofiles.map((profile: any, index: any) => {
-        const timeslot: any = {
-          value: profile.time_slot_group.pk,
-          label: profile.time_slot_group.name
-        };
-        return (
-          <Profile
-            key={profile.pk}
-            deleteProfile={deleteProfile}
-            filters={filters}
-            selectedFilters={formatData(profile.filters)}
-            selectedTimeslots={timeslot}
-            timeslots={timeslots}
-            active={profile.active}
-            media={formatMedia(profile.media[0])}
-            mediaKey={profile.time_slot_group.pk}
-          />
-        );
-      })}
+      {notificationprofiles.length > 0 ? (
+        notificationprofiles.map((profile: any, index: any) => {
+          const timeslot: any = {
+            value: profile.time_slot_group.pk,
+            label: profile.time_slot_group.name
+          };
+          return (
+            <Profile
+              key={profile.pk}
+              index={profile.pk}
+              exist={true}
+              deleteProfile={deleteProfile}
+              filters={filters}
+              selectedFilters={formatData(profile.filters)}
+              selectedTimeslots={timeslot}
+              timeslots={timeslots}
+              active={profile.active}
+              media={formatMedia(profile.media)}
+              mediaKey={profile.time_slot_group.pk}
+            />
+          );
+        })
+      ) : (
+        <h5>No profiles</h5>
+      )}
+
+      {addedNotificationprofiles.length > 0 ? (
+        addedNotificationprofiles.map((profile: any) => {
+          return (
+            <Profile
+              exist={false}
+              key={profile}
+              index={profile}
+              deleteProfile={deleteProfile}
+              filters={filters}
+              selectedFilters={[]}
+              selectedTimeslots={{ value: '', label: '' }}
+              timeslots={timeslots}
+              media={[]}
+              active={false}
+            />
+          );
+        })
+      ) : (
+        <h1></h1>
+      )}
       <div className='add-button'>
-        <Fab color='primary' aria-label='add' size='large'>
+        <Fab
+          color='primary'
+          aria-label='add'
+          size='large'
+          onClick={addProfileClick}>
           <AddIcon />
         </Fab>
       </div>
