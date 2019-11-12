@@ -150,7 +150,7 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
         <div className='filtername'>
           <h4>Filtername:</h4>
         </div>
-        <div className='filter-dropdown'>
+        <div className='filter-dropdown multi-select'>
           <Select
             isMulti
             defaultValue={selectedFilters}
@@ -176,7 +176,7 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
       </div>
       <div className='dropdown-media'>
         <h4>Media:</h4>
-        <div className='media-dropdown'>
+        <div className='media-dropdown multi-select'>
           <Select
             isMulti
             onChange={onChangeMedia}
