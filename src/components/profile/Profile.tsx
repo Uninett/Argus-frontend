@@ -14,9 +14,11 @@ type ProfileProps = {
   selectedFilters: { value: string; label: string }[];
   selectedTimeslots: { value: string; label: string };
   active: boolean;
+  index?: number;
   deleteProfile: any;
-  media: any;
-  mediaKey: any;
+  media?: any;
+  mediaKey?: any;
+  exist: boolean;
 };
 
 const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
@@ -31,52 +33,71 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
   const [selectedTimeslots, setSelectedTimeslots] = useState(
     props.selectedTimeslots
   );
-
+  const [id, setId] = useState(null);
   const [timeOptions, setTimeOptions] = useState(props.timeslots);
-  const [selectedOptions, setSelectedOptions] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [checkBox, setCheckBox] = useState(props.active);
 
-  useEffect(() => {
-    formatMedia();
-  }, []);
-
-  const formatMedia = () => {
-    for (let i = 0; i < mediaOptions.length; i++) {
-      const item = mediaOptions[i];
-      console.log(props.media);
-      console.log(item.value);
-
-      if (item.value === props.media) {
-        setMediaSelected({ value: item.value, label: item.label });
-        console.log('Dette er mediaobjectet', {
-          value: item.value,
-          label: item.label
-        });
-      }
-    }
-  };
-
   const postNewProfile = async () => {
-    setLoading(!loading);
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
-    await axios({
-      url: `http://localhost:8000/notificationprofiles/${selectedTimeslots.value}`,
-      method: 'PUT',
-      headers: {
-        Authorization: 'Token ' + localStorage.getItem('token')
-      },
-      data: {
-        time_slot_group: selectedTimeslots.value,
-        filters: selectedFilters.map((f: any) => {
-          return f.value;
-        }),
-        media: ['EM'],
-        active: checkBox
+    if (
+      selectedTimeslots &&
+      mediaSelected.length > 0 &&
+      selectedFilters.length > 0
+    ) {
+      if (props.exist || id) {
+        setLoading(!loading);
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
+        await axios({
+          url: `http://localhost:8000/notificationprofiles/${selectedTimeslots.value}`,
+          method: 'PUT',
+          headers: {
+            Authorization: 'Token ' + localStorage.getItem('token')
+          },
+          data: {
+            time_slot_group: selectedTimeslots.value,
+            filters: selectedFilters.map((f: any) => {
+              return f.value;
+            }),
+            media: mediaSelected.map((media: any) => {
+              return media.value;
+            }),
+            active: checkBox
+          }
+        }).catch((response: any) => {
+          alert('Timeslot is already in use or profile could not be saved');
+        });
+      } else {
+        setLoading(!loading);
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
+        await axios({
+          url: `http://localhost:8000/notificationprofiles/`,
+          method: 'POST',
+          headers: {
+            Authorization: 'Token ' + localStorage.getItem('token')
+          },
+          data: {
+            time_slot_group: selectedTimeslots.value,
+            filters: selectedFilters.map((f: any) => {
+              return f.value;
+            }),
+            media: mediaSelected.map((media: any) => {
+              return media.value;
+            }),
+            active: checkBox
+          }
+        })
+          .then((response: any) => {
+            setId(response.data.pk);
+          })
+          .catch((error: any) => {
+            alert('Timeslot is already in use or profile could not be saved');
+          });
       }
-    });
+    } else alert('Missing values');
   };
 
   const handleChange = (event: any) => {
@@ -96,22 +117,19 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
 
   const handleDelete = async () => {
     //slett fra database her:
-    await axios({
-      url: `http://localhost:8000/notificationprofiles/${selectedTimeslots.value}`,
-      method: 'DELETE',
-      headers: {
-        Authorization: 'Token ' + localStorage.getItem('token')
-      }
-    }).then((response: any) => {
-      console.log('data er slettet');
-    });
-  };
-
-  const handleSave = (event: any) => {
-    setLoading(!loading);
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+    if (props.mediaKey) {
+      await axios({
+        url: `http://localhost:8000/notificationprofiles/${selectedTimeslots.value}`,
+        method: 'DELETE',
+        headers: {
+          Authorization: 'Token ' + localStorage.getItem('token')
+        }
+      }).then((response: any) => {
+        props.deleteProfile(props.index, false);
+      });
+    } else {
+      props.deleteProfile(props.index, true);
+    }
   };
 
   return (
@@ -160,6 +178,7 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
         <h4>Media:</h4>
         <div className='media-dropdown'>
           <Select
+            isMulti
             onChange={onChangeMedia}
             defaultValue={mediaSelected}
             name='timeslots'
