@@ -3,8 +3,7 @@
 
 ## Requirements
 
-For development, you will only need Node.js installed on your environement.
-And please use the appropriate [Editorconfig](http://editorconfig.org/) plugin for your Editor (not mandatory).
+For development, you will only need Node.js installed on your environment.
 
 ### Node
 
@@ -62,9 +61,23 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.<br>
 You will also see any lint errors in the console.
 
-### `AAS backend`
+## Code structure
+The folder structure of this project is split into components and views.Each view component is built up using other components. App.js handles the routing to each view component that is displayed on the page.
+
+## Prettier
+
+We use [prettier](https://github.com/prettier/prettier) for JS auto-formatting.
+We highly recommend using format on save via an editor plugin,
+for example [prettier-atom](https://atom.io/packages/prettier-atom) and
+[vim-prettier](https://github.com/prettier/vim-prettier).
+
+You can also format the code via `yarn prettier`.
+
+## CSS
+ColorScheme.css defines every color used in the project and each component has their own css file.
+
+## Backend
 Can be found here: https://github.com/ddabble/aas
 
-To learn React, check out the [React documentation](https://reactjs.org/).
 
-Use Gitmoji to add emoji to a commit :sparkles:
+
