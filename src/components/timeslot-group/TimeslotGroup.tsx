@@ -82,7 +82,7 @@ const TimeslotGroup: React.FC<timeslotGrupProp> = (props: timeslotGrupProp) => {
         variant="contained"
         color="primary"
         onClick={() => {
-          props.saveTimeslotGroup();
+          props.saveTimeslotGroup(props.groupKey);
         }}
       >
         Save timeslot group
