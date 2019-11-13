@@ -15,6 +15,8 @@ const Timeslots: React.FC = () => {
     new Map([[initialTimeslotGroupKey, false]])
   );
 
+  const [groupPK, setGroupPK] = useState(new Map());
+
   const [nameField, setNameField] = useState<any>(
     new Map([[initialTimeslotGroupKey, ""]])
   );
@@ -72,6 +74,7 @@ const Timeslots: React.FC = () => {
         serverBoolean.set(groupKey, true);
         setFromServer(serverBoolean);
         setNameField(nameField.set(groupKey, group.name.toString()));
+        setGroupPK(groupPK.set(groupKey, group.pk));
         responseGroups.push(new Map([[groupKey, []]]));
         group.time_slots.forEach((timeslot: any) => {
           const timeslotKey = uuidv1();
@@ -161,13 +164,13 @@ const Timeslots: React.FC = () => {
     serverBoolean.set(groupKey, true);
     setFromServer(serverBoolean);
 
-    setNameField(nameField.set(groupKey, ''));
-    setStartTime(startTime.set(timeslotKey, '07:30'));
-    setEndTime(endTime.set(timeslotKey, '16:30'));
-    setDaysValue(daysValue.set(timeslotKey, []))
+    setNameField(nameField.set(groupKey, ""));
+    setStartTime(startTime.set(timeslotKey, "07:30"));
+    setEndTime(endTime.set(timeslotKey, "16:30"));
+    setDaysValue(daysValue.set(timeslotKey, []));
   };
 
-  const deleteTimeslotGroup = async () => {
+  const deleteTimeslotGroup = async (key: string) => {
     await axios({});
   };
 

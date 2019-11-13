@@ -48,7 +48,7 @@ const TimeslotGroup: React.FC<timeslotGrupProp> = (props: timeslotGrupProp) => {
           onChange={e => props.handleNameChange(e.target.value, props.groupKey)}
         />
       </div>
-      {/*<Dialog handleDelete={props.deleteTimeslotGroup} />*/}
+      <Dialog handleDelete={() => props.deleteTimeslotGroup(props.groupKey)} />
       {props.timeslots
         .filter((slot: string) => {
           let cond = false;
