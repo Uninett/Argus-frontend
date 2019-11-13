@@ -42,8 +42,8 @@
   font-size: 2em;
   color: white;
   background-color: var(--primary);
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   border-radius: 30px;
   margin: auto;
   grid-area: add;
