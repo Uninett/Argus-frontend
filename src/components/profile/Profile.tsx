@@ -5,67 +5,137 @@ import Button from '@material-ui/core/Button';
 import SaveIcon from '@material-ui/icons/Save';
 import Dialogue from '../dialogue/Dialogue';
 import Spinner from '../spinners/Spinner';
+import axios from 'axios';
 import './Profile.css';
 
 type ProfileProps = {
-  profileNames?: { value: string; label: string }[];
-  timeslots?: { value: string; label: string }[];
+  filters: { value: string; label: string }[];
+  timeslots: { value: string; label: string }[];
+  selectedFilters: { value: string; label: string }[];
+  selectedTimeslots: { value: string; label: string };
+  active: boolean;
+  index?: number;
+  deleteProfile: any;
+  media?: any;
+  mediaKey?: any;
+  exist: boolean;
 };
 
 const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
-  const [filterNameOption, setFilterNameOption] = useState(props.profileNames);
-  const [selectedFilterName, setSelectedFilterName] = useState(null);
+  const [filterOptions, setFilterOptions] = useState(props.filters);
+  const [selectedFilters, setSelectedFilters] = useState(props.selectedFilters);
+  const [mediaOptions, setMediaOptions] = useState([
+    { label: 'Slack', value: 'SL' },
+    { label: 'Sms', value: 'SM' },
+    { label: 'Email', value: 'EM' }
+  ]);
+  const [mediaSelected, setMediaSelected] = useState(props.media);
+  const [selectedTimeslots, setSelectedTimeslots] = useState(
+    props.selectedTimeslots
+  );
+  const [id, setId] = useState(null);
   const [timeOptions, setTimeOptions] = useState(props.timeslots);
-  const [selectedOptions, setSelectedOptions] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-  const [checkBox, setCheckBox] = useState(false);
+  const [checkBox, setCheckBox] = useState(props.active);
+
+  const postNewProfile = async () => {
+    if (
+      selectedTimeslots &&
+      mediaSelected.length > 0 &&
+      selectedFilters.length > 0
+    ) {
+      if (props.exist || id) {
+        setLoading(!loading);
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
+        await axios({
+          url: `http://localhost:8000/notificationprofiles/${selectedTimeslots.value}`,
+          method: 'PUT',
+          headers: {
+            Authorization: 'Token ' + localStorage.getItem('token')
+          },
+          data: {
+            time_slot_group: selectedTimeslots.value,
+            filters: selectedFilters.map((f: any) => {
+              return f.value;
+            }),
+            media: mediaSelected.map((media: any) => {
+              return media.value;
+            }),
+            active: checkBox
+          }
+        }).catch((response: any) => {
+          alert('Timeslot is already in use or profile could not be saved');
+        });
+      } else {
+        setLoading(!loading);
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
+        await axios({
+          url: `http://localhost:8000/notificationprofiles/`,
+          method: 'POST',
+          headers: {
+            Authorization: 'Token ' + localStorage.getItem('token')
+          },
+          data: {
+            time_slot_group: selectedTimeslots.value,
+            filters: selectedFilters.map((f: any) => {
+              return f.value;
+            }),
+            media: mediaSelected.map((media: any) => {
+              return media.value;
+            }),
+            active: checkBox
+          }
+        })
+          .then((response: any) => {
+            setId(response.data.pk);
+          })
+          .catch((error: any) => {
+            alert('Timeslot is already in use or profile could not be saved');
+          });
+      }
+    } else alert('Missing values');
+  };
 
   const handleChange = (event: any) => {
     setCheckBox(event.target.checked);
   };
-
-  const onChange = (e: any) => {
-    setSelectedOptions(e);
+  const onChangeMedia = (e: any) => {
+    setMediaSelected(e);
   };
 
-  const handleSave = (event: any) => {
-    setLoading(!loading);
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+  const onChangeFilters = (e: any) => {
+    setSelectedFilters(e);
+  };
+
+  const onChangeTimeslots = (e: any) => {
+    setSelectedTimeslots(e);
+  };
+
+  const handleDelete = async () => {
+    //slett fra database her:
+    if (props.mediaKey) {
+      await axios({
+        url: `http://localhost:8000/notificationprofiles/${selectedTimeslots.value}`,
+        method: 'DELETE',
+        headers: {
+          Authorization: 'Token ' + localStorage.getItem('token')
+        }
+      }).then((response: any) => {
+        props.deleteProfile(props.index, false);
+      });
+    } else {
+      props.deleteProfile(props.index, true);
+    }
   };
 
   return (
     <div className='notification-container'>
-      <div className='filtername-box'>
-        <div className='filtername'>
-          <h4>Filtername:</h4>
-        </div>
-        <div className='filter-dropdown'>
-          <Select
-            isMulti
-            onChange={onChange}
-            name='filters'
-            label='Single select'
-            options={filterNameOption}
-          />
-        </div>
-      </div>
-      <div className='dropdown'>
-        <h4>Timeslots:</h4>
-        <div className='timeslot-dropdown'>
-          <Select
-            isMulti
-            onChange={onChange}
-            name='timeslots'
-            options={timeOptions}
-            className='basic-multi-select'
-            classNamePrefix='select'
-          />
-        </div>
-      </div>
       <div className='check-box'>
-        <h4 className='activate-box'>active:</h4>
+        <h4 className='activate-box'>Active:</h4>
         <Checkbox
           checked={checkBox}
           onChange={handleChange}
@@ -76,6 +146,48 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
           }}
         />
       </div>
+      <div className='filtername-box'>
+        <div className='filtername'>
+          <h4>Filtername:</h4>
+        </div>
+        <div className='filter-dropdown multi-select'>
+          <Select
+            isMulti
+            defaultValue={selectedFilters}
+            onChange={onChangeFilters}
+            name='filters'
+            label='Single select'
+            options={filterOptions}
+          />
+        </div>
+      </div>
+      <div className='dropdown-timeslots'>
+        <h4>Timeslots:</h4>
+        <div className='timeslot-dropdown'>
+          <Select
+            onChange={onChangeTimeslots}
+            defaultValue={selectedTimeslots}
+            name='timeslots'
+            options={timeOptions}
+            className='basic-multi-select'
+            classNamePrefix='select'
+          />
+        </div>
+      </div>
+      <div className='dropdown-media'>
+        <h4>Media:</h4>
+        <div className='media-dropdown multi-select'>
+          <Select
+            isMulti
+            onChange={onChangeMedia}
+            defaultValue={mediaSelected}
+            name='timeslots'
+            options={mediaOptions}
+            className='basic-multi-select'
+            classNamePrefix='select'
+          />
+        </div>
+      </div>
       <div className='buttons-container'>
         <div className='button-save'>
           {loading ? (
@@ -85,14 +197,14 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
               variant='contained'
               color='primary'
               size='small'
-              onClick={handleSave}
+              onClick={postNewProfile}
               startIcon={<SaveIcon />}>
               Save
             </Button>
           )}
         </div>
         <div className='button-delete'>
-          <Dialogue />
+          <Dialogue handleDelete={handleDelete} />
         </div>
       </div>
     </div>

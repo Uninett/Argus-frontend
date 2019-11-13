@@ -1,51 +1,98 @@
-.body {
-  font-family: 'Muli', sans-serif;
-}
+
 .notification-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  align-items: center;
-  width: 85%;
+  display: grid;
+  grid-template-areas: "activeBox  timeslot filter media  buttons";
+  grid-template-columns: auto 20vw 20vw 20vw 130px;
   margin: auto;
   margin-top: 10px;
-  border: 1px solid lightgrey;
   border-radius: 5px;
   box-shadow: 0px 1px 5px 1px #b6b6b6;
+  padding: 0 10px 0 10px;
 }
-.dropdown {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  width: 30vw;
-}
-.check-box {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-}
-.timeslot-dropdown {
-  margin-left: 5px;
-  width: 28vw;
-}
-.buttons-container {
-  display: flex;
-  justify-content: space-around;
-}
-.filtername-box {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  width: 30vw;
-}
-.filter-dropdown {
-  min-width: 25vw;
-  max-width: 30vw;
-  margin-left: 5px;
+.notification-container h4 {
+  margin: 5px 0 5px 0;
 }
 
-.button-delete {
-  margin-left: 10px;
-  width: 100%;
+.dropdown-media {
+  margin: 0 10px 10px 10px;
+  grid-area: media;
+}
+.dropdown-timeslots {
+  margin: 0 10px 10px 10px;
+  grid-area: timeslot;
+}
+.check-box {
+  margin: 0 10px 10px 10px;
+  grid-area: activeBox;
+}
+
+.buttons-container {
+  margin: 0 10px 0 10px;
+  position: relative;
+  grid-area: buttons;
+}
+.filtername-box {
+  margin: 0 10px 10px 10px;
+  grid-area: filter;
+}
+
+
+.buttons-container .MuiButton-containedPrimary {
+  background-color: var(--primary);
+}
+
+.buttons-container .button-save {
+  top: calc(calc(100% - 60px) / 3);
+
+}
+
+.buttons-container .MuiButton-containedSecondary {
+  background-color: var(--warning);
+  top: calc(calc(200% - 30px) / 3);
+  
+}
+
+.buttons-container .MuiButton-containedSecondary, .buttons-container .MuiButton-containedPrimary, .buttons-container .button-save {
+  color: #fff;
+  height: 30px;
+  width: 100px;
+  position: absolute;
+}
+
+
+
+.check-box .MuiCheckbox-colorPrimary.Mui-checked {
+  color: var(--primary);
+}
+.add-button .MuiFab-primary {
+  color: #fff;
+  background-color: var(--primary); 
+}
+
+.add-button .MuiFab-primary:hover {
+  color: #fff;
+  background-color: var(--primary-dark); 
+}
+
+.buttons-container .MuiButton-containedPrimary:hover {
+  background-color: var(--primary);
+}
+.buttons-container .MuiButton-containedSecondary:hover {
+  background-color: var(--warning);
+}
+
+.multi-select [class*="multiValue"]  {
+  color: white;
+  background-color: var(--primary);
+}
+.multi-select [class*="multiValue"] div {
+  color: white;
+}
+.multi-select [class*="multiValue"] div:hover {
+  color: white;
+}
+
+[class*="makeStyles"] .MuiCircularProgress-colorPrimary {
+  margin: auto;
+  color: var(--primary);
 }

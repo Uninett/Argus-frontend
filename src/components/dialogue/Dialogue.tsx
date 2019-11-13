@@ -9,7 +9,10 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from '@material-ui/core/styles';
 
-export default function ResponsiveDialog() {
+type PropType = {
+  handleDelete: any;
+};
+export default function ResponsiveDialog(props: PropType) {
   const [open, setOpen] = React.useState(false);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -20,6 +23,10 @@ export default function ResponsiveDialog() {
 
   const handleClose = () => {
     setOpen(false);
+  };
+  const handleAccept = () => {
+    props.handleDelete();
+    handleClose();
   };
 
   return (
@@ -42,14 +49,14 @@ export default function ResponsiveDialog() {
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to delete this profile?
+            Are you sure you want to delete?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button autoFocus onClick={handleClose} color='primary'>
             Disagree
           </Button>
-          <Button onClick={handleClose} color='primary' autoFocus>
+          <Button onClick={handleAccept} color='primary' autoFocus>
             Agree
           </Button>
         </DialogActions>

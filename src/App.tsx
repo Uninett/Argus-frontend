@@ -9,6 +9,7 @@ import NotificationProfileView from './views/notificationProfileView/Notificatio
 import ActiveProfile from './components/active-profiles/ActiveProfile';
 import ProfileList from './components/profileList/ProfileList';
 import Timeslots from "./components/timeslots/Timeslots";
+import FilterBuildingView from "./views/filterBuildingView/filterBuildingView";
 
 const App: React.SFC = () => {
   return (
@@ -23,6 +24,7 @@ const App: React.SFC = () => {
         <Route path='/login' component={LoginView} />
         <Route path='/profile' component={ActiveProfile} />
         <Route path='/timeslots' component={Timeslots} />
+        <ProtectedRoute path="/customfilter" component={FilterBuildingView} />
         <Route path='*' component={() => <h1>404 not found</h1>} />
       </Switch>
     </div>
