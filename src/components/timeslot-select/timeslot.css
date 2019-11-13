@@ -2,11 +2,11 @@
   display: grid;
   grid-template-areas: 
   ". name name ."
-  ". settings settings ."
+  ". settings settings savedelete"
   ". add add ."
   ". delete save .";
-  grid-template-columns: 40px auto auto 40px;
-  grid-template-rows: 70px auto 50px 60px;
+  grid-template-columns: 40px auto auto 130px;
+  grid-template-rows: 70px auto 50px 0;
   width: 90vw;
   margin: auto;
   margin-bottom: 40px;
@@ -118,22 +118,21 @@
 }
 
 .saveDelete {
-  grid-column-start: delete;
-  grid-column-end: save;
-  display: inline-flex;
-  justify-content: space-around;
+  grid-area: savedelete;
 }
 .saveDelete #timeslot-delete button {
   background-color: var(--warning);
-  width: 150px;
+  width: 110px;
   height: 40px;
+  margin: 10px;
 }
 
 
 .saveDelete #timeslot-save button{
   background-color: var(--primary);
   height: 40px;
-  width: 150px;
+  margin: 10px;
+  width: 110px;
 }
 
 .MuiOutlinedInput-root input {

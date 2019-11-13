@@ -2,7 +2,7 @@
     text-align: center;
     display: grid;
     grid-template-areas: "logo . buttons";
-    grid-template-columns: 20vw auto 40vw;
+    grid-template-columns: 20vw auto 50vw;
     grid-template-rows: minmax(80px, var(--header-height));
     background-color: var(--headercolor);
     align-items: center;
