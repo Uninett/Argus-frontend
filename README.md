@@ -1,5 +1,5 @@
 # Aggregated Alert System - Frontend
-
+> built using React with TypeScript
 
 ## Requirements
 
