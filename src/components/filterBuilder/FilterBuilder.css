@@ -1,8 +1,8 @@
 .WrappingDiv {
   display: grid;
   grid-template-areas:
-    "filter"
-    "preview";
+    'filter'
+    'preview';
 }
 
 .filterBuilding-div {
@@ -27,7 +27,7 @@
 
 .ButtonDiv {
   display: grid;
-  grid-template-areas: ". preview create";
+  grid-template-areas: '. preview create';
   grid-template-columns: 30% auto auto;
   margin-bottom: 20px;
 }
@@ -36,6 +36,7 @@
   align-items: flex-end;
   grid-area: create;
   margin-left: auto;
+  margin-top: 10px;
 }
 .ButtonDiv .MuiButton-containedPrimary {
   color: #fff;
@@ -48,6 +49,7 @@
 
 .preview {
   grid-area: preview;
+  margin-top: 10px;
 }
 
 .InputWrapperDiv {
@@ -75,7 +77,7 @@
 
 .filterSelect {
   display: grid;
-  grid-template-areas: "intruction selector";
+  grid-template-areas: 'intruction selector';
   grid-template-columns: 30% auto;
 }
 .filterSelect p {
