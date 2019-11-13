@@ -2,6 +2,7 @@ import React, { useState, useEffect, SetStateAction } from "react";
 import Select from "react-select";
 import axios from "axios";
 import "./FilterBuilder.css";
+import moment from "moment";
 
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
@@ -55,7 +56,24 @@ const FilterBuilder: React.FC = () => {
 
   useEffect(() => {
     fetchProblemTypes();
+    getAlerts();
   }, []);
+
+  //fetches alerts and sets state
+  const getAlerts = async () => {
+    await axios({
+      url: "http://localhost:8000/alerts/",
+      method: "GET",
+      headers: {
+        Authorization: "Token " + localStorage.getItem("token")
+      }
+    }).then((response: any) => {
+      for (let item of response.data) {
+        item.timestamp = moment(item.timestamp).format("YYYY.MM.DD  hh:mm:ss");
+      }
+      setPreviewAlerts(response.data);
+    });
+  };
 
   const postNewFilter = async () => {
     await axios({
@@ -92,8 +110,11 @@ const FilterBuilder: React.FC = () => {
         objectTypes: filter.objectTypes,
         networkSystems: filter.networkSystems
       }
-    }).then(result => {
-      setPreviewAlerts(result.data);
+    }).then(response => {
+      for (let item of response.data) {
+        item.timestamp = moment(item.timestamp).format("YYYY.MM.DD  hh:mm:ss");
+      }
+      setPreviewAlerts(response.data);
     });
   };
 
