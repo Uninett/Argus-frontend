@@ -40,12 +40,12 @@ button {
   height: 100%;
   margin: auto;
   grid-area: logo;
-  stroke: var(--loginLogo);
+  stroke: var(--loginlogo);
 }
 
 #login-text {
   stroke: none;
-  fill: var(--loginLogo);
+  fill: var(--loginlogo);
 }
 
 #login-feide {
