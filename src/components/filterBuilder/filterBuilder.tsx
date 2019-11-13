@@ -17,26 +17,26 @@ const defaultResponse = [{ label: "none", value: "none" }];
 type Filter = {
   problemTypes: string[];
   objectTypes: string[];
-  networkSystemTypes: string[];
+  parentObjects: string[];
   networkSystems: string[];
 };
 
 const defaultFilter = {
   problemTypes: [],
   objectTypes: [],
-  networkSystemTypes: [],
+  parentObjects: [],
   networkSystems: []
 };
 
 let objectTypesResponse: Metadata = [];
-let networkTypesResponse: Metadata = [];
+let parentObjectsResponse: Metadata = [];
 let networkSystemsResponse: Metadata = [];
 let problemTypesResponse: Metadata = [];
 
 let properties = [
   { propertyName: "objectTypes", list: objectTypesResponse },
   { propertyName: "networkSystems", list: networkSystemsResponse },
-  { propertyName: "networkSystemTypes", list: networkTypesResponse },
+  { propertyName: "parentObjects", list: parentObjectsResponse },
   { propertyName: "problemTypes", list: problemTypesResponse }
 ];
 
@@ -45,9 +45,7 @@ const FilterBuilder: React.FC = () => {
   const [name, setName] = useState("");
   const [objectTypes, setobjectTypes] = useState<Metadata>(defaultResponse);
   const [problemTypes, setProblemTypes] = useState<Metadata>(defaultResponse);
-  const [networkSystemTypes, setNetworkSystemTypes] = useState<Metadata>(
-    defaultResponse
-  );
+  const [parentObjects, setParentObjects] = useState<Metadata>(defaultResponse);
   const [networkSystems, setNetworkSystems] = useState<Metadata>(
     defaultResponse
   );
@@ -108,7 +106,8 @@ const FilterBuilder: React.FC = () => {
       data: {
         problemTypes: filter.problemTypes,
         objectTypes: filter.objectTypes,
-        networkSystems: filter.networkSystems
+        networkSystems: filter.networkSystems,
+        parentObjects: filter.parentObjects
       }
     }).then(response => {
       for (let item of response.data) {
@@ -136,7 +135,7 @@ const FilterBuilder: React.FC = () => {
       });
     });
     setProblemTypes(problemTypesResponse);
-    setNetworkSystemTypes(networkTypesResponse);
+    setParentObjects(parentObjectsResponse);
     setobjectTypes(objectTypesResponse);
     setNetworkSystems(networkSystemsResponse);
   };
@@ -207,7 +206,7 @@ const FilterBuilder: React.FC = () => {
             ></Select>
           </div>
           <div className="filterSelect">
-            <p>Select objectTypes</p>
+            <p>Select object types</p>
             <Select
               className="selector"
               isMulti
@@ -217,13 +216,13 @@ const FilterBuilder: React.FC = () => {
             ></Select>
           </div>
           <div className="filterSelect">
-            <p>Select netWorkSystemTypes</p>
+            <p>Select parent objects</p>
             <Select
               className="selector"
               isMulti
               name="boisss"
-              options={networkSystemTypes}
-              onChange={value => handleChange(value, "networkSystemTypes")}
+              options={parentObjects}
+              onChange={value => handleChange(value, "parentObjects")}
             ></Select>
           </div>
           <div className="filterSelect">
