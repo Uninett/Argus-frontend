@@ -55,6 +55,26 @@ const Timeslots: React.FC = () => {
     });
   };
 
+  const deleteTimeslotGroup = async (key: string) => {
+    await axios({
+      url:
+        "http://127.0.0.1:8000/notificationprofiles/timeslotgroups/" +
+        groupPK.get(key),
+      method: "DELETE",
+      headers: {
+        Authorization: "Token " + localStorage.getItem("token")
+      }
+    }).then(() => {
+      const newGroups = [...timeslotGroups];
+      let groupMap: any;
+      timeslotGroups.forEach(group => {
+        if (group.has(key)) groupMap = group;
+      });
+      newGroups.splice(newGroups.indexOf(groupMap), 1);
+      setTimeslotGroups(newGroups);
+    });
+  };
+
   const buildTimeslotGroups = (
     data: any,
     firstTime: boolean,
@@ -143,20 +163,34 @@ const Timeslots: React.FC = () => {
 
   const addTimeslotGroup = async (groupKey: any) => {
     const dataTimeslots = buildDataTimeslots(groupKey);
-    await axios({
-      url: "http://127.0.0.1:8000/notificationprofiles/timeslotgroups/",
-      method: "POST",
-      headers: {
-        Authorization: "Token " + localStorage.getItem("token")
-      },
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      data: { name: nameField.get(groupKey), time_slots: dataTimeslots }
-    }).then(() => {
-      const groupKey = uuidv1();
-      const timeslotKey = uuidv1();
-      resetView(groupKey, timeslotKey);
-      getTimeslotGroup(false, groupKey, timeslotKey);
-    });
+    if (fromServer.get(groupKey)) {
+      await axios({
+        url:
+          "http://127.0.0.1:8000/notificationprofiles/timeslotgroups/" +
+          groupPK.get(groupKey),
+        method: "PUT",
+        headers: {
+          Authorization: "Token " + localStorage.getItem("token")
+        },
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        data: { name: nameField.get(groupKey), time_slots: dataTimeslots }
+      });
+    } else {
+      await axios({
+        url: "http://127.0.0.1:8000/notificationprofiles/timeslotgroups/",
+        method: "POST",
+        headers: {
+          Authorization: "Token " + localStorage.getItem("token")
+        },
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        data: { name: nameField.get(groupKey), time_slots: dataTimeslots }
+      }).then(() => {
+        const groupKey = uuidv1();
+        const timeslotKey = uuidv1();
+        resetView(groupKey, timeslotKey);
+        getTimeslotGroup(false, groupKey, timeslotKey);
+      });
+    }
   };
 
   const resetView = (groupKey: string, timeslotKey: string) => {
@@ -168,10 +202,6 @@ const Timeslots: React.FC = () => {
     setStartTime(startTime.set(timeslotKey, "07:30"));
     setEndTime(endTime.set(timeslotKey, "16:30"));
     setDaysValue(daysValue.set(timeslotKey, []));
-  };
-
-  const deleteTimeslotGroup = async (key: string) => {
-    await axios({});
   };
 
   const handleStartTimeChange = (value: any, key: string) => {

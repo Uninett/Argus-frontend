@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import { TextField } from "@material-ui/core";
 import Select from "react-select";
 import "./timeslot.css";
-import Dialog from "../dialogue/Dialogue";
 import Button from "@material-ui/core/Button";
 
 const days = [

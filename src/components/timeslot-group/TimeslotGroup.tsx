@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { TextField } from "@material-ui/core";
 import Timeslot from "../timeslot-select/Timeslot";
 import Button from "@material-ui/core/Button";
@@ -40,7 +40,7 @@ const TimeslotGroup: React.FC<timeslotGrupProp> = (props: timeslotGrupProp) => {
       <div className="timeslot-group-name">
         <TextField
           id="name"
-          value={props.groupName || ''}
+          value={props.groupName || ""}
           required={true}
           margin="normal"
           variant="outlined"
