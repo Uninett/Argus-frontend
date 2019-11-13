@@ -37,7 +37,7 @@ const TimeslotGroup: React.FC<timeslotGrupProp> = (props: timeslotGrupProp) => {
 
   return (
     <div className="super-container">
-      <div className="timeslot-group-name">
+      <div id="timeslot-name" className="timeslot-group-name">
         <TextField
           id="name"
           value={props.groupName || ""}
@@ -48,7 +48,9 @@ const TimeslotGroup: React.FC<timeslotGrupProp> = (props: timeslotGrupProp) => {
           onChange={e => props.handleNameChange(e.target.value, props.groupKey)}
         />
       </div>
-      <Dialog handleDelete={() => props.deleteTimeslotGroup(props.groupKey)} />
+      
+      <div className="timeslot-settings">
+
       {props.timeslots
         .filter((slot: string) => {
           let cond = false;
@@ -60,33 +62,44 @@ const TimeslotGroup: React.FC<timeslotGrupProp> = (props: timeslotGrupProp) => {
         .map((element: string) => {
           return (
             <Timeslot
-              key={element}
-              dictKey={element}
-              deleteTimeslot={props.deleteTimeslot}
+            key={element}
+            dictKey={element}
+            deleteTimeslot={props.deleteTimeslot}
               handleStartChange={props.handleStartTimeChange}
               handleEndChange={props.handleEndTimeChange}
               handleDayChange={props.handleDayChange}
               startTime={props.startTime.get(element)}
               endTime={props.endTime.get(element)}
               daysValue={props.daysValue.get(element)}
-            />
-          );
-        })}
+              />
+              );
+            })}
+            </div>
       <Button
+      id="timeslot-addNew"
         variant="contained"
         onClick={() => props.addTimeslot(props.groupKey)}
       >
-        Add timeslot
+        +
       </Button>
+      <div className="saveDelete">
+      <div id="timeslot-delete">
+      <Dialog handleDelete={() => props.deleteTimeslotGroup(props.groupKey)} />
+      </div>
+        <div id="timeslot-save">
+
       <Button
-        variant="contained"
-        color="primary"
-        onClick={() => {
-          props.saveTimeslotGroup(props.groupKey);
-        }}
+      id="timeslot-save"
+      variant="contained"
+      color="primary"
+      onClick={() => {
+        props.saveTimeslotGroup(props.groupKey);
+      }}
       >
-        Save timeslot group
+        Save
       </Button>
+      </div>
+      </div>
     </div>
   );
 };

@@ -26,8 +26,23 @@ type TimeslotProp = {
 
 const Timeslot: React.FC<TimeslotProp> = (props: TimeslotProp) => {
   return (
-    <div>
+    <div className="timeslot-setting">
+
+          <div className="timeslot-day">
+          <p>Days:</p>
+
+            <Select
+              isMulti
+              value={props.daysValue}
+              onChange={e => props.handleDayChange(e, props.dictKey)}
+              name="filters"
+              label="Single select"
+              options={days}
+              />
+          </div>
       <div className="timeslot-time">
+        <div id="timeslot-times">
+
         <TextField
           id="start-time"
           label="Start Time"
@@ -42,7 +57,7 @@ const Timeslot: React.FC<TimeslotProp> = (props: TimeslotProp) => {
           inputProps={{
             step: 300
           }}
-        />
+          />
         <TextField
           id="end-time"
           label="End Time"
@@ -57,27 +72,19 @@ const Timeslot: React.FC<TimeslotProp> = (props: TimeslotProp) => {
           inputProps={{
             step: 300
           }}
-        />
-      </div>
-      <div className="timeslot-day">
-        <Select
-          isMulti
-          value={props.daysValue}
-          onChange={e => props.handleDayChange(e, props.dictKey)}
-          name="filters"
-          label="Single select"
-          options={days}
-        />
-      </div>
+          />
+          </div>
+    </div>
       <div className="timeslot-delete">
         <Button
           variant={"contained"}
           onClick={e => props.deleteTimeslot(e, props.dictKey)}
-        >
-          Delete Timeslot
+          >
+          X
         </Button>
       </div>
-    </div>
+          </div>
+
   );
 };
 

@@ -195,7 +195,7 @@ const Timeslots: React.FC = () => {
 
   const resetView = (groupKey: string, timeslotKey: string) => {
     const serverBoolean = fromServer;
-    serverBoolean.set(groupKey, true);
+    serverBoolean.set(groupKey, false);
     setFromServer(serverBoolean);
 
     setNameField(nameField.set(groupKey, ""));
