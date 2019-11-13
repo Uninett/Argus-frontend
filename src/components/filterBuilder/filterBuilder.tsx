@@ -104,10 +104,10 @@ const FilterBuilder: React.FC = () => {
         Authorization: "Token " + localStorage.getItem("token")
       },
       data: {
-        problemTypes: filter.problemTypes,
-        objectTypes: filter.objectTypes,
-        networkSystems: filter.networkSystems,
-        parentObjects: filter.parentObjects
+        sourceNames: filter.networkSystems,
+        objectTypeNames: filter.objectTypes,
+        parentObjectNames: filter.parentObjects,
+        problemTypeNames: filter.problemTypes,
       }
     }).then(response => {
       for (let item of response.data) {
