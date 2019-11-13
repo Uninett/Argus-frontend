@@ -112,9 +112,56 @@ const ProfileList: React.FC = () => {
   };
 
   const addProfileClick = () => {
-    const newProfiles: number[] = addedNotificationprofiles;
-    newProfiles.push(newProfileCounter);
-    setNewProfileCounter(newProfileCounter + 1);
+    console.log(timeslots.length);
+    if (getUnusedTimeslots().length > 0) {
+      const newProfiles: number[] = addedNotificationprofiles;
+      newProfiles.push(newProfileCounter);
+      setNewProfileCounter(newProfileCounter + 1);
+    } else alert('All timeslots are in use');
+  };
+
+  const getUnusedTimeslots = () => {
+    if (notificationprofiles.length > 0 && timeslots.length > 0) {
+      const timeslotsProfile: any = [];
+      for (let i = 0; i < notificationprofiles.length; i++) {
+        const element: any = notificationprofiles[i];
+        timeslotsProfile.push(element.time_slot_group.pk);
+      }
+      const timeslotNames: any = [];
+      timeslots.map((timeslot: any) => {
+        timeslotNames.push(timeslot.value);
+      });
+
+      console.log('dette er timeslotNames:', timeslotNames);
+      const difference: any = timeslotsProfile
+        .filter((x: any) => !timeslotNames.includes(x))
+        .concat(
+          timeslotNames.filter((x: any) => !timeslotsProfile.includes(x))
+        );
+      console.log('dette er forskjellen i lista', difference);
+      const newList: any = [];
+      for (let i = 0; i < timeslots.length; i++) {
+        const element1: any = timeslots[i];
+        for (let j = 0; j < difference.length; j++) {
+          const element2: any = difference[j];
+          if (element1.value === element2) {
+            newList.push({ value: element1.value, label: element1.label });
+          }
+        }
+      }
+      console.log(newList);
+      return newList;
+    }
+  };
+  const removeTimeslot = (item: any) => {
+    const list: any = [];
+    for (let i = 0; i < timeslots.length; i++) {
+      const element: any = timeslots[i];
+      if (element.value != item.value) {
+        list.push(element);
+      }
+    }
+    setTimeslots(list);
   };
 
   return (
@@ -129,6 +176,7 @@ const ProfileList: React.FC = () => {
             <Profile
               key={profile.pk}
               index={profile.pk}
+              getNotificationprofiles={getNotificationprofiles}
               exist={true}
               deleteProfile={deleteProfile}
               filters={filters}
@@ -136,8 +184,10 @@ const ProfileList: React.FC = () => {
               selectedTimeslots={timeslot}
               timeslots={timeslots}
               active={profile.active}
+              removeTimeslot={removeTimeslot}
               media={formatMedia(profile.media)}
               mediaKey={profile.time_slot_group.pk}
+              unusedTimeSlots={getUnusedTimeslots}
             />
           );
         })
@@ -157,8 +207,11 @@ const ProfileList: React.FC = () => {
               selectedFilters={[]}
               selectedTimeslots={{ value: '', label: '' }}
               timeslots={timeslots}
+              removeTimeslot={removeTimeslot}
               media={[]}
+              getNotificationprofiles={getNotificationprofiles}
               active={false}
+              unusedTimeSlots={getUnusedTimeslots}
             />
           );
         })
