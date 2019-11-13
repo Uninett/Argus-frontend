@@ -19,6 +19,9 @@ type ProfileProps = {
   media?: any;
   mediaKey?: any;
   exist: boolean;
+  unusedTimeSlots: any;
+  getNotificationprofiles: any;
+  removeTimeslot: any;
 };
 
 const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
@@ -29,14 +32,24 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
     { label: 'Sms', value: 'SM' },
     { label: 'Email', value: 'EM' }
   ]);
+  const [exist, setExist] = useState(props.exist);
   const [mediaSelected, setMediaSelected] = useState(props.media);
   const [selectedTimeslots, setSelectedTimeslots] = useState(
     props.selectedTimeslots
   );
   const [id, setId] = useState(null);
-  const [timeOptions, setTimeOptions] = useState(props.timeslots);
+  const [timeOptions, setTimeOptions] = useState<any>(props.timeslots);
   const [loading, setLoading] = useState(false);
   const [checkBox, setCheckBox] = useState(props.active);
+
+  useEffect(() => {
+    if (props.exist) {
+      setTimeOptions([props.selectedTimeslots]);
+    } else if (!props.exist) {
+      const timeslots: any = props.unusedTimeSlots();
+      setTimeOptions(timeslots);
+    }
+  }, []);
 
   const postNewProfile = async () => {
     if (
@@ -44,7 +57,7 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
       mediaSelected.length > 0 &&
       selectedFilters.length > 0
     ) {
-      if (props.exist || id) {
+      if (exist || id) {
         setLoading(!loading);
         setTimeout(() => {
           setLoading(false);
@@ -92,6 +105,8 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
         })
           .then((response: any) => {
             setId(response.data.pk);
+            setTimeOptions([selectedTimeslots]);
+            props.removeTimeslot(selectedTimeslots);
           })
           .catch((error: any) => {
             alert('Timeslot is already in use or profile could not be saved');
