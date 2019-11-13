@@ -13,8 +13,9 @@
   grid-area: filter;
   border: 1px solid lightgrey;
   border-radius: 5px;
-  box-shadow: 0px 1px 5px 1px #c5c5df;
+  box-shadow: var(--boxshadow) ;
   margin-top: 5vh;
+  background-color: var(--boxbackground);
 }
 
 .filterHeader {

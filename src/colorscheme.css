@@ -8,6 +8,12 @@
     --secondary-dark: #9B7414;
     --background: #fff;
     --text: #434343;
-    --white: #fff;
+    --boxbackground: #FFFFFE;
+    --white: #ffffff;
     --warning: #910041;
+    --headercolor: #006D91;
+    --headerbutton: #fff;
+    --loginlogo: white;
+    --boxshadowcolor: #999999;
+    --boxshadow: 0 2px 10px 0 var(--boxshadowcolor);
 }

@@ -13,7 +13,7 @@
   grid-template-rows: 35% auto auto auto;
   grid-template-columns: 100%;
   padding: 20px;
-  box-shadow: 0px 1px 5px 1px #c5c5df;
+  box-shadow: var(--boxshadow);
   width: var(--loginbox-width);
   height: var(--loginbox-height);
   margin: auto;
@@ -40,6 +40,12 @@ button {
   height: 100%;
   margin: auto;
   grid-area: logo;
+  stroke: var(--loginLogo);
+}
+
+#login-text {
+  stroke: none;
+  fill: var(--loginLogo);
 }
 
 #login-feide {
@@ -67,7 +73,7 @@ button {
 
 #login-button {
   font-size: 1em;
-  box-shadow: #b6b6b6;
+  box-shadow: var(--boxshadow);
   background-color: var(--primary-dark);
   margin-top: 10px;
   color: var(--white);

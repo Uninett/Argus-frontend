@@ -1,4 +1,15 @@
 .add-button {
-  padding-top: 20px;
-  margin: auto;
+  width: 100vw;
+}
+
+.add-button .MuiFab-primary {
+  color: #fff;
+  background-color: var(--primary);
+  left: 50%;
+}
+
+
+.add-button .MuiFab-primary:hover {
+  color: #fff;
+  background-color: var(--primary-dark); 
 }

@@ -1,16 +1,18 @@
 .header {
     text-align: center;
     display: grid;
-    grid-template-columns: 20vw auto 13vw 13vw 13vw;
-    grid-template-areas: "logo . notificationProfiles filters user";
-    grid-template-rows: minmax(70px, var(--header-height));
-    background-color: var(--primary);
+    grid-template-areas: "logo . buttons";
+    grid-template-columns: 20vw auto 40vw;
+    grid-template-rows: minmax(80px, var(--header-height));
+    background-color: var(--headercolor);
     align-items: center;
+    box-shadow: var(--boxshadow) ;
 }
 
 .header p {
   margin: 0;
 }
+
 
 #logo {
     grid-area: logo;
@@ -19,31 +21,45 @@
     margin-left: calc(var(--logomargin) * 2);
 }
 
-#logo{
+#logo {
     height: 60px;
+    stroke: var(--headerbutton);
 }
 
+#logotext {
+    stroke: none;
+    fill: var(--headerbutton);
+}
+
+#headerbuttons {
+    display: flex;
+    grid-area: buttons;
+    align-items: baseline;
+    justify-items: baseline;
+}
 .headerbutton {
-    text-align: center;
     text-decoration: none;
     margin-top: auto;
-    width: 90%;
     border: none;
-    color: white;
+    color: var(--headerbutton);
     font-weight: 400;
     font-size: 1.2rem;
 }
- #header-user {
-    grid-area: user;
+#header-user {
+    margin: auto;
+    order: 3;
     position: relative;
 }
 
+
 #header-filters {
-    grid-area: filters;
+    margin: auto;
+    order: 2;
 }
 
 #header-notificationProfiles {
-    grid-area: notificationProfiles;
+    margin: auto;
+    order: 1;
 }
 
 #header-user:hover, #header-notificationProfiles:hover, #header-logout:hover, #header-filters:hover, #header-profiles:hover {
@@ -58,29 +74,25 @@
 }
 
 .dropdown {
-    position: absolute;
     align-items: center;
     display: inline-block;
 }
 
 .dropdown-content {
-    margin-left: calc(calc(13vw - 100px) / 2);
-    min-width: 100px;
+    width: 100px;
+    position: absolute;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px ;
-    padding-top: 20px;
     display: none;
-    position: absolute;
-    background-color: var(--primary);
+    background-color: var(--headercolor);
     z-index: 1;
-
 }
 
 .dropdown-button {
     margin: 0.7vh;
     height: 2em;
     display: block;
-    background-color: var(--primary);
+    background-color: var(--headercolor);
     text-align: center;
     padding: 0;
 }
@@ -89,10 +101,10 @@
 
 /* Responsive Design */
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 650px) {
 
     .header {
-        grid-template-columns: 20vw auto auto auto;
-        grid-template-areas: "logo notificationProfiles filters user";
+        grid-template-columns: 20vw auto;
+        grid-template-areas: "logo buttons";
     }
   }
