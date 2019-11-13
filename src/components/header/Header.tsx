@@ -51,6 +51,9 @@ const Header: React.FC<{ history: any }> = props => {
       </svg>
       </a>
       <div id="headerbuttons">
+      <a id='header-timeslots' className='headerbutton' href='/timeslots'>
+        <p>Timeslots</p>
+      </a>
       <a id='header-filters' className='headerbutton' href='/customfilter'>
         <p>Filters</p>
       </a>

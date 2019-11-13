@@ -1,0 +1,141 @@
+.super-container {
+  display: grid;
+  grid-template-areas: 
+  ". name name ."
+  ". settings settings ."
+  ". add add ."
+  ". delete save .";
+  grid-template-columns: 40px auto auto 40px;
+  grid-template-rows: 70px auto 50px 60px;
+  width: 90vw;
+  margin: auto;
+  margin-bottom: 40px;
+  border-radius: 5px;
+  box-shadow: var(--boxshadow);
+  background-color: var(--boxbackground);
+  padding: 10px;
+}
+
+#timeslot-name {
+  grid-area: name;
+  margin: auto;
+}
+
+
+#timeslot-delete, #timeslot-save {
+  margin: auto;
+}
+
+
+.timeslot-settings  {
+  grid-area: settings;
+  grid-template-columns: auto auto auto;
+  grid-template-rows: 100px;
+  width: 100%;
+  display: table;
+  
+}
+
+
+#timeslot-addNew {
+  min-width: 0;
+  font-size: 2em;
+  color: white;
+  background-color: var(--primary);
+  width: 40px;
+  height: 40px;
+  border-radius: 30px;
+  margin: auto;
+  grid-area: add;
+  padding: 0;
+}
+
+#timeslot-addNew [class*="label"]{
+  padding: 0;
+  width: 30px;
+  height: 30px;
+}
+
+
+
+.timeslot-setting {
+  display: table-row;
+  width: 100%;
+}
+
+.timeslot-setting  .timeslot-time {
+  width: 30%;
+  height: 10px;
+  float: left;
+}
+
+.timeslot-setting  #timeslot-times {
+  margin: auto;
+}
+
+
+.timeslot-setting  #timeslot-times  .MuiFormControl-marginNormal {
+  margin-left: 2%;
+  width: 45%;
+  margin-top: 30px;
+}
+
+.timeslot-setting  #timeslot-times  .MuiFormControl-marginNormal div input {
+  padding: 7px;
+}
+
+
+
+.timeslot-setting  .timeslot-day {
+  height: 50px;
+  width: 60%;
+  float: left;
+  margin-top: 27px;
+  margin-right: 10px;
+}
+
+.timeslot-setting  .timeslot-day p {
+  float: left;
+  margin: 7px;
+}
+
+
+.timeslot-setting  .timeslot-day [class*="control"] {
+  height: 30px;
+  margin: auto;
+}
+
+.timeslot-delete button{
+  margin-top: 30px;
+  min-width: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 30px;
+  background-color: var(--primary);
+  color: white;
+  padding: 0;
+  float: left;
+}
+
+.saveDelete {
+  grid-column-start: delete;
+  grid-column-end: save;
+  display: inline-flex;
+  justify-content: space-around;
+}
+.saveDelete #timeslot-delete button {
+  background-color: var(--warning);
+  width: 150px;
+  height: 40px;
+}
+
+
+.saveDelete #timeslot-save button{
+  background-color: var(--primary);
+  height: 40px;
+  width: 150px;
+}
+
+.MuiOutlinedInput-root input {
+  padding: 5px;
+}

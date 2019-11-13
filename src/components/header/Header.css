@@ -45,24 +45,29 @@
     font-weight: 400;
     font-size: 1.2rem;
 }
+#header-timeslots {
+    margin: auto;
+    order: 1;
+}
+
 #header-user {
     margin: auto;
-    order: 3;
+    order: 4;
     position: relative;
 }
 
 
 #header-filters {
     margin: auto;
-    order: 2;
+    order: 3;
 }
 
 #header-notificationProfiles {
     margin: auto;
-    order: 1;
+    order: 2;
 }
 
-#header-user:hover, #header-notificationProfiles:hover, #header-logout:hover, #header-filters:hover, #header-profiles:hover {
+#header-user:hover, #header-timeslots:hover, #header-notificationProfiles:hover, #header-logout:hover, #header-filters:hover, #header-profiles:hover {
     color: var(--secondary);
 }
 
