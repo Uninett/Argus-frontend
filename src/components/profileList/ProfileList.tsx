@@ -13,16 +13,17 @@ const ProfileList: React.FC = () => {
   const [newProfileCounter, setNewProfileCounter] = useState(0);
   const [filters, setFilters] = useState<any>([]);
   const [timeslots, setTimeslots] = useState<any>([]);
-  const [mediaOptions, setMediaOptions] = useState([
+  const mediaOptions = [
     { label: 'Slack', value: 'SL' },
     { label: 'Sms', value: 'SM' },
     { label: 'Email', value: 'EM' }
-  ]);
+  ];
 
   useEffect(() => {
     getNotificationprofiles();
     getFilters();
     getTimeslots();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   //fetch all notificationprofiles
@@ -65,7 +66,7 @@ const ProfileList: React.FC = () => {
 
   const formatData = (data: any) => {
     const formattedList: any = [];
-    data.map((element: any) => {
+    data.forEach((element: any) => {
       const object: any = {
         value: element.pk,
         label: element.name
@@ -129,7 +130,7 @@ const ProfileList: React.FC = () => {
       }
       const timeslotNames: any = [];
       timeslots.map((timeslot: any) => {
-        timeslotNames.push(timeslot.value);
+        return timeslotNames.push(timeslot.value);
       });
 
       const difference: any = timeslotsProfile
@@ -156,7 +157,7 @@ const ProfileList: React.FC = () => {
     const list: any = [];
     for (let i = 0; i < timeslots.length; i++) {
       const element: any = timeslots[i];
-      if (element.value != item.value) {
+      if (element.value !== item.value) {
         list.push(element);
       }
     }
@@ -215,7 +216,7 @@ const ProfileList: React.FC = () => {
           );
         })
       ) : (
-        <h1></h1>
+        <div></div>
       )}
       <div className='add-button'>
         <Fab

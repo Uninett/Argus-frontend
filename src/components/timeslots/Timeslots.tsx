@@ -32,6 +32,7 @@ const Timeslots: React.FC = () => {
 
   useEffect(() => {
     getTimeslotGroup(true, initialTimeslotGroupKey, initialTimeslotKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getTimeslotGroup = async (

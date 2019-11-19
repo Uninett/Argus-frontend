@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Header.css';
 import auth from '../../auth';
-import aaslogo from '../../Media/img//logo/logo_white.svg';
 import { withRouter } from 'react-router-dom';
 
 const Userbutton: React.FC<{ history: any }> = props => {
