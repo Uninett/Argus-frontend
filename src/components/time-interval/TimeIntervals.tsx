@@ -1,121 +1,121 @@
 import React, { useEffect, useState } from "react";
-import TimeslotGroup from "../timeslot-group/TimeslotGroup";
+import TimeSlot from "../time-slot/TimeSlot";
 import axios from "axios";
 
-const Timeslots: React.FC = () => {
+const TimeIntervals: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const uuidv1 = require("uuid/v1");
-  const initialTimeslotGroupKey = uuidv1();
-  const initialTimeslotKey = uuidv1();
-  const [timeslotGroups, setTimeslotGroups] = useState([
-    new Map([[initialTimeslotGroupKey, [initialTimeslotKey]]])
+  const initialTimeSlotKey = uuidv1();
+  const initialTimeIntervalKey = uuidv1();
+  const [timeSlots, setTimeSlots] = useState([
+    new Map([[initialTimeSlotKey, [initialTimeIntervalKey]]])
   ]);
-  const [timeslots, setTimeslot] = useState([initialTimeslotKey]);
+  const [timeIntervals, setTimeInterval] = useState([initialTimeIntervalKey]);
   const [fromServer, setFromServer] = useState(
-    new Map([[initialTimeslotGroupKey, false]])
+    new Map([[initialTimeSlotKey, false]])
   );
 
-  const [groupPK, setGroupPK] = useState(new Map());
+  const [timeSlotPK, setTimeSlotPK] = useState(new Map());
 
   const [nameField, setNameField] = useState<any>(
-    new Map([[initialTimeslotGroupKey, ""]])
+    new Map([[initialTimeSlotKey, ""]])
   );
   const [startTime, setStartTime] = useState(
-    new Map([[initialTimeslotKey, "07:30"]])
+    new Map([[initialTimeIntervalKey, "07:30"]])
   );
   const [endTime, setEndTime] = useState(
-    new Map([[initialTimeslotKey, "16:30"]])
+    new Map([[initialTimeIntervalKey, "16:30"]])
   );
   const [daysValue, setDaysValue] = useState<any>(
-    new Map([[initialTimeslotKey, []]])
+    new Map([[initialTimeIntervalKey, []]])
   );
 
   useEffect(() => {
-    getTimeslotGroup(true, initialTimeslotGroupKey, initialTimeslotKey);
+    getTimeSlot(true, initialTimeSlotKey, initialTimeIntervalKey);
   }, []);
 
-  const getTimeslotGroup = async (
+  const getTimeSlot = async (
     firstTime: boolean,
-    inputGroupKey: string,
-    inputSlotKey: string
+    inputTimeSlotKey: string,
+    inputTimeIntervalKey: string
   ) => {
     await axios({
-      url: "http://127.0.0.1:8000/notificationprofiles/timeslotgroups/",
+      url: "http://127.0.0.1:8000/notificationprofiles/timeslots/",
       method: "GET",
       headers: {
         Authorization: "Token " + localStorage.getItem("token")
       }
     }).then((response: any) => {
-      buildTimeslotGroups(
+      buildTimeSlots(
         response.data,
         firstTime,
-        inputGroupKey,
-        inputSlotKey
+        inputTimeSlotKey,
+        inputTimeIntervalKey
       );
     });
   };
 
-  const deleteTimeslotGroup = async (key: string) => {
+  const deleteTimeSlot = async (key: string) => {
     await axios({
       url:
-        "http://127.0.0.1:8000/notificationprofiles/timeslotgroups/" +
-        groupPK.get(key),
+        "http://127.0.0.1:8000/notificationprofiles/timeslots/" +
+        timeSlotPK.get(key),
       method: "DELETE",
       headers: {
         Authorization: "Token " + localStorage.getItem("token")
       }
     }).then(() => {
-      const newGroups = [...timeslotGroups];
-      let groupMap: any;
-      timeslotGroups.forEach(group => {
-        if (group.has(key)) groupMap = group;
+      const newTimeSlots = [...timeSlots];
+      let timeSlotMap: any;
+      timeSlots.forEach(timeSlot => {
+        if (timeSlot.has(key)) timeSlotMap = timeSlot;
       });
-      newGroups.splice(newGroups.indexOf(groupMap), 1);
-      setTimeslotGroups(newGroups);
+      newTimeSlots.splice(newTimeSlots.indexOf(timeSlotMap), 1);
+      setTimeSlots(newTimeSlots);
     });
   };
 
-  const buildTimeslotGroups = (
+  const buildTimeSlots = (
     data: any,
     firstTime: boolean,
-    inputGroupKey: string,
-    inputSlotKey: string
+    inputTimeSlotKey: string,
+    inputTimeIntervalKey: string
   ) => {
-    let responseGroups: any = [new Map([[inputGroupKey, [inputSlotKey]]])];
-    let responseTimeslots: any = [inputSlotKey];
+    let responseTimeSlots: any = [new Map([[inputTimeSlotKey, [inputTimeIntervalKey]]])];
+    let responseTimeIntervals: any = [inputTimeIntervalKey];
     if (firstTime) {
-      responseGroups = [...timeslotGroups];
-      responseTimeslots = [...timeslots];
+      responseTimeSlots = [...timeSlots];
+      responseTimeIntervals = [...timeIntervals];
     }
     if (data) {
-      data.forEach((group: any) => {
-        const groupKey = uuidv1();
+      data.forEach((timeSlot: any) => {
+        const timeSlotKey = uuidv1();
         const serverBoolean = fromServer;
-        serverBoolean.set(groupKey, true);
+        serverBoolean.set(timeSlotKey, true);
         setFromServer(serverBoolean);
-        setNameField(nameField.set(groupKey, group.name.toString()));
-        setGroupPK(groupPK.set(groupKey, group.pk));
-        responseGroups.push(new Map([[groupKey, []]]));
-        group.time_slots.forEach((timeslot: any) => {
-          const timeslotKey = uuidv1();
-          responseTimeslots.push(timeslotKey);
-          responseGroups.forEach((groupMap: any) => {
-            if (groupMap.has(groupKey)) {
-              const groupTimeslots = groupMap.get(groupKey);
-              groupTimeslots.push(timeslotKey);
-              groupMap.set(groupKey, groupTimeslots);
+        setNameField(nameField.set(timeSlotKey, timeSlot.name.toString()));
+        setTimeSlotPK(timeSlotPK.set(timeSlotKey, timeSlot.pk));
+        responseTimeSlots.push(new Map([[timeSlotKey, []]]));
+        timeSlot.time_intervals.forEach((timeInterval: any) => {
+          const timeIntervalKey = uuidv1();
+          responseTimeIntervals.push(timeIntervalKey);
+          responseTimeSlots.forEach((timeSlotMap: any) => {
+            if (timeSlotMap.has(timeSlotKey)) {
+              const timeIntervals = timeSlotMap.get(timeSlotKey);
+              timeIntervals.push(timeIntervalKey);
+              timeSlotMap.set(timeSlotKey, timeIntervals);
             }
           });
-          setStartTime(startTime.set(timeslotKey, timeslot.start.toString()));
-          setEndTime(endTime.set(timeslotKey, timeslot.end.toString()));
+          setStartTime(startTime.set(timeIntervalKey, timeInterval.start.toString()));
+          setEndTime(endTime.set(timeIntervalKey, timeInterval.end.toString()));
           setDaysValue(
-            daysValue.set(timeslotKey, convertDay(timeslot.day.toString()))
+            daysValue.set(timeIntervalKey, convertDay(timeInterval.day.toString()))
           );
         });
       });
     }
-    setTimeslotGroups(responseGroups);
-    setTimeslot(responseTimeslots);
+    setTimeSlots(responseTimeSlots);
+    setTimeInterval(responseTimeIntervals);
   };
 
   const convertDay = (day: any) => {
@@ -139,18 +139,18 @@ const Timeslots: React.FC = () => {
     }
   };
 
-  const buildDataTimeslots = (groupKey: any) => {
-    const _timeslots: any = [];
-    const groupSlots: any = [];
-    timeslotGroups.forEach((group: any) => {
-      if (group.has(groupKey)) groupSlots.push(...group.get(groupKey));
+  const buildDataTimeIntervals = (timeSlotKey: any) => {
+    const _timeIntervals: any = [];
+    const timeSlotIntervals: any = [];
+    timeSlots.forEach((timeSlot: any) => {
+      if (timeSlot.has(timeSlotKey)) timeSlotIntervals.push(...timeSlot.get(timeSlotKey));
     });
-    groupSlots.forEach((key: any) => {
+    timeSlotIntervals.forEach((key: any) => {
       if (daysValue.get(key)) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
         daysValue.get(key).forEach((day: any) => {
-          _timeslots.push({
+          _timeIntervals.push({
             day: day.value,
             start: startTime.get(key),
             end: endTime.get(key)
@@ -158,50 +158,50 @@ const Timeslots: React.FC = () => {
         });
       }
     });
-    return _timeslots;
+    return _timeIntervals;
   };
 
-  const addTimeslotGroup = async (groupKey: any) => {
-    const dataTimeslots = buildDataTimeslots(groupKey);
-    if (fromServer.get(groupKey)) {
+  const addTimeSlot = async (timeSlotKey: any) => {
+    const dataTimeIntervals = buildDataTimeIntervals(timeSlotKey);
+    if (fromServer.get(timeSlotKey)) {
       await axios({
         url:
-          "http://127.0.0.1:8000/notificationprofiles/timeslotgroups/" +
-          groupPK.get(groupKey),
+          "http://127.0.0.1:8000/notificationprofiles/timeslots/" +
+          timeSlotPK.get(timeSlotKey),
         method: "PUT",
         headers: {
           Authorization: "Token " + localStorage.getItem("token")
         },
         // eslint-disable-next-line @typescript-eslint/camelcase
-        data: { name: nameField.get(groupKey), time_slots: dataTimeslots }
+        data: { name: nameField.get(timeSlotKey), time_intervals: dataTimeIntervals }
       });
     } else {
       await axios({
-        url: "http://127.0.0.1:8000/notificationprofiles/timeslotgroups/",
+        url: "http://127.0.0.1:8000/notificationprofiles/timeslots/",
         method: "POST",
         headers: {
           Authorization: "Token " + localStorage.getItem("token")
         },
         // eslint-disable-next-line @typescript-eslint/camelcase
-        data: { name: nameField.get(groupKey), time_slots: dataTimeslots }
+        data: { name: nameField.get(timeSlotKey), time_intervals: dataTimeIntervals }
       }).then(() => {
-        const groupKey = uuidv1();
-        const timeslotKey = uuidv1();
-        resetView(groupKey, timeslotKey);
-        getTimeslotGroup(false, groupKey, timeslotKey);
+        const timeSlotKey = uuidv1();
+        const timeIntervalKey = uuidv1();
+        resetView(timeSlotKey, timeIntervalKey);
+        getTimeSlot(false, timeSlotKey, timeIntervalKey);
       });
     }
   };
 
-  const resetView = (groupKey: string, timeslotKey: string) => {
+  const resetView = (timeSlotKey: string, timeIntervalKey: string) => {
     const serverBoolean = fromServer;
-    serverBoolean.set(groupKey, false);
+    serverBoolean.set(timeSlotKey, false);
     setFromServer(serverBoolean);
 
-    setNameField(nameField.set(groupKey, ""));
-    setStartTime(startTime.set(timeslotKey, "07:30"));
-    setEndTime(endTime.set(timeslotKey, "16:30"));
-    setDaysValue(daysValue.set(timeslotKey, []));
+    setNameField(nameField.set(timeSlotKey, ""));
+    setStartTime(startTime.set(timeIntervalKey, "07:30"));
+    setEndTime(endTime.set(timeIntervalKey, "16:30"));
+    setDaysValue(daysValue.set(timeIntervalKey, []));
   };
 
   const handleStartTimeChange = (value: any, key: string) => {
@@ -230,19 +230,19 @@ const Timeslots: React.FC = () => {
     return newStateMap;
   };
 
-  const addTimeslot = (groupKey: any) => {
+  const addTimeInterval = (timeSlotKey: any) => {
     const key = uuidv1();
     const initialStartTime = "07:30";
     const initialEndTime = "16:30";
 
-    const newTimeslots = [...timeslots, key];
-    setTimeslot(newTimeslots);
-    timeslotGroups.forEach(group => {
-      if (group) {
-        if (group.has(groupKey)) {
+    const newTimeIntervals = [...timeIntervals, key];
+    setTimeInterval(newTimeIntervals);
+    timeSlots.forEach(timeSlot => {
+      if (timeSlot) {
+        if (timeSlot.has(timeSlotKey)) {
           // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
           // @ts-ignore
-          group.get(groupKey).push(key);
+          timeSlot.get(timeSlotKey).push(key);
         }
       }
     });
@@ -251,35 +251,35 @@ const Timeslots: React.FC = () => {
     setDaysValue(daysValue.set(key, []));
   };
 
-  const deleteTimeslot = (event: any, key: string) => {
-    const newTimeslots = [...timeslots];
-    newTimeslots.splice(newTimeslots.indexOf(key), 1);
-    setTimeslot(newTimeslots);
+  const deleteTimeInterval = (event: any, key: string) => {
+    const newTimeIntervals = [...timeIntervals];
+    newTimeIntervals.splice(newTimeIntervals.indexOf(key), 1);
+    setTimeInterval(newTimeIntervals);
   };
 
   return (
     <div>
-      <h1>Timeslots: </h1>
-      {timeslotGroups.map((element: any) => {
+      <h1>Time slots:</h1>
+      {timeSlots.map((element: any) => {
         const key = element.keys().next().value;
         return (
-          <TimeslotGroup
+          <TimeSlot
             key={key}
-            groupKey={key}
-            groupName={nameField.get(key)}
-            saveTimeslotGroup={addTimeslotGroup}
-            timeslots={timeslots}
-            timeslotGroups={timeslotGroups}
+            timeSlotKey={key}
+            timeSlotName={nameField.get(key)}
+            saveTimeSlot={addTimeSlot}
+            timeIntervals={timeIntervals}
+            timeSlots={timeSlots}
             handleStartTimeChange={handleStartTimeChange}
             handleEndTimeChange={handleEndTimeChange}
             handleDayChange={handleDayChange}
             startTime={startTime}
             endTime={endTime}
             daysValue={daysValue}
-            addTimeslot={addTimeslot}
-            deleteTimeslot={deleteTimeslot}
+            addTimeInterval={addTimeInterval}
+            deleteTimeInterval={deleteTimeInterval}
             handleNameChange={handleNameChange}
-            deleteTimeslotGroup={deleteTimeslotGroup}
+            deleteTimeSlot={deleteTimeSlot}
           />
         );
       })}
@@ -287,4 +287,4 @@ const Timeslots: React.FC = () => {
   );
 };
 
-export default Timeslots;
+export default TimeIntervals;

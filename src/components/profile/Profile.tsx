@@ -29,7 +29,7 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
   const [selectedFilters, setSelectedFilters] = useState(props.selectedFilters);
   const [mediaOptions, setMediaOptions] = useState([
     { label: 'Slack', value: 'SL' },
-    { label: 'Sms', value: 'SM' },
+    { label: 'SMS', value: 'SM' },
     { label: 'Email', value: 'EM' }
   ]);
   const [exist, setExist] = useState(props.exist);
@@ -69,7 +69,7 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
             Authorization: 'Token ' + localStorage.getItem('token')
           },
           data: {
-            time_slot_group: selectedTimeslots.value,
+            time_slot: selectedTimeslots.value,
             filters: selectedFilters.map((f: any) => {
               return f.value;
             }),
@@ -93,7 +93,7 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
             Authorization: 'Token ' + localStorage.getItem('token')
           },
           data: {
-            time_slot_group: selectedTimeslots.value,
+            time_slot: selectedTimeslots.value,
             filters: selectedFilters.map((f: any) => {
               return f.value;
             }),
