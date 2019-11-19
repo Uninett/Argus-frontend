@@ -1,33 +1,33 @@
 import React from "react";
 import { TextField } from "@material-ui/core";
-import Timeslot from "../timeslot-select/Timeslot";
+import TimeInterval from "../time-interval-select/TimeInterval";
 import Button from "@material-ui/core/Button";
 import Dialog from "../dialogue/Dialogue";
 
-type timeslotGrupProp = {
-  timeslots: any;
-  saveTimeslotGroup: any;
+type timeSlotProp = {
+  timeIntervals: any;
+  saveTimeSlot: any;
   handleStartTimeChange: any;
   handleEndTimeChange: any;
   handleDayChange: any;
   startTime: any;
   endTime: any;
   daysValue: any;
-  addTimeslot: any;
+  addTimeInterval: any;
   handleNameChange: any;
-  deleteTimeslot: any;
-  deleteTimeslotGroup: any;
-  groupKey: string;
-  timeslotGroups: any;
-  groupName: string | undefined;
+  deleteTimeInterval: any;
+  deleteTimeSlot: any;
+  timeSlotKey: string;
+  timeSlots: any;
+  timeSlotName: string | undefined;
 };
 
-const TimeslotGroup: React.FC<timeslotGrupProp> = (props: timeslotGrupProp) => {
+const TimeSlot: React.FC<timeSlotProp> = (props: timeSlotProp) => {
   const setSlotlist = () => {
     const list: any = [];
-    props.timeslotGroups.forEach((groupMap: any) => {
-      if (groupMap.has(props.groupKey)) {
-        list.push(...groupMap.get(props.groupKey));
+    props.timeSlots.forEach((timeSlotMap: any) => {
+      if (timeSlotMap.has(props.timeSlotKey)) {
+        list.push(...timeSlotMap.get(props.timeSlotKey));
       }
     });
     return list;
@@ -37,21 +37,20 @@ const TimeslotGroup: React.FC<timeslotGrupProp> = (props: timeslotGrupProp) => {
 
   return (
     <div className="super-container">
-      <div id="timeslot-name" className="timeslot-group-name">
+      <div className="timeslot-name">
         <TextField
-          id="name"
-          value={props.groupName || ""}
+          value={props.timeSlotName || ""}
           required={true}
           margin="normal"
           variant="outlined"
-          helperText="Name timeslot group"
-          onChange={e => props.handleNameChange(e.target.value, props.groupKey)}
+          helperText="Name of time slot"
+          onChange={e => props.handleNameChange(e.target.value, props.timeSlotKey)}
         />
       </div>
-      
-      <div className="timeslot-settings">
 
-      {props.timeslots
+      <div className="time-interval-settings">
+
+      {props.timeIntervals
         .filter((slot: string) => {
           let cond = false;
           if (slotList.includes(slot)) {
@@ -61,10 +60,10 @@ const TimeslotGroup: React.FC<timeslotGrupProp> = (props: timeslotGrupProp) => {
         })
         .map((element: string) => {
           return (
-            <Timeslot
+            <TimeInterval
             key={element}
             dictKey={element}
-            deleteTimeslot={props.deleteTimeslot}
+            deleteTimeInterval={props.deleteTimeInterval}
               handleStartChange={props.handleStartTimeChange}
               handleEndChange={props.handleEndTimeChange}
               handleDayChange={props.handleDayChange}
@@ -76,24 +75,23 @@ const TimeslotGroup: React.FC<timeslotGrupProp> = (props: timeslotGrupProp) => {
             })}
             </div>
       <Button
-      id="timeslot-addNew"
+        className="timeslot-addNew"
         variant="contained"
-        onClick={() => props.addTimeslot(props.groupKey)}
+        onClick={() => props.addTimeInterval(props.timeSlotKey)}
       >
         +
       </Button>
       <div className="saveDelete">
-      <div id="timeslot-delete">
-      <Dialog handleDelete={() => props.deleteTimeslotGroup(props.groupKey)} />
+      <div className="timeslot-delete">
+      <Dialog handleDelete={() => props.deleteTimeSlot(props.timeSlotKey)} />
       </div>
-        <div id="timeslot-save">
+        <div className="timeslot-save">
 
       <Button
-      id="timeslot-save"
       variant="contained"
       color="primary"
       onClick={() => {
-        props.saveTimeslotGroup(props.groupKey);
+        props.saveTimeSlot(props.timeSlotKey);
       }}
       >
         Save
@@ -104,4 +102,4 @@ const TimeslotGroup: React.FC<timeslotGrupProp> = (props: timeslotGrupProp) => {
   );
 };
 
-export default TimeslotGroup;
+export default TimeSlot;

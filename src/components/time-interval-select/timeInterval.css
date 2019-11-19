@@ -16,18 +16,18 @@
   padding: 10px;
 }
 
-#timeslot-name {
+.timeslot-name {
   grid-area: name;
   margin: auto;
 }
 
 
-#timeslot-delete, #timeslot-save {
+.timeslot-delete, .timeslot-save {
   margin: auto;
 }
 
 
-.timeslot-settings  {
+.time-interval-settings  {
   grid-area: settings;
   grid-template-columns: auto auto auto;
   grid-template-rows: 100px;
@@ -37,7 +37,7 @@
 }
 
 
-#timeslot-addNew {
+.super-container .timeslot-addNew {
   min-width: 0;
   font-size: 2em;
   color: white;
@@ -50,7 +50,7 @@
   padding: 0;
 }
 
-#timeslot-addNew [class*="label"]{
+.timeslot-addNew [class*="label"]{
   padding: 0;
   width: 30px;
   height: 30px;
@@ -58,35 +58,35 @@
 
 
 
-.timeslot-setting {
+.time-interval-setting {
   display: table-row;
   width: 100%;
 }
 
-.timeslot-setting  .timeslot-time {
+.time-interval-setting  .time-interval-time {
   width: 30%;
   height: 10px;
   float: left;
 }
 
-.timeslot-setting  #timeslot-times {
+.time-interval-setting  .time-interval-times {
   margin: auto;
 }
 
 
-.timeslot-setting  #timeslot-times  .MuiFormControl-marginNormal {
+.time-interval-setting  .time-interval-times  .MuiFormControl-marginNormal {
   margin-left: 2%;
   width: 45%;
   margin-top: 30px;
 }
 
-.timeslot-setting  #timeslot-times  .MuiFormControl-marginNormal div input {
+.time-interval-setting  .time-interval-times  .MuiFormControl-marginNormal div input {
   padding: 7px;
 }
 
 
 
-.timeslot-setting  .timeslot-day {
+.time-interval-setting  .time-interval-day {
   height: 50px;
   width: 60%;
   float: left;
@@ -94,18 +94,18 @@
   margin-right: 10px;
 }
 
-.timeslot-setting  .timeslot-day p {
+.time-interval-setting  .time-interval-day p {
   float: left;
   margin: 7px;
 }
 
 
-.timeslot-setting  .timeslot-day [class*="control"] {
+.time-interval-setting  .time-interval-day [class*="control"] {
   height: 30px;
   margin: auto;
 }
 
-.timeslot-delete button{
+.time-interval-delete button{
   margin-top: 30px;
   min-width: 0;
   width: 30px;
@@ -120,7 +120,7 @@
 .saveDelete {
   grid-area: savedelete;
 }
-.saveDelete #timeslot-delete button {
+.saveDelete .timeslot-delete button {
   background-color: var(--warning);
   width: 110px;
   height: 40px;
@@ -128,7 +128,7 @@
 }
 
 
-.saveDelete #timeslot-save button{
+.saveDelete .timeslot-save button{
   background-color: var(--primary);
   height: 40px;
   margin: 10px;
