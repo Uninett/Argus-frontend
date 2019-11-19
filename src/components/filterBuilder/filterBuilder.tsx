@@ -91,7 +91,10 @@ const FilterBuilder: React.FC = () => {
         }
       })
       .catch(response => {
-        setShowDialog([true, "oops, something went wrong :("]);
+        setShowDialog([
+          true,
+          "oops, something went wrong :(, try a different name"
+        ]);
       });
   };
 
@@ -104,10 +107,10 @@ const FilterBuilder: React.FC = () => {
         Authorization: "Token " + localStorage.getItem("token")
       },
       data: {
-        sourceNames: filter.networkSystems,
-        objectTypeNames: filter.objectTypes,
-        parentObjectNames: filter.parentObjects,
-        problemTypeNames: filter.problemTypes,
+        sourceIds: filter.networkSystems,
+        objectTypeIds: filter.objectTypes,
+        parentObjectIds: filter.parentObjects,
+        problemTypeIds: filter.problemTypes
       }
     }).then(response => {
       for (let item of response.data) {
@@ -129,7 +132,7 @@ const FilterBuilder: React.FC = () => {
         result.data[p.propertyName].map((obj: any) => {
           p.list.push({
             label: obj.name,
-            value: obj.name
+            value: obj.pk
           });
         });
       });
