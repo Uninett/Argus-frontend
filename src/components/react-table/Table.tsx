@@ -45,7 +45,7 @@ const Table: React.FC<AlertsProps> = props => {
       ]}
       columns={columns}
       loading={false}
-      noDataText='Loading...'
+      noDataText='No data'
       data={props.alerts}
       pageSize={props.alerts.length}
       showPaginationBottom={false}></ReactTable>
