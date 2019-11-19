@@ -1,18 +1,18 @@
-import React, { useState, useEffect, SetStateAction } from "react";
-import Select from "react-select";
-import axios from "axios";
-import "./FilterBuilder.css";
-import moment from "moment";
+import React, { useState, useEffect } from 'react';
+import Select from 'react-select';
+import axios from 'axios';
+import './FilterBuilder.css';
+import moment from 'moment';
 
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
-import SaveIcon from "@material-ui/icons/Save";
-import Dialog from "@material-ui/core/Dialog";
-import Table from "../react-table/Table";
-import CheckCircleIcon from "@material-ui/icons/CheckCircle";
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import SaveIcon from '@material-ui/icons/Save';
+import Dialog from '@material-ui/core/Dialog';
+import Table from '../react-table/Table';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 
 type Metadata = { label: string; value: string }[];
-const defaultResponse = [{ label: "none", value: "none" }];
+const defaultResponse = [{ label: 'none', value: 'none' }];
 
 type Filter = {
   problemTypes: string[];
@@ -28,21 +28,21 @@ const defaultFilter = {
   networkSystems: []
 };
 
-let objectTypesResponse: Metadata = [];
-let parentObjectsResponse: Metadata = [];
-let networkSystemsResponse: Metadata = [];
-let problemTypesResponse: Metadata = [];
+const objectTypesResponse: Metadata = [];
+const parentObjectsResponse: Metadata = [];
+const networkSystemsResponse: Metadata = [];
+const problemTypesResponse: Metadata = [];
 
-let properties = [
-  { propertyName: "objectTypes", list: objectTypesResponse },
-  { propertyName: "networkSystems", list: networkSystemsResponse },
-  { propertyName: "parentObjects", list: parentObjectsResponse },
-  { propertyName: "problemTypes", list: problemTypesResponse }
+const properties = [
+  { propertyName: 'objectTypes', list: objectTypesResponse },
+  { propertyName: 'networkSystems', list: networkSystemsResponse },
+  { propertyName: 'parentObjects', list: parentObjectsResponse },
+  { propertyName: 'problemTypes', list: problemTypesResponse }
 ];
 
 const FilterBuilder: React.FC = () => {
   const [filter, setFilter] = useState<Filter>(defaultFilter);
-  const [name, setName] = useState("");
+  const [name, setName] = useState('');
   const [objectTypes, setobjectTypes] = useState<Metadata>(defaultResponse);
   const [problemTypes, setProblemTypes] = useState<Metadata>(defaultResponse);
   const [parentObjects, setParentObjects] = useState<Metadata>(defaultResponse);
@@ -50,7 +50,7 @@ const FilterBuilder: React.FC = () => {
     defaultResponse
   );
   const [previewAlerts, setPreviewAlerts] = useState<any>([]);
-  const [showDialog, setShowDialog] = useState<[boolean, string]>([false, ""]);
+  const [showDialog, setShowDialog] = useState<[boolean, string]>([false, '']);
 
   useEffect(() => {
     fetchProblemTypes();
@@ -60,14 +60,14 @@ const FilterBuilder: React.FC = () => {
   //fetches alerts and sets state
   const getAlerts = async () => {
     await axios({
-      url: "http://localhost:8000/alerts/",
-      method: "GET",
+      url: 'http://localhost:8000/alerts/',
+      method: 'GET',
       headers: {
-        Authorization: "Token " + localStorage.getItem("token")
+        Authorization: 'Token ' + localStorage.getItem('token')
       }
     }).then((response: any) => {
       for (let item of response.data) {
-        item.timestamp = moment(item.timestamp).format("YYYY.MM.DD  hh:mm:ss");
+        item.timestamp = moment(item.timestamp).format('YYYY.MM.DD  hh:mm:ss');
       }
       setPreviewAlerts(response.data);
     });
@@ -75,10 +75,10 @@ const FilterBuilder: React.FC = () => {
 
   const postNewFilter = async () => {
     await axios({
-      url: "http://localhost:8000/notificationprofiles/filters/",
-      method: "POST",
+      url: 'http://localhost:8000/notificationprofiles/filters/',
+      method: 'POST',
       headers: {
-        Authorization: "Token " + localStorage.getItem("token")
+        Authorization: 'Token ' + localStorage.getItem('token')
       },
       data: {
         name: name,
@@ -86,14 +86,14 @@ const FilterBuilder: React.FC = () => {
       }
     })
       .then(result => {
-        if (result.status == 201) {
-          setShowDialog([true, " Successfully saved filter "]);
+        if (result.status === 201) {
+          setShowDialog([true, ' Successfully saved filter ']);
         }
       })
       .catch(response => {
         setShowDialog([
           true,
-          "oops, something went wrong :(, try a different name"
+          'oops, something went wrong :(, try a different name'
         ]);
       });
   };
@@ -101,10 +101,10 @@ const FilterBuilder: React.FC = () => {
   const preview = async () => {
     console.log(filter);
     await axios({
-      url: "http://localhost:8000/alerts/preview/",
-      method: "POST",
+      url: 'http://localhost:8000/alerts/preview/',
+      method: 'POST',
       headers: {
-        Authorization: "Token " + localStorage.getItem("token")
+        Authorization: 'Token ' + localStorage.getItem('token')
       },
       data: {
         sourceIds: filter.networkSystems,
@@ -114,7 +114,7 @@ const FilterBuilder: React.FC = () => {
       }
     }).then(response => {
       for (let item of response.data) {
-        item.timestamp = moment(item.timestamp).format("YYYY.MM.DD  hh:mm:ss");
+        item.timestamp = moment(item.timestamp).format('YYYY.MM.DD  hh:mm:ss');
       }
       setPreviewAlerts(response.data);
     });
@@ -122,15 +122,15 @@ const FilterBuilder: React.FC = () => {
 
   const fetchProblemTypes = async () => {
     await axios({
-      url: "http://localhost:8000/alerts/metadata/",
-      method: "GET",
+      url: 'http://localhost:8000/alerts/metadata/',
+      method: 'GET',
       headers: {
-        Authorization: "Token " + localStorage.getItem("token")
+        Authorization: 'Token ' + localStorage.getItem('token')
       }
     }).then(result => {
       properties.map(p => {
-        result.data[p.propertyName].map((obj: any) => {
-          p.list.push({
+        return result.data[p.propertyName].map((obj: any) => {
+          return p.list.push({
             label: obj.name,
             value: obj.pk
           });
@@ -159,111 +159,107 @@ const FilterBuilder: React.FC = () => {
   };
 
   const handleCreate = () => {
-    if (name == "") {
-      alert("Please enter a name for this filter");
+    if (name === '') {
+      alert('Please enter a name for this filter');
     } else {
       postNewFilter();
     }
   };
   const handleClose = () => {
-    setShowDialog([false, ""]);
+    setShowDialog([false, '']);
   };
 
   return (
-    <div className="WrappingDiv">
+    <div className='WrappingDiv'>
       <Dialog open={showDialog[0]} onClose={handleClose}>
-        <h1 className="dialogHeader">{showDialog[1]}</h1>
-        <div className="dialogDiv">
-          {showDialog[1] == " Successfully saved filter " ? (
-            <CheckCircleIcon color={"primary"} />
+        <h1 className='dialogHeader'>{showDialog[1]}</h1>
+        <div className='dialogDiv'>
+          {showDialog[1] === ' Successfully saved filter ' ? (
+            <CheckCircleIcon color={'primary'} />
           ) : (
-            ""
+            ''
           )}
         </div>
       </Dialog>
-      <div className="filterBuilding-div">
-        <div className="InputWrapperDiv">
-          <h1 className={"filterHeader"}>Build custom filter </h1>
-          <div className="filterSelect">
+      <div className='filterBuilding-div'>
+        <div className='InputWrapperDiv'>
+          <h1 className={'filterHeader'}>Build custom filter </h1>
+          <div className='filterSelect'>
             <p>Name</p>
-            <div className="NameFieldDiv">
+            <div className='NameFieldDiv'>
               <TextField
                 required
-                id="standard-required"
-                label="Required"
-                defaultValue=""
-                placeholder="name"
+                id='standard-required'
+                label='Required'
+                defaultValue=''
+                placeholder='name'
                 onChange={handleName}
-                margin="dense"
+                margin='dense'
               />
             </div>
           </div>
-          <div className="filterSelect">
+          <div className='filterSelect'>
             <p>Select problem type</p>
             <Select
-              className="selector"
+              className='selector'
               isMulti
-              name="bois"
+              name='bois'
               options={problemTypes}
-              onChange={value => handleChange(value, "problemTypes")}
-            ></Select>
+              onChange={value => handleChange(value, 'problemTypes')}></Select>
           </div>
-          <div className="filterSelect">
+          <div className='filterSelect'>
             <p>Select object types</p>
             <Select
-              className="selector"
+              className='selector'
               isMulti
-              name="boiss"
+              name='boiss'
               options={objectTypes}
-              onChange={value => handleChange(value, "objectTypes")}
-            ></Select>
+              onChange={value => handleChange(value, 'objectTypes')}></Select>
           </div>
-          <div className="filterSelect">
+          <div className='filterSelect'>
             <p>Select parent objects</p>
             <Select
-              className="selector"
+              className='selector'
               isMulti
-              name="boisss"
+              name='boisss'
               options={parentObjects}
-              onChange={value => handleChange(value, "parentObjects")}
-            ></Select>
+              onChange={value => handleChange(value, 'parentObjects')}></Select>
           </div>
-          <div className="filterSelect">
+          <div className='filterSelect'>
             <p>Select netWorkSystems</p>
             <Select
-              className="selector"
+              className='selector'
               isMulti
-              name="boissss"
+              name='boissss'
               options={networkSystems}
-              onChange={value => handleChange(value, "networkSystems")}
-            ></Select>
+              onChange={value =>
+                handleChange(value, 'networkSystems')
+              }></Select>
           </div>
-          <div className="ButtonDiv">
-            <div className="create">
+          <div className='ButtonDiv'>
+            <div className='create'>
               <Button
                 onClick={handleCreate}
-                variant="contained"
-                color="primary"
-                size="large"
-                startIcon={<SaveIcon />}
-              >
+                variant='contained'
+                color='primary'
+                size='large'
+                startIcon={<SaveIcon />}>
                 create
               </Button>
             </div>
-            <div className="preview">
+            <div className='preview'>
               <Button
                 onClick={preview}
-                variant="contained"
-                color="primary"
-                size="large"
-              >
+                variant='contained'
+                color='primary'
+                size='large'>
                 Preview Alerts
               </Button>
             </div>
           </div>
         </div>
       </div>
-      <div className="previewList">
+      <div className='previewList'>
         <Table alerts={previewAlerts}></Table>
       </div>
     </div>

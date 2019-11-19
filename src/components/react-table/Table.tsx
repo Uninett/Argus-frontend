@@ -2,7 +2,7 @@ import React from 'react';
 import ReactTable from 'react-table';
 import './table.css';
 import 'react-table/react-table.css';
-import moment from 'moment';
+
 
 type AlertsProps = {
   alerts: any;
@@ -27,7 +27,7 @@ const Table: React.FC<AlertsProps> = props => {
       Header: 'Details URL',
       accessor: 'details_url',
       Cell: (row: { value: string }) => (
-        <a href={row.value} target='_blank'>
+        <a href={row.value} rel="noopener noreferrer" target='_blank'>
           {' '}
           {row.value}{' '}
         </a>

@@ -5,7 +5,6 @@ import Table from '../../components/react-table/Table';
 import '../../components/react-table/table.css';
 import axios from 'axios';
 import { withRouter } from 'react-router-dom';
-import { getEnabledCategories } from 'trace_events';
 import moment from 'moment';
 type PropType = {
   history: any;
