@@ -32,6 +32,7 @@ const TimeIntervals: React.FC = () => {
 
   useEffect(() => {
     getTimeSlot(true, initialTimeSlotKey, initialTimeIntervalKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getTimeSlot = async (

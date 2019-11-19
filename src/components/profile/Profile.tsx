@@ -26,14 +26,14 @@ type ProfileProps = {
 };
 
 const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
-  const [filterOptions, setFilterOptions] = useState(props.filters);
+  const filterOptions = props.filters;
   const [selectedFilters, setSelectedFilters] = useState(props.selectedFilters);
-  const [mediaOptions, setMediaOptions] = useState([
+  const mediaOptions = [
     { label: 'Slack', value: 'SL' },
     { label: 'SMS', value: 'SM' },
     { label: 'Email', value: 'EM' }
-  ]);
-  const [exist, setExist] = useState(props.exist);
+  ];
+  const exist = props.exist;
   const [mediaSelected, setMediaSelected] = useState(props.media);
   const [selectedTimeslots, setSelectedTimeslots] = useState(
     props.selectedTimeslots
@@ -51,6 +51,7 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
       const timeslots: any = props.unusedTimeSlots();
       setTimeOptions(timeslots);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const postNewProfile = async () => {
