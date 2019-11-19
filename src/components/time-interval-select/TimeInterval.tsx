@@ -1,7 +1,7 @@
 import React from "react";
 import { TextField } from "@material-ui/core";
 import Select from "react-select";
-import "./timeslot.css";
+import "./timeInterval.css";
 import Button from "@material-ui/core/Button";
 
 const days = [
@@ -13,8 +13,8 @@ const days = [
   { value: "SA", label: "Saturday" },
   { value: "SU", label: "Sunday" }
 ];
-type TimeslotProp = {
-  deleteTimeslot: any;
+type TimeIntervalProp = {
+  deleteTimeInterval: any;
   handleStartChange: any;
   handleEndChange: any;
   handleDayChange: any;
@@ -24,11 +24,11 @@ type TimeslotProp = {
   dictKey: string;
 };
 
-const Timeslot: React.FC<TimeslotProp> = (props: TimeslotProp) => {
+const TimeInterval: React.FC<TimeIntervalProp> = (props: TimeIntervalProp) => {
   return (
-    <div className="timeslot-setting">
+    <div className="time-interval-setting">
 
-          <div className="timeslot-day">
+          <div className="time-interval-day">
           <p>Days:</p>
 
             <Select
@@ -40,11 +40,10 @@ const Timeslot: React.FC<TimeslotProp> = (props: TimeslotProp) => {
               options={days}
               />
           </div>
-      <div className="timeslot-time">
-        <div id="timeslot-times">
+      <div className="time-interval-time">
+        <div className="time-interval-times">
 
         <TextField
-          id="start-time"
           label="Start Time"
           type="time"
           margin="normal"
@@ -59,7 +58,6 @@ const Timeslot: React.FC<TimeslotProp> = (props: TimeslotProp) => {
           }}
           />
         <TextField
-          id="end-time"
           label="End Time"
           type="time"
           margin="normal"
@@ -75,10 +73,10 @@ const Timeslot: React.FC<TimeslotProp> = (props: TimeslotProp) => {
           />
           </div>
     </div>
-      <div className="timeslot-delete">
+      <div className="time-interval-delete">
         <Button
           variant={"contained"}
-          onClick={e => props.deleteTimeslot(e, props.dictKey)}
+          onClick={e => props.deleteTimeInterval(e, props.dictKey)}
           >
           X
         </Button>
@@ -88,4 +86,4 @@ const Timeslot: React.FC<TimeslotProp> = (props: TimeslotProp) => {
   );
 };
 
-export default Timeslot;
+export default TimeInterval;

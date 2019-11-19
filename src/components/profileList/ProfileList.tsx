@@ -15,7 +15,7 @@ const ProfileList: React.FC = () => {
   const [timeslots, setTimeslots] = useState<any>([]);
   const mediaOptions = [
     { label: 'Slack', value: 'SL' },
-    { label: 'Sms', value: 'SM' },
+    { label: 'SMS', value: 'SM' },
     { label: 'Email', value: 'EM' }
   ];
 
@@ -54,7 +54,7 @@ const ProfileList: React.FC = () => {
   //fetch all timeslots
   const getTimeslots = async () => {
     await axios({
-      url: 'http://localhost:8000/notificationprofiles/timeslotgroups/',
+      url: 'http://localhost:8000/notificationprofiles/timeslots/',
       method: 'GET',
       headers: {
         Authorization: 'Token ' + localStorage.getItem('token')
@@ -118,7 +118,7 @@ const ProfileList: React.FC = () => {
       const newProfiles: number[] = addedNotificationprofiles;
       newProfiles.push(newProfileCounter);
       setNewProfileCounter(newProfileCounter + 1);
-    } else alert('All timeslots are in use');
+    } else alert('All time slots are in use');
   };
 
   const getUnusedTimeslots = () => {
@@ -126,7 +126,7 @@ const ProfileList: React.FC = () => {
       const timeslotsProfile: any = [];
       for (let i = 0; i < notificationprofiles.length; i++) {
         const element: any = notificationprofiles[i];
-        timeslotsProfile.push(element.time_slot_group.pk);
+        timeslotsProfile.push(element.time_slot.pk);
       }
       const timeslotNames: any = [];
       timeslots.map((timeslot: any) => {
@@ -169,8 +169,8 @@ const ProfileList: React.FC = () => {
       {notificationprofiles.length > 0 ? (
         notificationprofiles.map((profile: any, index: any) => {
           const timeslot: any = {
-            value: profile.time_slot_group.pk,
-            label: profile.time_slot_group.name
+            value: profile.time_slot.pk,
+            label: profile.time_slot.name
           };
           return (
             <Profile
@@ -186,7 +186,7 @@ const ProfileList: React.FC = () => {
               active={profile.active}
               removeTimeslot={removeTimeslot}
               media={formatMedia(profile.media)}
-              mediaKey={profile.time_slot_group.pk}
+              mediaKey={profile.time_slot.pk}
               unusedTimeSlots={getUnusedTimeslots}
             />
           );

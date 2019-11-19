@@ -43,7 +43,7 @@ const Header: React.FC<{ history: any }> = props => {
       </a>
       <div id="headerbuttons">
       <a id='header-timeslots' className='headerbutton' href='/timeslots'>
-        <p>Timeslots</p>
+        <p>Time slots</p>
       </a>
       <a id='header-filters' className='headerbutton' href='/customfilter'>
         <p>Filters</p>
