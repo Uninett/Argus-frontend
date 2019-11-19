@@ -132,13 +132,11 @@ const ProfileList: React.FC = () => {
         timeslotNames.push(timeslot.value);
       });
 
-      console.log('dette er timeslotNames:', timeslotNames);
       const difference: any = timeslotsProfile
         .filter((x: any) => !timeslotNames.includes(x))
         .concat(
           timeslotNames.filter((x: any) => !timeslotsProfile.includes(x))
         );
-      console.log('dette er forskjellen i lista', difference);
       const newList: any = [];
       for (let i = 0; i < timeslots.length; i++) {
         const element1: any = timeslots[i];
@@ -149,8 +147,9 @@ const ProfileList: React.FC = () => {
           }
         }
       }
-      console.log(newList);
       return newList;
+    } else {
+      return timeslots;
     }
   };
   const removeTimeslot = (item: any) => {
