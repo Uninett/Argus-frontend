@@ -188,6 +188,7 @@ const ProfileList: React.FC = () => {
               media={formatMedia(profile.media)}
               mediaKey={profile.time_slot_group.pk}
               unusedTimeSlots={getUnusedTimeslots}
+              changesMade={false}
             />
           );
         })
@@ -212,6 +213,7 @@ const ProfileList: React.FC = () => {
               getNotificationprofiles={getNotificationprofiles}
               active={false}
               unusedTimeSlots={getUnusedTimeslots}
+              changesMade={false}
             />
           );
         })

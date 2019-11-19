@@ -22,6 +22,7 @@ type ProfileProps = {
   unusedTimeSlots: any;
   getNotificationprofiles: any;
   removeTimeslot: any;
+  changesMade: boolean;
 };
 
 const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
@@ -41,6 +42,7 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
   const [timeOptions, setTimeOptions] = useState<any>(props.timeslots);
   const [loading, setLoading] = useState(false);
   const [checkBox, setCheckBox] = useState(props.active);
+  const [changesMade, setChangesMade] = useState(props.changesMade);
 
   useEffect(() => {
     if (props.exist) {
@@ -62,6 +64,7 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
         setTimeout(() => {
           setLoading(false);
         }, 1000);
+        setChangesMade(false);
         await axios({
           url: `http://localhost:8000/notificationprofiles/${selectedTimeslots.value}`,
           method: 'PUT',
@@ -116,17 +119,21 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
   };
 
   const handleChange = (event: any) => {
+    setChangesMade(true);
     setCheckBox(event.target.checked);
   };
   const onChangeMedia = (e: any) => {
+    setChangesMade(true);
     setMediaSelected(e);
   };
 
   const onChangeFilters = (e: any) => {
+    setChangesMade(true);
     setSelectedFilters(e);
   };
 
   const onChangeTimeslots = (e: any) => {
+    setChangesMade(true);
     setSelectedTimeslots(e);
   };
 
@@ -207,7 +214,7 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
         <div className='button-save'>
           {loading ? (
             <Spinner />
-          ) : (
+          ) : (changesMade ? (
             <Button
               variant='contained'
               color='primary'
@@ -215,8 +222,17 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
               onClick={postNewProfile}
               startIcon={<SaveIcon />}>
               Save
+            </Button>) : (
+              <Button
+              disabled
+              variant='contained'
+              color='primary'
+              size='small'
+              startIcon={<SaveIcon />}>
+              Save
             </Button>
-          )}
+            ))
+          }
         </div>
         <div className='button-delete'>
           <Dialogue handleDelete={handleDelete} />
