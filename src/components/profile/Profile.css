@@ -2,7 +2,7 @@
 .notification-container {
   display: grid;
   grid-template-areas: "activeBox  timeslot filter media  buttons";
-  grid-template-columns: 90px auto auto auto 140px;
+  grid-template-columns: 1fr 3fr 8fr 5fr 140px;
   margin: auto;
   margin-top: 10px;
   border-radius: 5px;
