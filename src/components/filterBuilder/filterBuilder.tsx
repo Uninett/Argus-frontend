@@ -15,40 +15,42 @@ type Metadata = { label: string; value: string }[];
 const defaultResponse = [{ label: 'none', value: 'none' }];
 
 type Filter = {
-  problemTypes: string[];
-  objectTypes: string[];
-  parentObjects: string[];
-  networkSystems: string[];
+  sourceIds: string[];
+  objectTypeIds: string[];
+  parentObjectIds: string[];
+  problemTypeIds: string[];
 };
 
 const defaultFilter = {
-  problemTypes: [],
-  objectTypes: [],
-  parentObjects: [],
-  networkSystems: []
+  sourceIds: [],
+  objectTypeIds: [],
+  parentObjectIds: [],
+  problemTypeIds: [],
 };
 
+const networkSystemsResponse: Metadata = [];
 const objectTypesResponse: Metadata = [];
 const parentObjectsResponse: Metadata = [];
-const networkSystemsResponse: Metadata = [];
 const problemTypesResponse: Metadata = [];
 
 const properties = [
-  { propertyName: 'objectTypes', list: objectTypesResponse },
   { propertyName: 'networkSystems', list: networkSystemsResponse },
+  { propertyName: 'objectTypes', list: objectTypesResponse },
   { propertyName: 'parentObjects', list: parentObjectsResponse },
-  { propertyName: 'problemTypes', list: problemTypesResponse }
+  { propertyName: 'problemTypes', list: problemTypesResponse },
 ];
 
 const FilterBuilder: React.FC = () => {
   const [filter, setFilter] = useState<Filter>(defaultFilter);
   const [name, setName] = useState('');
-  const [objectTypes, setobjectTypes] = useState<Metadata>(defaultResponse);
-  const [problemTypes, setProblemTypes] = useState<Metadata>(defaultResponse);
-  const [parentObjects, setParentObjects] = useState<Metadata>(defaultResponse);
-  const [networkSystems, setNetworkSystems] = useState<Metadata>(
-    defaultResponse
+
+  const [sourceIds, setSourceIds] = useState<Metadata>(
+      defaultResponse
   );
+  const [objectTypeIds, setObjectTypeIds] = useState<Metadata>(defaultResponse);
+  const [parentObjectIds, setParentObjectIds] = useState<Metadata>(defaultResponse);
+  const [problemTypeIds, setProblemTypeIds] = useState<Metadata>(defaultResponse);
+
   const [previewAlerts, setPreviewAlerts] = useState<any>([]);
   const [showDialog, setShowDialog] = useState<[boolean, string]>([false, '']);
 
@@ -99,19 +101,13 @@ const FilterBuilder: React.FC = () => {
   };
 
   const preview = async () => {
-    console.log(filter);
     await axios({
-      url: 'http://localhost:8000/alerts/preview/',
+      url: 'http://localhost:8000/notificationprofiles/filterpreview/',
       method: 'POST',
       headers: {
         Authorization: 'Token ' + localStorage.getItem('token')
       },
-      data: {
-        sourceIds: filter.networkSystems,
-        objectTypeIds: filter.objectTypes,
-        parentObjectIds: filter.parentObjects,
-        problemTypeIds: filter.problemTypes
-      }
+      data: filter
     }).then(response => {
       for (let item of response.data) {
         item.timestamp = moment(item.timestamp).format('YYYY.MM.DD  hh:mm:ss');
@@ -137,10 +133,10 @@ const FilterBuilder: React.FC = () => {
         });
       });
     });
-    setProblemTypes(problemTypesResponse);
-    setParentObjects(parentObjectsResponse);
-    setobjectTypes(objectTypesResponse);
-    setNetworkSystems(networkSystemsResponse);
+    setSourceIds(networkSystemsResponse);
+    setParentObjectIds(parentObjectsResponse);
+    setObjectTypeIds(objectTypesResponse);
+    setProblemTypeIds(problemTypesResponse);
   };
 
   const handleChange = (value: any, property: string) => {
@@ -199,13 +195,13 @@ const FilterBuilder: React.FC = () => {
             </div>
           </div>
           <div className='filterSelect'>
-            <p>Select problem type</p>
+            <p>Select problem types</p>
             <Select
               className='selector'
               isMulti
               name='bois'
-              options={problemTypes}
-              onChange={value => handleChange(value, 'problemTypes')}></Select>
+              options={problemTypeIds}
+              onChange={value => handleChange(value, 'problemTypeIds')}></Select>
           </div>
           <div className='filterSelect'>
             <p>Select object types</p>
@@ -213,8 +209,8 @@ const FilterBuilder: React.FC = () => {
               className='selector'
               isMulti
               name='boiss'
-              options={objectTypes}
-              onChange={value => handleChange(value, 'objectTypes')}></Select>
+              options={objectTypeIds}
+              onChange={value => handleChange(value, 'objectTypeIds')}></Select>
           </div>
           <div className='filterSelect'>
             <p>Select parent objects</p>
@@ -222,18 +218,18 @@ const FilterBuilder: React.FC = () => {
               className='selector'
               isMulti
               name='boisss'
-              options={parentObjects}
-              onChange={value => handleChange(value, 'parentObjects')}></Select>
+              options={parentObjectIds}
+              onChange={value => handleChange(value, 'parentObjectIds')}></Select>
           </div>
           <div className='filterSelect'>
-            <p>Select netWorkSystems</p>
+            <p>Select network systems</p>
             <Select
               className='selector'
               isMulti
               name='boissss'
-              options={networkSystems}
+              options={sourceIds}
               onChange={value =>
-                handleChange(value, 'networkSystems')
+                handleChange(value, 'sourceIds')
               }></Select>
           </div>
           <div className='ButtonDiv'>
