@@ -12,7 +12,10 @@ type PropType = {
 
 
 const AlertView: React.FC<PropType> = props => {
+  const LOADING_TEXT = "Loading...";
+
   const [alerts, setAlerts] = useState<any>([]);
+  const [noDataText, setNoDataText] = useState<string>(LOADING_TEXT);
 
   useEffect(() => {
     getAlerts();
@@ -31,8 +34,7 @@ const AlertView: React.FC<PropType> = props => {
         item.timestamp = moment(item.timestamp).format('YYYY.MM.DD  hh:mm:ss')
       }
 
-
-      
+      setNoDataText(response.data.length === 0 ? "No data" : LOADING_TEXT);
       setAlerts(response.data);
     });
   };
@@ -42,7 +44,7 @@ const AlertView: React.FC<PropType> = props => {
         <Header />
       </header>
       <div className='table'>
-        <Table alerts={alerts} />
+        <Table alerts={alerts} noDataText={noDataText} />
       </div>
     </div>
   );

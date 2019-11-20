@@ -6,6 +6,7 @@ import 'react-table/react-table.css';
 
 type AlertsProps = {
   alerts: any;
+  noDataText: string;
 };
 
 //function formatDate(dateString: string):string {
@@ -45,10 +46,10 @@ const Table: React.FC<AlertsProps> = props => {
       ]}
       columns={columns}
       loading={false}
-      noDataText='No data'
+      noDataText={props.noDataText}
       data={props.alerts}
       pageSize={props.alerts.length}
-      showPaginationBottom={false}></ReactTable>
+      showPaginationBottom={false} />
   );
 };
 
