@@ -108,7 +108,7 @@ const TimeIntervals: React.FC = () => {
             }
           });
           setStartTime(startTime.set(timeIntervalKey, timeInterval.start.toString()));
-          setEndTime(endTime.set(timeIntervalKey, timeInterval.end.toString()));
+          setEndTime(endTime.set(timeIntervalKey, timeInterval.end.toString().slice(0, 5)));
           setDaysValue(
             daysValue.set(timeIntervalKey, convertDay(timeInterval.day.toString()))
           );
@@ -255,6 +255,8 @@ const TimeIntervals: React.FC = () => {
   const deleteTimeInterval = (event: any, key: string) => {
     const newTimeIntervals = [...timeIntervals];
     newTimeIntervals.splice(newTimeIntervals.indexOf(key), 1);
+    daysValue.delete(key);
+    setDaysValue(daysValue);
     setTimeInterval(newTimeIntervals);
   };
 
