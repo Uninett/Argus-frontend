@@ -42,6 +42,8 @@ const properties = [
 
 const FilterBuilder: React.FC = () => {
   const LOADING_TEXT = "Loading...";
+  const NO_DATA_TEXT = "No data";
+  const NO_MATCHING_ALERTS_TEXT = "No matching alerts";
 
   const [filter, setFilter] = useState<Filter>(defaultFilter);
   const [name, setName] = useState('');
@@ -74,7 +76,7 @@ const FilterBuilder: React.FC = () => {
       for (let item of response.data) {
         item.timestamp = moment(item.timestamp).format('YYYY.MM.DD  hh:mm:ss');
       }
-      setNoDataText(response.data.length === 0 ? "No data" : LOADING_TEXT);
+      setNoDataText(response.data.length === 0 ? NO_DATA_TEXT : LOADING_TEXT);
       setPreviewAlerts(response.data);
     });
   };
@@ -116,7 +118,7 @@ const FilterBuilder: React.FC = () => {
       for (let item of response.data) {
         item.timestamp = moment(item.timestamp).format('YYYY.MM.DD  hh:mm:ss');
       }
-      setNoDataText(response.data.length === 0 ? "No data" : LOADING_TEXT);
+      setNoDataText(response.data.length === 0 ? NO_MATCHING_ALERTS_TEXT : LOADING_TEXT);
       setPreviewAlerts(response.data);
     });
   };
