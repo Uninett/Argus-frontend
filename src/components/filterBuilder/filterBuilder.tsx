@@ -41,6 +41,8 @@ const properties = [
 ];
 
 const FilterBuilder: React.FC = () => {
+  const LOADING_TEXT = "Loading...";
+
   const [filter, setFilter] = useState<Filter>(defaultFilter);
   const [name, setName] = useState('');
 
@@ -52,6 +54,7 @@ const FilterBuilder: React.FC = () => {
   const [problemTypeIds, setProblemTypeIds] = useState<Metadata>(defaultResponse);
 
   const [previewAlerts, setPreviewAlerts] = useState<any>([]);
+  const [noDataText, setNoDataText] = useState<string>(LOADING_TEXT);
   const [showDialog, setShowDialog] = useState<[boolean, string]>([false, '']);
 
   useEffect(() => {
@@ -71,6 +74,7 @@ const FilterBuilder: React.FC = () => {
       for (let item of response.data) {
         item.timestamp = moment(item.timestamp).format('YYYY.MM.DD  hh:mm:ss');
       }
+      setNoDataText(response.data.length === 0 ? "No data" : LOADING_TEXT);
       setPreviewAlerts(response.data);
     });
   };
@@ -112,6 +116,7 @@ const FilterBuilder: React.FC = () => {
       for (let item of response.data) {
         item.timestamp = moment(item.timestamp).format('YYYY.MM.DD  hh:mm:ss');
       }
+      setNoDataText(response.data.length === 0 ? "No data" : LOADING_TEXT);
       setPreviewAlerts(response.data);
     });
   };
@@ -256,7 +261,7 @@ const FilterBuilder: React.FC = () => {
         </div>
       </div>
       <div className='previewList'>
-        <Table alerts={previewAlerts}></Table>
+        <Table alerts={previewAlerts} noDataText={noDataText} />
       </div>
     </div>
   );
