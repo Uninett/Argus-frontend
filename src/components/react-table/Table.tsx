@@ -23,7 +23,7 @@ const Table: React.FC<AlertsProps> = props => {
     { Header: 'Description', accessor: 'description' },
     { Header: 'Object', accessor: 'object.name' },
     { Header: 'Parent object', accessor: 'parent_object.name' },
-    { Header: 'Source', accessor: 'source.type.name' },
+    { Header: 'Source', accessor: 'source.type' },
     {
       Header: 'Details URL',
       accessor: 'details_url',
