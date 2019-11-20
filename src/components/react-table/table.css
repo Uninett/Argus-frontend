@@ -11,7 +11,8 @@
     calc(calc(95vh - var(--header-height)) - var(--table-height)) / 2
   );
   width: 80vw;
-  height: var(--table-height);
+  max-height: var(--table-height);
+  min-height: 140px;
   box-shadow: var(--boxshadow);
   border: none !important;
   border-radius: 5px;
@@ -19,6 +20,11 @@
   background-color: var(--boxbackground);
 }
 
+div .ReactTable .rt-noData {
+  top: 60%;
+  margin: auto;
+  z-index: 0;
+}
 
 #root .ReactTable .rt-thead.-header {
   color: var(--table-header-font-color);
