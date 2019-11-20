@@ -99,7 +99,7 @@ const LoginView: React.FC<any> = props => {
           <a
             id='login-feide'
             href={'http://localhost:8000/login/dataporten_feide/'}>
-            login with feide
+            Log in with Feide
           </a>
         </div>
       </div>
