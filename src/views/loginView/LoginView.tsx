@@ -57,11 +57,11 @@ const LoginView: React.FC<any> = props => {
             xmlns='http://www.w3.org/2000/svg'>
             <path
               d='M22.4953 47.7931L45.3656 3.0137L68.2359 47.7931H22.4953Z'
-              stroke-width='2.74152'
+              strokeWidth='2.74152'
             />
             <path
               d='M2.39699 47.7931L25.6164 2.9796L48.8358 47.7931H2.39699Z'
-              stroke-width='2.74152'
+              strokeWidth='2.74152'
             />
             <path
               id='login-text'
@@ -99,7 +99,7 @@ const LoginView: React.FC<any> = props => {
           <a
             id='login-feide'
             href={'http://localhost:8000/login/dataporten_feide/'}>
-            login with feide
+            Log in with Feide
           </a>
         </div>
       </div>
