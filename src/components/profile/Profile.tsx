@@ -90,6 +90,7 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
         setTimeout(() => {
           setLoading(false);
         }, 1000);
+        setChangesMade(false);
         await axios({
           url: `http://localhost:8000/notificationprofiles/`,
           method: 'POST',

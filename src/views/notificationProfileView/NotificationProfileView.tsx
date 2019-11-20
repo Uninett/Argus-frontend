@@ -10,7 +10,7 @@ const NotificationProfileView: React.FC = () => {
       <header>
         <Header />
       </header>
-      <h1>My Notification Profiles</h1>
+      <h1>Notification Profiles</h1>
       <div className='profileList-container'>
         <ProfileList />
       </div>

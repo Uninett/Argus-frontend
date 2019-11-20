@@ -260,7 +260,7 @@ const TimeIntervals: React.FC = () => {
 
   return (
     <div>
-      <h1>Time slots:</h1>
+      <h1>Time slots</h1>
       {timeSlots.map((element: any) => {
         const key = element.keys().next().value;
         return (

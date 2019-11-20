@@ -26,9 +26,9 @@ type TimeIntervalProp = {
 
 const TimeInterval: React.FC<TimeIntervalProp> = (props: TimeIntervalProp) => {
   return (
-    <div className="time-interval-setting">
-
-          <div className="time-interval-day">
+    <div className="timeslot-interval">
+    <div className="timeslot-interval-settings">
+          <div className="timeslot-interval-day">
           <p>Days:</p>
 
             <Select
@@ -40,8 +40,7 @@ const TimeInterval: React.FC<TimeIntervalProp> = (props: TimeIntervalProp) => {
               options={days}
               />
           </div>
-      <div className="time-interval-time">
-        <div className="time-interval-times">
+        <div className="timeslot-interval-times">
 
         <TextField
           label="Start Time"
@@ -72,13 +71,14 @@ const TimeInterval: React.FC<TimeIntervalProp> = (props: TimeIntervalProp) => {
           }}
           />
           </div>
-    </div>
+          </div>
       <div className="time-interval-delete">
         <Button
+          className="time-interval-delete-button"
           variant={"contained"}
           onClick={e => props.deleteTimeInterval(e, props.dictKey)}
           >
-          X
+          +
         </Button>
       </div>
           </div>

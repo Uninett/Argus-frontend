@@ -183,7 +183,6 @@ const FilterBuilder: React.FC = () => {
       </Dialog>
       <div className='filterBuilding-div'>
         <div className='InputWrapperDiv'>
-          <h1 className={'filterHeader'}>Build custom filter </h1>
           <div className='filterSelect'>
             <p>Name</p>
             <div className='NameFieldDiv'>
