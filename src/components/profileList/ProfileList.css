@@ -1,0 +1,16 @@
+.add-button {
+  width: 100vw;
+}
+
+.add-button .MuiFab-primary {
+  color: #fff;
+  background-color: var(--primary);
+  left: 50%;
+  margin-top: 15px;
+}
+
+
+.add-button .MuiFab-primary:hover {
+  color: #fff;
+  background-color: var(--primary-dark); 
+}

@@ -1,0 +1,15 @@
+.alertbox {
+  word-wrap: break-word;
+  width: var(--alertbox-width);
+  background-color: white;
+  text-align: left;
+  padding: 10px;
+  margin-left: calc(calc(100vw - var(--alertbox-width)) * 0.5);
+  box-shadow: var(--boxshadow);
+}
+
+.container {
+  height: calc(100vh - var(--header-height));
+  display: flex;
+  align-items: center;
+}

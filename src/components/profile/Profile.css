@@ -1,0 +1,92 @@
+
+.notification-container {
+  display: grid;
+  grid-template-areas: "activeBox  timeslot filter media  buttons";
+  grid-template-columns: 1fr 3fr 8fr 5fr 140px;
+  margin: auto;
+  margin-top: 10px;
+  border-radius: 5px;
+  box-shadow: var(--boxshadow) ;
+  padding: 0 10px 0 10px;
+  width: 90vw;
+  background-color: var(--boxbackground);
+}
+.notification-container h4 {
+  margin: 5px 0 5px 0;
+}
+
+.dropdown-media {
+  margin: 0 10px 10px 10px;
+  grid-area: media;
+}
+.dropdown-timeslots {
+  margin: 0 10px 10px 10px;
+  grid-area: timeslot;
+}
+.check-box {
+  margin: 0 10px 10px 10px;
+  grid-area: activeBox;
+}
+
+.buttons-container {
+  margin: 0 10px 0 10px;
+  position: relative;
+  grid-area: buttons;
+}
+.filtername-box {
+  margin: 0 10px 10px 10px;
+  grid-area: filter;
+}
+
+
+.buttons-container .MuiButton-containedPrimary {
+  background-color: var(--primary);
+}
+
+.buttons-container .button-save {
+  top: calc(calc(100% - 60px) / 3);
+
+}
+
+.buttons-container .MuiButton-containedSecondary {
+  background-color: var(--warning);
+  top: calc(calc(200% - 30px) / 3);
+  
+}
+
+.buttons-container .MuiButton-containedSecondary, .buttons-container .MuiButton-containedPrimary, .buttons-container .button-save {
+  color: #fff;
+  height: 30px;
+  width: 100px;
+  position: absolute;
+}
+
+
+
+.check-box .MuiCheckbox-colorPrimary.Mui-checked {
+  color: var(--primary);
+}
+
+
+.buttons-container .MuiButton-containedPrimary:hover {
+  background-color: var(--primary);
+}
+.buttons-container .MuiButton-containedSecondary:hover {
+  background-color: var(--warning);
+}
+
+.multi-select [class*="multiValue"]  {
+  color: white;
+  background-color: var(--primary);
+}
+.multi-select [class*="multiValue"] div {
+  color: white;
+}
+.multi-select [class*="multiValue"] div:hover {
+  color: white;
+}
+
+[class*="makeStyles"] .MuiCircularProgress-colorPrimary {
+  margin: auto;
+  color: var(--primary);
+}

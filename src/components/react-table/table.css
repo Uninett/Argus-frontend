@@ -1,0 +1,79 @@
+.ReactTable {
+  --table-background-color: var(--white);
+  --table-header-color: var(--white);
+  --table-header-font-color: var(--primary);
+  --table-sorting-color: var(--secondary);
+  --table-active-font-color: var(--primary);
+  --table-height: 70vh;
+  background-color: var(--table-background-color);
+  margin: auto;
+  margin-top: calc(
+    calc(calc(95vh - var(--header-height)) - var(--table-height)) / 2
+  );
+  width: 80vw;
+  max-height: var(--table-height);
+  min-height: 140px;
+  box-shadow: var(--boxshadow);
+  border: none !important;
+  border-radius: 5px;
+  z-index: 0;
+  background-color: var(--boxbackground);
+}
+
+div .ReactTable .rt-noData {
+  top: 60%;
+  margin: auto;
+  z-index: 0;
+}
+
+#root .ReactTable .rt-thead.-header {
+  color: var(--table-header-font-color);
+  background-color: var(--table-header-color);
+  box-shadow: var(--boxshadow);
+  font-weight: 500;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  z-index: 1;
+}
+
+.ReactTable .rt-thead .rt-th.-sort-asc, .ReactTable .rt-thead .rt-td.-sort-asc {
+  color: var(--table-active-font-color);
+  box-shadow: inset 0 3px 0 0 var(--table-sorting-color) !important;
+}
+
+.ReactTable .rt-thead .rt-th.-sort-desc, .ReactTable .rt-thead .rt-td.-sort-asc {
+  color: var(--table-active-font-color);
+  box-shadow: inset 0 -3px 0 0 var(--table-sorting-color) !important;
+
+}
+
+.ReactTable a {
+  color: var(--text);
+}
+.ReactTable a:visited {
+  color: var(--primary);
+}
+
+.-odd {
+  background-color: var(--primary-lighter);
+}
+
+/* width */
+.rt-body::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+.rt-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+.rt-body::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+.rt-body::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

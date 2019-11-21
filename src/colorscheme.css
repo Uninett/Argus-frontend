@@ -1,0 +1,19 @@
+:root{
+    --primary: #006D91;
+    --primary-light: #0091C1;
+    --primary-lighter: #EDFAFF;
+    --primary-dark: #005775;
+    --secondary: #F3B61F;
+    --secondary-light: #F7D070;
+    --secondary-dark: #C98200;
+    --background: #fff;
+    --text: #434343;
+    --boxbackground: #FFFFFE;
+    --white: #ffffff;
+    --warning: #910041;
+    --headercolor: #006D91;
+    --headerbutton: #fff;
+    --loginlogo: white;
+    --boxshadowcolor: #999999;
+    --boxshadow: 0 2px 10px 0 var(--boxshadowcolor);
+}

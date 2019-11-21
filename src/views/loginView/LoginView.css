@@ -1,0 +1,119 @@
+.login-container {
+  display: grid;
+  color: var(--white);
+  --loginbox-width: 25vw;
+  --loginbox-height: 50vh;
+  text-align: center;
+  background-color: var(--primary);
+  grid-template-areas:
+  "logo"
+  "form"
+  "warning"
+  "feide";
+  grid-template-rows: 35% auto auto auto;
+  grid-template-columns: 100%;
+  padding: 20px;
+  box-shadow: var(--boxshadow);
+  width: var(--loginbox-width);
+  height: var(--loginbox-height);
+  margin: auto;
+  border-radius: 3px;
+}
+
+.login-container input,
+button {
+  margin: 0.7vh;
+  border-radius: 3px;
+}
+
+.login-container button {
+  width: 7vw;
+  margin: 1vh;
+  border-radius: 3px;
+  color: white;
+  border: none;
+  padding: 5px;
+  background-color: var(--primary);
+}
+
+#login-logo {
+  height: 100%;
+  margin: auto;
+  grid-area: logo;
+  stroke: var(--loginlogo);
+}
+
+#login-text {
+  stroke: none;
+  fill: var(--loginlogo);
+}
+
+#login-feide {
+  color: white;
+  grid-area: feide;
+  padding: 10px;
+}
+
+#login-form{
+  margin-top: 50px;
+  border: none;
+  grid-area: form;
+}
+
+#login-header {
+  font-weight: 200;
+  margin-bottom: 0;
+  grid-area: header;
+}
+
+#login-warning {
+  color: var(--secondary-light);
+  grid-area: warning;
+}
+
+#login-button {
+  font-size: 1em;
+  box-shadow: var(--boxshadow);
+  background-color: var(--primary-dark);
+  margin-top: 10px;
+  color: var(--white);
+  width: max-content;
+}
+
+#login-form input {
+  padding-left: 5px;
+  padding-right: 5px;
+  height: 1.5em;
+  border: none;
+  text-align: left;
+}
+
+#login-form input::placeholder {
+  text-align: center;
+}
+
+/* Responsive Design */
+
+@media only screen and (max-height: 550px) {
+
+
+  .login-container {
+    grid-template-areas:
+    "form"
+    "warning"
+    "feide";
+    grid-template-rows: 70% 15% 15%;
+    grid-template-columns: 100%;
+
+  }
+
+  #login-logo {
+    display: none;
+  }
+
+  #login-form{
+    margin: auto;
+    border: none;
+    grid-area: form;
+  }
+}

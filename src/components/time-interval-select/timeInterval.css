@@ -1,0 +1,160 @@
+.super-container {
+  display: grid;
+  grid-template-areas: 
+  "name savedelete savedelete"
+  "settings settings buttons"
+  ;
+  grid-template-columns: auto auto 10px;
+  grid-template-rows: 50px auto ;
+  width: 70vw;
+  margin: auto;
+  margin-bottom: 40px;
+  border-radius: 5px;
+  box-shadow: var(--boxshadow);
+  background-color: var(--boxbackground);
+  padding: 10px;
+}
+
+.timeslot-intervals {
+  grid-area: settings;
+  justify-content: space-between;
+}
+
+.timeslot-interval {
+  display: flex;
+  justify-content: space-between;
+}
+
+.timeslot-interval-settings {
+  width: 92%;
+  display: flex;
+  justify-content: space-around;
+}
+
+.timeslot-interval-day {
+  width: 70%;
+}
+
+.timeslot-interval-day p {
+  margin-bottom: 3px;
+}
+
+.timeslot-interval-times {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 28px;
+}
+
+.timeslot-interval-times [class*=marginNormal] {
+  margin-left: 15px;
+}
+
+.timeslot-interval-times [class*=root] {
+  height: 41px;
+  max-width: 120px;
+  min-width: 80px;
+}
+
+
+/* To indicate that the first box is for creating timeslots */
+.super-container:first-of-type .timeslot-delete {
+  display: none;
+}
+.super-container:first-of-type .timeslot-save button span {
+  display: none;
+}
+.super-container:first-of-type .timeslot-save button:after {
+  content: "Create";
+}
+
+/* Timeslot Name */
+
+.timeslot-name {
+  grid-area: name;
+  margin-top: 10px;
+}
+
+.timeslot-name div {
+  margin-top: 0;
+}
+
+
+.super-container .timeslot-addNew {
+  font-size: 2em;
+  color: white;
+  background-color: var(--primary);
+  width: 30px;
+  height: 30px;
+  border-radius: 30px;
+  top: 20px;
+  padding: 0;
+  order: 1;
+}
+
+
+/* Row Add and Delete */
+  .timeslot-addNew [class*="label"], .time-interval-delete button, .super-container .timeslot-addNew, .time-interval-delete button{
+    top: 17px;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    right: 30px;
+  }
+
+  .timeslot-addNew [class*="label"], .time-interval-delete button {
+    right: 50px;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+  }
+
+
+.time-interval-delete button, .super-container .timeslot-addNew{
+  margin-top: 30px;
+  font-size: 2em;
+  min-width: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 30px;
+  background-color: var(--primary);
+  color: white;
+  grid-area: buttons;
+  padding: 0;
+}
+
+.time-interval-delete-button span {
+  transform: rotate(45deg);
+  height: 30px;
+}
+
+
+/* Container for Save- and Delete Timeslot Buttons */
+.saveDelete {
+  grid-area: savedelete;
+  display: flex;
+  right: 0;
+    justify-content: flex-end;
+}
+
+/* Delete Timeslot Button */
+.saveDelete .timeslot-delete button {
+  background-color: var(--warning);
+  width: 100px;
+  height: 35px;
+    margin: 10px;
+}
+
+
+/* Save Timeslot Button */
+.saveDelete .timeslot-save button{
+  background-color: var(--primary);
+  height: 35px;
+  margin: 10px;
+  width: 100px;
+}
+
+/* Name and Time Select */
+
+.MuiOutlinedInput-root input {
+  padding: 5px;
+}
