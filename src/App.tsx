@@ -21,7 +21,7 @@ const App: React.SFC = () => {
         <ProtectedRoute path="/timeslots" component={TimeslotView} />
         <Route path="/login" component={LoginView} />
         <ProtectedRoute path="/customfilter" component={FilterBuildingView} />
-        <Route path="*" component={() => <h1>404 not found</h1>} />
+        <Route path="*" component={() => <div id="not-found"><h1>404 not found</h1></div>} />
       </Switch>
     </div>
   );

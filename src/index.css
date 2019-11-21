@@ -23,3 +23,13 @@ h1 {
   margin-left: 10vw;
 }
 
+#not-found {
+  text-align: center;
+  height: calc(100vh - var(--header-height));
+}
+
+#not-found h1 {
+  font-size: 50pt;
+  color: var(--secondary);
+  margin-top: 100px;
+}
