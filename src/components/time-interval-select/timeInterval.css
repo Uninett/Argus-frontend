@@ -1,10 +1,10 @@
 .super-container {
   display: grid;
   grid-template-areas: 
-  "name savedelete "
-  "settings settings "
+  "name savedelete savedelete"
+  "settings settings buttons"
   ;
-  grid-template-columns: auto auto;
+  grid-template-columns: auto auto 10px;
   grid-template-rows: 50px auto ;
   width: 70vw;
   margin: auto;
@@ -26,7 +26,7 @@
 }
 
 .timeslot-interval-settings {
-  width: 85%;
+  width: 92%;
   display: flex;
   justify-content: space-around;
 }
@@ -86,9 +86,7 @@
   width: 30px;
   height: 30px;
   border-radius: 30px;
-  left: 60vw;
   top: 20px;
-  grid-area: settings;
   padding: 0;
   order: 1;
 }
@@ -100,10 +98,11 @@
     padding: 0;
     width: 30px;
     height: 30px;
+    right: 30px;
   }
 
   .timeslot-addNew [class*="label"], .time-interval-delete button {
-    right: 20px;
+    right: 50px;
     padding: 0;
     width: 30px;
     height: 30px;
@@ -119,6 +118,7 @@
   border-radius: 30px;
   background-color: var(--primary);
   color: white;
+  grid-area: buttons;
   padding: 0;
 }
 
