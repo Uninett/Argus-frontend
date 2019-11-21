@@ -113,7 +113,6 @@ const ProfileList: React.FC = () => {
   };
 
   const addProfileClick = () => {
-    console.log(timeslots.length);
     if (getUnusedTimeslots().length > 0) {
       const newProfiles: number[] = addedNotificationprofiles;
       newProfiles.push(newProfileCounter);

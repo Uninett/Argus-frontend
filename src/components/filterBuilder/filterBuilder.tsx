@@ -158,7 +158,6 @@ const FilterBuilder: React.FC = () => {
 
   const handleName = (e: any) => {
     setName(e.target.value);
-    console.log(name);
   };
 
   const handleCreate = () => {

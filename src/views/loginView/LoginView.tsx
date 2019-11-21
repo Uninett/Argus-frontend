@@ -40,8 +40,6 @@ const LoginView: React.FC<any> = props => {
         });
       })
       .catch(error => {
-        console.log('en feil skjedde');
-        console.log(error.type);
         setLoginAttemptFailed(true);
       });
   };
