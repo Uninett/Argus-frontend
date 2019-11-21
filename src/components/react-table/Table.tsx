@@ -6,6 +6,7 @@ import 'react-table/react-table.css';
 
 type AlertsProps = {
   alerts: any;
+  noDataText: string;
 };
 
 //function formatDate(dateString: string):string {
@@ -22,7 +23,7 @@ const Table: React.FC<AlertsProps> = props => {
     { Header: 'Description', accessor: 'description' },
     { Header: 'Object', accessor: 'object.name' },
     { Header: 'Parent object', accessor: 'parent_object.name' },
-    { Header: 'Source', accessor: 'source.type.name' },
+    { Header: 'Source', accessor: 'source.type' },
     {
       Header: 'Details URL',
       accessor: 'details_url',
@@ -45,10 +46,10 @@ const Table: React.FC<AlertsProps> = props => {
       ]}
       columns={columns}
       loading={false}
-      noDataText='No data'
+      noDataText={props.noDataText}
       data={props.alerts}
       pageSize={props.alerts.length}
-      showPaginationBottom={false}></ReactTable>
+      showPaginationBottom={false} />
   );
 };
 
