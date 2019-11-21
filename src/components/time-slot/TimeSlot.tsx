@@ -48,8 +48,7 @@ const TimeSlot: React.FC<timeSlotProp> = (props: timeSlotProp) => {
         />
       </div>
 
-      <div className="time-interval-settings">
-
+      <div className="timeslot-intervals">
       {props.timeIntervals
         .filter((slot: string) => {
           let cond = false;

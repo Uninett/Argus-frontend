@@ -44,6 +44,7 @@ const AlertView: React.FC<PropType> = props => {
       <header>
         <Header />
       </header>
+      <h1 className={'filterHeader'}>Active Alerts </h1>
       <div className='table'>
         <Table alerts={alerts} noDataText={noDataText} />
       </div>

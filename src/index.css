@@ -19,6 +19,7 @@ code {
 }
 
 h1 {
-  margin-left: 5vw;
+  color: var(--primary-dark);
+  margin-left: 10vw;
 }
 

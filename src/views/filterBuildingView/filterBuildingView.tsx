@@ -13,6 +13,7 @@ const FilterBuildingView: React.FC<PropType> = props => {
       <header>
         <Header />
       </header>
+      <h1 className={'filterHeader'}>Build custom filter </h1>
       <FilterBuilder />
     </div>
   );
