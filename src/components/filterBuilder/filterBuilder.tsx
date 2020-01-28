@@ -11,6 +11,7 @@ import Dialog from '@material-ui/core/Dialog';
 import Table from '../react-table/Table';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 
+declare const config: Record<string, string>;
 type Metadata = { label: string; value: string }[];
 const defaultResponse = [{ label: 'none', value: 'none' }];
 
@@ -67,7 +68,7 @@ const FilterBuilder: React.FC = () => {
   //fetches alerts and sets state
   const getAlerts = async () => {
     await axios({
-      url: 'http://localhost:8000/alerts/',
+      url: `http://${config.backend}/alerts/`,
       method: 'GET',
       headers: {
         Authorization: 'Token ' + localStorage.getItem('token')
@@ -83,7 +84,7 @@ const FilterBuilder: React.FC = () => {
 
   const postNewFilter = async () => {
     await axios({
-      url: 'http://localhost:8000/notificationprofiles/filters/',
+      url: `http://${config.backend}/notificationprofiles/filters/`,
       method: 'POST',
       headers: {
         Authorization: 'Token ' + localStorage.getItem('token')
@@ -108,7 +109,7 @@ const FilterBuilder: React.FC = () => {
 
   const preview = async () => {
     await axios({
-      url: 'http://localhost:8000/notificationprofiles/filterpreview/',
+      url: `http://${config.backend}/notificationprofiles/filterpreview/`,
       method: 'POST',
       headers: {
         Authorization: 'Token ' + localStorage.getItem('token')
@@ -125,7 +126,7 @@ const FilterBuilder: React.FC = () => {
 
   const fetchProblemTypes = async () => {
     await axios({
-      url: 'http://localhost:8000/alerts/metadata/',
+      url: `http://${config.backend}/alerts/metadata/`,
       method: 'GET',
       headers: {
         Authorization: 'Token ' + localStorage.getItem('token')
