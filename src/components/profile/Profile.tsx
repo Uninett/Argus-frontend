@@ -68,7 +68,7 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
         }, 1000);
         setChangesMade(false);
         await axios({
-          url: `http://${config.backend}/notificationprofiles/${selectedTimeslots.value}`,
+          url: `${config.backend}/notificationprofiles/${selectedTimeslots.value}`,
           method: 'PUT',
           headers: {
             Authorization: 'Token ' + localStorage.getItem('token')
@@ -93,7 +93,7 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
         }, 1000);
         setChangesMade(false);
         await axios({
-          url: `http://${config.backend}/notificationprofiles/`,
+          url: `${config.backend}/notificationprofiles/`,
           method: 'POST',
           headers: {
             Authorization: 'Token ' + localStorage.getItem('token')
@@ -144,7 +144,7 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
     //slett fra database her:
     if (props.mediaKey) {
       await axios({
-        url: `http://${config.backend}/notificationprofiles/${selectedTimeslots.value}`,
+        url: `${config.backend}/notificationprofiles/${selectedTimeslots.value}`,
         method: 'DELETE',
         headers: {
           Authorization: 'Token ' + localStorage.getItem('token')
