@@ -8,6 +8,7 @@ import Spinner from '../spinners/Spinner';
 import axios from 'axios';
 import './Profile.css';
 
+declare const config: Record<string, string>;
 type ProfileProps = {
   filters: { value: string; label: string }[];
   timeslots: { value: string; label: string }[];
@@ -67,7 +68,7 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
         }, 1000);
         setChangesMade(false);
         await axios({
-          url: `http://localhost:8000/notificationprofiles/${selectedTimeslots.value}`,
+          url: `${config.backend}/notificationprofiles/${selectedTimeslots.value}`,
           method: 'PUT',
           headers: {
             Authorization: 'Token ' + localStorage.getItem('token')
@@ -92,7 +93,7 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
         }, 1000);
         setChangesMade(false);
         await axios({
-          url: `http://localhost:8000/notificationprofiles/`,
+          url: `${config.backend}/notificationprofiles/`,
           method: 'POST',
           headers: {
             Authorization: 'Token ' + localStorage.getItem('token')
@@ -143,7 +144,7 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
     //slett fra database her:
     if (props.mediaKey) {
       await axios({
-        url: `http://localhost:8000/notificationprofiles/${selectedTimeslots.value}`,
+        url: `${config.backend}/notificationprofiles/${selectedTimeslots.value}`,
         method: 'DELETE',
         headers: {
           Authorization: 'Token ' + localStorage.getItem('token')

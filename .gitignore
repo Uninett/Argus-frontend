@@ -158,4 +158,7 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+# Production config file
+/public/config/config.js
+
 # End of https://www.gitignore.io/api/react,macos,windows,pycharm+all
