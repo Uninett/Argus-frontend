@@ -68,7 +68,7 @@ const FilterBuilder: React.FC = () => {
   //fetches alerts and sets state
   const getAlerts = async () => {
     await axios({
-      url: `${config.backend}/alerts/`,
+      url: '/alerts/',
       method: 'GET',
       headers: {
         Authorization: 'Token ' + localStorage.getItem('token')
@@ -84,7 +84,7 @@ const FilterBuilder: React.FC = () => {
 
   const postNewFilter = async () => {
     await axios({
-      url: `${config.backend}/notificationprofiles/filters/`,
+      url: '/notificationprofiles/filters/',
       method: 'POST',
       headers: {
         Authorization: 'Token ' + localStorage.getItem('token')
@@ -109,7 +109,7 @@ const FilterBuilder: React.FC = () => {
 
   const preview = async () => {
     await axios({
-      url: `${config.backend}/notificationprofiles/filterpreview/`,
+      url: '/notificationprofiles/filterpreview/',
       method: 'POST',
       headers: {
         Authorization: 'Token ' + localStorage.getItem('token')
@@ -126,7 +126,7 @@ const FilterBuilder: React.FC = () => {
 
   const fetchProblemTypes = async () => {
     await axios({
-      url: `${config.backend}/alerts/metadata/`,
+      url: '/alerts/metadata/',
       method: 'GET',
       headers: {
         Authorization: 'Token ' + localStorage.getItem('token')
