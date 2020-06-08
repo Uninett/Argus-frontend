@@ -31,7 +31,7 @@ const ProfileList: React.FC = () => {
   //fetch all notificationprofiles
   const getNotificationprofiles = async () => {
     await axios({
-      url: '/notificationprofiles/',
+      url: '/api/v1/notificationprofiles/',
       method: 'GET',
       headers: {
         Authorization: 'Token ' + localStorage.getItem('token')
@@ -43,7 +43,7 @@ const ProfileList: React.FC = () => {
   //fetch all filters
   const getFilters = async () => {
     await axios({
-      url: '/notificationprofiles/filters/',
+      url: '/api/v1/notificationprofiles/filters/',
       method: 'GET',
       headers: {
         Authorization: 'Token ' + localStorage.getItem('token')
@@ -56,7 +56,7 @@ const ProfileList: React.FC = () => {
   //fetch all timeslots
   const getTimeslots = async () => {
     await axios({
-      url: '/notificationprofiles/timeslots/',
+      url: '/api/v1/notificationprofiles/timeslots/',
       method: 'GET',
       headers: {
         Authorization: 'Token ' + localStorage.getItem('token')
