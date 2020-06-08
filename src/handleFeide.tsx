@@ -13,7 +13,7 @@ class HandleFeide {
       localStorage.setItem('token', token);
       localStorage.setItem('loggedin', 'true');
       await Axios({
-        url: 'api/v1/auth/user/',
+        url: '/api/v1/auth/user/',
         method: 'GET',
         headers: {
           Authorization: 'Token ' + token

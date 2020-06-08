@@ -26,7 +26,7 @@ const LoginView: React.FC<any> = props => {
   //get Token and set localStorage with token, username and isloggedin
   const getToken = async () => {
     await Axios({
-      url: 'api/v1/api-token-auth/',
+      url: '/api/v1/api-token-auth/',
       method: 'POST',
       data: { username: username, password: password }
     })
