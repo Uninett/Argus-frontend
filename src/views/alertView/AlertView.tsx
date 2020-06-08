@@ -27,7 +27,7 @@ const AlertView: React.FC<PropType> = props => {
   //fetches alerts and sets state
   const getAlerts = async () => {
     await axios({
-      url: '/alerts/active/',
+      url: 'api/v1/alerts/active/',
       method: 'GET',
       headers: {
         Authorization: 'Token ' + localStorage.getItem('token')
