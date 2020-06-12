@@ -4,6 +4,8 @@ import auth from './auth';
 
 const cookies = new Cookies();
 
+declare const config: Record<string, string>;
+
 class HandleFeide {
   async loggedIn() {
     const token = cookies.get('token');
@@ -11,7 +13,7 @@ class HandleFeide {
       localStorage.setItem('token', token);
       localStorage.setItem('loggedin', 'true');
       await Axios({
-        url: 'http://127.0.0.1:8000/auth/user/',
+        url: '/api/v1/auth/user/',
         method: 'GET',
         headers: {
           Authorization: 'Token ' + token

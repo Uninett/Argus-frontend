@@ -41,7 +41,7 @@ const TimeIntervals: React.FC = () => {
     inputTimeIntervalKey: string
   ) => {
     await axios({
-      url: "http://127.0.0.1:8000/notificationprofiles/timeslots/",
+      url: "/api/v1/notificationprofiles/timeslots/",
       method: "GET",
       headers: {
         Authorization: "Token " + localStorage.getItem("token")
@@ -59,7 +59,7 @@ const TimeIntervals: React.FC = () => {
   const deleteTimeSlot = async (key: string) => {
     await axios({
       url:
-        "http://127.0.0.1:8000/notificationprofiles/timeslots/" +
+        "/api/v1/notificationprofiles/timeslots/" +
         timeSlotPK.get(key),
       method: "DELETE",
       headers: {
@@ -167,7 +167,7 @@ const TimeIntervals: React.FC = () => {
     if (fromServer.get(timeSlotKey)) {
       await axios({
         url:
-          "http://127.0.0.1:8000/notificationprofiles/timeslots/" +
+          "/api/v1/notificationprofiles/timeslots/" +
           timeSlotPK.get(timeSlotKey),
         method: "PUT",
         headers: {
@@ -178,7 +178,7 @@ const TimeIntervals: React.FC = () => {
       });
     } else {
       await axios({
-        url: "http://127.0.0.1:8000/notificationprofiles/timeslots/",
+        url: "/api/v1/notificationprofiles/timeslots/",
         method: "POST",
         headers: {
           Authorization: "Token " + localStorage.getItem("token")

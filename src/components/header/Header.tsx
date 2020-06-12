@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './Header.css';
 import auth from '../../auth';
-import { withRouter } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 
 const Userbutton: React.FC<{ history: any }> = props => {
   const [user, setUser] = useState<any>('');
@@ -34,7 +34,7 @@ const Userbutton: React.FC<{ history: any }> = props => {
 const Header: React.FC<{ history: any }> = props => {
   return (
     <div className='header'>
-      <a href='/'>
+      <Link to='/'>
         <svg
           id='logo'
           width='74'
@@ -56,20 +56,20 @@ const Header: React.FC<{ history: any }> = props => {
             fill='#006D91'
           />
         </svg>
-      </a>
+      </Link>
       <div id='headerbuttons'>
-        <a id='header-timeslots' className='headerbutton' href='/timeslots'>
+        <Link id='header-timeslots' className='headerbutton' to='/timeslots'>
           <p>Time slots</p>
-        </a>
-        <a id='header-filters' className='headerbutton' href='/customfilter'>
+        </Link>
+        <Link id='header-filters' className='headerbutton' to='/customfilter'>
           <p>Filters</p>
-        </a>
-        <a
+        </Link>
+        <Link
           id='header-notificationProfiles'
           className='headerbutton'
-          href='/notification-profile'>
+          to='/notification-profile'>
           <p>Notification profiles</p>
-        </a>
+        </Link>
 
         <Userbutton history={props.history} />
       </div>
