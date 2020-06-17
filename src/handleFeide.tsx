@@ -4,8 +4,6 @@ import auth from './auth';
 
 const cookies = new Cookies();
 
-declare const config: Record<string, string>;
-
 class HandleFeide {
   async loggedIn() {
     const token = cookies.get('token');

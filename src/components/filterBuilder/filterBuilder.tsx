@@ -3,6 +3,7 @@ import Select from 'react-select';
 import axios from 'axios';
 import './FilterBuilder.css';
 import moment from 'moment';
+import { BACKEND_URL } from '../../config'
 
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -11,7 +12,6 @@ import Dialog from '@material-ui/core/Dialog';
 import Table from '../react-table/Table';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 
-declare const config: Record<string, string>;
 type Metadata = { label: string; value: string }[];
 const defaultResponse = [{ label: 'none', value: 'none' }];
 
@@ -68,7 +68,7 @@ const FilterBuilder: React.FC = () => {
   //fetches alerts and sets state
   const getAlerts = async () => {
     await axios({
-      url: '/api/v1/alerts/',
+      url: `${BACKEND_URL}/api/v1/alerts/`,
       method: 'GET',
       headers: {
         Authorization: 'Token ' + localStorage.getItem('token')
@@ -84,7 +84,7 @@ const FilterBuilder: React.FC = () => {
 
   const postNewFilter = async () => {
     await axios({
-      url: '/api/v1/notificationprofiles/filters/',
+      url: `${BACKEND_URL}/api/v1/notificationprofiles/filters/`,
       method: 'POST',
       headers: {
         Authorization: 'Token ' + localStorage.getItem('token')
@@ -109,7 +109,7 @@ const FilterBuilder: React.FC = () => {
 
   const preview = async () => {
     await axios({
-      url: '/api/v1/notificationprofiles/filterpreview/',
+      url: `${BACKEND_URL}/api/v1/notificationprofiles/filterpreview/`,
       method: 'POST',
       headers: {
         Authorization: 'Token ' + localStorage.getItem('token')
@@ -126,7 +126,7 @@ const FilterBuilder: React.FC = () => {
 
   const fetchProblemTypes = async () => {
     await axios({
-      url: '/api/v1/alerts/metadata/',
+      url: `${BACKEND_URL}/api/v1/alerts/metadata/`,
       method: 'GET',
       headers: {
         Authorization: 'Token ' + localStorage.getItem('token')

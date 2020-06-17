@@ -3,8 +3,8 @@ import './LoginView.css';
 import Axios from 'axios';
 import { Store } from '../../store';
 import auth from '../../auth';
+import { BACKEND_URL } from '../../config'
 
-declare const config: Record<string, string>;
 
 const LoginView: React.FC<any> = props => {
   const [username, setUsername] = useState('');
@@ -26,7 +26,7 @@ const LoginView: React.FC<any> = props => {
   //get Token and set localStorage with token, username and isloggedin
   const getToken = async () => {
     await Axios({
-      url: '/api/v1/token-auth/',
+      url: `${BACKEND_URL}/api/v1/token-auth/`,
       method: 'POST',
       data: { username: username, password: password }
     })
@@ -98,8 +98,8 @@ const LoginView: React.FC<any> = props => {
           </p>
           <a
             id='login-feide'
-            href='/oidc/login/dataporten_feide/'
-            target='_self'>
+            href={`${BACKEND_URL}/oidc/login/dataporten_feide/`}
+            >
             Log in with Feide
           </a>
         </div>

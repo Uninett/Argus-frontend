@@ -6,8 +6,8 @@ import '../../components/react-table/table.css';
 import axios from 'axios';
 import { withRouter } from 'react-router-dom';
 import moment from 'moment';
+import { BACKEND_URL } from '../../config'
 
-declare const config: Record<string, string>;
 type PropType = {
   history: any;
 };
@@ -27,7 +27,7 @@ const AlertView: React.FC<PropType> = props => {
   //fetches alerts and sets state
   const getAlerts = async () => {
     await axios({
-      url: '/api/v1/alerts/active/',
+      url: `${BACKEND_URL}/api/v1/alerts/active/`,
       method: 'GET',
       headers: {
         Authorization: 'Token ' + localStorage.getItem('token')

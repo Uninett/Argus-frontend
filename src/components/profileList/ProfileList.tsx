@@ -4,8 +4,7 @@ import Profile from '../profile/Profile';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import axios from 'axios';
-
-declare const config: Record<string, string>;
+import { BACKEND_URL } from '../../config'
 
 const ProfileList: React.FC = () => {
   const [notificationprofiles, setNotificationprofiles] = useState([]);
@@ -31,7 +30,7 @@ const ProfileList: React.FC = () => {
   //fetch all notificationprofiles
   const getNotificationprofiles = async () => {
     await axios({
-      url: '/api/v1/notificationprofiles/',
+      url: `${BACKEND_URL}/api/v1/notificationprofiles/`,
       method: 'GET',
       headers: {
         Authorization: 'Token ' + localStorage.getItem('token')
@@ -43,7 +42,7 @@ const ProfileList: React.FC = () => {
   //fetch all filters
   const getFilters = async () => {
     await axios({
-      url: '/api/v1/notificationprofiles/filters/',
+      url: `${BACKEND_URL}/api/v1/notificationprofiles/filters/`,
       method: 'GET',
       headers: {
         Authorization: 'Token ' + localStorage.getItem('token')
@@ -56,7 +55,7 @@ const ProfileList: React.FC = () => {
   //fetch all timeslots
   const getTimeslots = async () => {
     await axios({
-      url: '/api/v1/notificationprofiles/timeslots/',
+      url: `${BACKEND_URL}/api/v1/notificationprofiles/timeslots/`,
       method: 'GET',
       headers: {
         Authorization: 'Token ' + localStorage.getItem('token')
