@@ -13,26 +13,31 @@ type AlertsProps = {
 //  2014-09-15T11:25:42.833000+02:00
 //}
 
+const SourceDetailUrl = (row: { value: string, original: { details_url: string }}) => {
+      return (
+        <a href={row.original.details_url} rel="noopener noreferrer" target='_blank'>
+          {' '}
+          {row.value}{' '}
+        </a>
+    )
+}
+
 const Table: React.FC<AlertsProps> = props => {
   const columns: any = [
     {
       Header: 'Timestamp',
-      accessor: 'timestamp'
+      accessor: 'timestamp',
+      id: 'timestamp_col',
     },
-    { Header: 'Problem type', accessor: 'problem_type.name' },
-    { Header: 'Description', accessor: 'description' },
-    { Header: 'Object', accessor: 'object.name' },
-    { Header: 'Parent object', accessor: 'parent_object.name' },
-    { Header: 'Source', accessor: 'source.type' },
+    { Header: 'Problem type', accessor: 'problem_type.name', id: 'problem_type_col', },
+    { Header: 'Description', accessor: 'description', id: 'description_col', },
+    { Header: 'Object', accessor: 'object.name', id: 'object_col', },
+    { Header: 'Parent object', accessor: 'parent_object.name', id: 'parent_object_col', },
     {
-      Header: 'Details URL',
-      accessor: 'details_url',
-      Cell: (row: { value: string }) => (
-        <a href={row.value} rel="noopener noreferrer" target='_blank'>
-          {' '}
-          {row.value}{' '}
-        </a>
-      )
+      Header: 'Source',
+      accessor: (row: any, i: any) => String(row.source.name),
+      id: 'source_col',
+      Cell: SourceDetailUrl,
     }
   ];
 
