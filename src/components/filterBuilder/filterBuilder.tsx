@@ -29,13 +29,13 @@ const defaultFilter = {
   problemTypeIds: [],
 };
 
-const networkSystemsResponse: Metadata = [];
+const alertSourcesResponse: Metadata = [];
 const objectTypesResponse: Metadata = [];
 const parentObjectsResponse: Metadata = [];
 const problemTypesResponse: Metadata = [];
 
 const properties = [
-  { propertyName: 'networkSystems', list: networkSystemsResponse },
+  { propertyName: 'alertSources', list: alertSourcesResponse },
   { propertyName: 'objectTypes', list: objectTypesResponse },
   { propertyName: 'parentObjects', list: parentObjectsResponse },
   { propertyName: 'problemTypes', list: problemTypesResponse },
@@ -141,7 +141,7 @@ const FilterBuilder: React.FC = () => {
         });
       });
     });
-    setSourceIds(networkSystemsResponse);
+    setSourceIds(alertSourcesResponse);
     setParentObjectIds(parentObjectsResponse);
     setObjectTypeIds(objectTypesResponse);
     setProblemTypeIds(problemTypesResponse);
@@ -228,7 +228,7 @@ const FilterBuilder: React.FC = () => {
               onChange={value => handleChange(value, 'parentObjectIds')}></Select>
           </div>
           <div className='filterSelect'>
-            <p>Select network systems</p>
+            <p>Select alert sources</p>
             <Select
               className='selector'
               isMulti
