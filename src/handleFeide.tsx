@@ -1,6 +1,7 @@
 import { Cookies } from 'react-cookie';
 import Axios from 'axios';
 import auth from './auth';
+import { BACKEND_URL } from './config'
 
 const cookies = new Cookies();
 
@@ -11,7 +12,7 @@ class HandleFeide {
       localStorage.setItem('token', token);
       localStorage.setItem('loggedin', 'true');
       await Axios({
-        url: '/api/v1/auth/user/',
+        url: `${BACKEND_URL}/api/v1/auth/user/`,
         method: 'GET',
         headers: {
           Authorization: 'Token ' + token
