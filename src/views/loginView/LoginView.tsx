@@ -1,11 +1,12 @@
 import React, { useState, useContext } from 'react';
+import { Cookies } from "react-cookie";
+
 import './LoginView.css';
 import { Store } from '../../store';
-import auth from '../../auth';
+import Auth from '../../auth';
 import { BACKEND_URL } from '../../config'
-
-import Api from '../../api'
-
+import { AxiosResponse } from 'axios'
+import Api, { Token } from '../../api'
 
 const LoginView: React.FC<any> = props => {
   const [username, setUsername] = useState('');
@@ -16,31 +17,18 @@ const LoginView: React.FC<any> = props => {
   //runs when the form is submitted. GetToken() will run and then it will redirect to AlertView
   const onSubmit = async (e: any) => {
     e.preventDefault();
-    await getToken();
-    if (localStorage.getItem('token')) {
-      auth.login(() => {
+
+    Api.userpassAuth(username, password).then((token: Token) => {
+      console.log("Logged in using user-pass auth")
+      setLoginAttemptFailed(false)
+
+      Auth.login(token, () => {
         props.history.push('/');
-      });
-    }
-  };
-
-  //get Token and set localStorage with token, username and isloggedin
-  const getToken = async () => {
-    console.log("getToken called");
-    Api.userpassAuth(username, password).then(token => {
-        console.log("got token!", token)
-        Api.useAuthToken(token)
-
-        localStorage.setItem("token", token)
-        localStorage.setItem("user", username)
-        localStorage.setItem("loggedin", "true")
-        
-        dispatch({ type: "setUser", "payload": username })
-        dispatch({ type: "setToken", "payload": token })
-        dispatch({ type: "setLoggedIn", "payload": true })
+      })
     }).catch(error => {
         console.log(error)
         setLoginAttemptFailed(true)
+        Auth.logout()
     })
   };
 

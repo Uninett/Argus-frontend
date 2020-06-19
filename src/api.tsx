@@ -1,9 +1,10 @@
 import axios, {
-  AxiosError,
   AxiosRequestConfig,
   AxiosResponse,
   AxiosInstance,
 } from "axios";
+
+import Auth from "./auth"
 
 import { BACKEND_URL } from "./config";
 
@@ -12,6 +13,13 @@ export interface AuthUserResponse {
   first_name: string;
   last_name: string;
   email: string;
+}
+
+export interface User {
+  username: string
+  first_name: string
+  last_name: string
+  email: string
 }
 
 export type Token = string;
@@ -173,15 +181,30 @@ function configWithAuth(config: AxiosRequestConfig, token: string) {
 
 export class ApiClient {
   api: AxiosInstance;
-  token: string;
+  token?: string;
   config: AxiosRequestConfig;
 
   public constructor(config?: AxiosRequestConfig) {
     this.config = config || apiConfig;
     this.api = axios.create(this.config);
-    this.token = localStorage.getItem("token") || "default"; // FIXME: localStorage should be replaced
+    this.token = Auth.token()
   }
 
+  public registerUnauthorizedCallback(callback: (response: AxiosResponse, error: any) => void) {
+    console.log("setting up unauthorized callback")
+    this.api.interceptors.response.use(
+      response => response,
+      error => {
+        const {status} = error.response;
+        if (status === 401) {
+          callback(error.response, error)
+        }
+        return Promise.reject(error);
+     }
+    );
+  }
+
+  // @deprecated
   public useAuthToken(token: string): void {
     this.token = token;
   }
@@ -198,13 +221,24 @@ export class ApiClient {
     );
   }
 
+  // authUser: returns the information about an authenticated user
+  public authGetUser(): Promise<User> {
+    return resolveOrReject(
+      this.authGet<User, {}>(
+        "/api/v1/auth/user/",
+      ),
+      defaultResolver,
+      (error) => new Error(`Failed to get user: ${error}`)
+    );
+  }
+
   // NotificationProfile
   public getNotificationProfile(
-    timeSlot: TimeslotPK
+    timeslot: TimeslotPK
   ): Promise<NotificationProfile> {
     return resolveOrReject(
       this.authGet<NotificationProfile, GetNotificationProfileRequest>(
-        `/api/v1/notificationprofile/${timeSlot}`
+        `/api/v1/notificationprofile/${timeslot}`
       ),
       defaultResolver,
       (error) => new Error(`Failed to get notification profile: ${error}`)
@@ -222,7 +256,7 @@ export class ApiClient {
   }
 
   public putNotificationProfile(
-    timeSlot: TimeslotPK,
+    timeslot: TimeslotPK,
     filters: FilterPK[],
     media: MediaAlternative[],
     active: boolean
@@ -231,20 +265,20 @@ export class ApiClient {
       this.authPut<
         NotificationProfileSuccessResponse,
         NotificationProfileRequest
-      >(`/api/v1/notificationprofiles/${timeSlot}`, {
-        time_slot: timeSlot,
+      >(`/api/v1/notificationprofiles/${timeslot}`, {
+        "time_slot": timeslot,
         filters,
         media,
         active,
       }),
       defaultResolver,
       (error) =>
-        new Error(`Failed to update notification profile ${timeSlot}: ${error}`)
+        new Error(`Failed to update notification profile ${timeslot}: ${error}`)
     );
   }
 
   public postNotificationProfile(
-    timeSlot: TimeslotPK,
+    timeslot: TimeslotPK,
     filters: FilterPK[],
     media: MediaAlternative[],
     active: boolean
@@ -254,29 +288,29 @@ export class ApiClient {
         NotificationProfileSuccessResponse,
         NotificationProfileRequest
       >(`/api/v1/notificationprofiles/`, {
-        time_slot: timeSlot,
+        "time_slot": timeslot,
         filters,
         media,
         active,
       }),
       defaultResolver,
       (error) =>
-        new Error(`Failed to create notification profile ${timeSlot}: ${error}`)
+        new Error(`Failed to create notification profile ${timeslot}: ${error}`)
     );
   }
 
-  public deleteNotificationProfile(timeSlot: TimeslotPK): Promise<boolean> {
+  public deleteNotificationProfile(timeslot: TimeslotPK): Promise<boolean> {
     return this.authDelete<
       NotificationProfileSuccessResponse,
       DeleteNotificationProfileRequest
-    >(`/api/v1/notificationprofiles/${timeSlot}`)
+    >(`/api/v1/notificationprofiles/${timeslot}`)
       .then((response) => {
         return Promise.resolve(true);
       })
       .catch((error) => {
         return Promise.reject(
           new Error(
-            `Failed to delete notification profile ${timeSlot}: ${error}`
+            `Failed to delete notification profile ${timeslot}: ${error}`
           )
         );
       });
@@ -334,7 +368,7 @@ export class ApiClient {
     return resolveOrReject(
       this.authPost<FilterSuccessResponse, FilterRequest>(
         `/api/v1/notificationprofiles/filters/`,
-        { name, filter_string: filterString }
+        { name, "filter_string": filterString }
       ),
       defaultResolver,
       (error) =>
@@ -359,7 +393,19 @@ export class ApiClient {
       this.authDelete<boolean, never>(
         `/api/v1/notificationprofiles/timeslots/${timeslotPK}`
       ),
-      (inp: any) => true,
+      () => true,
+      (error) =>
+        new Error(`Failed to delete notificationprofile timeslots: ${error}`)
+    );
+  }
+
+  public putTimeslot(timeslotPK: TimeslotPK, name: string, timeIntervals: TimeInterval[]): Promise<Timeslot> {
+    return resolveOrReject(
+      this.authPut<Timeslot, Omit<Timeslot, "pk">>(
+        `/api/v1/notificationprofiles/timeslots/${timeslotPK}`,
+        { name, "time_intervals": timeIntervals }
+      ),
+     defaultResolver,
       (error) =>
         new Error(`Failed to delete notificationprofile timeslots: ${error}`)
     );
@@ -396,16 +442,22 @@ export class ApiClient {
     return this.api.delete(url, config);
   }
 
+  private mustBeAuthenticated<T>(ifAuthenticated: (token: Token) => Promise<T>): Promise<T> {
+    const token = Auth.token()
+    if (Auth.isAuthenticated() && token) {
+        return ifAuthenticated(token)
+    }
+    return Promise.reject("Not authenticated")
+  }
+
   private authPost<T, B, R = AxiosResponse<T>>(
     url: string,
     data?: B,
     config?: AxiosRequestConfig
   ): Promise<R> {
-    return this.api.post(
-      url,
-      data,
-      configWithAuth(config || this.config, this.token)
-    );
+    return this.mustBeAuthenticated((token: Token) => (
+        this.api.post(url, data, configWithAuth(config || this.config, token)
+    )))
   }
 
   private authPut<T, B, R = AxiosResponse<T>>(
@@ -413,11 +465,9 @@ export class ApiClient {
     data?: B,
     config?: AxiosRequestConfig
   ): Promise<R> {
-    return this.api.put(
-      url,
-      data,
-      configWithAuth(config || this.config, this.token)
-    );
+    return this.mustBeAuthenticated((token: Token) => (
+        this.api.put(url, data, configWithAuth(config || this.config, token)
+    )))
   }
 
   private authGet<T, B, R = AxiosResponse<T>>(
@@ -425,17 +475,18 @@ export class ApiClient {
     data?: B,
     config?: AxiosRequestConfig
   ): Promise<R> {
-    return this.api.get(url, configWithAuth(config || this.config, this.token));
+    return this.mustBeAuthenticated((token: Token) => (
+        this.api.get(url, configWithAuth(config || this.config, token)
+    )))
   }
 
   private authDelete<T, B, R = AxiosResponse<T>>(
     url: string,
     config?: AxiosRequestConfig
   ): Promise<R> {
-    return this.api.delete(
-      url,
-      configWithAuth(config || this.config, this.token)
-    );
+    return this.mustBeAuthenticated((token: Token) => (
+        this.api.delete(url, configWithAuth(config || this.config, token)
+    )))
   }
 }
 

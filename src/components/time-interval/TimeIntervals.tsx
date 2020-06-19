@@ -148,27 +148,10 @@ const TimeIntervals: React.FC = () => {
   const addTimeSlot = async (timeSlotKey: any) => {
     const dataTimeIntervals = buildDataTimeIntervals(timeSlotKey);
     if (fromServer.get(timeSlotKey)) {
-      await axios({
-        url:
-          `${BACKEND_URL}/api/v1/notificationprofiles/timeslots/` +
-          timeSlotPK.get(timeSlotKey),
-        method: "PUT",
-        headers: {
-          Authorization: "Token " + localStorage.getItem("token")
-        },
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        data: { name: nameField.get(timeSlotKey), time_intervals: dataTimeIntervals }
-      });
+      await Api.putTimeslot(timeSlotPK.get(timeSlotKey), nameField.get(timeSlotKey), dataTimeIntervals)
     } else {
-      await axios({
-        url: `${BACKEND_URL}/api/v1/notificationprofiles/timeslots/`,
-        method: "POST",
-        headers: {
-          Authorization: "Token " + localStorage.getItem("token")
-        },
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        data: { name: nameField.get(timeSlotKey), time_intervals: dataTimeIntervals }
-      }).then(() => {
+      await Api.putTimeslot(timeSlotPK.get(timeSlotKey), nameField.get(timeSlotKey), dataTimeIntervals)
+      .then(() => {
         const timeSlotKey = uuidv1();
         const timeIntervalKey = uuidv1();
         resetView(timeSlotKey, timeIntervalKey);

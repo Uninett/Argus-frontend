@@ -10,10 +10,7 @@ export const ProtectedRoute = ({ component: Component, ...rest }: any) => {
       {...rest}
       render={ props => {
           handleFeide.loggedIn();
-          if (
-              auth.isAuthenticated() ||
-              localStorage.getItem('loggedin') === 'true'
-          ) {
+          if (auth.isAuthenticated()) {
               return <Component {...props} />;
           } else {
               return (
