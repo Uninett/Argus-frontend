@@ -3,9 +3,11 @@ import ReactTable from 'react-table';
 import './table.css';
 import 'react-table/react-table.css';
 
+import {AlertWithFormattedTimestamp} from "../../utils";
+
 
 type AlertsProps = {
-  alerts: any;
+  alerts: AlertWithFormattedTimestamp[];
   noDataText: string;
 };
 
@@ -45,7 +47,7 @@ const Table: React.FC<AlertsProps> = props => {
     <ReactTable
       defaultSorted={[
         {
-          id: 'timestamp',
+          id: 'formatted_timestamp',
           desc: true
         }
       ]}

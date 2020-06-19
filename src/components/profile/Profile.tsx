@@ -5,9 +5,8 @@ import Button from '@material-ui/core/Button';
 import SaveIcon from '@material-ui/icons/Save';
 import Dialogue from '../dialogue/Dialogue';
 import Spinner from '../spinners/Spinner';
-import axios from 'axios';
 import './Profile.css';
-import { BACKEND_URL } from '../../config'
+import Api from '../../api'
 
 type ProfileProps = {
   filters: { value: string; label: string }[];
@@ -39,7 +38,7 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
   const [selectedTimeslots, setSelectedTimeslots] = useState(
     props.selectedTimeslots
   );
-  const [id, setId] = useState(null);
+  const [id, setId] = useState(0); // TODO: is 0 acceptable???
   const [timeOptions, setTimeOptions] = useState<any>(props.timeslots);
   const [loading, setLoading] = useState(false);
   const [checkBox, setCheckBox] = useState(props.active);
@@ -61,64 +60,32 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
       mediaSelected.length > 0 &&
       selectedFilters.length > 0
     ) {
-      if (exist || id) {
         setLoading(!loading);
         setTimeout(() => {
           setLoading(false);
         }, 1000);
         setChangesMade(false);
-        await axios({
-          url: `${BACKEND_URL}/api/v1/notificationprofiles/${selectedTimeslots.value}`,
-          method: 'PUT',
-          headers: {
-            Authorization: 'Token ' + localStorage.getItem('token')
-          },
-          data: {
-            time_slot: selectedTimeslots.value,
-            filters: selectedFilters.map((f: any) => {
-              return f.value;
-            }),
-            media: mediaSelected.map((media: any) => {
-              return media.value;
-            }),
-            active: checkBox
-          }
-        }).catch((response: any) => {
-          alert('Timeslot is already in use or profile could not be saved');
-        });
-      } else {
-        setLoading(!loading);
-        setTimeout(() => {
-          setLoading(false);
-        }, 1000);
-        setChangesMade(false);
-        await axios({
-          url: `${BACKEND_URL}/api/v1/notificationprofiles/`,
-          method: 'POST',
-          headers: {
-            Authorization: 'Token ' + localStorage.getItem('token')
-          },
-          data: {
-            time_slot: selectedTimeslots.value,
-            filters: selectedFilters.map((f: any) => {
-              return f.value;
-            }),
-            media: mediaSelected.map((media: any) => {
-              return media.value;
-            }),
-            active: checkBox
-          }
-        })
-          .then((response: any) => {
-            setId(response.data.pk);
+
+        const timeSlot = selectedTimeslots.value
+        const filters = selectedFilters.map((f: any) => { return f.value; })
+        const media = mediaSelected.map((media: any) => { return media.value; })  
+        const active = checkBox
+
+        const promise = ((exist || id)
+            ? Api.putNotificationProfile(timeSlot, filters, media, active)
+            : Api.postNotificationProfile(timeSlot, filters, media, active))
+
+        promise.then(notificationProfile => {
+            setId(notificationProfile.pk);
             setTimeOptions([selectedTimeslots]);
             props.removeTimeslot(selectedTimeslots);
-          })
-          .catch((error: any) => {
-            alert('Timeslot is already in use or profile could not be saved');
-          });
-      }
-    } else alert('Missing values');
+        }).catch(error => {
+            alert(`Timeslot is already in use or profile could not be saved: ${error}`)
+        })
+    } else {
+        alert('Missing values');
+        return
+    }
   };
 
   const handleChange = (event: any) => {
@@ -143,15 +110,8 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
   const handleDelete = async () => {
     //slett fra database her:
     if (props.mediaKey) {
-      await axios({
-        url: `${BACKEND_URL}/api/v1/notificationprofiles/${selectedTimeslots.value}`,
-        method: 'DELETE',
-        headers: {
-          Authorization: 'Token ' + localStorage.getItem('token')
-        }
-      }).then((response: any) => {
-        props.deleteProfile(props.index, false);
-      });
+      Api.deleteNotificationProfile(selectedTimeslots.value)
+        .then(success => success && props.deleteProfile(props.index, false))
     } else {
       props.deleteProfile(props.index, true);
     }

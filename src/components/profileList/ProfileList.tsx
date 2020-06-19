@@ -3,17 +3,29 @@ import './ProfileList.css';
 import Profile from '../profile/Profile';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
-import axios from 'axios';
-import { BACKEND_URL } from '../../config'
+import Api, {NotificationProfile, NotificationProfilePK, Filter, Timeslot} from '../../api'
+
+interface FilterData {
+    label: string
+    value: string
+}
+
+interface TimeslotData {
+    label: string
+    value: string
+}
+
+interface Data {
+    label: string
+    value: string | number
+}
 
 const ProfileList: React.FC = () => {
-  const [notificationprofiles, setNotificationprofiles] = useState([]);
-  const [addedNotificationprofiles, setaddedNotificationprofiles] = useState(
-    []
-  );
-  const [newProfileCounter, setNewProfileCounter] = useState(0);
-  const [filters, setFilters] = useState<any>([]);
-  const [timeslots, setTimeslots] = useState<any>([]);
+  const [notificationprofiles, setNotificationprofiles] = useState<NotificationProfile[]>([]);
+  const [addedNotificationprofiles, setaddedNotificationprofiles] = useState<NotificationProfilePK[]>([]);
+  const [newProfileCounter, setNewProfileCounter] = useState<number>(0);
+  const [filters, setFilters] = useState<FilterData[]>([]);
+  const [timeslots, setTimeslots] = useState<TimeslotData[]>([]);
   const mediaOptions = [
     { label: 'Slack', value: 'SL' },
     { label: 'SMS', value: 'SM' },
@@ -22,59 +34,24 @@ const ProfileList: React.FC = () => {
 
   useEffect(() => {
     getNotificationprofiles();
-    getFilters();
-    getTimeslots();
+    Api.getAllFilters().then((filters: Filter[]) => {
+        setFilters(formatData<FilterData>(filters))
+    })
+    Api.getAllTimeslots().then((timeslots: Timeslot[]) => {
+        setTimeslots(formatData<TimeslotData>(timeslots))
+    })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   //fetch all notificationprofiles
   const getNotificationprofiles = async () => {
-    await axios({
-      url: `${BACKEND_URL}/api/v1/notificationprofiles/`,
-      method: 'GET',
-      headers: {
-        Authorization: 'Token ' + localStorage.getItem('token')
-      }
-    }).then((response: any) => {
-      setNotificationprofiles(response.data);
-    });
-  };
-  //fetch all filters
-  const getFilters = async () => {
-    await axios({
-      url: `${BACKEND_URL}/api/v1/notificationprofiles/filters/`,
-      method: 'GET',
-      headers: {
-        Authorization: 'Token ' + localStorage.getItem('token')
-      }
-    }).then((response: any) => {
-      setFilters(formatData(response.data));
-    });
+    Api.getAllNotificationProfiles().then((profiles: NotificationProfile[]) => {
+        setNotificationprofiles(profiles)
+    })
   };
 
-  //fetch all timeslots
-  const getTimeslots = async () => {
-    await axios({
-      url: `${BACKEND_URL}/api/v1/notificationprofiles/timeslots/`,
-      method: 'GET',
-      headers: {
-        Authorization: 'Token ' + localStorage.getItem('token')
-      }
-    }).then((response: any) => {
-      setTimeslots(formatData(response.data));
-    });
-  };
-
-  const formatData = (data: any) => {
-    const formattedList: any = [];
-    data.forEach((element: any) => {
-      const object: any = {
-        value: element.pk,
-        label: element.name
-      };
-      formattedList.push(object);
-    });
-    return formattedList;
+  function formatData<T extends Data>(input: (Filter | Timeslot)[]): T[] {
+    return input.map((elem: (Filter | Timeslot)) => ({ value: elem.pk, label: elem.name } as T))
   };
 
   const deleteProfile = (num: number, isNew: boolean) => {

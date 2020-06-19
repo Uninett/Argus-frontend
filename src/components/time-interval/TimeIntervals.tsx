@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import TimeSlot from "../time-slot/TimeSlot";
 import axios from "axios";
 import { BACKEND_URL } from "../../config"
+import Api, { Timeslot } from "../../api"
 
 const TimeIntervals: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -41,40 +42,21 @@ const TimeIntervals: React.FC = () => {
     inputTimeSlotKey: string,
     inputTimeIntervalKey: string
   ) => {
-    await axios({
-      url: `${BACKEND_URL}/api/v1/notificationprofiles/timeslots/`,
-      method: "GET",
-      headers: {
-        Authorization: "Token " + localStorage.getItem("token")
-      }
-    }).then((response: any) => {
-      buildTimeSlots(
-        response.data,
-        firstTime,
-        inputTimeSlotKey,
-        inputTimeIntervalKey
-      );
-    });
+    Api.getAllTimeslots().then((timeslots: Timeslot[]) => {
+        buildTimeSlots(timeslots, firstTime, inputTimeSlotKey, inputTimeIntervalKey)
+    })
   };
 
   const deleteTimeSlot = async (key: string) => {
-    await axios({
-      url:
-        `${BACKEND_URL}/api/v1/notificationprofiles/timeslots/` +
-        timeSlotPK.get(key),
-      method: "DELETE",
-      headers: {
-        Authorization: "Token " + localStorage.getItem("token")
-      }
-    }).then(() => {
-      const newTimeSlots = [...timeSlots];
-      let timeSlotMap: any;
-      timeSlots.forEach(timeSlot => {
-        if (timeSlot.has(key)) timeSlotMap = timeSlot;
-      });
-      newTimeSlots.splice(newTimeSlots.indexOf(timeSlotMap), 1);
-      setTimeSlots(newTimeSlots);
-    });
+    Api.deleteTimeslot(timeSlotPK.get(key)).then((response: any) => {
+       const newTimeSlots = [...timeSlots];
+       let timeSlotMap: any;
+       timeSlots.forEach(timeSlot => {
+         if (timeSlot.has(key)) timeSlotMap = timeSlot;
+       });
+       newTimeSlots.splice(newTimeSlots.indexOf(timeSlotMap), 1);
+       setTimeSlots(newTimeSlots);
+    })
   };
 
   const buildTimeSlots = (

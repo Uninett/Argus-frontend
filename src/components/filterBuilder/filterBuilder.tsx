@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
-import axios from 'axios';
 import './FilterBuilder.css';
-import moment from 'moment';
-import { BACKEND_URL } from '../../config'
 
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -12,51 +9,47 @@ import Dialog from '@material-ui/core/Dialog';
 import Table from '../react-table/Table';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 
-type Metadata = { label: string; value: string }[];
+import Api, {Alert, AlertMetadata, Filter, FilterDefinition} from '../../api'
+import {AlertWithFormattedTimestamp, alertWithFormattedTimestamp} from '../../utils'
+
+
+type NameAndPK = { pk: string | number, name: string }
+type Metadata = { label: string; value: string | number };
 const defaultResponse = [{ label: 'none', value: 'none' }];
 
-type Filter = {
-  sourceIds: string[];
-  objectTypeIds: string[];
-  parentObjectIds: string[];
-  problemTypeIds: string[];
-};
 
-const defaultFilter = {
+const defaultFilter: FilterDefinition = {
   sourceIds: [],
   objectTypeIds: [],
   parentObjectIds: [],
   problemTypeIds: [],
 };
 
-const alertSourcesResponse: Metadata = [];
-const objectTypesResponse: Metadata = [];
-const parentObjectsResponse: Metadata = [];
-const problemTypesResponse: Metadata = [];
+const alertSourcesResponse: Metadata[] = [];
+const objectTypesResponse: Metadata[] = [];
+const parentObjectsResponse: Metadata[] = [];
+const problemTypesResponse: Metadata[] = [];
 
-const properties = [
-  { propertyName: 'alertSources', list: alertSourcesResponse },
-  { propertyName: 'objectTypes', list: objectTypesResponse },
-  { propertyName: 'parentObjects', list: parentObjectsResponse },
-  { propertyName: 'problemTypes', list: problemTypesResponse },
-];
+function mapToMetadata<T extends NameAndPK>(meta: T): Metadata {
+    return {label: meta.name, value: meta.pk}
+}
 
 const FilterBuilder: React.FC = () => {
   const LOADING_TEXT = "Loading...";
   const NO_DATA_TEXT = "No data";
   const NO_MATCHING_ALERTS_TEXT = "No matching alerts";
 
-  const [filter, setFilter] = useState<Filter>(defaultFilter);
-  const [name, setName] = useState('');
+  const [filter, setFilter] = useState<FilterDefinition>(defaultFilter);
+  const [name, setName] = useState<string>('');
 
-  const [sourceIds, setSourceIds] = useState<Metadata>(
+  const [sourceIds, setSourceIds] = useState<Metadata[]>(
       defaultResponse
   );
-  const [objectTypeIds, setObjectTypeIds] = useState<Metadata>(defaultResponse);
-  const [parentObjectIds, setParentObjectIds] = useState<Metadata>(defaultResponse);
-  const [problemTypeIds, setProblemTypeIds] = useState<Metadata>(defaultResponse);
+  const [objectTypeIds, setObjectTypeIds] = useState<Metadata[]>(defaultResponse);
+  const [parentObjectIds, setParentObjectIds] = useState<Metadata[]>(defaultResponse);
+  const [problemTypeIds, setProblemTypeIds] = useState<Metadata[]>(defaultResponse);
 
-  const [previewAlerts, setPreviewAlerts] = useState<any>([]);
+  const [previewAlerts, setPreviewAlerts] = useState<AlertWithFormattedTimestamp[]>([]);
   const [noDataText, setNoDataText] = useState<string>(LOADING_TEXT);
   const [showDialog, setShowDialog] = useState<[boolean, string]>([false, '']);
 
@@ -65,90 +58,45 @@ const FilterBuilder: React.FC = () => {
     getAlerts();
   }, []);
 
-  //fetches alerts and sets state
-  const getAlerts = async () => {
-    await axios({
-      url: `${BACKEND_URL}/api/v1/alerts/`,
-      method: 'GET',
-      headers: {
-        Authorization: 'Token ' + localStorage.getItem('token')
-      }
-    }).then((response: any) => {
-      for (let item of response.data) {
-        item.timestamp = moment(item.timestamp).format('YYYY.MM.DD  hh:mm:ss');
-      }
-      setNoDataText(response.data.length === 0 ? NO_DATA_TEXT : LOADING_TEXT);
-      setPreviewAlerts(response.data);
-    });
-  };
+  const getAlerts = (filter?: FilterDefinition) => {
+    const promise = (filter && Api.postFilterPreview(filter)) || Api.getAllAlerts()
+    promise.then((alerts: Alert[]) => {
+        const formattedAlerts = alerts.map(alertWithFormattedTimestamp)
+        setNoDataText(alerts.length === 0 ? NO_DATA_TEXT : LOADING_TEXT)
+        setPreviewAlerts(formattedAlerts)
+    })
+  }
 
   const postNewFilter = async () => {
-    await axios({
-      url: `${BACKEND_URL}/api/v1/notificationprofiles/filters/`,
-      method: 'POST',
-      headers: {
-        Authorization: 'Token ' + localStorage.getItem('token')
-      },
-      data: {
-        name: name,
-        filter_string: JSON.stringify(filter)
-      }
+    await Api.postFilter(name, JSON.stringify(filter)).then((filter: Filter) => {
+        setShowDialog([true, ' Successfully saved filter ']);
+    }).catch(error => {
+        setShowDialog([ true, `Unable to create filter: ${name}. Try using a different name` ]);
+        console.log(error)
     })
-      .then(result => {
-        if (result.status === 201) {
-          setShowDialog([true, ' Successfully saved filter ']);
-        }
-      })
-      .catch(response => {
-        setShowDialog([
-          true,
-          'oops, something went wrong :(, try a different name'
-        ]);
-      });
-  };
+  }
 
-  const preview = async () => {
-    await axios({
-      url: `${BACKEND_URL}/api/v1/notificationprofiles/filterpreview/`,
-      method: 'POST',
-      headers: {
-        Authorization: 'Token ' + localStorage.getItem('token')
-      },
-      data: filter
-    }).then(response => {
-      for (let item of response.data) {
-        item.timestamp = moment(item.timestamp).format('YYYY.MM.DD  hh:mm:ss');
-      }
-      setNoDataText(response.data.length === 0 ? NO_MATCHING_ALERTS_TEXT : LOADING_TEXT);
-      setPreviewAlerts(response.data);
-    });
-  };
+  const preview = async () => { await getAlerts(filter) };
 
   const fetchProblemTypes = async () => {
-    await axios({
-      url: `${BACKEND_URL}/api/v1/alerts/metadata/`,
-      method: 'GET',
-      headers: {
-        Authorization: 'Token ' + localStorage.getItem('token')
-      }
-    }).then(result => {
-      properties.map(p => {
-        return result.data[p.propertyName].map((obj: any) => {
-          return p.list.push({
-            label: obj.name,
-            value: obj.pk
-          });
-        });
-      });
-    });
-    setSourceIds(alertSourcesResponse);
-    setParentObjectIds(parentObjectsResponse);
-    setObjectTypeIds(objectTypesResponse);
-    setProblemTypeIds(problemTypesResponse);
-  };
+    await Api.getAllAlertsMetadata().then((alertMetadata: AlertMetadata): AlertMetadata => {
+        // TODO: is all of this necessary?
+        alertMetadata.alertSources.map(mapToMetadata).forEach((m: Metadata) => alertSourcesResponse.push(m))
+        alertMetadata.objectTypes.map(mapToMetadata).forEach((m: Metadata) => objectTypesResponse.push(m))
+        alertMetadata.parentObjects.map(mapToMetadata).forEach((m: Metadata) => parentObjectsResponse.push(m))
+        alertMetadata.problemTypes.map(mapToMetadata).forEach((m: Metadata) => problemTypesResponse.push(m))
+
+        setSourceIds(alertSourcesResponse)
+        setParentObjectIds(parentObjectsResponse)
+        setObjectTypeIds(objectTypesResponse)
+        setProblemTypeIds(problemTypesResponse)
+
+        return alertMetadata
+    })
+  }
 
   const handleChange = (value: any, property: string) => {
-    let newFilter: any = filter;
+    const newFilter: any = filter;
     newFilter[property] = value
       ? value.map((obj: any) => {
           return obj.value;

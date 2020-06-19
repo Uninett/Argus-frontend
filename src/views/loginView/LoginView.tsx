@@ -1,9 +1,10 @@
 import React, { useState, useContext } from 'react';
 import './LoginView.css';
-import Axios from 'axios';
 import { Store } from '../../store';
 import auth from '../../auth';
 import { BACKEND_URL } from '../../config'
+
+import Api from '../../api'
 
 
 const LoginView: React.FC<any> = props => {
@@ -25,25 +26,22 @@ const LoginView: React.FC<any> = props => {
 
   //get Token and set localStorage with token, username and isloggedin
   const getToken = async () => {
-    await Axios({
-      url: `${BACKEND_URL}/api/v1/token-auth/`,
-      method: 'POST',
-      data: { username: username, password: password }
+    console.log("getToken called");
+    Api.userpassAuth(username, password).then(token => {
+        console.log("got token!", token)
+        Api.useAuthToken(token)
+
+        localStorage.setItem("token", token)
+        localStorage.setItem("user", username)
+        localStorage.setItem("loggedin", "true")
+        
+        dispatch({ type: "setUser", "payload": username })
+        dispatch({ type: "setToken", "payload": token })
+        dispatch({ type: "setLoggedIn", "payload": true })
+    }).catch(error => {
+        console.log(error)
+        setLoginAttemptFailed(true)
     })
-      .then(result => {
-        localStorage.setItem('token', result.data.token);
-        localStorage.setItem('user', result.data.token ? username : 'null');
-        localStorage.setItem('loggedin', result.data.token ? 'true' : 'false');
-        dispatch({ type: 'setUser', payload: username });
-        dispatch({ type: 'setToken', payload: result.data.token });
-        dispatch({
-          type: 'setLoggedin',
-          payload: result.data.token ? true : false
-        });
-      })
-      .catch(error => {
-        setLoginAttemptFailed(true);
-      });
   };
 
   return (
