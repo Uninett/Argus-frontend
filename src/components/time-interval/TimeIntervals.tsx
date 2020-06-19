@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import TimeSlot from "../time-slot/TimeSlot";
-import axios from "axios";
-import { BACKEND_URL } from "../../config"
 import api, { Timeslot } from "../../api"
 
 const TimeIntervals: React.FC = () => {

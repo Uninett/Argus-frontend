@@ -37,7 +37,7 @@ function mapToMetadata<T extends NameAndPK>(meta: T): Metadata {
 const FilterBuilder: React.FC = () => {
   const LOADING_TEXT = "Loading...";
   const NO_DATA_TEXT = "No data";
-  const NO_MATCHING_ALERTS_TEXT = "No matching alerts";
+  // const NO_MATCHING_ALERTS_TEXT = "No matching alerts";
 
   const [filter, setFilter] = useState<FilterDefinition>(defaultFilter);
   const [name, setName] = useState<string>('');

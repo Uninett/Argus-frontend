@@ -1,10 +1,9 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, /* useContext */ } from 'react';
 
 import './LoginView.css';
-import { Store } from '../../store';
+// import { Store } from '../../store';
 import Auth from '../../auth';
 import { BACKEND_URL } from '../../config'
-import { AxiosResponse } from 'axios'
 import api, { Token } from '../../api'
 import { loginAndSetUser } from '../../utils'
 
@@ -12,7 +11,7 @@ const LoginView: React.FC<any> = props => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loginAttemptFailed, setLoginAttemptFailed] = useState(false);
-  const { dispatch } = useContext(Store);
+  // const { dispatch } = useContext(Store);
 
   const onSubmit = async (e: any) => {
     e.preventDefault();
