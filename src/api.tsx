@@ -4,7 +4,7 @@ import axios, {
   AxiosInstance,
 } from "axios";
 
-import Auth from "./auth"
+import auth from "./auth"
 
 import { BACKEND_URL } from "./config";
 
@@ -187,7 +187,12 @@ export class ApiClient {
   public constructor(config?: AxiosRequestConfig) {
     this.config = config || apiConfig;
     this.api = axios.create(this.config);
-    this.token = Auth.token()
+    this.token = auth.token()
+
+    this.registerUnauthorizedCallback((reponse: AxiosResponse, error) => {
+        console.log("Unauthorized response recieved, logging out!")
+        auth.logout()
+    })
   }
 
   public registerUnauthorizedCallback(callback: (response: AxiosResponse, error: any) => void) {
@@ -443,8 +448,8 @@ export class ApiClient {
   }
 
   private mustBeAuthenticated<T>(ifAuthenticated: (token: Token) => Promise<T>): Promise<T> {
-    const token = Auth.token()
-    if (Auth.isAuthenticated() && token) {
+    const token = auth.token()
+    if (auth.isAuthenticated() && token) {
         return ifAuthenticated(token)
     }
     return Promise.reject("Not authenticated")

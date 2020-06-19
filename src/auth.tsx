@@ -20,7 +20,7 @@ class Auth {
     this.authenticated = false;
     this._token = undefined
     cookies.remove("token")
-    localStorage.remove("user")
+    localStorage.removeItem("user")
     if (callback) callback();
   }
 
