@@ -1,5 +1,4 @@
 import React, { useState, useContext } from 'react';
-import { Cookies } from "react-cookie";
 
 import './LoginView.css';
 import { Store } from '../../store';
@@ -7,6 +6,7 @@ import Auth from '../../auth';
 import { BACKEND_URL } from '../../config'
 import { AxiosResponse } from 'axios'
 import Api, { Token } from '../../api'
+import { loginAndSetUser } from '../../utils'
 
 const LoginView: React.FC<any> = props => {
   const [username, setUsername] = useState('');
@@ -20,10 +20,9 @@ const LoginView: React.FC<any> = props => {
 
     Api.userpassAuth(username, password).then((token: Token) => {
       console.log("Logged in using user-pass auth")
-      setLoginAttemptFailed(false)
-
-      Auth.login(token, () => {
-        props.history.push('/');
+      loginAndSetUser(token).then(() => {
+          setLoginAttemptFailed(false)
+          props.history.push('/');
       })
     }).catch(error => {
         console.log(error)
