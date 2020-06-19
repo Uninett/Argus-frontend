@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import TimeSlot from "../time-slot/TimeSlot";
 import axios from "axios";
+import { BACKEND_URL } from "../../config"
 
 const TimeIntervals: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -41,7 +42,7 @@ const TimeIntervals: React.FC = () => {
     inputTimeIntervalKey: string
   ) => {
     await axios({
-      url: "/api/v1/notificationprofiles/timeslots/",
+      url: `${BACKEND_URL}/api/v1/notificationprofiles/timeslots/`,
       method: "GET",
       headers: {
         Authorization: "Token " + localStorage.getItem("token")
@@ -59,7 +60,7 @@ const TimeIntervals: React.FC = () => {
   const deleteTimeSlot = async (key: string) => {
     await axios({
       url:
-        "/api/v1/notificationprofiles/timeslots/" +
+        `${BACKEND_URL}/api/v1/notificationprofiles/timeslots/` +
         timeSlotPK.get(key),
       method: "DELETE",
       headers: {
@@ -167,7 +168,7 @@ const TimeIntervals: React.FC = () => {
     if (fromServer.get(timeSlotKey)) {
       await axios({
         url:
-          "/api/v1/notificationprofiles/timeslots/" +
+          `${BACKEND_URL}/api/v1/notificationprofiles/timeslots/` +
           timeSlotPK.get(timeSlotKey),
         method: "PUT",
         headers: {
@@ -178,7 +179,7 @@ const TimeIntervals: React.FC = () => {
       });
     } else {
       await axios({
-        url: "/api/v1/notificationprofiles/timeslots/",
+        url: `${BACKEND_URL}/api/v1/notificationprofiles/timeslots/`,
         method: "POST",
         headers: {
           Authorization: "Token " + localStorage.getItem("token")
