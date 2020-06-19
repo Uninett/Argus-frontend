@@ -4,7 +4,7 @@ import Header from '../../components/header/Header';
 import Table from '../../components/react-table/Table';
 import '../../components/react-table/table.css';
 import { withRouter } from 'react-router-dom';
-import Api, {Alert} from "../../api";
+import api, {Alert} from "../../api";
 import {AlertWithFormattedTimestamp, alertWithFormattedTimestamp} from "../../utils";
 
 type PropType = {};
@@ -20,7 +20,7 @@ const AlertView: React.FC<PropType> = props => {
 
   //fetches alerts and sets state
   const getAlerts = async () => {   
-    await Api.getActiveAlerts().then((alerts: Alert[]) => {
+    await api.getActiveAlerts().then((alerts: Alert[]) => {
        const alertsWithFormattedTimestamps = alerts.map(alertWithFormattedTimestamp)
        setNoDataText(alerts.length === 0 ? NO_DATA_TEXT : LOADING_TEXT);
        setAlerts(alertsWithFormattedTimestamps);

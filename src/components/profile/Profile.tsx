@@ -6,7 +6,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import Dialogue from '../dialogue/Dialogue';
 import Spinner from '../spinners/Spinner';
 import './Profile.css';
-import Api from '../../api'
+import api from '../../api'
 
 type ProfileProps = {
   filters: { value: string; label: string }[];
@@ -72,8 +72,8 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
         const active = checkBox
 
         const promise = ((exist || id)
-            ? Api.putNotificationProfile(timeSlot, filters, media, active)
-            : Api.postNotificationProfile(timeSlot, filters, media, active))
+            ? api.putNotificationProfile(timeSlot, filters, media, active)
+            : api.postNotificationProfile(timeSlot, filters, media, active))
 
         promise.then(notificationProfile => {
             setId(notificationProfile.pk);
@@ -110,7 +110,7 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
   const handleDelete = async () => {
     //slett fra database her:
     if (props.mediaKey) {
-      Api.deleteNotificationProfile(selectedTimeslots.value)
+      api.deleteNotificationProfile(selectedTimeslots.value)
         .then(success => success && props.deleteProfile(props.index, false))
     } else {
       props.deleteProfile(props.index, true);

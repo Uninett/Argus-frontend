@@ -9,7 +9,7 @@ import Dialog from '@material-ui/core/Dialog';
 import Table from '../react-table/Table';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 
-import Api, {Alert, AlertMetadata, Filter, FilterDefinition} from '../../api'
+import api, {Alert, AlertMetadata, Filter, FilterDefinition} from '../../api'
 import {AlertWithFormattedTimestamp, alertWithFormattedTimestamp} from '../../utils'
 
 
@@ -59,7 +59,7 @@ const FilterBuilder: React.FC = () => {
   }, []);
 
   const getAlerts = (filter?: FilterDefinition) => {
-    const promise = (filter && Api.postFilterPreview(filter)) || Api.getAllAlerts()
+    const promise = (filter && api.postFilterPreview(filter)) || api.getAllAlerts()
     promise.then((alerts: Alert[]) => {
         const formattedAlerts = alerts.map(alertWithFormattedTimestamp)
         setNoDataText(alerts.length === 0 ? NO_DATA_TEXT : LOADING_TEXT)
@@ -68,7 +68,7 @@ const FilterBuilder: React.FC = () => {
   }
 
   const postNewFilter = async () => {
-    await Api.postFilter(name, JSON.stringify(filter)).then((filter: Filter) => {
+    await api.postFilter(name, JSON.stringify(filter)).then((filter: Filter) => {
         setShowDialog([true, ' Successfully saved filter ']);
     }).catch(error => {
         setShowDialog([ true, `Unable to create filter: ${name}. Try using a different name` ]);
@@ -79,7 +79,7 @@ const FilterBuilder: React.FC = () => {
   const preview = async () => { await getAlerts(filter) };
 
   const fetchProblemTypes = async () => {
-    await Api.getAllAlertsMetadata().then((alertMetadata: AlertMetadata): AlertMetadata => {
+    await api.getAllAlertsMetadata().then((alertMetadata: AlertMetadata): AlertMetadata => {
         // TODO: is all of this necessary?
         alertMetadata.alertSources.map(mapToMetadata).forEach((m: Metadata) => alertSourcesResponse.push(m))
         alertMetadata.objectTypes.map(mapToMetadata).forEach((m: Metadata) => objectTypesResponse.push(m))

@@ -3,7 +3,7 @@ import './ProfileList.css';
 import Profile from '../profile/Profile';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
-import Api, {NotificationProfile, NotificationProfilePK, Filter, Timeslot} from '../../api'
+import api, {NotificationProfile, NotificationProfilePK, Filter, Timeslot} from '../../api'
 
 interface FilterData {
     label: string
@@ -34,10 +34,10 @@ const ProfileList: React.FC = () => {
 
   useEffect(() => {
     getNotificationprofiles();
-    Api.getAllFilters().then((filters: Filter[]) => {
+    api.getAllFilters().then((filters: Filter[]) => {
         setFilters(formatData<FilterData>(filters))
     })
-    Api.getAllTimeslots().then((timeslots: Timeslot[]) => {
+    api.getAllTimeslots().then((timeslots: Timeslot[]) => {
         setTimeslots(formatData<TimeslotData>(timeslots))
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -45,7 +45,7 @@ const ProfileList: React.FC = () => {
 
   //fetch all notificationprofiles
   const getNotificationprofiles = async () => {
-    Api.getAllNotificationProfiles().then((profiles: NotificationProfile[]) => {
+    api.getAllNotificationProfiles().then((profiles: NotificationProfile[]) => {
         setNotificationprofiles(profiles)
     })
   };

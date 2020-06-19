@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import TimeSlot from "../time-slot/TimeSlot";
 import axios from "axios";
 import { BACKEND_URL } from "../../config"
-import Api, { Timeslot } from "../../api"
+import api, { Timeslot } from "../../api"
 
 const TimeIntervals: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -42,13 +42,13 @@ const TimeIntervals: React.FC = () => {
     inputTimeSlotKey: string,
     inputTimeIntervalKey: string
   ) => {
-    Api.getAllTimeslots().then((timeslots: Timeslot[]) => {
+    api.getAllTimeslots().then((timeslots: Timeslot[]) => {
         buildTimeSlots(timeslots, firstTime, inputTimeSlotKey, inputTimeIntervalKey)
     })
   };
 
   const deleteTimeSlot = async (key: string) => {
-    Api.deleteTimeslot(timeSlotPK.get(key)).then((response: any) => {
+    api.deleteTimeslot(timeSlotPK.get(key)).then((response: any) => {
        const newTimeSlots = [...timeSlots];
        let timeSlotMap: any;
        timeSlots.forEach(timeSlot => {
@@ -148,9 +148,9 @@ const TimeIntervals: React.FC = () => {
   const addTimeSlot = async (timeSlotKey: any) => {
     const dataTimeIntervals = buildDataTimeIntervals(timeSlotKey);
     if (fromServer.get(timeSlotKey)) {
-      await Api.putTimeslot(timeSlotPK.get(timeSlotKey), nameField.get(timeSlotKey), dataTimeIntervals)
+      await api.putTimeslot(timeSlotPK.get(timeSlotKey), nameField.get(timeSlotKey), dataTimeIntervals)
     } else {
-      await Api.putTimeslot(timeSlotPK.get(timeSlotKey), nameField.get(timeSlotKey), dataTimeIntervals)
+      await api.putTimeslot(timeSlotPK.get(timeSlotKey), nameField.get(timeSlotKey), dataTimeIntervals)
       .then(() => {
         const timeSlotKey = uuidv1();
         const timeIntervalKey = uuidv1();

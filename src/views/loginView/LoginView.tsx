@@ -5,7 +5,7 @@ import { Store } from '../../store';
 import Auth from '../../auth';
 import { BACKEND_URL } from '../../config'
 import { AxiosResponse } from 'axios'
-import Api, { Token } from '../../api'
+import api, { Token } from '../../api'
 import { loginAndSetUser } from '../../utils'
 
 const LoginView: React.FC<any> = props => {
@@ -14,11 +14,10 @@ const LoginView: React.FC<any> = props => {
   const [loginAttemptFailed, setLoginAttemptFailed] = useState(false);
   const { dispatch } = useContext(Store);
 
-  //runs when the form is submitted. GetToken() will run and then it will redirect to AlertView
   const onSubmit = async (e: any) => {
     e.preventDefault();
 
-    Api.userpassAuth(username, password).then((token: Token) => {
+    api.userpassAuth(username, password).then((token: Token) => {
       console.log("Logged in using user-pass auth")
       loginAndSetUser(token).then(() => {
           setLoginAttemptFailed(false)
