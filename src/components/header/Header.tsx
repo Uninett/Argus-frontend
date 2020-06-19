@@ -3,18 +3,10 @@ import './Header.css';
 import auth from '../../auth';
 import { Link, withRouter } from 'react-router-dom';
 
-const Userbutton: React.FC<{ history: any }> = props => {
-  const [user, setUser] = useState<any>('');
-
-  useEffect(() => {
-    setTimeout(() => {
-      setUser(localStorage.getItem('user'));
-    }, 10);
-  }, []);
-
+const Userbutton: React.FC<{ history: any, user: string }> = props => {
   return (
     <div id='header-user' className='headerbutton dropdown'>
-      <p>{user}</p>
+      <p>{props.user}</p>
       <div className='dropdown-content'>
         <button
           className='headerbutton dropdown-button'
@@ -32,6 +24,9 @@ const Userbutton: React.FC<{ history: any }> = props => {
 };
 
 const Header: React.FC<{ history: any }> = props => {
+  // TODO: Use react context
+  const user =  localStorage.getItem("user") || "unknown"
+
   return (
     <div className='header'>
       <Link to='/'>
@@ -71,7 +66,7 @@ const Header: React.FC<{ history: any }> = props => {
           <p>Notification profiles</p>
         </Link>
 
-        <Userbutton history={props.history} />
+        <Userbutton history={props.history} user={user} />
       </div>
     </div>
   );

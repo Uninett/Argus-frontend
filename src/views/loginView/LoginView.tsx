@@ -1,4 +1,4 @@
-import React, { useState, /* useContext */ } from 'react';
+import React, { useState, useContext } from 'react';
 
 import './LoginView.css';
 // import { Store } from '../../store';
@@ -7,19 +7,22 @@ import { BACKEND_URL } from '../../config'
 import api, { Token } from '../../api'
 import { loginAndSetUser } from '../../utils'
 
+import { Store } from "../../store"
+
 const LoginView: React.FC<any> = props => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loginAttemptFailed, setLoginAttemptFailed] = useState(false);
-  // const { dispatch } = useContext(Store);
+  const { dispatch } = useContext(Store);
 
   const onSubmit = async (e: any) => {
     e.preventDefault();
 
-    api.userpassAuth(username, password).then((token: Token) => {
+    await api.userpassAuth(username, password).then((token: Token) => {
       console.log("Logged in using user-pass auth")
       loginAndSetUser(token).then(() => {
           setLoginAttemptFailed(false)
+          dispatch({ type: "setUser", payload: localStorage.getItem("user") })
           props.history.push('/');
       })
     }).catch(error => {

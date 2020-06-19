@@ -18,7 +18,8 @@ export function alertWithFormattedTimestamp(
 export async function loginAndSetUser(token: Token): Promise<void> {
   return auth.login(token, () => {
     api.authGetUser().then((user: User) => {
-      localStorage.setItem('user', user.first_name.split(' ')[0]);
+      const userName: string = user.first_name.split(' ')[0]
+      localStorage.setItem('user', userName);
     }).catch(error => {
       console.log("error", error)
     })
