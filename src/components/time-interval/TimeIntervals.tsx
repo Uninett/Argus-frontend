@@ -148,7 +148,7 @@ const TimeIntervals: React.FC = () => {
     if (fromServer.get(timeSlotKey)) {
       await api.putTimeslot(timeSlotPK.get(timeSlotKey), nameField.get(timeSlotKey), dataTimeIntervals)
     } else {
-      await api.putTimeslot(timeSlotPK.get(timeSlotKey), nameField.get(timeSlotKey), dataTimeIntervals)
+      await api.postTimeslot(nameField.get(timeSlotKey), dataTimeIntervals)
       .then(() => {
         const timeSlotKey = uuidv1();
         const timeIntervalKey = uuidv1();

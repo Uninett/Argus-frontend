@@ -412,7 +412,19 @@ export class ApiClient {
       ),
      defaultResolver,
       (error) =>
-        new Error(`Failed to delete notificationprofile timeslots: ${error}`)
+        new Error(`Failed to put notificationprofile timeslot: ${error}`)
+    );
+  }
+
+  public postTimeslot(name: string, timeIntervals: TimeInterval[]): Promise<Timeslot> {
+    return resolveOrReject(
+      this.authPost<Timeslot, Omit<Timeslot, "pk">>(
+        `/api/v1/notificationprofiles/timeslots/`,
+        { name, "time_intervals": timeIntervals }
+      ),
+     defaultResolver,
+      (error) =>
+        new Error(`Failed to post notificationprofile timeslot: ${error}`)
     );
   }
 
