@@ -4,9 +4,9 @@ import TimeInterval from "../time-interval-select/TimeInterval";
 import Button from "@material-ui/core/Button";
 import Dialog from "../dialogue/Dialogue";
 
-type timeSlotProp = {
+type timeslotProp = {
   timeIntervals: any;
-  saveTimeSlot: any;
+  saveTimeslot: any;
   handleStartTimeChange: any;
   handleEndTimeChange: any;
   handleDayChange: any;
@@ -16,18 +16,18 @@ type timeSlotProp = {
   addTimeInterval: any;
   handleNameChange: any;
   deleteTimeInterval: any;
-  deleteTimeSlot: any;
-  timeSlotKey: string;
-  timeSlots: any;
-  timeSlotName: string | undefined;
+  deleteTimeslot: any;
+  timeslotKey: string;
+  timeslots: any;
+  timeslotName: string | undefined;
 };
 
-const TimeSlot: React.FC<timeSlotProp> = (props: timeSlotProp) => {
+const Timeslot: React.FC<timeslotProp> = (props: timeslotProp) => {
   const setSlotlist = () => {
     const list: any = [];
-    props.timeSlots.forEach((timeSlotMap: any) => {
-      if (timeSlotMap.has(props.timeSlotKey)) {
-        list.push(...timeSlotMap.get(props.timeSlotKey));
+    props.timeslots.forEach((timeslotMap: any) => {
+      if (timeslotMap.has(props.timeslotKey)) {
+        list.push(...timeslotMap.get(props.timeslotKey));
       }
     });
     return list;
@@ -39,12 +39,12 @@ const TimeSlot: React.FC<timeSlotProp> = (props: timeSlotProp) => {
     <div className="super-container">
       <div className="timeslot-name">
         <TextField
-          value={props.timeSlotName || ""}
+          value={props.timeslotName || ""}
           required={true}
           margin="normal"
           variant="outlined"
-          helperText="Name of time slot"
-          onChange={(e) => props.handleNameChange(e.target.value, props.timeSlotKey)}
+          helperText="Name of timeslot"
+          onChange={(e) => props.handleNameChange(e.target.value, props.timeslotKey)}
         />
       </div>
 
@@ -73,19 +73,19 @@ const TimeSlot: React.FC<timeSlotProp> = (props: timeSlotProp) => {
             );
           })}
       </div>
-      <Button className="timeslot-addNew" variant="contained" onClick={() => props.addTimeInterval(props.timeSlotKey)}>
+      <Button className="timeslot-addNew" variant="contained" onClick={() => props.addTimeInterval(props.timeslotKey)}>
         +
       </Button>
       <div className="saveDelete">
         <div className="timeslot-delete">
-          <Dialog handleDelete={() => props.deleteTimeSlot(props.timeSlotKey)} />
+          <Dialog handleDelete={() => props.deleteTimeslot(props.timeslotKey)} />
         </div>
         <div className="timeslot-save">
           <Button
             variant="contained"
             color="primary"
             onClick={() => {
-              props.saveTimeSlot(props.timeSlotKey);
+              props.saveTimeslot(props.timeslotKey);
             }}
           >
             Save
@@ -96,4 +96,4 @@ const TimeSlot: React.FC<timeSlotProp> = (props: timeSlotProp) => {
   );
 };
 
-export default TimeSlot;
+export default Timeslot;
