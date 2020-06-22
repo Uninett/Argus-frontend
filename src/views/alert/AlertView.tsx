@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./AlertView.css";
 import Header from "../../components/header/Header";
-import Table from "../../components/react-table/Table";
-import "../../components/react-table/table.css";
+import AlertTable from "../../components/alerttable/AlertTable";
+import "../../components/alerttable/alerttable.css";
 import { withRouter } from "react-router-dom";
 import api, { Alert } from "../../api";
 import { AlertWithFormattedTimestamp, alertWithFormattedTimestamp } from "../../utils";
@@ -35,7 +35,7 @@ const AlertView: React.FC<PropType> = (props) => {
       </header>
       <h1 className={"filterHeader"}>Active Alerts </h1>
       <div className="table">
-        <Table alerts={alerts} noDataText={noDataText} />
+        <AlertTable alerts={alerts} noDataText={noDataText} />
       </div>
     </div>
   );

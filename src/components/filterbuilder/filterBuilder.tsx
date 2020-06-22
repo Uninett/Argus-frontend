@@ -6,7 +6,7 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import SaveIcon from "@material-ui/icons/Save";
 import Dialog from "@material-ui/core/Dialog";
-import Table from "../react-table/Table";
+import AlertTable from "../alerttable/AlertTable";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 
 import api, { Alert, AlertMetadata, Filter, FilterDefinition } from "../../api";
@@ -202,7 +202,7 @@ const FilterBuilder: React.FC = () => {
         </div>
       </div>
       <div className="previewList">
-        <Table alerts={previewAlerts} noDataText={noDataText} />
+        <AlertTable alerts={previewAlerts} noDataText={noDataText} />
       </div>
     </div>
   );
