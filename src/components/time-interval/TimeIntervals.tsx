@@ -1,68 +1,47 @@
 import React, { useEffect, useState } from "react";
 import TimeSlot from "../time-slot/TimeSlot";
-import api, { Timeslot } from "../../api"
+import api, { Timeslot } from "../../api";
 
 const TimeIntervals: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const uuidv1 = require("uuid/v1");
   const initialTimeSlotKey = uuidv1();
   const initialTimeIntervalKey = uuidv1();
-  const [timeSlots, setTimeSlots] = useState([
-    new Map([[initialTimeSlotKey, [initialTimeIntervalKey]]])
-  ]);
+  const [timeSlots, setTimeSlots] = useState([new Map([[initialTimeSlotKey, [initialTimeIntervalKey]]])]);
   const [timeIntervals, setTimeInterval] = useState([initialTimeIntervalKey]);
-  const [fromServer, setFromServer] = useState(
-    new Map([[initialTimeSlotKey, false]])
-  );
+  const [fromServer, setFromServer] = useState(new Map([[initialTimeSlotKey, false]]));
 
   const [timeSlotPK, setTimeSlotPK] = useState(new Map());
 
-  const [nameField, setNameField] = useState<any>(
-    new Map([[initialTimeSlotKey, ""]])
-  );
-  const [startTime, setStartTime] = useState(
-    new Map([[initialTimeIntervalKey, "07:30"]])
-  );
-  const [endTime, setEndTime] = useState(
-    new Map([[initialTimeIntervalKey, "16:30"]])
-  );
-  const [daysValue, setDaysValue] = useState<any>(
-    new Map([[initialTimeIntervalKey, []]])
-  );
+  const [nameField, setNameField] = useState<any>(new Map([[initialTimeSlotKey, ""]]));
+  const [startTime, setStartTime] = useState(new Map([[initialTimeIntervalKey, "07:30"]]));
+  const [endTime, setEndTime] = useState(new Map([[initialTimeIntervalKey, "16:30"]]));
+  const [daysValue, setDaysValue] = useState<any>(new Map([[initialTimeIntervalKey, []]]));
 
   useEffect(() => {
     getTimeSlot(true, initialTimeSlotKey, initialTimeIntervalKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const getTimeSlot = async (
-    firstTime: boolean,
-    inputTimeSlotKey: string,
-    inputTimeIntervalKey: string
-  ) => {
+  const getTimeSlot = async (firstTime: boolean, inputTimeSlotKey: string, inputTimeIntervalKey: string) => {
     api.getAllTimeslots().then((timeslots: Timeslot[]) => {
-        buildTimeSlots(timeslots, firstTime, inputTimeSlotKey, inputTimeIntervalKey)
-    })
+      buildTimeSlots(timeslots, firstTime, inputTimeSlotKey, inputTimeIntervalKey);
+    });
   };
 
   const deleteTimeSlot = async (key: string) => {
     api.deleteTimeslot(timeSlotPK.get(key)).then((response: any) => {
-       const newTimeSlots = [...timeSlots];
-       let timeSlotMap: any;
-       timeSlots.forEach(timeSlot => {
-         if (timeSlot.has(key)) timeSlotMap = timeSlot;
-       });
-       newTimeSlots.splice(newTimeSlots.indexOf(timeSlotMap), 1);
-       setTimeSlots(newTimeSlots);
-    })
+      const newTimeSlots = [...timeSlots];
+      let timeSlotMap: any;
+      timeSlots.forEach((timeSlot) => {
+        if (timeSlot.has(key)) timeSlotMap = timeSlot;
+      });
+      newTimeSlots.splice(newTimeSlots.indexOf(timeSlotMap), 1);
+      setTimeSlots(newTimeSlots);
+    });
   };
 
-  const buildTimeSlots = (
-    data: any,
-    firstTime: boolean,
-    inputTimeSlotKey: string,
-    inputTimeIntervalKey: string
-  ) => {
+  const buildTimeSlots = (data: any, firstTime: boolean, inputTimeSlotKey: string, inputTimeIntervalKey: string) => {
     let responseTimeSlots: any = [new Map([[inputTimeSlotKey, [inputTimeIntervalKey]]])];
     let responseTimeIntervals: any = [inputTimeIntervalKey];
     if (firstTime) {
@@ -90,9 +69,7 @@ const TimeIntervals: React.FC = () => {
           });
           setStartTime(startTime.set(timeIntervalKey, timeInterval.start.toString()));
           setEndTime(endTime.set(timeIntervalKey, timeInterval.end.toString().slice(0, 5)));
-          setDaysValue(
-            daysValue.set(timeIntervalKey, convertDay(timeInterval.day.toString()))
-          );
+          setDaysValue(daysValue.set(timeIntervalKey, convertDay(timeInterval.day.toString())));
         });
       });
     }
@@ -135,7 +112,7 @@ const TimeIntervals: React.FC = () => {
           _timeIntervals.push({
             day: day.value,
             start: startTime.get(key),
-            end: endTime.get(key)
+            end: endTime.get(key),
           });
         });
       }
@@ -146,10 +123,9 @@ const TimeIntervals: React.FC = () => {
   const addTimeSlot = async (timeSlotKey: any) => {
     const dataTimeIntervals = buildDataTimeIntervals(timeSlotKey);
     if (fromServer.get(timeSlotKey)) {
-      await api.putTimeslot(timeSlotPK.get(timeSlotKey), nameField.get(timeSlotKey), dataTimeIntervals)
+      await api.putTimeslot(timeSlotPK.get(timeSlotKey), nameField.get(timeSlotKey), dataTimeIntervals);
     } else {
-      await api.postTimeslot(nameField.get(timeSlotKey), dataTimeIntervals)
-      .then(() => {
+      await api.postTimeslot(nameField.get(timeSlotKey), dataTimeIntervals).then(() => {
         const timeSlotKey = uuidv1();
         const timeIntervalKey = uuidv1();
         resetView(timeSlotKey, timeIntervalKey);
@@ -202,7 +178,7 @@ const TimeIntervals: React.FC = () => {
 
     const newTimeIntervals = [...timeIntervals, key];
     setTimeInterval(newTimeIntervals);
-    timeSlots.forEach(timeSlot => {
+    timeSlots.forEach((timeSlot) => {
       if (timeSlot) {
         if (timeSlot.has(timeSlotKey)) {
           // eslint-disable-next-line @typescript-eslint/ban-ts-ignore

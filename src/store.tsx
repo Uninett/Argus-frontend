@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface IState {
   user: string | null;
@@ -7,23 +7,20 @@ interface IState {
 }
 
 const initialState: IState = {
-  user: localStorage.getItem('user'),
-  token: localStorage.getItem('token'),
-  loggedIn: localStorage.getItem('user') ? true : false
+  user: localStorage.getItem("user"),
+  token: localStorage.getItem("token"),
+  loggedIn: localStorage.getItem("user") ? true : false,
 };
 
 export const Store = React.createContext<IState | any>(initialState);
 
-function reducer(
-  state: IState,
-  action: { type: string; payload: any }
-): IState {
+function reducer(state: IState, action: { type: string; payload: any }): IState {
   switch (action.type) {
-    case 'setUser':
+    case "setUser":
       return { ...state, user: action.payload };
-    case 'setToken':
+    case "setToken":
       return { ...state, token: action.payload };
-    case 'setLogin':
+    case "setLogin":
       return { ...state, token: action.payload };
     default:
       return initialState;

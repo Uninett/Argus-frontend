@@ -9,30 +9,33 @@ import NotificationProfileView from "./views/notificationProfileView/Notificatio
 import FilterBuildingView from "./views/filterBuildingView/filterBuildingView";
 import TimeslotView from "./views/timeslotView/TimeslotView";
 
-import api from "./api"
-import auth from "./auth"
-
+import api from "./api";
+import auth from "./auth";
 
 const App: React.SFC = () => {
-  const history = useHistory()
+  const history = useHistory();
   api.registerUnauthorizedCallback((reponse, error) => {
-      console.log("Unauthorized response recieved, logging out!")
-      auth.logout()
-      history.push("/login")
-  })
+    console.log("Unauthorized response recieved, logging out!");
+    auth.logout();
+    history.push("/login");
+  });
 
   return (
     <div>
       <Switch>
         <ProtectedRoute exact path="/" component={AlertView} />
-        <ProtectedRoute
-          path="/notification-profile"
-          component={NotificationProfileView}
-        />
+        <ProtectedRoute path="/notification-profile" component={NotificationProfileView} />
         <ProtectedRoute path="/timeslots" component={TimeslotView} />
         <Route path="/login" component={LoginView} />
         <ProtectedRoute path="/customfilter" component={FilterBuildingView} />
-        <Route path="*" component={() => <div id="not-found"><h1>404 not found</h1></div>} />
+        <Route
+          path="*"
+          component={() => (
+            <div id="not-found">
+              <h1>404 not found</h1>
+            </div>
+          )}
+        />
       </Switch>
     </div>
   );

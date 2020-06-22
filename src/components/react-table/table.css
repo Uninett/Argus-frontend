@@ -7,9 +7,7 @@
   --table-height: 70vh;
   background-color: var(--table-background-color);
   margin: auto;
-  margin-top: calc(
-    calc(calc(95vh - var(--header-height)) - var(--table-height)) / 2
-  );
+  margin-top: calc(calc(calc(95vh - var(--header-height)) - var(--table-height)) / 2);
   width: 80vw;
   max-height: var(--table-height);
   min-height: 140px;
@@ -36,15 +34,16 @@ div .ReactTable .rt-noData {
   z-index: 1;
 }
 
-.ReactTable .rt-thead .rt-th.-sort-asc, .ReactTable .rt-thead .rt-td.-sort-asc {
+.ReactTable .rt-thead .rt-th.-sort-asc,
+.ReactTable .rt-thead .rt-td.-sort-asc {
   color: var(--table-active-font-color);
   box-shadow: inset 0 3px 0 0 var(--table-sorting-color) !important;
 }
 
-.ReactTable .rt-thead .rt-th.-sort-desc, .ReactTable .rt-thead .rt-td.-sort-asc {
+.ReactTable .rt-thead .rt-th.-sort-desc,
+.ReactTable .rt-thead .rt-td.-sort-asc {
   color: var(--table-active-font-color);
   box-shadow: inset 0 -3px 0 0 var(--table-sorting-color) !important;
-
 }
 
 .ReactTable a {

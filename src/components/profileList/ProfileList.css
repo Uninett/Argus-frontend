@@ -9,8 +9,7 @@
   margin-top: 15px;
 }
 
-
 .add-button .MuiFab-primary:hover {
   color: #fff;
-  background-color: var(--primary-dark); 
+  background-color: var(--primary-dark);
 }

@@ -44,58 +44,53 @@ const TimeSlot: React.FC<timeSlotProp> = (props: timeSlotProp) => {
           margin="normal"
           variant="outlined"
           helperText="Name of time slot"
-          onChange={e => props.handleNameChange(e.target.value, props.timeSlotKey)}
+          onChange={(e) => props.handleNameChange(e.target.value, props.timeSlotKey)}
         />
       </div>
 
       <div className="timeslot-intervals">
-      {props.timeIntervals
-        .filter((slot: string) => {
-          let cond = false;
-          if (slotList.includes(slot)) {
-            cond = true;
-          }
-          return cond;
-        })
-        .map((element: string) => {
-          return (
-            <TimeInterval
-            key={element}
-            dictKey={element}
-            deleteTimeInterval={props.deleteTimeInterval}
-              handleStartChange={props.handleStartTimeChange}
-              handleEndChange={props.handleEndTimeChange}
-              handleDayChange={props.handleDayChange}
-              startTime={props.startTime.get(element)}
-              endTime={props.endTime.get(element)}
-              daysValue={props.daysValue.get(element)}
+        {props.timeIntervals
+          .filter((slot: string) => {
+            let cond = false;
+            if (slotList.includes(slot)) {
+              cond = true;
+            }
+            return cond;
+          })
+          .map((element: string) => {
+            return (
+              <TimeInterval
+                key={element}
+                dictKey={element}
+                deleteTimeInterval={props.deleteTimeInterval}
+                handleStartChange={props.handleStartTimeChange}
+                handleEndChange={props.handleEndTimeChange}
+                handleDayChange={props.handleDayChange}
+                startTime={props.startTime.get(element)}
+                endTime={props.endTime.get(element)}
+                daysValue={props.daysValue.get(element)}
               />
-              );
-            })}
-            </div>
-      <Button
-        className="timeslot-addNew"
-        variant="contained"
-        onClick={() => props.addTimeInterval(props.timeSlotKey)}
-      >
+            );
+          })}
+      </div>
+      <Button className="timeslot-addNew" variant="contained" onClick={() => props.addTimeInterval(props.timeSlotKey)}>
         +
       </Button>
       <div className="saveDelete">
-      <div className="timeslot-delete">
-      <Dialog handleDelete={() => props.deleteTimeSlot(props.timeSlotKey)} />
-      </div>
+        <div className="timeslot-delete">
+          <Dialog handleDelete={() => props.deleteTimeSlot(props.timeSlotKey)} />
+        </div>
         <div className="timeslot-save">
-
-      <Button
-      variant="contained"
-      color="primary"
-      onClick={() => {
-        props.saveTimeSlot(props.timeSlotKey);
-      }}
-      >
-        Save
-      </Button>
-      </div>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              props.saveTimeSlot(props.timeSlotKey);
+            }}
+          >
+            Save
+          </Button>
+        </div>
       </div>
     </div>
   );
