@@ -21,7 +21,6 @@ const LoginView: React.FC<any> = (props) => {
     await api
       .userpassAuth(username, password)
       .then((token: Token) => {
-        console.log("Logged in using user-pass auth");
         loginAndSetUser(token).then(() => {
           setLoginAttemptFailed(false);
           dispatch({ type: "setUser", payload: localStorage.getItem("user") });
