@@ -1,7 +1,7 @@
 import React from "react";
 import { TextField } from "@material-ui/core";
 import Select from "react-select";
-import "./timeInterval.css";
+import "./timeintervalselector.css";
 import Button from "@material-ui/core/Button";
 
 const days = [
@@ -24,7 +24,7 @@ type TimeIntervalProp = {
   dictKey: string;
 };
 
-const TimeInterval: React.FC<TimeIntervalProp> = (props: TimeIntervalProp) => {
+const TimeIntervalSelector: React.FC<TimeIntervalProp> = (props: TimeIntervalProp) => {
   return (
     <div className="timeslot-interval">
       <div className="timeslot-interval-settings">
@@ -84,4 +84,4 @@ const TimeInterval: React.FC<TimeIntervalProp> = (props: TimeIntervalProp) => {
   );
 };
 
-export default TimeInterval;
+export default TimeIntervalSelector;

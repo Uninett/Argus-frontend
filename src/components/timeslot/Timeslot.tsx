@@ -1,6 +1,6 @@
 import React from "react";
 import { TextField } from "@material-ui/core";
-import TimeInterval from "../time-interval-select/TimeInterval";
+import TimeIntervalSelector from "../timeintervalselector/TimeIntervalSelector";
 import Button from "@material-ui/core/Button";
 import Dialog from "../dialogue/Dialogue";
 
@@ -59,7 +59,7 @@ const Timeslot: React.FC<timeslotProp> = (props: timeslotProp) => {
           })
           .map((element: string) => {
             return (
-              <TimeInterval
+              <TimeIntervalSelector
                 key={element}
                 dictKey={element}
                 deleteTimeInterval={props.deleteTimeInterval}
