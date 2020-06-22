@@ -1,7 +1,7 @@
 import React from "react";
 import "./variables.css";
 import "./colorscheme.css";
-import AlertView from "./views/alertView/AlertView";
+import AlertView from "./views/alert/AlertView";
 import LoginView from "./views/loginView/LoginView";
 import { Route, Switch, useHistory } from "react-router-dom";
 import { ProtectedRoute } from "./protected.route";
