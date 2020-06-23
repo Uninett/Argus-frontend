@@ -42,8 +42,6 @@ const SourceDetailUrl = (row: { value: string; original: { details_url: string }
   );
 };
 
-const centerStyle = { textAlign: "center" };
-
 type ConstrainedColumn = {
   Header: string;
   accessor: Accessor;
@@ -54,14 +52,6 @@ type ConstrainedColumn = {
 type ConstraintFunction = (rows: Row[], header: string, accessor: Accessor) => number;
 function maxWidthColumn(rows: Row[], header: string, accessor: Accessor, func: ConstraintFunction): ConstrainedColumn {
   return { Header: header, accessor, maxWidth: func(rows, header, accessor) };
-}
-
-function minWidthColumn(rows: Row[], header: string, accessor: Accessor, func: ConstraintFunction): ConstrainedColumn {
-  return { Header: header, accessor, minWidth: func(rows, header, accessor) };
-}
-
-function unboundedColumn(rows: Row[], header: string, accessor: Accessor, func: ConstraintFunction): ConstrainedColumn {
-  return { Header: header, accessor };
 }
 
 const AlertTable: React.FC<AlertsProps> = (props) => {
