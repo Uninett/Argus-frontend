@@ -11,7 +11,7 @@ const days = [
   { value: "TH", label: "Thursday" },
   { value: "FR", label: "Friday" },
   { value: "SA", label: "Saturday" },
-  { value: "SU", label: "Sunday" }
+  { value: "SU", label: "Sunday" },
 ];
 type TimeIntervalProp = {
   deleteTimeInterval: any;
@@ -27,62 +27,60 @@ type TimeIntervalProp = {
 const TimeInterval: React.FC<TimeIntervalProp> = (props: TimeIntervalProp) => {
   return (
     <div className="timeslot-interval">
-    <div className="timeslot-interval-settings">
-          <div className="timeslot-interval-day">
+      <div className="timeslot-interval-settings">
+        <div className="timeslot-interval-day">
           <p>Days:</p>
 
-            <Select
-              isMulti
-              value={props.daysValue}
-              onChange={e => props.handleDayChange(e, props.dictKey)}
-              name="filters"
-              label="Single select"
-              options={days}
-              />
-          </div>
+          <Select
+            isMulti
+            value={props.daysValue}
+            onChange={(e) => props.handleDayChange(e, props.dictKey)}
+            name="filters"
+            label="Single select"
+            options={days}
+          />
+        </div>
         <div className="timeslot-interval-times">
-
-        <TextField
-          label="Start Time"
-          type="time"
-          margin="normal"
-          variant="outlined"
-          value={props.startTime}
-          onChange={e => props.handleStartChange(e.target.value, props.dictKey)}
-          InputLabelProps={{
-            shrink: true
-          }}
-          inputProps={{
-            step: 300
-          }}
+          <TextField
+            label="Start Time"
+            type="time"
+            margin="normal"
+            variant="outlined"
+            value={props.startTime}
+            onChange={(e) => props.handleStartChange(e.target.value, props.dictKey)}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            inputProps={{
+              step: 300,
+            }}
           />
-        <TextField
-          label="End Time"
-          type="time"
-          margin="normal"
-          variant="outlined"
-          value={props.endTime}
-          onChange={e => props.handleEndChange(e.target.value, props.dictKey)}
-          InputLabelProps={{
-            shrink: true
-          }}
-          inputProps={{
-            step: 300
-          }}
+          <TextField
+            label="End Time"
+            type="time"
+            margin="normal"
+            variant="outlined"
+            value={props.endTime}
+            onChange={(e) => props.handleEndChange(e.target.value, props.dictKey)}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            inputProps={{
+              step: 300,
+            }}
           />
-          </div>
-          </div>
+        </div>
+      </div>
       <div className="time-interval-delete">
         <Button
           className="time-interval-delete-button"
           variant={"contained"}
-          onClick={e => props.deleteTimeInterval(e, props.dictKey)}
-          >
+          onClick={(e) => props.deleteTimeInterval(e, props.dictKey)}
+        >
           +
         </Button>
       </div>
-          </div>
-
+    </div>
   );
 };
 

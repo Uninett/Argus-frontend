@@ -6,10 +6,10 @@
   text-align: center;
   background-color: var(--primary);
   grid-template-areas:
-  "logo"
-  "form"
-  "warning"
-  "feide";
+    "logo"
+    "form"
+    "warning"
+    "feide";
   grid-template-rows: 35% auto auto auto;
   grid-template-columns: 100%;
   padding: 20px;
@@ -54,7 +54,7 @@ button {
   padding: 10px;
 }
 
-#login-form{
+#login-form {
   margin-top: 50px;
   border: none;
   grid-area: form;
@@ -95,23 +95,20 @@ button {
 /* Responsive Design */
 
 @media only screen and (max-height: 550px) {
-
-
   .login-container {
     grid-template-areas:
-    "form"
-    "warning"
-    "feide";
+      "form"
+      "warning"
+      "feide";
     grid-template-rows: 70% 15% 15%;
     grid-template-columns: 100%;
-
   }
 
   #login-logo {
     display: none;
   }
 
-  #login-form{
+  #login-form {
     margin: auto;
     border: none;
     grid-area: form;

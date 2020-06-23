@@ -1,81 +1,58 @@
-import React, { useState, useEffect } from 'react';
-import './ProfileList.css';
-import Profile from '../profile/Profile';
-import Fab from '@material-ui/core/Fab';
-import AddIcon from '@material-ui/icons/Add';
-import axios from 'axios';
-import { BACKEND_URL } from '../../config'
+import React, { useState, useEffect } from "react";
+import "./ProfileList.css";
+import Profile from "../profile/Profile";
+import Fab from "@material-ui/core/Fab";
+import AddIcon from "@material-ui/icons/Add";
+import api, { NotificationProfile, NotificationProfilePK, Filter, Timeslot } from "../../api";
+
+interface FilterData {
+  label: string;
+  value: string;
+}
+
+interface TimeslotData {
+  label: string;
+  value: string;
+}
+
+interface Data {
+  label: string;
+  value: string | number;
+}
 
 const ProfileList: React.FC = () => {
-  const [notificationprofiles, setNotificationprofiles] = useState([]);
-  const [addedNotificationprofiles, setaddedNotificationprofiles] = useState(
-    []
-  );
-  const [newProfileCounter, setNewProfileCounter] = useState(0);
-  const [filters, setFilters] = useState<any>([]);
-  const [timeslots, setTimeslots] = useState<any>([]);
+  const [notificationprofiles, setNotificationprofiles] = useState<NotificationProfile[]>([]);
+  const [addedNotificationprofiles, setaddedNotificationprofiles] = useState<NotificationProfilePK[]>([]);
+  const [newProfileCounter, setNewProfileCounter] = useState<number>(0);
+  const [filters, setFilters] = useState<FilterData[]>([]);
+  const [timeslots, setTimeslots] = useState<TimeslotData[]>([]);
   const mediaOptions = [
-    { label: 'Slack', value: 'SL' },
-    { label: 'SMS', value: 'SM' },
-    { label: 'Email', value: 'EM' }
+    { label: "Slack", value: "SL" },
+    { label: "SMS", value: "SM" },
+    { label: "Email", value: "EM" },
   ];
 
   useEffect(() => {
     getNotificationprofiles();
-    getFilters();
-    getTimeslots();
+    api.getAllFilters().then((filters: Filter[]) => {
+      setFilters(formatData<FilterData>(filters));
+    });
+    api.getAllTimeslots().then((timeslots: Timeslot[]) => {
+      setTimeslots(formatData<TimeslotData>(timeslots));
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   //fetch all notificationprofiles
   const getNotificationprofiles = async () => {
-    await axios({
-      url: `${BACKEND_URL}/api/v1/notificationprofiles/`,
-      method: 'GET',
-      headers: {
-        Authorization: 'Token ' + localStorage.getItem('token')
-      }
-    }).then((response: any) => {
-      setNotificationprofiles(response.data);
-    });
-  };
-  //fetch all filters
-  const getFilters = async () => {
-    await axios({
-      url: `${BACKEND_URL}/api/v1/notificationprofiles/filters/`,
-      method: 'GET',
-      headers: {
-        Authorization: 'Token ' + localStorage.getItem('token')
-      }
-    }).then((response: any) => {
-      setFilters(formatData(response.data));
+    api.getAllNotificationProfiles().then((profiles: NotificationProfile[]) => {
+      setNotificationprofiles(profiles);
     });
   };
 
-  //fetch all timeslots
-  const getTimeslots = async () => {
-    await axios({
-      url: `${BACKEND_URL}/api/v1/notificationprofiles/timeslots/`,
-      method: 'GET',
-      headers: {
-        Authorization: 'Token ' + localStorage.getItem('token')
-      }
-    }).then((response: any) => {
-      setTimeslots(formatData(response.data));
-    });
-  };
-
-  const formatData = (data: any) => {
-    const formattedList: any = [];
-    data.forEach((element: any) => {
-      const object: any = {
-        value: element.pk,
-        label: element.name
-      };
-      formattedList.push(object);
-    });
-    return formattedList;
-  };
+  function formatData<T extends Data>(input: (Filter | Timeslot)[]): T[] {
+    return input.map((elem: Filter | Timeslot) => ({ value: elem.pk, label: elem.name } as T));
+  }
 
   const deleteProfile = (num: number, isNew: boolean) => {
     if (isNew) {
@@ -104,7 +81,7 @@ const ProfileList: React.FC = () => {
         if (item.value === media[j]) {
           const object: any = {
             value: item.value,
-            label: item.label
+            label: item.label,
           };
           matchedMedia.push(object);
         }
@@ -118,7 +95,7 @@ const ProfileList: React.FC = () => {
       const newProfiles: number[] = addedNotificationprofiles;
       newProfiles.push(newProfileCounter);
       setNewProfileCounter(newProfileCounter + 1);
-    } else alert('All time slots are in use');
+    } else alert("All time slots are in use");
   };
 
   const getUnusedTimeslots = () => {
@@ -135,9 +112,7 @@ const ProfileList: React.FC = () => {
 
       const difference: any = timeslotsProfile
         .filter((x: any) => !timeslotNames.includes(x))
-        .concat(
-          timeslotNames.filter((x: any) => !timeslotsProfile.includes(x))
-        );
+        .concat(timeslotNames.filter((x: any) => !timeslotsProfile.includes(x)));
       const newList: any = [];
       for (let i = 0; i < timeslots.length; i++) {
         const element1: any = timeslots[i];
@@ -165,12 +140,12 @@ const ProfileList: React.FC = () => {
   };
 
   return (
-    <div className='profile-container'>
+    <div className="profile-container">
       {notificationprofiles.length > 0 ? (
         notificationprofiles.map((profile: any, index: any) => {
           const timeslot: any = {
             value: profile.time_slot.pk,
-            label: profile.time_slot.name
+            label: profile.time_slot.name,
           };
           return (
             <Profile
@@ -206,7 +181,7 @@ const ProfileList: React.FC = () => {
               deleteProfile={deleteProfile}
               filters={filters}
               selectedFilters={[]}
-              selectedTimeslots={{ value: '', label: '' }}
+              selectedTimeslots={{ value: "", label: "" }}
               timeslots={timeslots}
               removeTimeslot={removeTimeslot}
               media={[]}
@@ -220,12 +195,8 @@ const ProfileList: React.FC = () => {
       ) : (
         <div></div>
       )}
-      <div className='add-button'>
-        <Fab
-          color='primary'
-          aria-label='add'
-          size='large'
-          onClick={addProfileClick}>
+      <div className="add-button">
+        <Fab color="primary" aria-label="add" size="large" onClick={addProfileClick}>
           <AddIcon />
         </Fab>
       </div>

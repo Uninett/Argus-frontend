@@ -1,128 +1,125 @@
 .header {
-    text-align: center;
-    display: grid;
-    grid-template-areas: "logo . buttons";
-    grid-template-columns: 20vw auto 50vw;
-    grid-template-rows: minmax(80px, var(--header-height));
-    background-color: var(--headercolor);
-    align-items: center;
-    box-shadow: var(--boxshadow) ;
+  text-align: center;
+  display: grid;
+  grid-template-areas: "logo . buttons";
+  grid-template-columns: 20vw auto 50vw;
+  grid-template-rows: minmax(80px, var(--header-height));
+  background-color: var(--headercolor);
+  align-items: center;
+  box-shadow: var(--boxshadow);
 }
 
 .header p {
   margin: 0;
 }
 
-
 #logo {
-    grid-area: logo;
-    --logomargin: 0.7vh;
-    margin-top: calc(var(--logomargin));
-    margin-left: calc(var(--logomargin) * 2);
+  grid-area: logo;
+  --logomargin: 0.7vh;
+  margin-top: calc(var(--logomargin));
+  margin-left: calc(var(--logomargin) * 2);
 }
 
 #logo {
-    height: 60px;
-    stroke: var(--headerbutton);
+  height: 60px;
+  stroke: var(--headerbutton);
 }
 
 #logotext {
-    stroke: none;
-    fill: var(--headerbutton);
+  stroke: none;
+  fill: var(--headerbutton);
 }
 
 #headerbuttons {
-    display: flex;
-    grid-area: buttons;
-    align-items: baseline;
-    justify-items: baseline;
-    margin-top: 30px;
+  display: flex;
+  grid-area: buttons;
+  align-items: baseline;
+  justify-items: baseline;
+  margin-top: 30px;
 }
 .headerbutton {
-    text-decoration: none;
-    margin-top: auto;
-    border: none;
-    color: var(--headerbutton);
-    font-weight: 400;
-    font-size: 1.2rem;
-
+  text-decoration: none;
+  margin-top: auto;
+  border: none;
+  color: var(--headerbutton);
+  font-weight: 400;
+  font-size: 1.2rem;
 }
 #header-timeslots {
-    margin: auto;
-    order: 1;
+  margin: auto;
+  order: 1;
 }
 
 #header-user {
-    width: 110px;
-    margin: auto;
-    order: 4;
-    position: relative;
-    margin-right: 20px;
+  width: 110px;
+  margin: auto;
+  order: 4;
+  position: relative;
+  margin-right: 20px;
 }
 
-
 #header-filters {
-    margin: auto;
-    order: 2;
+  margin: auto;
+  order: 2;
 }
 
 #header-notificationProfiles {
-    margin: auto;
-    order: 3;
+  margin: auto;
+  order: 3;
 }
 
-
-#header-user:hover, #header-timeslots:hover, #header-notificationProfiles:hover, #header-logout:hover, #header-filters:hover, #header-profiles:hover {
-    color: var(--secondary);
+#header-user:hover,
+#header-timeslots:hover,
+#header-notificationProfiles:hover,
+#header-logout:hover,
+#header-filters:hover,
+#header-profiles:hover {
+  color: var(--secondary);
 }
-
 
 /* Dropdown Menu */
 
 .dropdown:hover .dropdown-content {
-    display: block;
+  display: block;
 }
 
 .dropdown {
-    align-items: center;
-    display: inline-block;
+  align-items: center;
+  display: inline-block;
 }
 
 .dropdown-content {
-    width: auto;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px ;
-    display: none;
-    background-color: var(--headercolor);
-    z-index: 1;
+  width: auto;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  display: none;
+  background-color: var(--headercolor);
+  z-index: 1;
 }
 
 .dropdown-content .dropdown-button {
-    font-size: 1.2rem;
-    font-weight: 400;
-    font-family: inherit;
-    margin: auto;
-    margin-top: 0.5em;
-    margin-bottom: 0.5em;
-    height: 2em;
-    display: block;
-    background-color: var(--headercolor);
-    text-align: center;
-    padding: 0;
+  font-size: 1.2rem;
+  font-weight: 400;
+  font-family: inherit;
+  margin: auto;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  height: 2em;
+  display: block;
+  background-color: var(--headercolor);
+  text-align: center;
+  padding: 0;
 }
-
-
 
 /* Responsive Design */
 
 @media only screen and (max-width: 650px) {
-
-    .header {
-        grid-template-columns: 20vw auto;
-        grid-template-areas: "logo buttons";
-    }
+  .header {
+    grid-template-columns: 20vw auto;
+    grid-template-areas: "logo buttons";
   }
+}

@@ -1,4 +1,3 @@
-
 .notification-container {
   display: grid;
   grid-template-areas: "activeBox  timeslot filter media  buttons";
@@ -6,7 +5,7 @@
   margin: auto;
   margin-top: 10px;
   border-radius: 5px;
-  box-shadow: var(--boxshadow) ;
+  box-shadow: var(--boxshadow);
   padding: 0 10px 0 10px;
   width: 90vw;
   background-color: var(--boxbackground);
@@ -38,35 +37,31 @@
   grid-area: filter;
 }
 
-
 .buttons-container .MuiButton-containedPrimary {
   background-color: var(--primary);
 }
 
 .buttons-container .button-save {
   top: calc(calc(100% - 60px) / 3);
-
 }
 
 .buttons-container .MuiButton-containedSecondary {
   background-color: var(--warning);
   top: calc(calc(200% - 30px) / 3);
-  
 }
 
-.buttons-container .MuiButton-containedSecondary, .buttons-container .MuiButton-containedPrimary, .buttons-container .button-save {
+.buttons-container .MuiButton-containedSecondary,
+.buttons-container .MuiButton-containedPrimary,
+.buttons-container .button-save {
   color: #fff;
   height: 30px;
   width: 100px;
   position: absolute;
 }
 
-
-
 .check-box .MuiCheckbox-colorPrimary.Mui-checked {
   color: var(--primary);
 }
-
 
 .buttons-container .MuiButton-containedPrimary:hover {
   background-color: var(--primary);
@@ -75,7 +70,7 @@
   background-color: var(--warning);
 }
 
-.multi-select [class*="multiValue"]  {
+.multi-select [class*="multiValue"] {
   color: white;
   background-color: var(--primary);
 }

@@ -1,22 +1,33 @@
 import { Cookies } from "react-cookie";
 
 const cookies = new Cookies();
+
 class Auth {
   authenticated: boolean;
+  private _token?: string;
+
   constructor() {
     this.authenticated = false;
   }
 
-  login(cb: any) {
+  login(token: string, callback?: () => void) {
     this.authenticated = true;
-    cb();
+    this._token = token;
+    cookies.set("token", token, { path: "/" });
+    if (callback) callback();
   }
-  logout(cb: any) {
-    localStorage.clear();
-    cookies.remove('token'); 
+  logout(callback?: () => void) {
     this.authenticated = false;
-    cb();
+    this._token = undefined;
+    cookies.remove("token");
+    localStorage.removeItem("user");
+    if (callback) callback();
   }
+
+  token(): string | undefined {
+    return this._token;
+  }
+
   isAuthenticated() {
     return this.authenticated;
   }

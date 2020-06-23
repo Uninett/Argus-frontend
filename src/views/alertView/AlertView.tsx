@@ -1,23 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import './AlertView.css';
-import Header from '../../components/header/Header';
-import Table from '../../components/react-table/Table';
-import '../../components/react-table/table.css';
-import axios from 'axios';
-import { withRouter } from 'react-router-dom';
-import moment from 'moment';
-import { BACKEND_URL } from '../../config'
+import React, { useState, useEffect } from "react";
+import "./AlertView.css";
+import Header from "../../components/header/Header";
+import Table from "../../components/react-table/Table";
+import "../../components/react-table/table.css";
+import { withRouter } from "react-router-dom";
+import api, { Alert } from "../../api";
+import { AlertWithFormattedTimestamp, alertWithFormattedTimestamp } from "../../utils";
 
-type PropType = {
-  history: any;
-};
+type PropType = {};
 
-
-const AlertView: React.FC<PropType> = props => {
+const AlertView: React.FC<PropType> = (props) => {
   const LOADING_TEXT = "Loading...";
   const NO_DATA_TEXT = "No data";
 
-  const [alerts, setAlerts] = useState<any>([]);
+  const [alerts, setAlerts] = useState<AlertWithFormattedTimestamp[]>([]);
   const [noDataText, setNoDataText] = useState<string>(LOADING_TEXT);
 
   useEffect(() => {
@@ -26,19 +22,10 @@ const AlertView: React.FC<PropType> = props => {
 
   //fetches alerts and sets state
   const getAlerts = async () => {
-    await axios({
-      url: `${BACKEND_URL}/api/v1/alerts/active/`,
-      method: 'GET',
-      headers: {
-        Authorization: 'Token ' + localStorage.getItem('token')
-      }
-    }).then((response: any) => {
-      for(let item of response.data) {
-        item.timestamp = moment(item.timestamp).format('YYYY.MM.DD  hh:mm:ss')
-      }
-
-      setNoDataText(response.data.length === 0 ? NO_DATA_TEXT : LOADING_TEXT);
-      setAlerts(response.data);
+    await api.getActiveAlerts().then((alerts: Alert[]) => {
+      const alertsWithFormattedTimestamps = alerts.map(alertWithFormattedTimestamp);
+      setNoDataText(alerts.length === 0 ? NO_DATA_TEXT : LOADING_TEXT);
+      setAlerts(alertsWithFormattedTimestamps);
     });
   };
   return (
@@ -46,8 +33,8 @@ const AlertView: React.FC<PropType> = props => {
       <header>
         <Header />
       </header>
-      <h1 className={'filterHeader'}>Active Alerts </h1>
-      <div className='table'>
+      <h1 className={"filterHeader"}>Active Alerts </h1>
+      <div className="table">
         <Table alerts={alerts} noDataText={noDataText} />
       </div>
     </div>
