@@ -1,6 +1,6 @@
 import React from "react";
 import { withRouter } from "react-router-dom";
-import TimeIntervals from "../../components/time-interval/TimeIntervals";
+import TimeIntervals from "../../components/timeintervals/TimeIntervals";
 import Header from "../../components/header/Header";
 
 const TimeslotView: React.FC = () => {

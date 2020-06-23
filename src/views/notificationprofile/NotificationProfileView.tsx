@@ -2,7 +2,7 @@ import React from "react";
 import "./NotificationProfileView.css";
 import Header from "../../components/header/Header";
 import { withRouter } from "react-router-dom";
-import ProfileList from "../../components/profileList/ProfileList";
+import ProfileList from "../../components/profilelist/ProfileList";
 
 const NotificationProfileView: React.FC = () => {
   return (

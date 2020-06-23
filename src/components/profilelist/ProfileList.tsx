@@ -95,7 +95,7 @@ const ProfileList: React.FC = () => {
       const newProfiles: number[] = addedNotificationprofiles;
       newProfiles.push(newProfileCounter);
       setNewProfileCounter(newProfileCounter + 1);
-    } else alert("All time slots are in use");
+    } else alert("All timeslots are in use");
   };
 
   const getUnusedTimeslots = () => {
@@ -162,7 +162,7 @@ const ProfileList: React.FC = () => {
               removeTimeslot={removeTimeslot}
               media={formatMedia(profile.media)}
               mediaKey={profile.time_slot.pk}
-              unusedTimeSlots={getUnusedTimeslots}
+              unusedTimeslots={getUnusedTimeslots}
               changesMade={false}
             />
           );
@@ -187,7 +187,7 @@ const ProfileList: React.FC = () => {
               media={[]}
               getNotificationprofiles={getNotificationprofiles}
               active={false}
-              unusedTimeSlots={getUnusedTimeslots}
+              unusedTimeslots={getUnusedTimeslots}
               changesMade={false}
             />
           );

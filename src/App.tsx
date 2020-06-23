@@ -1,13 +1,13 @@
 import React from "react";
 import "./variables.css";
 import "./colorscheme.css";
-import AlertView from "./views/alertView/AlertView";
-import LoginView from "./views/loginView/LoginView";
+import AlertView from "./views/alert/AlertView";
+import LoginView from "./views/login/LoginView";
 import { Route, Switch, useHistory } from "react-router-dom";
 import { ProtectedRoute } from "./protected.route";
-import NotificationProfileView from "./views/notificationProfileView/NotificationProfileView";
-import FilterBuildingView from "./views/filterBuildingView/filterBuildingView";
-import TimeslotView from "./views/timeslotView/TimeslotView";
+import NotificationProfileView from "./views/notificationprofile/NotificationProfileView";
+import FilterBuildingView from "./views/filterbuilding/FilterBuildingView";
+import TimeslotView from "./views/timeslot/TimeslotView";
 
 import api from "./api";
 import auth from "./auth";

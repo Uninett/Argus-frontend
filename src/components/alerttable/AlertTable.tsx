@@ -1,6 +1,6 @@
 import React from "react";
 import ReactTable from "react-table";
-import "./table.css";
+import "./alerttable.css";
 import "react-table/react-table.css";
 
 import { AlertWithFormattedTimestamp } from "../../utils";
@@ -23,7 +23,7 @@ const SourceDetailUrl = (row: { value: string; original: { details_url: string }
   );
 };
 
-const Table: React.FC<AlertsProps> = (props) => {
+const AlertTable: React.FC<AlertsProps> = (props) => {
   const columns: any = [
     {
       Header: "Timestamp",
@@ -60,4 +60,4 @@ const Table: React.FC<AlertsProps> = (props) => {
   );
 };
 
-export default Table;
+export default AlertTable;

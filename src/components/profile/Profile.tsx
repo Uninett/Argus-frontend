@@ -19,7 +19,7 @@ type ProfileProps = {
   media?: any;
   mediaKey?: any;
   exist: boolean;
-  unusedTimeSlots: any;
+  unusedTimeslots: any;
   getNotificationprofiles: any;
   removeTimeslot: any;
   changesMade: boolean;
@@ -46,7 +46,7 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
     if (props.exist) {
       setTimeOptions([props.selectedTimeslots]);
     } else if (!props.exist) {
-      const timeslots: any = props.unusedTimeSlots();
+      const timeslots: any = props.unusedTimeslots();
       setTimeOptions(timeslots);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -60,7 +60,7 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
       }, 1000);
       setChangesMade(false);
 
-      const timeSlot = selectedTimeslots.value;
+      const timeslot = selectedTimeslots.value;
       const filters = selectedFilters.map((f: any) => {
         return f.value;
       });
@@ -71,8 +71,8 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
 
       const promise =
         exist || notificationProfileId
-          ? api.putNotificationProfile(timeSlot, filters, media, active)
-          : api.postNotificationProfile(timeSlot, filters, media, active);
+          ? api.putNotificationProfile(timeslot, filters, media, active)
+          : api.postNotificationProfile(timeslot, filters, media, active);
 
       promise
         .then((notificationProfile) => {
