@@ -1,4 +1,4 @@
-# Aggregated Alert System - Frontend
+# Argus - Frontend
 > built using React with TypeScript
 
 ## Requirements
@@ -46,8 +46,8 @@ Also, be sure to have `git` available in your PATH, `npm` might need it.
 
 ## Install
 
-    $ git clone https://github.com/Uninett/aas-frontend
-    $ cd aas-frontend
+    $ git clone https://github.com/Uninett/argus-frontend
+    $ cd argus-frontend
     $ npm install
 
 Installs all the dependencies for the project.
@@ -77,7 +77,7 @@ You can also format the code via `yarn prettier`.
 ColorScheme.css defines every color used in the project and each component has their own css file.
 
 ## Backend
-Can be found here: https://github.com/Uninett/aas
+Can be found here: https://github.com/Uninett/argus
 
 
 
