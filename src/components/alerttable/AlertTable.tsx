@@ -1,32 +1,16 @@
 import React from "react";
-import ReactTable from "react-table";
+// import ReactTable from "react-table";
 import "./alerttable.css";
 import "react-table/react-table.css";
 
-import { AlertWithFormattedTimestamp, objectGetPropertyByPath } from "../../utils";
-
-// This is based on the following:
-// https://github.com/tannerlinsley/react-table/issues/94
-function calculateTableCellWidth(cellString: string, cssMagicSpacing: number = 9): number {
-  return cssMagicSpacing * cellString.length;
-}
-
-type Row = any;
-type ColumnAccessorFunction = (row: Row) => string;
-type Accessor = string | ColumnAccessorFunction;
-function getMaxColumnWidth(
-  rows: Row[],
-  headerText: string,
-  accessorValue: Accessor,
-  maxWidth: number = 600,
-  cssMagicSpacing: number = 11,
-): number {
-  const accessorFunction =
-    typeof accessorValue === "string" ? (row: Row) => objectGetPropertyByPath(row, accessorValue) : accessorValue;
-  const cellLength = (row: Row): number => (`${accessorFunction(row)}` || "").length;
-  const maxCellLength: number = rows.reduce((seen: number, row: Row) => Math.max(seen, cellLength(row)), 0);
-  return Math.min(maxWidth, cssMagicSpacing * Math.max(maxCellLength, headerText.length));
-}
+import { AlertWithFormattedTimestamp } from "../../utils";
+import Table, {
+  getMaxColumnWidth,
+  maxWidthColumn,
+  calculateTableCellWidth,
+  ConstraintFunction,
+  Row,
+} from "../table/Table";
 
 type AlertsProps = {
   alerts: AlertWithFormattedTimestamp[];
@@ -41,18 +25,6 @@ const SourceDetailUrl = (row: { value: string; original: { details_url: string }
     </a>
   );
 };
-
-type ConstrainedColumn = {
-  Header: string;
-  accessor: Accessor;
-  maxWidth?: number;
-  minWidth?: number;
-};
-
-type ConstraintFunction = (rows: Row[], header: string, accessor: Accessor) => number;
-function maxWidthColumn(rows: Row[], header: string, accessor: Accessor, func: ConstraintFunction): ConstrainedColumn {
-  return { Header: header, accessor, maxWidth: func(rows, header, accessor) };
-}
 
 const AlertTable: React.FC<AlertsProps> = (props) => {
   const rows: Row[] = props.alerts;
@@ -89,22 +61,7 @@ const AlertTable: React.FC<AlertsProps> = (props) => {
     },
   ];
 
-  return (
-    <ReactTable
-      defaultSorted={[
-        {
-          id: "timestamp_col",
-          desc: true,
-        },
-      ]}
-      columns={columns}
-      loading={false}
-      noDataText={props.noDataText}
-      data={props.alerts}
-      pageSize={props.alerts.length}
-      showPaginationBottom={false}
-    />
-  );
+  return <Table data={rows} columns={columns} sorted={[{ id: "timestamp_col", desc: true }]} />;
 };
 
 export default AlertTable;

@@ -7,7 +7,7 @@ type PropType = {
   history: any;
 };
 
-const FilterBuildingView: React.FC<PropType> = (props) => {
+const Filters: React.FC<PropType> = (props) => {
   return (
     <div>
       <header>
@@ -18,4 +18,4 @@ const FilterBuildingView: React.FC<PropType> = (props) => {
   );
 };
 
-export default withRouter(FilterBuildingView);
+export default withRouter(Filters);

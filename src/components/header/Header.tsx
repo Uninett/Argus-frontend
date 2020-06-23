@@ -39,10 +39,10 @@ const Header: React.FC<{ history: any }> = (props) => {
         <Link id="header-timeslots" className="headerbutton" to="/timeslots">
           <p>Timeslots</p>
         </Link>
-        <Link id="header-filters" className="headerbutton" to="/customfilter">
+        <Link id="header-filters" className="headerbutton" to="/filters">
           <p>Filters</p>
         </Link>
-        <Link id="header-notificationProfiles" className="headerbutton" to="/notification-profile">
+        <Link id="header-notificationProfiles" className="headerbutton" to="/notificationprofiles">
           <p>Notification profiles</p>
         </Link>
 

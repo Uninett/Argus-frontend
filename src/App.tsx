@@ -7,6 +7,7 @@ import { Route, Switch, useHistory } from "react-router-dom";
 import { ProtectedRoute } from "./protected.route";
 import NotificationProfileView from "./views/notificationprofile/NotificationProfileView";
 import FilterBuildingView from "./views/filterbuilding/FilterBuildingView";
+import FiltersView from "./views/filters/FiltersView";
 import TimeslotView from "./views/timeslot/TimeslotView";
 
 import api from "./api";
@@ -24,10 +25,11 @@ const App: React.SFC = () => {
     <div>
       <Switch>
         <ProtectedRoute exact path="/" component={AlertView} />
-        <ProtectedRoute path="/notification-profile" component={NotificationProfileView} />
+        <ProtectedRoute path="/notificationprofiles" component={NotificationProfileView} />
         <ProtectedRoute path="/timeslots" component={TimeslotView} />
         <Route path="/login" component={LoginView} />
-        <ProtectedRoute path="/customfilter" component={FilterBuildingView} />
+        <ProtectedRoute path="/filterstable" component={FilterBuildingView} />
+        <ProtectedRoute path="/filters" component={FiltersView} />
         <Route
           path="*"
           component={() => (

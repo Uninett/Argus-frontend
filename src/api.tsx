@@ -3,6 +3,7 @@ import axios, { AxiosRequestConfig, AxiosResponse, AxiosInstance } from "axios";
 import auth from "./auth";
 
 import { BACKEND_URL } from "./config";
+import { debuglog } from "./utils";
 
 export interface AuthUserResponse {
   username: string;
@@ -61,6 +62,13 @@ export interface FilterDefinition {
   parentObjectIds: string[];
   problemTypeIds: string[];
 }
+
+export const EmptyFilterDefinition = {
+  sourceIds: [],
+  objectTypeIds: [],
+  parentObjectIds: [],
+  problemTypeIds: [],
+};
 
 export type MediaAlternative = "Email" | "SMS" | "Slack";
 
@@ -180,13 +188,12 @@ export class ApiClient {
     this.token = auth.token();
 
     this.registerUnauthorizedCallback((reponse: AxiosResponse, error) => {
-      console.log("Unauthorized response recieved, logging out!");
+      debuglog("Unauthorized response recieved, logging out!");
       auth.logout();
     });
   }
 
   public registerUnauthorizedCallback(callback: (response: AxiosResponse, error: any) => void) {
-    console.log("setting up unauthorized callback");
     this.api.interceptors.response.use(
       (response) => response,
       (error) => {
@@ -211,6 +218,10 @@ export class ApiClient {
       (data: AuthTokenSuccessResponse) => data.token,
       defaultError,
     );
+  }
+
+  public postLogout(username: string, password: string): Promise<Token> {
+    return resolveOrReject(this.authGet<string, {}>("/api/v1/auth/logout/"), defaultResolver, defaultError);
   }
 
   // authUser: returns the information about an authenticated user
@@ -340,6 +351,14 @@ export class ApiClient {
       }),
       defaultResolver,
       (error) => new Error(`Failed to create notification filter ${name}: ${error}`),
+    );
+  }
+
+  public deleteFilter(pk: FilterPK): Promise<any> {
+    return resolveOrReject(
+      this.authDelete<never, never>(`/api/v1/notificationprofiles/filters/${pk}`),
+      defaultResolver,
+      (error) => new Error(`Failed to delete notification filter ${pk}: ${error}`),
     );
   }
 
