@@ -6,7 +6,7 @@ import LoginView from "./views/login/LoginView";
 import { Route, Switch, useHistory } from "react-router-dom";
 import { ProtectedRoute } from "./protected.route";
 import NotificationProfileView from "./views/notificationprofile/NotificationProfileView";
-import FilterBuildingView from "./views/filterbuilding/filterBuildingView";
+import FilterBuildingView from "./views/filterbuilding/FilterBuildingView";
 import TimeslotView from "./views/timeslot/TimeslotView";
 
 import api from "./api";
