@@ -27,6 +27,7 @@
     "start": "HTTPS=true PORT=4443 react-scripts start",
     "debug": "react-scripts start",
     "build": "react-scripts build",
+    "lint": "eslint src --ext .ts,.tsx,.js",
     "test": "react-scripts test",
     "format": "prettier --write src",
     "eject": "react-scripts eject"
@@ -51,6 +52,7 @@
     "@typescript-eslint/eslint-plugin": "*",
     "@typescript-eslint/parser": "*",
     "eslint-config-prettier": "*",
+    "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react-hooks": "*",
     "prettier": "*"
   }
