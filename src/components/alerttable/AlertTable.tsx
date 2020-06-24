@@ -93,7 +93,7 @@ const AlertTable: React.FC<AlertsProps> = (props) => {
     <ReactTable
       defaultSorted={[
         {
-          id: "formatted_timestamp",
+          id: "timestamp_col",
           desc: true,
         },
       ]}
