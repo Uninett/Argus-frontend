@@ -1,6 +1,7 @@
 import moment from "moment";
 import api, { Alert, User, Token } from "./api";
 import auth from "./auth";
+import { DEBUG } from "./config";
 
 export interface AlertWithFormattedTimestamp extends Alert {
   formattedTimestamp: string;
@@ -38,3 +39,5 @@ export function objectGetPropertyByPath(obj: object, path: string): any {
 export function objectGetPropertyByPathArray(obj: any, path: string[]): any {
   return path.reduce((obj: any, property: string): any => obj[property], obj);
 }
+
+export const debuglog = DEBUG ? console.log.bind(null, "[DEBUG]") : () => {};
