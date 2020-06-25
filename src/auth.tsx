@@ -1,4 +1,5 @@
 import { Cookies } from "react-cookie";
+import { USE_SECURE_COOKIE } from "./config";
 
 const cookies = new Cookies();
 
@@ -13,7 +14,7 @@ class Auth {
   login(token: string, callback?: () => void) {
     this.authenticated = true;
     this._token = token;
-    cookies.set("token", token, { path: "/" });
+    cookies.set("token", token, { path: "/", secure: USE_SECURE_COOKIE });
     if (callback) callback();
   }
   logout(callback?: () => void) {
