@@ -1,71 +1,78 @@
 import React from "react";
-import ReactTable, { SortingRule } from "react-table";
+import ReactTable, { SortingRule, Column } from "react-table";
 // import "./table.css";
 import "react-table/react-table.css";
 
-import { objectGetPropertyByPath } from "../../utils";
+import { getPropertyByPath } from "../../utils";
 
 // This is based on the following:
 // https://github.com/tannerlinsley/react-table/issues/94
-export function calculateTableCellWidth(cellString: string, cssMagicSpacing: number = 9): number {
+export function calculateTableCellWidth(cellString: string, cssMagicSpacing = 9): number {
   return cssMagicSpacing * cellString.length;
 }
 
-export type Row = any;
-export type ColumnAccessorFunction = (row: Row) => string;
-export type Accessor = string | ColumnAccessorFunction;
-export function getMaxColumnWidth(
-  rows: Row[],
+export type ColumnAccessorFunction<RowType> = (row: RowType) => string;
+export type Accessor<RowType> = string | ColumnAccessorFunction<RowType>;
+export function getMaxColumnWidth<RowType>(
+  rows: RowType[],
   headerText: string,
-  accessorValue: Accessor,
-  maxWidth: number = 600,
-  cssMagicSpacing: number = 11,
+  accessorValue: Accessor<RowType>,
+  maxWidth = 600,
+  cssMagicSpacing = 11,
 ): number {
   const accessorFunction =
-    typeof accessorValue === "string" ? (row: Row) => objectGetPropertyByPath(row, accessorValue) : accessorValue;
-  const cellLength = (row: Row): number => (`${accessorFunction(row)}` || "").length;
-  const maxCellLength: number = rows.reduce((seen: number, row: Row) => Math.max(seen, cellLength(row)), 0);
+    typeof accessorValue === "string"
+      ? (row: RowType) => getPropertyByPath<RowType>(row, accessorValue)
+      : accessorValue;
+  const cellLength = (row: RowType): number => (`${accessorFunction(row)}` || "").length;
+  const maxCellLength: number = rows.reduce((seen: number, row: RowType) => Math.max(seen, cellLength(row)), 0);
   return Math.min(maxWidth, cssMagicSpacing * Math.max(maxCellLength, headerText.length));
 }
 
-export type ConstrainedColumn = {
+export type ConstrainedColumn<RowType> = {
   Header: string;
-  accessor: Accessor;
+  accessor: Accessor<RowType>;
   maxWidth?: number;
   minWidth?: number;
 };
 
-export type ConstraintFunction = (rows: Row[], header: string, accessor: Accessor) => number;
-export function maxWidthColumn(
-  rows: Row[],
+export type ConstraintFunction<RowType> = (rows: RowType[], header: string, accessor: Accessor<RowType>) => number;
+export function maxWidthColumn<RowType>(
+  rows: RowType[],
   header: string,
-  accessor: Accessor,
-  func: ConstraintFunction,
-): ConstrainedColumn {
+  accessor: Accessor<RowType>,
+  func: ConstraintFunction<RowType>,
+): ConstrainedColumn<RowType> {
   return { Header: header, accessor, maxWidth: func(rows, header, accessor) };
 }
 
-type TablePropsType = {
-  data: any[];
-  columns: any[];
+type TablePropsType<RowType> = {
+  data: RowType[];
+  columns: Column[];
   noDataText?: string;
   pageSize?: number;
   loading?: boolean;
   sorted?: SortingRule[];
 };
 
-const Table: React.FC<TablePropsType> = ({ data, columns, noDataText, pageSize, loading, sorted, ...props }) => {
-  return (
-    <ReactTable
-      defaultSorted={sorted || []}
-      columns={columns}
-      loading={loading}
-      noDataText={noDataText || "No data"}
-      data={data}
-      pageSize={pageSize || data.length}
-      showPaginationBottom={pageSize ? true : false}
-    />
-  );
-};
+type TableComponent<T> = React.FC<TablePropsType<T>>;
+
+class Table<RowType> extends React.Component<TablePropsType<RowType>> {
+  render() {
+    const { data, columns, noDataText, pageSize, loading, sorted }: TablePropsType<RowType> = this.props;
+
+    return (
+      <ReactTable
+        defaultSorted={sorted || []}
+        columns={columns}
+        loading={loading}
+        noDataText={noDataText || "No data"}
+        data={data}
+        pageSize={pageSize || data.length}
+        showPaginationBottom={pageSize ? true : false}
+      />
+    );
+  }
+}
 
 export default Table;

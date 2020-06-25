@@ -1,17 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Select from "react-select";
 import "./FilterBuilder.css";
 
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import SaveIcon from "@material-ui/icons/Save";
-import Dialog from "@material-ui/core/Dialog";
-import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 
-import api, { Alert, AlertMetadata, Filter, FilterDefinition } from "../../api";
+import { FilterDefinition } from "../../api";
 import { defaultFilter, Metadata } from "../../common/filters";
 
-type FilterBuilderProps = {
+type FilterBuilderPropsType = {
   onFilterCreate: (name: string, filter: FilterDefinition) => void;
   onFilterPreview: (filter: FilterDefinition) => void;
 
@@ -21,15 +19,14 @@ type FilterBuilderProps = {
   problemTypeIds: Metadata[];
 };
 
-const FilterBuilder: React.FC<FilterBuilderProps> = ({
+const FilterBuilder: React.FC<FilterBuilderPropsType> = ({
   onFilterCreate,
   onFilterPreview,
   sourceIds,
   objectTypeIds,
   parentObjectIds,
   problemTypeIds,
-  ...props
-}) => {
+}: FilterBuilderPropsType) => {
   // const LOADING_TEXT = "Loading...";
   // const NO_DATA_TEXT = "No data";
   // const NO_MATCHING_ALERTS_TEXT = "No matching alerts";
@@ -37,27 +34,8 @@ const FilterBuilder: React.FC<FilterBuilderProps> = ({
   const [filter, setFilter] = useState<FilterDefinition>(defaultFilter);
   const [name, setName] = useState<string>("");
 
-  // const [noDataText, setNoDataText] = useState<string>(LOADING_TEXT);
-  const [showDialog, setShowDialog] = useState<[boolean, string]>([false, ""]);
-
-  // const getAlerts = (filter?: FilterDefinition) => {
-  //   const promise = (filter && api.postFilterPreview(filter)) || api.getAllAlerts();
-  //   promise.then((alerts: Alert[]) => {
-  //     const formattedAlerts = alerts.map(alertWithFormattedTimestamp);
-  //     setNoDataText(alerts.length === 0 ? NO_DATA_TEXT : LOADING_TEXT);
-  //     setPreviewAlerts(formattedAlerts);
-  //   });
-  //   console.log("geAlerts()")
-  // };
-
   const handleChange = (value: any, property: string) => {
-    const newFilter: any = filter;
-    newFilter[property] = value
-      ? value.map((obj: any) => {
-          return obj.value;
-        })
-      : [];
-    setFilter(newFilter);
+    setFilter({ ...filter, [property]: value ? value.map((metadata: Metadata) => metadata.value) : [] });
   };
 
   const handleNameChanged = (e: any) => {

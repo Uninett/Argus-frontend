@@ -11,7 +11,7 @@ type AlertsPreviewProps = {
   filter?: FilterDefinition;
 };
 
-const AlertsPreview: React.FC<AlertsPreviewProps> = ({ filter }) => {
+const AlertsPreview: React.FC<AlertsPreviewProps> = ({ filter }: AlertsPreviewProps) => {
   const [noDataText, setNoDataText] = useState<string>(LOADING_TEXT);
   const [previewAlerts, setPreviewAlerts] = useState<AlertWithFormattedTimestamp[]>([]);
 
@@ -30,7 +30,7 @@ const AlertsPreview: React.FC<AlertsPreviewProps> = ({ filter }) => {
     } else {
       getAlerts(filter);
     }
-  }, []);
+  }, [filter]);
 
   return <AlertTable alerts={previewAlerts} noDataText={noDataText} />;
 };

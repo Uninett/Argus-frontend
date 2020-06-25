@@ -74,6 +74,7 @@ export type MediaAlternative = "Email" | "SMS" | "Slack";
 
 export type NotificationProfilePK = number;
 export interface NotificationProfileKeyed {
+  // eslint-disable-next-line
   time_slot: TimeslotPK;
   filters: FilterPK[];
   media: MediaAlternative[];
@@ -150,8 +151,10 @@ export function defaultResolver<T, P = T>(data: T): T {
   return data;
 }
 
+// eslint-disable-next-line
 export type ErrorCreator = (error: any) => Error;
 
+// eslint-disable-next-line
 export function defaultError(error: any): Error {
   return new Error(`${error}`);
 }
@@ -187,12 +190,13 @@ export class ApiClient {
     this.api = axios.create(this.config);
     this.token = auth.token();
 
-    this.registerUnauthorizedCallback((reponse: AxiosResponse, error) => {
+    this.registerUnauthorizedCallback(() => {
       debuglog("Unauthorized response recieved, logging out!");
       auth.logout();
     });
   }
 
+  // eslint-disable-next-line
   public registerUnauthorizedCallback(callback: (response: AxiosResponse, error: any) => void) {
     this.api.interceptors.response.use(
       (response) => response,
@@ -220,8 +224,8 @@ export class ApiClient {
     );
   }
 
-  public postLogout(username: string, password: string): Promise<Token> {
-    return resolveOrReject(this.authGet<string, {}>("/api/v1/auth/logout/"), defaultResolver, defaultError);
+  public postLogout(): Promise<void> {
+    return resolveOrReject(this.authGet<void, {}>("/api/v1/auth/logout/"), defaultResolver, defaultError);
   }
 
   // authUser: returns the information about an authenticated user
@@ -260,6 +264,7 @@ export class ApiClient {
       this.authPut<NotificationProfileSuccessResponse, NotificationProfileRequest>(
         `/api/v1/notificationprofiles/${timeslot}`,
         {
+          // eslint-disable-next-line
           time_slot: timeslot,
           filters,
           media,
@@ -279,6 +284,7 @@ export class ApiClient {
   ): Promise<NotificationProfile> {
     return resolveOrReject(
       this.authPost<NotificationProfileSuccessResponse, NotificationProfileRequest>(`/api/v1/notificationprofiles/`, {
+        // eslint-disable-next-line
         time_slot: timeslot,
         filters,
         media,
@@ -293,7 +299,7 @@ export class ApiClient {
     return this.authDelete<NotificationProfileSuccessResponse, DeleteNotificationProfileRequest>(
       `/api/v1/notificationprofiles/${timeslot}`,
     )
-      .then((response) => {
+      .then(() => {
         return Promise.resolve(true);
       })
       .catch((error) => {
@@ -347,6 +353,7 @@ export class ApiClient {
     return resolveOrReject(
       this.authPost<FilterSuccessResponse, FilterRequest>(`/api/v1/notificationprofiles/filters/`, {
         name,
+        // eslint-disable-next-line
         filter_string: filterString,
       }),
       defaultResolver,
@@ -354,7 +361,7 @@ export class ApiClient {
     );
   }
 
-  public deleteFilter(pk: FilterPK): Promise<any> {
+  public deleteFilter(pk: FilterPK): Promise<void> {
     return resolveOrReject(
       this.authDelete<never, never>(`/api/v1/notificationprofiles/filters/${pk}`),
       defaultResolver,
@@ -383,6 +390,7 @@ export class ApiClient {
     return resolveOrReject(
       this.authPut<Timeslot, Omit<Timeslot, "pk">>(`/api/v1/notificationprofiles/timeslots/${timeslotPK}`, {
         name,
+        // eslint-disable-next-line
         time_intervals: timeIntervals,
       }),
       defaultResolver,
@@ -394,6 +402,7 @@ export class ApiClient {
     return resolveOrReject(
       this.authPost<Timeslot, Omit<Timeslot, "pk">>(`/api/v1/notificationprofiles/timeslots/`, {
         name,
+        // eslint-disable-next-line
         time_intervals: timeIntervals,
       }),
       defaultResolver,

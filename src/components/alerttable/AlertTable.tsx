@@ -1,16 +1,11 @@
 import React from "react";
-// import ReactTable from "react-table";
 import "./alerttable.css";
 import "react-table/react-table.css";
 
+// TODO: remove alertWithFormattedTimestamp
+// use regular alert instead.
 import { AlertWithFormattedTimestamp } from "../../utils";
-import Table, {
-  getMaxColumnWidth,
-  maxWidthColumn,
-  calculateTableCellWidth,
-  ConstraintFunction,
-  Row,
-} from "../table/Table";
+import Table, { getMaxColumnWidth, maxWidthColumn, calculateTableCellWidth, ConstraintFunction } from "../table/Table";
 
 type AlertsProps = {
   alerts: AlertWithFormattedTimestamp[];
@@ -26,33 +21,37 @@ const SourceDetailUrl = (row: { value: string; original: { details_url: string }
   );
 };
 
-const AlertTable: React.FC<AlertsProps> = (props) => {
-  const rows: Row[] = props.alerts;
+const AlertTable: React.FC<AlertsProps> = ({ alerts }: AlertsProps) => {
+  type A = AlertWithFormattedTimestamp;
 
-  const timestampCellWidth: ConstraintFunction = (rows: Row[]) =>
-    calculateTableCellWidth("2015-11-14T03:04:14.387000+01:00");
+  const timestampCellWidth: ConstraintFunction<A> = () => calculateTableCellWidth("2015-11-14T03:04:14.387000+01:00");
 
-  const columns: any = [
+  const columns = [
     {
       id: "timestamp_col",
-      ...maxWidthColumn(rows, "Timestamp", "timestamp", timestampCellWidth),
+      ...maxWidthColumn<A>(alerts, "Timestamp", "timestamp", timestampCellWidth),
     },
     {
       id: "source_col",
       Cell: SourceDetailUrl,
-      ...maxWidthColumn(rows, "Source", (row: Row) => String(row.source.name), getMaxColumnWidth),
+      ...maxWidthColumn<A>(
+        alerts,
+        "Source",
+        (alert: AlertWithFormattedTimestamp) => String(alert.source.name),
+        getMaxColumnWidth,
+      ),
     },
     {
       id: "problem_type_col",
-      ...maxWidthColumn(rows, "Problem type", "problem_type.name", getMaxColumnWidth),
+      ...maxWidthColumn<A>(alerts, "Problem type", "problem_type.name", getMaxColumnWidth),
     },
     {
       id: "object_col",
-      ...maxWidthColumn(rows, "Object", "object.name", getMaxColumnWidth),
+      ...maxWidthColumn<A>(alerts, "Object", "object.name", getMaxColumnWidth),
     },
     {
       id: "parent_object_col",
-      ...maxWidthColumn(rows, "Parent object", "parent_object.name", getMaxColumnWidth),
+      ...maxWidthColumn<A>(alerts, "Parent object", "parent_object.name", getMaxColumnWidth),
     },
     {
       id: "description_col",
@@ -61,7 +60,7 @@ const AlertTable: React.FC<AlertsProps> = (props) => {
     },
   ];
 
-  return <Table data={rows} columns={columns} sorted={[{ id: "timestamp_col", desc: true }]} />;
+  return <Table data={alerts} columns={columns} sorted={[{ id: "timestamp_col", desc: true }]} />;
 };
 
 export default AlertTable;

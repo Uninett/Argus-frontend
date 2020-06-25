@@ -1,4 +1,4 @@
-import { FilterDefinition, AlertMetadata } from "../../api";
+import { FilterDefinition } from "../../api";
 
 export type NameAndPK = { pk: string | number; name: string };
 

@@ -15,7 +15,7 @@ type ProfileProps = {
   selectedTimeslots: { value: string; label: string };
   active: boolean;
   index?: number;
-  deleteProfile: any;
+  deleteProfile: (index: number, something: boolean) => void;
   media?: any;
   mediaKey?: any;
   exist: boolean;
@@ -109,13 +109,20 @@ const Profile: React.SFC<ProfileProps> = (props: ProfileProps) => {
   };
 
   const handleDelete = async () => {
+    if (props.index === undefined) {
+      // Why is this nullable
+      return;
+    }
+
+    const index: number = props.index;
+
     //slett fra database her:
     if (props.mediaKey) {
       api
         .deleteNotificationProfile(selectedTimeslots.value)
-        .then((success) => success && props.deleteProfile(props.index, false));
-    } else {
-      props.deleteProfile(props.index, true);
+        .then((success) => success && props.deleteProfile(index, false));
+    } else if (props.index !== undefined) {
+      props.deleteProfile(index, true);
     }
   };
 

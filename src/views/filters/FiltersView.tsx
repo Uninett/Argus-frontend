@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Header from "../../components/header/Header";
 import "../../components/alerttable/alerttable.css";
 import FilterBuilder from "../../components/filterbuilder/FilterBuilder";
-import { withRouter, Redirect } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import api, {
   AlertSource,
   AlertObjectType,
@@ -12,19 +12,13 @@ import api, {
   Filter,
   FilterDefinition,
   FilterPK,
-  EmptyFilterDefinition,
 } from "../../api";
-import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
-import SaveIcon from "@material-ui/icons/Save";
 import Dialog from "@material-ui/core/Dialog";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
-import { debuglog, AlertWithFormattedTimestamp, alertWithFormattedTimestamp } from "../../utils";
 
-import Table, { Accessor, Row } from "../../components/table/Table";
-import AlertTable from "../../components/alerttable/AlertTable";
+import Table, { Accessor } from "../../components/table/Table";
 import AlertsPreview from "../../components/alertspreview/AlertsPreview";
-import { AccessorFunction } from "react-table";
 
 import { Metadata, defaultResponse, mapToMetadata } from "../../common/filters";
 
@@ -37,7 +31,7 @@ type Dict<T> = {
 };
 
 function reducer<T extends Keyable>(elements: T[], initial: Dict<T> = {}): Dict<T> {
-  return elements.reduce((acc: Dict<T>, curr: T) => ({ [curr.pk]: curr, ...acc }), {});
+  return elements.reduce((acc: Dict<T>, curr: T) => ({ [curr.pk]: curr, ...acc }), initial);
 }
 
 type Id = string;
@@ -64,8 +58,16 @@ enum IdNameField {
   ID = 0,
   NAME = 1,
 }
+
+type StringProperty<T> = {
+  [key: string]: T[];
+};
+
+// TODO: fix this when new filter model is introduced
+// eslint-disable-next-line
 function fromIdNameTuple(property: string, field: IdNameField) {
-  return (row: Row) => (property in row ? row[property].map((elem: any) => elem[field]) : undefined);
+  // eslint-disable-next-line
+  return (row: any) => (property in row ? row[property].map((elem: any) => elem[field]) : undefined);
 }
 
 function filterWithNamesToDefinition(filterWithNames: FilterWithNames): FilterDefinition {
@@ -97,41 +99,41 @@ function filterToFilterWithNames(definition: FilterDefinitionDict, filter: Filte
 type FilterTablePropType = {
   filters: Dict<FilterWithNames>;
   onFilterDelete: (filter: FilterWithNames) => void;
-  onFilterPreview: (filter: FilterWithNames | any, rest?: any) => void;
+  onFilterPreview: (filter: FilterWithNames) => void;
 };
 
 const FilterTable: React.FC<FilterTablePropType> = ({ filters, onFilterDelete, onFilterPreview }) => {
   const withCell = (
     id: string,
     header: string,
-    accessor: Accessor,
-    cellCreator?: (filter: FilterWithNames, rest?: any) => any,
+    accessor: Accessor<any>,
+    cellCreator?: (filter: FilterWithNames) => React.ReactNode,
   ) => {
     if (cellCreator) {
-      const cell = ({ original, ...rest }: { original: FilterWithNames }) => cellCreator(original, rest);
+      const cell = ({ original }: { original: FilterWithNames }) => cellCreator(original);
       return { id, Header: header, accessor, Cell: cell };
     }
     return { id, Header: header, accessor };
   };
 
   // TODO: make type-safe
-  const namesFrom = (property: string): Accessor => (row: Row) => {
+  const namesFrom = (property: string): Accessor<any> => (row: any) => {
     return fromIdNameTuple(property, IdNameField.NAME)(row).join(", ");
   };
 
-  const columns: any = [
+  const columns = [
     withCell("name_col", "Filter name", "name"),
     withCell("sources_col", "Sources", namesFrom("sources")),
     withCell("objectTypes_col", "Object Types", namesFrom("objectTypes")),
     withCell("parentObjects_col", "Parent objects", namesFrom("parentObjects")),
     withCell("problemTypes_col", "Problem Types", namesFrom("problemTypes")),
-    withCell("actions_col", "Actions", "name_col", (filter: FilterWithNames, rest: any) => {
+    withCell("actions_col", "Actions", "name_col", (filter: FilterWithNames) => {
       return (
         <>
           <Button onClick={() => onFilterDelete(filter)} variant="contained" color="primary" size="small">
             Delete
           </Button>
-          <Button onClick={() => onFilterPreview(filter, rest)} variant="contained" color="primary" size="small">
+          <Button onClick={() => onFilterPreview(filter)} variant="contained" color="primary" size="small">
             Preview
           </Button>
         </>
@@ -174,12 +176,14 @@ const FiltersView: React.FC<FiltersViewPropType> = (props) => {
   function deleteFilter(filter: FilterWithNames) {
     api
       .deleteFilter(filter.pk)
-      .then((value) => {
+      .then(() => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { [filter.pk]: _, ...others } = filters;
         setFilters(others);
         setShowDialog([true, "Successfully deleted filter"]);
       })
       .catch((error) => {
+        console.log(error);
         setShowDialog([true, `Unable to delete filter: ${filter.name}!`]);
       });
   }
@@ -200,13 +204,13 @@ const FiltersView: React.FC<FiltersViewPropType> = (props) => {
       });
   }
 
-  function onPreviewFilter(filter?: FilterWithNames) {
-    onPreviewFilterByDefinition((filter && filterWithNamesToDefinition(filter!)) || undefined);
-  }
-
   function onPreviewFilterByDefinition(filter?: FilterDefinition) {
     setPreviewFilterCounter((counter) => counter + 1);
     setPreviewFilter(filter);
+  }
+
+  function onPreviewFilter(filter?: FilterWithNames) {
+    onPreviewFilterByDefinition((filter && filterWithNamesToDefinition(filter)) || undefined);
   }
 
   const handleClose = () => {

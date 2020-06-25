@@ -22,7 +22,7 @@ interface Data {
 
 const ProfileList: React.FC = () => {
   const [notificationprofiles, setNotificationprofiles] = useState<NotificationProfile[]>([]);
-  const [addedNotificationprofiles, setaddedNotificationprofiles] = useState<NotificationProfilePK[]>([]);
+  const [addedNotificationprofiles, setAddedNotificationprofiles] = useState<NotificationProfilePK[]>([]);
   const [newProfileCounter, setNewProfileCounter] = useState<number>(0);
   const [filters, setFilters] = useState<FilterData[]>([]);
   const [timeslots, setTimeslots] = useState<TimeslotData[]>([]);
@@ -32,7 +32,18 @@ const ProfileList: React.FC = () => {
     { label: "Email", value: "EM" },
   ];
 
+  function formatData<T extends Data>(input: (Filter | Timeslot)[]): T[] {
+    return input.map((elem: Filter | Timeslot) => ({ value: elem.pk, label: elem.name } as T));
+  }
+
+  const getNotificationprofiles = async () => {
+    api.getAllNotificationProfiles().then((profiles: NotificationProfile[]) => {
+      setNotificationprofiles(profiles);
+    });
+  };
+
   useEffect(() => {
+    //fetch all notificationprofiles
     getNotificationprofiles();
     api.getAllFilters().then((filters: Filter[]) => {
       setFilters(formatData<FilterData>(filters));
@@ -43,26 +54,15 @@ const ProfileList: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  //fetch all notificationprofiles
-  const getNotificationprofiles = async () => {
-    api.getAllNotificationProfiles().then((profiles: NotificationProfile[]) => {
-      setNotificationprofiles(profiles);
-    });
-  };
-
-  function formatData<T extends Data>(input: (Filter | Timeslot)[]): T[] {
-    return input.map((elem: Filter | Timeslot) => ({ value: elem.pk, label: elem.name } as T));
-  }
-
   const deleteProfile = (num: number, isNew: boolean) => {
     if (isNew) {
-      const prof: any = [...addedNotificationprofiles];
+      const prof: NotificationProfilePK[] = [...addedNotificationprofiles];
       const index: number = prof.indexOf(num);
       prof.splice(index, 1);
 
-      setaddedNotificationprofiles(prof);
+      setAddedNotificationprofiles(prof);
     } else {
-      const prof: any = [...notificationprofiles];
+      const prof = [...notificationprofiles];
       for (let i = 0; i < prof.length; i++) {
         const element: any = prof[i];
         if (element.pk === num) {
@@ -88,14 +88,6 @@ const ProfileList: React.FC = () => {
       }
     }
     return matchedMedia;
-  };
-
-  const addProfileClick = () => {
-    if (getUnusedTimeslots().length > 0) {
-      const newProfiles: number[] = addedNotificationprofiles;
-      newProfiles.push(newProfileCounter);
-      setNewProfileCounter(newProfileCounter + 1);
-    } else alert("All timeslots are in use");
   };
 
   const getUnusedTimeslots = () => {
@@ -128,6 +120,15 @@ const ProfileList: React.FC = () => {
       return timeslots;
     }
   };
+
+  const addProfileClick = () => {
+    if (getUnusedTimeslots().length > 0) {
+      const newProfiles: number[] = addedNotificationprofiles;
+      newProfiles.push(newProfileCounter);
+      setNewProfileCounter(newProfileCounter + 1);
+    } else alert("All timeslots are in use");
+  };
+
   const removeTimeslot = (item: any) => {
     const list: any = [];
     for (let i = 0; i < timeslots.length; i++) {
