@@ -37,10 +37,15 @@ button {
 }
 
 #login-logo {
+  width: 100%;
   height: 100%;
   margin: auto;
   grid-area: logo;
   stroke: var(--loginlogo);
+}
+
+#login-logo img {
+  width: 30%;
 }
 
 #login-text {

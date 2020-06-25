@@ -26,3 +26,15 @@ export async function loginAndSetUser(token: Token): Promise<void> {
       });
   });
 }
+
+export function calculateTableCellWidth(cellString: string, cssMagicSpacing: number = 10): number {
+  return cssMagicSpacing * cellString.length;
+}
+
+export function objectGetPropertyByPath(obj: object, path: string): any {
+  return objectGetPropertyByPathArray(obj, path.split("."));
+}
+
+export function objectGetPropertyByPathArray(obj: any, path: string[]): any {
+  return path.reduce((obj: any, property: string): any => obj[property], obj);
+}
