@@ -75,7 +75,7 @@ export type MediaAlternative = "Email" | "SMS" | "Slack";
 export type NotificationProfilePK = number;
 export interface NotificationProfileKeyed {
   // eslint-disable-next-line
-  time_slot: TimeslotPK;
+  timeslot: TimeslotPK;
   filters: FilterPK[];
   media: MediaAlternative[];
   active: boolean;
@@ -83,7 +83,7 @@ export interface NotificationProfileKeyed {
 
 export interface NotificationProfile {
   pk: number;
-  time_slot: Timeslot[];
+  timeslot: Timeslot;
   filters: Filter[];
   media: MediaAlternative[];
   active: boolean;
@@ -139,8 +139,8 @@ export interface AlertMetadata {
 
 export type NotificationProfileRequest = NotificationProfileKeyed;
 export type NotificationProfileSuccessResponse = NotificationProfile;
-export type GetNotificationProfileRequest = Pick<NotificationProfileRequest, "time_slot">;
-export type DeleteNotificationProfileRequest = Pick<NotificationProfileRequest, "time_slot">;
+export type GetNotificationProfileRequest = Pick<NotificationProfileRequest, "timeslot">;
+export type DeleteNotificationProfileRequest = Pick<NotificationProfileRequest, "timeslot">;
 
 export type FilterRequest = Omit<Filter, "pk">;
 export type FilterSuccessResponse = Filter;
@@ -201,9 +201,12 @@ export class ApiClient {
     this.api.interceptors.response.use(
       (response) => response,
       (error) => {
-        const { status } = error.response;
-        if (status === 401) {
-          callback(error.response, error);
+        if (error && error.response) {
+          debuglog(error);
+          const { status } = error.response;
+          if (status === 401) {
+            callback(error.response, error);
+          }
         }
         return Promise.reject(error);
       },
@@ -265,7 +268,7 @@ export class ApiClient {
         `/api/v1/notificationprofiles/${timeslot}`,
         {
           // eslint-disable-next-line
-          time_slot: timeslot,
+          timeslot: timeslot,
           filters,
           media,
           active,
@@ -285,7 +288,7 @@ export class ApiClient {
     return resolveOrReject(
       this.authPost<NotificationProfileSuccessResponse, NotificationProfileRequest>(`/api/v1/notificationprofiles/`, {
         // eslint-disable-next-line
-        time_slot: timeslot,
+        timeslot: timeslot,
         filters,
         media,
         active,

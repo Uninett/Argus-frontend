@@ -92,13 +92,13 @@ const ProfileList: React.FC = () => {
 
   const getUnusedTimeslots = () => {
     if (notificationprofiles.length > 0 && timeslots.length > 0) {
-      const timeslotsProfile: any = [];
+      const timeslotsProfile: string[] = [];
       for (let i = 0; i < notificationprofiles.length; i++) {
-        const element: any = notificationprofiles[i];
-        timeslotsProfile.push(element.time_slot.pk);
+        const element = notificationprofiles[i];
+        timeslotsProfile.push(String(element.timeslot.pk));
       }
-      const timeslotNames: any = [];
-      timeslots.map((timeslot: any) => {
+      const timeslotNames: string[] = [];
+      timeslots.map((timeslot: TimeslotData) => {
         return timeslotNames.push(timeslot.value);
       });
 
@@ -143,10 +143,10 @@ const ProfileList: React.FC = () => {
   return (
     <div className="profile-container">
       {notificationprofiles.length > 0 ? (
-        notificationprofiles.map((profile: any, index: any) => {
-          const timeslot: any = {
-            value: profile.time_slot.pk,
-            label: profile.time_slot.name,
+        notificationprofiles.map((profile: NotificationProfile, index: any) => {
+          const timeslot: TimeslotData = {
+            value: String(profile.timeslot.pk),
+            label: profile.timeslot.name,
           };
           return (
             <Profile
@@ -162,7 +162,7 @@ const ProfileList: React.FC = () => {
               active={profile.active}
               removeTimeslot={removeTimeslot}
               media={formatMedia(profile.media)}
-              mediaKey={profile.time_slot.pk}
+              mediaKey={profile.timeslot.pk}
               unusedTimeslots={getUnusedTimeslots}
               changesMade={false}
             />

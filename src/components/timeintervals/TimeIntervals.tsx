@@ -74,7 +74,7 @@ const TimeIntervals: React.FC = () => {
 
   useEffect(() => {
     getTimeslot(true, initialTimeslotKey, initialTimeIntervalKey);
-  });
+  }, []);
 
   const convertDay = (day: any) => {
     switch (day) {
