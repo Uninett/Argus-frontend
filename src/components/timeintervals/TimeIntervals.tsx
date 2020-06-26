@@ -18,17 +18,6 @@ const TimeIntervals: React.FC = () => {
   const [endTime, setEndTime] = useState(new Map([[initialTimeIntervalKey, "16:30"]]));
   const [daysValue, setDaysValue] = useState<any>(new Map([[initialTimeIntervalKey, []]]));
 
-  useEffect(() => {
-    getTimeslot(true, initialTimeslotKey, initialTimeIntervalKey);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const getTimeslot = async (firstTime: boolean, inputTimeslotKey: string, inputTimeIntervalKey: string) => {
-    api.getAllTimeslots().then((timeslots: TimeslotType[]) => {
-      buildTimeslots(timeslots, firstTime, inputTimeslotKey, inputTimeIntervalKey);
-    });
-  };
-
   const deleteTimeslot = async (key: string) => {
     api.deleteTimeslot(timeslotPK.get(key)).then((response: any) => {
       const newTimeslots = [...timeslots];
@@ -77,6 +66,16 @@ const TimeIntervals: React.FC = () => {
     setTimeInterval(responseTimeIntervals);
   };
 
+  const getTimeslot = async (firstTime: boolean, inputTimeslotKey: string, inputTimeIntervalKey: string) => {
+    api.getAllTimeslots().then((timeslots: TimeslotType[]) => {
+      buildTimeslots(timeslots, firstTime, inputTimeslotKey, inputTimeIntervalKey);
+    });
+  };
+
+  useEffect(() => {
+    getTimeslot(true, initialTimeslotKey, initialTimeIntervalKey);
+  }, []);
+
   const convertDay = (day: any) => {
     switch (day) {
       case "MO":
@@ -120,6 +119,17 @@ const TimeIntervals: React.FC = () => {
     return _timeIntervals;
   };
 
+  const resetView = (timeslotKey: string, timeIntervalKey: string) => {
+    const serverBoolean = fromServer;
+    serverBoolean.set(timeslotKey, false);
+    setFromServer(serverBoolean);
+
+    setNameField(nameField.set(timeslotKey, ""));
+    setStartTime(startTime.set(timeIntervalKey, "07:30"));
+    setEndTime(endTime.set(timeIntervalKey, "16:30"));
+    setDaysValue(daysValue.set(timeIntervalKey, []));
+  };
+
   const addTimeslot = async (timeslotKey: any) => {
     const dataTimeIntervals = buildDataTimeIntervals(timeslotKey);
     if (fromServer.get(timeslotKey)) {
@@ -132,17 +142,6 @@ const TimeIntervals: React.FC = () => {
         getTimeslot(false, timeslotKey, timeIntervalKey);
       });
     }
-  };
-
-  const resetView = (timeslotKey: string, timeIntervalKey: string) => {
-    const serverBoolean = fromServer;
-    serverBoolean.set(timeslotKey, false);
-    setFromServer(serverBoolean);
-
-    setNameField(nameField.set(timeslotKey, ""));
-    setStartTime(startTime.set(timeIntervalKey, "07:30"));
-    setEndTime(endTime.set(timeIntervalKey, "16:30"));
-    setDaysValue(daysValue.set(timeIntervalKey, []));
   };
 
   const handleStartTimeChange = (value: any, key: string) => {

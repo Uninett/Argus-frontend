@@ -9,21 +9,16 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
 
-type PropType = {
-  handleDelete: any;
+type ResponsiveDialogPropType = {
+  handleDelete: () => void;
 };
-export default function ResponsiveDialog(props: PropType) {
+const ResponsiveDialog: React.FC<ResponsiveDialogPropType> = (props: ResponsiveDialogPropType) => {
   const [open, setOpen] = React.useState(false);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
+  const handleClickOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
   const handleAccept = () => {
     props.handleDelete();
     handleClose();
@@ -50,4 +45,6 @@ export default function ResponsiveDialog(props: PropType) {
       </Dialog>
     </div>
   );
-}
+};
+
+export default ResponsiveDialog;

@@ -1,11 +1,18 @@
 import React from "react";
 import "./Header.css";
 import auth from "../../auth";
-import { Link, withRouter } from "react-router-dom";
+import { Link, withRouter, RouteComponentProps } from "react-router-dom";
 
 import Logo from "../logo/Logo";
 
-const Userbutton: React.FC<{ history: any; user: string }> = (props) => {
+type historyType = RouteComponentProps["history"];
+
+type UserbuttonPropsType = {
+  history: historyType;
+  user: string;
+};
+
+const Userbutton: React.FC<UserbuttonPropsType> = (props: UserbuttonPropsType) => {
   return (
     <div id="header-user" className="headerbutton dropdown">
       <p>{props.user}</p>
@@ -14,9 +21,7 @@ const Userbutton: React.FC<{ history: any; user: string }> = (props) => {
           className="headerbutton dropdown-button"
           id="header-logout"
           onClick={() => {
-            auth.logout(() => {
-              props.history.push("/login");
-            });
+            auth.logout(() => props.history.push("/login"));
           }}
         >
           Logout
@@ -26,7 +31,11 @@ const Userbutton: React.FC<{ history: any; user: string }> = (props) => {
   );
 };
 
-const Header: React.FC<{ history: any }> = (props) => {
+type HeaderPropsType = {
+  history: historyType;
+};
+
+const Header: React.FC<HeaderPropsType> = ({ history }: HeaderPropsType) => {
   // TODO: Use react context
   const user = localStorage.getItem("user") || "unknown";
 
@@ -39,14 +48,14 @@ const Header: React.FC<{ history: any }> = (props) => {
         <Link id="header-timeslots" className="headerbutton" to="/timeslots">
           <p>Timeslots</p>
         </Link>
-        <Link id="header-filters" className="headerbutton" to="/customfilter">
+        <Link id="header-filters" className="headerbutton" to="/filters">
           <p>Filters</p>
         </Link>
-        <Link id="header-notificationProfiles" className="headerbutton" to="/notification-profile">
+        <Link id="header-notificationProfiles" className="headerbutton" to="/notificationprofiles">
           <p>Notification profiles</p>
         </Link>
 
-        <Userbutton history={props.history} user={user} />
+        <Userbutton history={history} user={user} />
       </div>
     </div>
   );

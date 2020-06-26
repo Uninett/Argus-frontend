@@ -6,7 +6,7 @@ import LoginView from "./views/login/LoginView";
 import { Route, Switch, useHistory } from "react-router-dom";
 import { ProtectedRoute } from "./protected.route";
 import NotificationProfileView from "./views/notificationprofile/NotificationProfileView";
-import FilterBuildingView from "./views/filterbuilding/FilterBuildingView";
+import FiltersView from "./views/filters/FiltersView";
 import TimeslotView from "./views/timeslot/TimeslotView";
 
 import api from "./api";
@@ -14,7 +14,7 @@ import auth from "./auth";
 
 const App: React.SFC = () => {
   const history = useHistory();
-  api.registerUnauthorizedCallback((reponse, error) => {
+  api.registerUnauthorizedCallback(() => {
     console.log("Unauthorized response recieved, logging out!");
     auth.logout();
     history.push("/login");
@@ -24,10 +24,10 @@ const App: React.SFC = () => {
     <div>
       <Switch>
         <ProtectedRoute exact path="/" component={AlertView} />
-        <ProtectedRoute path="/notification-profile" component={NotificationProfileView} />
+        <ProtectedRoute path="/notificationprofiles" component={NotificationProfileView} />
         <ProtectedRoute path="/timeslots" component={TimeslotView} />
         <Route path="/login" component={LoginView} />
-        <ProtectedRoute path="/customfilter" component={FilterBuildingView} />
+        <ProtectedRoute path="/filters" component={FiltersView} />
         <Route
           path="*"
           component={() => (
