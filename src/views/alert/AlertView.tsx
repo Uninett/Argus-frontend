@@ -4,29 +4,21 @@ import Header from "../../components/header/Header";
 import AlertTable from "../../components/alerttable/AlertTable";
 import "../../components/alerttable/alerttable.css";
 import { withRouter } from "react-router-dom";
-import api, { Alert } from "../../api";
-import { AlertWithFormattedTimestamp, alertWithFormattedTimestamp } from "../../utils";
+import api from "../../api";
+import { useApiAlerts } from "../../api/hooks";
+
+import { LOADING_TEXT, ERROR_TEXT, NO_DATA_TEXT } from "../../constants";
 
 type AlertViewPropsType = {};
 
 const AlertView: React.FC<AlertViewPropsType> = () => {
-  const LOADING_TEXT = "Loading...";
-  const NO_DATA_TEXT = "No data";
-
-  const [alerts, setAlerts] = useState<AlertWithFormattedTimestamp[]>([]);
-  const [noDataText, setNoDataText] = useState<string>(LOADING_TEXT);
+  const [{ result: alerts, isLoading, isError }, setPromise] = useApiAlerts();
 
   useEffect(() => {
-    const getAlerts = async () => {
-      await api.getActiveAlerts().then((alerts: Alert[]) => {
-        const alertsWithFormattedTimestamps = alerts.map(alertWithFormattedTimestamp);
-        setNoDataText(alerts.length === 0 ? NO_DATA_TEXT : LOADING_TEXT);
-        setAlerts(alertsWithFormattedTimestamps);
-      });
-    };
+    setPromise(api.getActiveAlerts());
+  }, [setPromise]);
 
-    getAlerts();
-  }, []);
+  const noDataText = isLoading ? LOADING_TEXT : isError ? ERROR_TEXT : NO_DATA_TEXT;
 
   return (
     <div>
@@ -35,7 +27,7 @@ const AlertView: React.FC<AlertViewPropsType> = () => {
       </header>
       <h1 className={"filterHeader"}>Active Alerts </h1>
       <div className="table">
-        <AlertTable alerts={alerts} noDataText={noDataText} />
+        <AlertTable alerts={alerts || []} noDataText={noDataText} />
       </div>
     </div>
   );

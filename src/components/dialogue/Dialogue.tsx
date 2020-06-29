@@ -36,10 +36,10 @@ const ResponsiveDialog: React.FC<ResponsiveDialogPropType> = (props: ResponsiveD
         </DialogContent>
         <DialogActions>
           <Button autoFocus onClick={handleClose} color="primary">
-            Disagree
+            No
           </Button>
           <Button onClick={handleAccept} color="primary" autoFocus>
-            Agree
+            Yes
           </Button>
         </DialogActions>
       </Dialog>

@@ -1,9 +1,9 @@
 import axios, { AxiosRequestConfig, AxiosResponse, AxiosInstance } from "axios";
 
-import auth from "./auth";
+import auth from "../auth";
 
-import { BACKEND_URL } from "./config";
-import { debuglog } from "./utils";
+import { BACKEND_URL } from "../config";
+import { debuglog } from "../utils";
 
 export interface AuthUserResponse {
   username: string;
@@ -70,7 +70,7 @@ export const EmptyFilterDefinition = {
   problemTypeIds: [],
 };
 
-export type MediaAlternative = "Email" | "SMS" | "Slack";
+export type MediaAlternative = "EM" | "SM" | "SL";
 
 export type NotificationProfilePK = number;
 export interface NotificationProfileKeyed {
@@ -298,15 +298,15 @@ export class ApiClient {
     );
   }
 
-  public deleteNotificationProfile(timeslot: TimeslotPK): Promise<boolean> {
+  public deleteNotificationProfile(profile: NotificationProfilePK): Promise<boolean> {
     return this.authDelete<NotificationProfileSuccessResponse, DeleteNotificationProfileRequest>(
-      `/api/v1/notificationprofiles/${timeslot}`,
+      `/api/v1/notificationprofiles/${profile}`,
     )
       .then(() => {
         return Promise.resolve(true);
       })
       .catch((error) => {
-        return Promise.reject(new Error(`Failed to delete notification profile ${timeslot}: ${error}`));
+        return Promise.reject(new Error(`Failed to delete notification profile ${profile}: ${error}`));
       });
   }
 
