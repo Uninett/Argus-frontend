@@ -57,6 +57,7 @@ export function Selector<T extends { name: string; pk: K }, K extends number | s
 
   const selectOptions: SelectOptionsType<T>[] = mapToSelectOption<T>([...options.values()]);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const defaultValue = multiSelect ? (enabledOptions as any) : (enabledOptions[0] as any);
 
   function filterOption({ data }: { data: SelectOptionsType<T> }): boolean {
@@ -79,8 +80,11 @@ export function Selector<T extends { name: string; pk: K }, K extends number | s
       filterOption={(option) => {
         return filterOption(option);
       }}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       options={selectOptions as any}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       values={enabledOptions as any}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       isOptionDisabled={(option: any): boolean => (isOptionDisabled && isOptionDisabled(option.value as T)) || false}
     />
   );

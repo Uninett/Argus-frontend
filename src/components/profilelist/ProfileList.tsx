@@ -57,15 +57,6 @@ const ProfileList: React.FC = () => {
 
   const [action, setAction] = useState<Action>({ message: "", success: false, completed: false });
 
-  const [alertSnackbar, state, setAlertSnackbarState]: UseAlertSnackbarResultType = useAlertSnackbar();
-
-  function displaySnackbar(message: string, severity?: AlertSnackbarSeverity) {
-    debuglog(`Displaying message with severity ${severity}: ${message}`);
-    setAlertSnackbarState((state: AlertSnackbarState) => {
-      return { ...state, open: true, message, severity: severity || "success" };
-    });
-  }
-
   const calculateAvailableTimeslots = (
     profiles: Map<NotificationProfilePK, NotificationProfile>,
     timeslots: Map<TimeslotPK, Timeslot>,
@@ -91,6 +82,16 @@ const ProfileList: React.FC = () => {
 
   const useCombined = createUsePromise<[NotificationProfile[], Timeslot[]], ProfilesTimeslots>(mapper);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [alertSnackbar, alertSnackbarState, setAlertSnackbarState]: UseAlertSnackbarResultType = useAlertSnackbar();
+
+  function displaySnackbar(message: string, severity?: AlertSnackbarSeverity) {
+    debuglog(`Displaying message with severity ${severity}: ${message}`);
+    setAlertSnackbarState((state: AlertSnackbarState) => {
+      return { ...state, open: true, message, severity: severity || "success" };
+    });
+  }
+
   const [
     { result: combinedResult, isLoading: combinedIsLoading, isError: combinedIsError },
     setCombinedPromise,
@@ -101,7 +102,7 @@ const ProfileList: React.FC = () => {
     setAlertSnackbarState((state: AlertSnackbarState) => {
       return { ...state, open: true, message: "Unable to get profiles and timeslots", severity: "error" };
     });
-  }, [combinedIsError]);
+  }, [combinedIsError, setAlertSnackbarState]);
 
   useEffect(() => {
     if (combinedResult === undefined) {
@@ -131,7 +132,7 @@ const ProfileList: React.FC = () => {
     setAlertSnackbarState((state: AlertSnackbarState) => {
       return { ...state, open: true, message: "Unable to filters", severity: "error" };
     });
-  }, [filtersIsError]);
+  }, [filtersIsError, setAlertSnackbarState]);
 
   const mediaOptions: { label: string; value: MediaAlternative }[] = [
     { label: "Slack", value: "SL" },
@@ -247,35 +248,37 @@ const ProfileList: React.FC = () => {
         {combinedIsLoading || filtersIsLoading ? (
           <h5>Loading...</h5>
         ) : profiles && profilesKeys.length > 0 ? (
-          profilesKeys.map((pk: NotificationProfilePK) => {
-            const profile: NotificationProfile | undefined = profiles.get(pk);
-            if (!profile) {
-              return;
-            }
+          removeUndefined(
+            profilesKeys.map((pk: NotificationProfilePK) => {
+              const profile: NotificationProfile | undefined = profiles.get(pk);
+              if (!profile) {
+                return undefined;
+              }
 
-            return (
-              <Profile
-                exists
-                active={profile.active}
-                filters={filters || new Map<FilterPK, Filter>()}
-                timeslots={timeslots || new Map<TimeslotPK, Timeslot>()}
-                isTimeslotInUse={(timeslot: Timeslot): boolean => {
-                  console.log("is timeslot in use", timeslot, usedTimeslots.has(timeslot.name));
-                  return usedTimeslots.has(timeslot.name);
-                }}
-                key={profile.pk}
-                pk={profile.pk}
-                mediums={mediaOptions}
-                selectedMediums={profile.media}
-                selectedFilters={profile.filters}
-                selectedTimeslot={profile.timeslot}
-                onNewDelete={deleteNewProfile}
-                onSavedDelete={deleteSavedProfile}
-                onNewCreate={createNewProfile}
-                onSavedUpdate={updateSavedProfile}
-              />
-            );
-          })
+              return (
+                <Profile
+                  exists
+                  active={profile.active}
+                  filters={filters || new Map<FilterPK, Filter>()}
+                  timeslots={timeslots || new Map<TimeslotPK, Timeslot>()}
+                  isTimeslotInUse={(timeslot: Timeslot): boolean => {
+                    console.log("is timeslot in use", timeslot, usedTimeslots.has(timeslot.name));
+                    return usedTimeslots.has(timeslot.name);
+                  }}
+                  key={profile.pk}
+                  pk={profile.pk}
+                  mediums={mediaOptions}
+                  selectedMediums={profile.media}
+                  selectedFilters={profile.filters}
+                  selectedTimeslot={profile.timeslot}
+                  onNewDelete={deleteNewProfile}
+                  onSavedDelete={deleteSavedProfile}
+                  onNewCreate={createNewProfile}
+                  onSavedUpdate={updateSavedProfile}
+                />
+              );
+            }),
+          )
         ) : newProfile ? (
           <></>
         ) : (

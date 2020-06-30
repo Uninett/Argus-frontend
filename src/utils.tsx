@@ -3,6 +3,8 @@ import api, { Alert, User, Token } from "./api";
 import auth from "./auth";
 import { DEBUG } from "./config";
 
+export type ErrorType = string | Error;
+
 export interface AlertWithFormattedTimestamp extends Alert {
   formattedTimestamp: string;
 }

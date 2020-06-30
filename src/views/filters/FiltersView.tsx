@@ -106,6 +106,8 @@ const FilterTable: React.FC<FilterTablePropType> = ({ filters, onFilterDelete, o
   const withCell = (
     id: string,
     header: string,
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     accessor: Accessor<any>,
     cellCreator?: (filter: FilterWithNames) => React.ReactNode,
   ) => {
@@ -117,6 +119,7 @@ const FilterTable: React.FC<FilterTablePropType> = ({ filters, onFilterDelete, o
   };
 
   // TODO: make type-safe
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const namesFrom = (property: string): Accessor<any> => (row: any) => {
     return fromIdNameTuple(property, IdNameField.NAME)(row).join(", ");
   };
@@ -145,6 +148,7 @@ const FilterTable: React.FC<FilterTablePropType> = ({ filters, onFilterDelete, o
 };
 
 type FiltersViewPropType = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   history: any;
 };
 
@@ -153,7 +157,7 @@ const objectTypesResponse: Metadata[] = [];
 const parentObjectsResponse: Metadata[] = [];
 const problemTypesResponse: Metadata[] = [];
 
-const FiltersView: React.FC<FiltersViewPropType> = (props) => {
+const FiltersView: React.FC<FiltersViewPropType> = () => {
   const [sourceIds, setSourceIds] = useState<Metadata[]>(defaultResponse);
   const [objectTypeIds, setObjectTypeIds] = useState<Metadata[]>(defaultResponse);
   const [parentObjectIds, setParentObjectIds] = useState<Metadata[]>(defaultResponse);

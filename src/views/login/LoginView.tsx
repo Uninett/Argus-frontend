@@ -1,7 +1,6 @@
 import React, { useState, useContext } from "react";
 
 import "./LoginView.css";
-// import { Store } from '../../store';
 import Auth from "../../auth";
 import { BACKEND_URL } from "../../config";
 import api, { Token } from "../../api";
@@ -11,12 +10,20 @@ import { Store } from "../../store";
 
 import Logo from "../../components/logo/Logo";
 
-const LoginView: React.FC<any> = (props) => {
+type LoginViewPropsType = {
+  // TODO: Find type
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  history: any;
+};
+
+const LoginView: React.FC<LoginViewPropsType> = (props: LoginViewPropsType) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loginAttemptFailed, setLoginAttemptFailed] = useState(false);
   const { dispatch } = useContext(Store);
 
+  // TODO: Find type
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = async (e: any) => {
     e.preventDefault();
 

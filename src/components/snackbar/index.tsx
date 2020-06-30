@@ -25,7 +25,7 @@ const AlertSnackbar: React.SFC<AlertSnackbarPropsType> = ({
 
   onClose,
 }: AlertSnackbarPropsType): React.ReactElement => {
-  const handleClose = (event?: any, reason?: string) => {
+  const handleClose = (event?: unknown, reason?: string) => {
     if (reason === "clickaway") return;
     onClose();
   };

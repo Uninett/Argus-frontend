@@ -1,20 +1,29 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Dispatch, SetStateAction } from "react";
 import { Alert } from ".";
 // TODO: fix this
 import { alertWithFormattedTimestamp, AlertWithFormattedTimestamp } from "../utils";
-import { NotificationProfile, NotificationProfilePK, Filter, FilterPK, Timeslot, TimeslotPK } from "../api";
+import {
+  ApiErrorType,
+  NotificationProfile,
+  NotificationProfilePK,
+  Filter,
+  FilterPK,
+  Timeslot,
+  TimeslotPK,
+} from "../api";
 import { toMap, pkGetter } from "../utils";
 
 type UsePromiseReturnType<R> = {
   result: R | undefined;
   isLoading: boolean;
   isError: boolean;
-  error: any;
+  error: ApiErrorType | undefined;
 };
 
 export function createUsePromise<T, R = T>(mapper: (input: T) => R, onResult?: (result: R) => void) {
-  // TODO find type
-  const usePromise = (initialPromise?: Promise<T>): [UsePromiseReturnType<R>, any] => {
+  const usePromise = (
+    initialPromise?: Promise<T>,
+  ): [UsePromiseReturnType<R>, Dispatch<SetStateAction<Promise<T> | undefined>>] => {
     const [promise, setPromise] = useState<Promise<T> | undefined>(initialPromise);
     const [result, setResult] = useState<R | undefined>(undefined);
 
