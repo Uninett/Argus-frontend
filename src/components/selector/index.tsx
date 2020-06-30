@@ -1,9 +1,15 @@
-import React, { useState, useEffect } from "react";
-import Select, { OptionsType, OptionTypeBase, Props as SelectProps, ValueType } from "react-select";
-
+import React from "react";
+import Select, { Props as SelectProps } from "react-select";
 import { removeUndefined } from "../../utils";
 
-export interface SelectOptionsType<T> extends OptionTypeBase {
+/*
+ * The types from @types are not equal to the ones defined here:
+ *  From https://react-select.com/props#prop-types
+ */
+type OptionType = { [key: string]: unknown };
+type OptionsType = Array<OptionType>;
+
+export interface SelectOptionsType<T> extends OptionType {
   label: string;
   value: T;
 }
@@ -18,11 +24,11 @@ export function mapToSelectOption<T extends { name: string }>(elems: T[]): Selec
 
 export function onSelectChangeHandler<T>(callback: (target: T[] | T | undefined) => void): SelectProps["onChange"] {
   // TODO: fix
-  return (option: any) => {
+  return (option: unknown | unknown[] | SelectOptionsType<T>) => {
     if (Array.isArray(option)) {
-      callback(option.map((option: SelectOptionsType<T>) => option.value));
+      callback(option.map((option: SelectOptionsType<T>): T => option.value));
     } else if (option) {
-      callback(option.value);
+      callback((option as SelectOptionsType<T>).value);
     } else {
       callback(undefined);
     }
@@ -49,7 +55,7 @@ export function Selector<T extends { name: string; pk: K }, K extends number | s
     removeUndefined([...enabledOptionsKeys.values()].map((key: K) => options.get(key))),
   );
 
-  const selectOptions = mapToSelectOption<T>([...options.values()]);
+  const selectOptions: SelectOptionsType<T>[] = mapToSelectOption<T>([...options.values()]);
 
   const defaultValue = multiSelect ? (enabledOptions as any) : (enabledOptions[0] as any);
 
@@ -66,7 +72,7 @@ export function Selector<T extends { name: string; pk: K }, K extends number | s
        * https://github.com/JedWatson/react-select/issues/3306
        */
       getOptionValue={(option) => option.label}
-      onChange={onSelectChangeHandler(onSelectChange || (() => {}))}
+      onChange={onSelectChangeHandler(onSelectChange || (() => undefined))}
       name="filters"
       label="Single select"
       defaultValue={defaultValue}

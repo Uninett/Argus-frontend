@@ -22,7 +22,7 @@ export interface User {
 export type Token = string;
 
 const apiConfig = {
-  returnRejectedPromiseOnError: true,
+  returnRejectedPromiseOnError: false,
   // withCredentials: true,
   baseURL: BACKEND_URL,
 };
@@ -157,6 +157,13 @@ export type ErrorCreator = (error: any) => Error;
 // eslint-disable-next-line
 export function defaultError(error: any): Error {
   return new Error(`${error}`);
+}
+
+export function defaultErrorHandler(callback?: (message: string) => void): (error: Error) => void {
+  return (error: Error) => {
+    console.log("[API] Got Error", error);
+    callback && callback(error.message);
+  };
 }
 
 function resolveOrReject<T, P = T>(

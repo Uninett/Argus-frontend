@@ -6,6 +6,7 @@ import AddIcon from "@material-ui/icons/Add";
 
 import ActionDialog from "../../components/actiondialog/ActionDialog";
 import api, {
+  defaultErrorHandler,
   NotificationProfile,
   NotificationProfilePK,
   NotificationProfileKeyed,
@@ -15,8 +16,16 @@ import api, {
   TimeslotPK,
   MediaAlternative,
 } from "../../api";
-import { createUsePromise, useApiNotificationProfiles, useApiFilters, useApiTimeslots } from "../../api/hooks";
-import { toMap, pkGetter, removeUndefined } from "../../utils";
+import { createUsePromise, useApiFilters } from "../../api/hooks";
+import { debuglog, toMap, pkGetter, removeUndefined } from "../../utils";
+
+// TODO: rename to components/alertsnackbar
+import {
+  useAlertSnackbar,
+  UseAlertSnackbarResultType,
+  AlertSnackbarState,
+  AlertSnackbarSeverity,
+} from "../../components/snackbar";
 
 interface FilterData {
   label: string;
@@ -48,6 +57,15 @@ const ProfileList: React.FC = () => {
 
   const [action, setAction] = useState<Action>({ message: "", success: false, completed: false });
 
+  const [alertSnackbar, state, setAlertSnackbarState]: UseAlertSnackbarResultType = useAlertSnackbar();
+
+  function displaySnackbar(message: string, severity?: AlertSnackbarSeverity) {
+    debuglog(`Displaying message with severity ${severity}: ${message}`);
+    setAlertSnackbarState((state: AlertSnackbarState) => {
+      return { ...state, open: true, message, severity: severity || "success" };
+    });
+  }
+
   const calculateAvailableTimeslots = (
     profiles: Map<NotificationProfilePK, NotificationProfile>,
     timeslots: Map<TimeslotPK, Timeslot>,
@@ -71,25 +89,33 @@ const ProfileList: React.FC = () => {
     };
   };
 
-  const onResult = (combined: ProfilesTimeslots) => {
-    console.log("got combined", combined);
-    calculateAvailableTimeslots(combined.profiles, combined.timeslots);
-    setProfiles(combined.profiles || new Map<NotificationProfilePK, NotificationProfile>());
-    setTimeslots(combined.timeslots || new Map<TimeslotPK, Timeslot>());
-  };
-
-  const useCombined = createUsePromise<[NotificationProfile[], Timeslot[]], ProfilesTimeslots>(mapper, onResult);
+  const useCombined = createUsePromise<[NotificationProfile[], Timeslot[]], ProfilesTimeslots>(mapper);
 
   const [
     { result: combinedResult, isLoading: combinedIsLoading, isError: combinedIsError },
     setCombinedPromise,
   ] = useCombined();
 
+  useEffect(() => {
+    if (!combinedIsError) return;
+    setAlertSnackbarState((state: AlertSnackbarState) => {
+      return { ...state, open: true, message: "Unable to get profiles and timeslots", severity: "error" };
+    });
+  }, [combinedIsError]);
+
+  useEffect(() => {
+    if (combinedResult === undefined) {
+      return;
+    }
+    calculateAvailableTimeslots(combinedResult.profiles, combinedResult.timeslots);
+    setProfiles(combinedResult.profiles || new Map<NotificationProfilePK, NotificationProfile>());
+    setTimeslots(combinedResult.timeslots || new Map<TimeslotPK, Timeslot>());
+  }, [combinedResult]);
+
   const [newProfile, setNewProfile] = useState<Partial<NotificationProfile> | undefined>(undefined);
   const [usedTimeslots, setUsedTimeslots] = useState<Set<Timeslot["name"]>>(new Set<Timeslot["name"]>());
 
   useEffect(() => {
-    console.log("updating used timeslots");
     const newUsedTimeslots = new Set<Timeslot["name"]>(
       [...profiles.values()].map((profile: NotificationProfile) => profile.timeslot.name),
     );
@@ -97,10 +123,15 @@ const ProfileList: React.FC = () => {
   }, [profiles]);
 
   const [{ result: filters, isLoading: filtersIsLoading, isError: filtersIsError }, setFiltersPromise] = useApiFilters(
-    (result: Map<FilterPK, Filter>) => {
-      console.log("got filter result", result);
-    },
+    () => undefined,
   )();
+
+  useEffect(() => {
+    if (!filtersIsError) return;
+    setAlertSnackbarState((state: AlertSnackbarState) => {
+      return { ...state, open: true, message: "Unable to filters", severity: "error" };
+    });
+  }, [filtersIsError]);
 
   const mediaOptions: { label: string; value: MediaAlternative }[] = [
     { label: "Slack", value: "SL" },
@@ -114,19 +145,22 @@ const ProfileList: React.FC = () => {
     setCombinedPromise(promise);
   }, [setFiltersPromise, setCombinedPromise]);
 
-  function doAction(message: string, completed: boolean, success = true) {
-    setAction({ success, completed, message });
-  }
-
   const deleteSavedProfile = (pk: NotificationProfilePK) => {
-    api.deleteNotificationProfile(pk).then((success: boolean) => {
-      setProfiles((profiles: Map<NotificationProfilePK, NotificationProfile>) => {
-        const newProfiles = new Map<NotificationProfilePK, NotificationProfile>(profiles);
-        newProfiles.delete(pk);
-        return newProfiles;
-      });
-      doAction(success ? "Deleted notification profile" : "Unable to delete profile", true, success);
-    });
+    api
+      .deleteNotificationProfile(pk)
+      .then((success: boolean) => {
+        setProfiles((profiles: Map<NotificationProfilePK, NotificationProfile>) => {
+          const newProfiles = new Map<NotificationProfilePK, NotificationProfile>(profiles);
+          newProfiles.delete(pk);
+          return newProfiles;
+        });
+        const profileName = profiles.get(pk)?.timeslot.name || "<unknown>";
+        displaySnackbar(
+          success ? `Deleted notification profile: ${profileName}` : `Unable to delete profile: ${profileName}`,
+          success ? "warning" : "error",
+        );
+      })
+      .catch(defaultErrorHandler((msg: string) => displaySnackbar(msg, "error")));
   };
 
   const deleteNewProfile = () => {
@@ -134,8 +168,6 @@ const ProfileList: React.FC = () => {
   };
 
   const updateSavedProfile = (profile: NotificationProfile) => {
-    doAction(`Updating profile: ${profile.pk}`, false);
-    console.log("upadting profile", profile);
     api
       .putNotificationProfile(
         profile.timeslot.pk,
@@ -149,13 +181,12 @@ const ProfileList: React.FC = () => {
           newProfiles.set(profile.pk, profile);
           return newProfiles;
         });
-        doAction(`Updated profile: ${profile.pk}`, false);
-      });
+        displaySnackbar(`Updated profile: ${profile.timeslot.name}`, "success");
+      })
+      .catch(defaultErrorHandler((msg: string) => displaySnackbar(msg, "error")));
   };
 
   const createNewProfile = (profile: Omit<NotificationProfileKeyed, "pk">) => {
-    console.log("createNewProfile", profile);
-    doAction(`Creating new profile`, false);
     api
       .postNotificationProfile(profile.timeslot, profile.filters, profile.media, profile.active)
       .then((profile: NotificationProfile) => {
@@ -164,8 +195,9 @@ const ProfileList: React.FC = () => {
           newProfiles.set(profile.pk, profile);
           return newProfiles;
         });
-        doAction(`Create new profile: ${profile.pk}`, true);
-      });
+        displaySnackbar(`Created new profile: ${profile.timeslot.name}`, "success");
+      })
+      .catch(defaultErrorHandler((msg: string) => displaySnackbar(msg, "error")));
     setNewProfile(undefined);
   };
 
@@ -175,7 +207,7 @@ const ProfileList: React.FC = () => {
     } else if (newProfile === undefined) {
       setNewProfile({ media: [], active: false, filters: [], timeslot: timeslots.values().next().value });
     } else {
-      alert("Already working on new filter");
+      displaySnackbar("Already working on new filter. Create or delete that one first!", "error");
       return;
     }
   };
@@ -196,79 +228,69 @@ const ProfileList: React.FC = () => {
       onSavedDelete={deleteSavedProfile}
       onNewCreate={createNewProfile}
       onSavedUpdate={updateSavedProfile}
-      onUpdate={(newProfile: Partial<NotificationProfile>) => {
-        console.log("got new profile");
-        setNewProfile((profile?: Partial<NotificationProfile>) => {
-          if (!profile) {
-            return newProfile;
-          }
-          return {
-            timeslot: newProfile.timeslot ? newProfile.timeslot : profile.timeslot,
-            filters: newProfile.filters ? newProfile.filters : profile.filters,
-            media: newProfile.media ? newProfile.media : profile.media,
-            active: newProfile.active ? newProfile.active : profile.active,
-          };
-        });
-      }}
     />
   ) : (
     <></>
   );
 
   return (
-    <div className="profile-container">
-      <ActionDialog
-        message={action.message}
-        show={action.completed}
-        success={action.success}
-        onClose={() => setAction((action: Action) => ({ ...action, completed: false }))}
-      />
-      {combinedIsLoading || filtersIsLoading ? (
-        <h5>Loading...</h5>
-      ) : profiles && profilesKeys.length > 0 ? (
-        profilesKeys.map((pk: NotificationProfilePK) => {
-          const profile: NotificationProfile | undefined = profiles.get(pk);
-          if (!profile) {
-            return;
-          }
+    <>
+      <div className="profile-container">
+        {alertSnackbar}
+        <ActionDialog
+          key="actiondialog"
+          message={action.message}
+          show={action.completed}
+          success={action.success}
+          onClose={() => setAction((action: Action) => ({ ...action, completed: false }))}
+        />
+        {combinedIsLoading || filtersIsLoading ? (
+          <h5>Loading...</h5>
+        ) : profiles && profilesKeys.length > 0 ? (
+          profilesKeys.map((pk: NotificationProfilePK) => {
+            const profile: NotificationProfile | undefined = profiles.get(pk);
+            if (!profile) {
+              return;
+            }
 
-          return (
-            <Profile
-              exists
-              active={profile.active}
-              filters={filters || new Map<FilterPK, Filter>()}
-              timeslots={timeslots || new Map<TimeslotPK, Timeslot>()}
-              isTimeslotInUse={(timeslot: Timeslot): boolean => {
-                console.log("is timeslot in use", timeslot, usedTimeslots.has(timeslot.name));
-                return usedTimeslots.has(timeslot.name);
-              }}
-              key={profile.pk}
-              pk={profile.pk}
-              mediums={mediaOptions}
-              selectedMediums={profile.media}
-              selectedFilters={profile.filters}
-              selectedTimeslot={profile.timeslot}
-              onNewDelete={deleteNewProfile}
-              onSavedDelete={deleteSavedProfile}
-              onNewCreate={createNewProfile}
-              onSavedUpdate={updateSavedProfile}
-            />
-          );
-        })
-      ) : newProfile ? (
-        <></>
-      ) : (
-        <h5>No profiles</h5>
-      )}
-      {newProfileComponent}
-      {!newProfile && (
-        <div className="add-button">
-          <Fab color="primary" aria-label="add" size="large" onClick={addProfileClick}>
-            <AddIcon />
-          </Fab>
-        </div>
-      )}
-    </div>
+            return (
+              <Profile
+                exists
+                active={profile.active}
+                filters={filters || new Map<FilterPK, Filter>()}
+                timeslots={timeslots || new Map<TimeslotPK, Timeslot>()}
+                isTimeslotInUse={(timeslot: Timeslot): boolean => {
+                  console.log("is timeslot in use", timeslot, usedTimeslots.has(timeslot.name));
+                  return usedTimeslots.has(timeslot.name);
+                }}
+                key={profile.pk}
+                pk={profile.pk}
+                mediums={mediaOptions}
+                selectedMediums={profile.media}
+                selectedFilters={profile.filters}
+                selectedTimeslot={profile.timeslot}
+                onNewDelete={deleteNewProfile}
+                onSavedDelete={deleteSavedProfile}
+                onNewCreate={createNewProfile}
+                onSavedUpdate={updateSavedProfile}
+              />
+            );
+          })
+        ) : newProfile ? (
+          <></>
+        ) : (
+          <h5>No profiles</h5>
+        )}
+        {newProfileComponent}
+        {!newProfile && (
+          <div className="add-button">
+            <Fab color="primary" aria-label="add" size="large" onClick={addProfileClick}>
+              <AddIcon />
+            </Fab>
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import "./AlertView.css";
 import Header from "../../components/header/Header";
 import AlertTable from "../../components/alerttable/AlertTable";

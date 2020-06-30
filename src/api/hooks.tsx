@@ -55,7 +55,7 @@ function asMap<K extends string | number, V extends { pk: K }>(elems: V[]): Map<
 
 export const useApiAlerts = createUsePromise<Alert[], AlertWithFormattedTimestamp[]>(
   (alerts: Alert[]): AlertWithFormattedTimestamp[] => alerts.map(alertWithFormattedTimestamp),
-  () => {},
+  () => undefined,
 );
 
 export const useApiNotificationProfiles = (

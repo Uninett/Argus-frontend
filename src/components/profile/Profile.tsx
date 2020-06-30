@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Checkbox from "@material-ui/core/Checkbox";
 import Button from "@material-ui/core/Button";
 import SaveIcon from "@material-ui/icons/Save";
 import Dialogue from "../dialogue/Dialogue";
 import Spinner from "../spinners/Spinner";
 import "./Profile.css";
-import api, {
+import {
   NotificationProfile,
   NotificationProfilePK,
   NotificationProfileKeyed,
@@ -15,9 +15,8 @@ import api, {
   TimeslotPK,
   MediaAlternative,
 } from "../../api";
-import { pkGetter, toMap, debuglog } from "../../utils";
-import Selector, { SelectOptionsType } from "../selector";
-import Select from "react-select/src/Select";
+import { pkGetter, toMap } from "../../utils";
+import Selector from "../selector";
 
 type ProfileProps = {
   // if not set this means that it doesn't exist in the database
@@ -64,8 +63,6 @@ const Profile: React.FC<ProfileProps> = ({
 
   onNewCreate,
   onSavedUpdate,
-
-  onUpdate,
 }: ProfileProps) => {
   const [hasChanged, setHasChanged] = useState<boolean>(!exists);
   const [changedTimeslot, setChangedTimeslot] = useState<boolean>(false);
@@ -79,7 +76,6 @@ const Profile: React.FC<ProfileProps> = ({
   });
 
   const saveProfile = async (profile: Partial<NotificationProfile>) => {
-    debuglog("postnewprofile");
     if (
       profile &&
       profile.active !== undefined &&
@@ -88,7 +84,6 @@ const Profile: React.FC<ProfileProps> = ({
       profile.timeslot !== undefined
     ) {
       if (exists && pk !== undefined && !changedTimeslot) {
-        console.log("calling onSavedUpdate");
         onSavedUpdate({
           pk: pk,
           timeslot: profile.timeslot,
@@ -97,7 +92,6 @@ const Profile: React.FC<ProfileProps> = ({
           active: profile.active,
         });
       } else {
-        console.log("calling onNewCreate", profile);
         onNewCreate({
           timeslot: profile.timeslot.pk,
           filters: profile.filters.map((filter: Filter): FilterPK => pkGetter<FilterPK, Filter>(filter)),
@@ -121,12 +115,11 @@ const Profile: React.FC<ProfileProps> = ({
   };
 
   function onSelectTimeslot(timeslot?: Timeslot | Timeslot[]) {
-    console.log("On timeslot Change", timeslot);
     if (Array.isArray(timeslot)) {
       return;
     }
 
-    if (selectedTimeslot === undefined || (timeslot && selectedTimeslot.pk != timeslot.pk)) {
+    if (selectedTimeslot === undefined || (timeslot && selectedTimeslot.pk !== timeslot.pk)) {
       setHasChanged(true);
       setChangedTimeslot(true); // this requires a post instead of a put
       setProfile((profile: Partial<NotificationProfile>) => ({ ...profile, timeslot }));
@@ -153,8 +146,6 @@ const Profile: React.FC<ProfileProps> = ({
   }
 
   function onSelectMediums(selectedMediums?: SelectorMediaAlternative | SelectorMediaAlternative[]) {
-    console.log("On selectedMediums Change", selectedMediums);
-
     if (!Array.isArray(selectedMediums) || !selectedMediums) {
       setHasChanged(true);
       setProfile((profile: Partial<NotificationProfile>) => {
@@ -173,7 +164,6 @@ const Profile: React.FC<ProfileProps> = ({
   }
 
   function onActiveChanged() {
-    console.log("onActiveChanged");
     setHasChanged(true);
     setProfile((profile: Partial<NotificationProfile>) => {
       return { ...profile, active: !!!profile.active };
@@ -196,6 +186,10 @@ const Profile: React.FC<ProfileProps> = ({
       name: medium.label,
     }));
   }
+
+  const isNew = (): boolean => {
+    return (!exists && !pk) || changedTimeslot;
+  };
 
   return (
     <div className="notification-container">
@@ -268,11 +262,11 @@ const Profile: React.FC<ProfileProps> = ({
               }}
               startIcon={<SaveIcon />}
             >
-              Save
+              {isNew() ? "Create" : "Save"}
             </Button>
           ) : (
             <Button disabled variant="contained" color="primary" size="small" startIcon={<SaveIcon />}>
-              Save
+              {isNew() ? "Create" : "Save"}
             </Button>
           )}
         </div>
