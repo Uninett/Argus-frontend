@@ -27,7 +27,9 @@ type ProfileProps = {
 
   filters: Map<FilterPK, Filter>;
   timeslots: Map<TimeslotPK, Timeslot>;
-  mediums: { label: string; value: MediaAlternative }[]; // XXX: Rename in backend as well?
+  // TODO: Rename to media here (plural of medium),
+  // and rename MediaAlternative to Medium
+  mediums: { label: string; value: MediaAlternative }[];
 
   selectedFilters: Filter[];
   selectedMediums: MediaAlternative[];
@@ -108,6 +110,7 @@ const Profile: React.FC<ProfileProps> = ({
       }
       setHasChanged(false);
     } else {
+      // TODO: maybe disable the save button or something?
       console.log("not all values set, cannot create");
       console.log(profile);
       setProfile(profile);
@@ -127,8 +130,6 @@ const Profile: React.FC<ProfileProps> = ({
   }
 
   function onSelectFilters(selectedFilters?: Filter | Filter[]) {
-    console.log("On selectedFilters Change", selectedFilters);
-
     if (!Array.isArray(selectedFilters) || !selectedFilters) {
       setHasChanged(true);
       setProfile((profile: Partial<NotificationProfile>) => {

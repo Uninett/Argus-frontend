@@ -261,10 +261,7 @@ const ProfileList: React.FC = () => {
                   active={profile.active}
                   filters={filters || new Map<FilterPK, Filter>()}
                   timeslots={timeslots || new Map<TimeslotPK, Timeslot>()}
-                  isTimeslotInUse={(timeslot: Timeslot): boolean => {
-                    console.log("is timeslot in use", timeslot, usedTimeslots.has(timeslot.name));
-                    return usedTimeslots.has(timeslot.name);
-                  }}
+                  isTimeslotInUse={(timeslot: Timeslot): boolean => usedTimeslots.has(timeslot.name)}
                   key={profile.pk}
                   pk={profile.pk}
                   mediums={mediaOptions}
