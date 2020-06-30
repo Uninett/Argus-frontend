@@ -57,17 +57,6 @@ const ProfileList: React.FC = () => {
 
   const [action, setAction] = useState<Action>({ message: "", success: false, completed: false });
 
-  const calculateAvailableTimeslots = (
-    profiles: Map<NotificationProfilePK, NotificationProfile>,
-    timeslots: Map<TimeslotPK, Timeslot>,
-  ) => {
-    const avail: Set<TimeslotPK> = new Set<TimeslotPK>([...timeslots.keys()]);
-    for (const profile of profiles.values()) {
-      avail.delete(profile.pk);
-    }
-    setAvailableTimeslots(avail);
-  };
-
   type ProfilesTimeslots = {
     profiles: Map<NotificationProfilePK, NotificationProfile>;
     timeslots: Map<TimeslotPK, Timeslot>;
@@ -108,12 +97,12 @@ const ProfileList: React.FC = () => {
     if (combinedResult === undefined) {
       return;
     }
-    calculateAvailableTimeslots(combinedResult.profiles, combinedResult.timeslots);
     setProfiles(combinedResult.profiles || new Map<NotificationProfilePK, NotificationProfile>());
     setTimeslots(combinedResult.timeslots || new Map<TimeslotPK, Timeslot>());
   }, [combinedResult]);
 
   const [newProfile, setNewProfile] = useState<Partial<NotificationProfile> | undefined>(undefined);
+  const [unsavedProfiles, setUnsavedProfiles] = useState<Set<TimeslotPK>>(new Set());
   const [usedTimeslots, setUsedTimeslots] = useState<Set<Timeslot["name"]>>(new Set<Timeslot["name"]>());
 
   useEffect(() => {
@@ -121,7 +110,19 @@ const ProfileList: React.FC = () => {
       [...profiles.values()].map((profile: NotificationProfile) => profile.timeslot.name),
     );
     setUsedTimeslots(newUsedTimeslots);
-  }, [profiles]);
+    const calculateAvailableTimeslots = (
+      profiles: Map<NotificationProfilePK, NotificationProfile>,
+      timeslots: Map<TimeslotPK, Timeslot>,
+    ) => {
+      const avail: Set<TimeslotPK> = new Set<TimeslotPK>([...timeslots.keys()]);
+      for (const profile of profiles.values()) {
+        avail.delete(profile.pk);
+      }
+      setAvailableTimeslots(avail);
+    };
+
+    calculateAvailableTimeslots(profiles, timeslots);
+  }, [profiles, timeslots]);
 
   const [{ result: filters, isLoading: filtersIsLoading, isError: filtersIsError }, setFiltersPromise] = useApiFilters(
     () => undefined,
@@ -176,21 +177,42 @@ const ProfileList: React.FC = () => {
         profile.media,
         profile.active,
       )
-      .then((profile: NotificationProfile) => {
+      .then((newProfile: NotificationProfile) => {
+        // Special case: handle when the update function failes.
+        if (unsavedProfiles.has(profile.timeslot.pk)) {
+          setUnsavedProfiles((unsavedProfiles: Set<TimeslotPK>) => {
+            const newSet = new Set<TimeslotPK>(unsavedProfiles);
+            newSet.delete(profile.timeslot.pk);
+            return newSet;
+          });
+        }
+
         setProfiles((profiles: Map<NotificationProfilePK, NotificationProfile>) => {
           const newProfiles = new Map<NotificationProfilePK, NotificationProfile>(profiles);
-          newProfiles.set(profile.pk, profile);
+          newProfiles.set(profile.pk, newProfile);
           return newProfiles;
         });
         displaySnackbar(`Updated profile: ${profile.timeslot.name}`, "success");
       })
-      .catch(defaultErrorHandler((msg: string) => displaySnackbar(msg, "error")));
+      .catch(
+        defaultErrorHandler((msg: string) => {
+          displaySnackbar(msg, "error");
+
+          // Special case: handle when the update function failes.
+          setUnsavedProfiles((unsavedProfiles: Set<TimeslotPK>) => {
+            const newSet = new Set<TimeslotPK>(unsavedProfiles);
+            newSet.add(profile.timeslot.pk);
+            return newSet;
+          });
+        }),
+      );
   };
 
   const createNewProfile = (profile: Omit<NotificationProfileKeyed, "pk">) => {
     api
       .postNotificationProfile(profile.timeslot, profile.filters, profile.media, profile.active)
       .then((profile: NotificationProfile) => {
+        setNewProfile(undefined);
         setProfiles((profiles: Map<NotificationProfilePK, NotificationProfile>) => {
           const newProfiles = new Map<NotificationProfilePK, NotificationProfile>(profiles);
           newProfiles.set(profile.pk, profile);
@@ -198,15 +220,18 @@ const ProfileList: React.FC = () => {
         });
         displaySnackbar(`Created new profile: ${profile.timeslot.name}`, "success");
       })
-      .catch(defaultErrorHandler((msg: string) => displaySnackbar(msg, "error")));
-    setNewProfile(undefined);
+      .catch(
+        defaultErrorHandler((msg: string) => {
+          displaySnackbar(msg, "error");
+        }),
+      );
   };
 
   const addProfileClick = () => {
     if (availableTimeslots.size < 1 || !timeslots) {
       alert("All timeslots are in use");
     } else if (newProfile === undefined) {
-      setNewProfile({ media: [], active: false, filters: [], timeslot: timeslots.values().next().value });
+      setNewProfile({ media: [], active: true, filters: [], timeslot: timeslots.values().next().value });
     } else {
       displaySnackbar("Already working on new filter. Create or delete that one first!", "error");
       return;
@@ -257,12 +282,13 @@ const ProfileList: React.FC = () => {
 
               return (
                 <Profile
+                  unsavedChanges={unsavedProfiles.has(profile.timeslot.pk)}
                   exists
                   active={profile.active}
                   filters={filters || new Map<FilterPK, Filter>()}
                   timeslots={timeslots || new Map<TimeslotPK, Timeslot>()}
                   isTimeslotInUse={(timeslot: Timeslot): boolean => usedTimeslots.has(timeslot.name)}
-                  key={profile.pk}
+                  key={JSON.stringify(profile)}
                   pk={profile.pk}
                   mediums={mediaOptions}
                   selectedMediums={profile.media}

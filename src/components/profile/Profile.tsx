@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Checkbox from "@material-ui/core/Checkbox";
 import Button from "@material-ui/core/Button";
 import SaveIcon from "@material-ui/icons/Save";
@@ -24,6 +24,7 @@ type ProfileProps = {
 
   active: boolean;
   exists?: boolean;
+  unsavedChanges?: boolean;
 
   filters: Map<FilterPK, Filter>;
   timeslots: Map<TimeslotPK, Timeslot>;
@@ -50,6 +51,7 @@ const Profile: React.FC<ProfileProps> = ({
   pk,
   active,
   exists,
+  unsavedChanges,
 
   filters,
   timeslots,
@@ -66,7 +68,12 @@ const Profile: React.FC<ProfileProps> = ({
   onNewCreate,
   onSavedUpdate,
 }: ProfileProps) => {
-  const [hasChanged, setHasChanged] = useState<boolean>(!exists);
+  const [hasChanged, setHasChanged] = useState<boolean>((unsavedChanges && true) || !exists);
+
+  useEffect(() => {
+    setHasChanged((unsavedChanges && true) || !exists);
+  }, [unsavedChanges, exists]);
+
   const [changedTimeslot, setChangedTimeslot] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
 
@@ -108,7 +115,7 @@ const Profile: React.FC<ProfileProps> = ({
           setChangedTimeslot(false);
         }
       }
-      setHasChanged(false);
+      // setHasChanged(false);
     } else {
       // TODO: maybe disable the save button or something?
       console.log("not all values set, cannot create");
