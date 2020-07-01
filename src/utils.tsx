@@ -1,3 +1,4 @@
+import { useState, useEffect, Dispatch, SetStateAction } from "react";
 import moment from "moment";
 import api, { Alert, User, Token } from "./api";
 import auth from "./auth";
@@ -79,4 +80,15 @@ export function toMap<K extends number | string, T>(elements: T[], getter: (elem
 
 export function pkGetter<K, T extends { pk: K }>(elem: T): K {
   return elem.pk;
+}
+
+// From https://github.com/facebook/react/issues/15523
+export function useStateWithDynamicDefault<T>(defaultVal: T): [T, Dispatch<SetStateAction<T>>] {
+  const [state, setState] = useState<T>(defaultVal);
+
+  useEffect(() => {
+    setState(defaultVal);
+  }, [defaultVal]);
+
+  return [state, setState];
 }

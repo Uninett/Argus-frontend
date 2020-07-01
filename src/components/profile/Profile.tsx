@@ -15,7 +15,7 @@ import {
   TimeslotPK,
   MediaAlternative,
 } from "../../api";
-import { pkGetter, toMap } from "../../utils";
+import { useStateWithDynamicDefault, pkGetter, toMap } from "../../utils";
 import Selector from "../selector";
 
 type ProfileProps = {
@@ -24,6 +24,7 @@ type ProfileProps = {
 
   active: boolean;
   exists?: boolean;
+  unsavedChanges: boolean;
 
   filters: Map<FilterPK, Filter>;
   timeslots: Map<TimeslotPK, Timeslot>;
@@ -50,6 +51,7 @@ const Profile: React.FC<ProfileProps> = ({
   pk,
   active,
   exists,
+  unsavedChanges,
 
   filters,
   timeslots,
@@ -66,7 +68,8 @@ const Profile: React.FC<ProfileProps> = ({
   onNewCreate,
   onSavedUpdate,
 }: ProfileProps) => {
-  const [hasChanged, setHasChanged] = useState<boolean>(!exists);
+  const [hasChanged, setHasChanged] = useStateWithDynamicDefault<boolean>(unsavedChanges);
+
   const [changedTimeslot, setChangedTimeslot] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
 
@@ -108,7 +111,7 @@ const Profile: React.FC<ProfileProps> = ({
           setChangedTimeslot(false);
         }
       }
-      setHasChanged(false);
+      // setHasChanged(false);
     } else {
       // TODO: maybe disable the save button or something?
       console.log("not all values set, cannot create");
