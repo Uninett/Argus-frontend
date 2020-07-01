@@ -19,13 +19,12 @@ import api, {
 import { createUsePromise, useApiFilters } from "../../api/hooks";
 import { debuglog, toMap, pkGetter, removeUndefined } from "../../utils";
 
-// TODO: rename to components/alertsnackbar
 import {
   useAlertSnackbar,
   UseAlertSnackbarResultType,
   AlertSnackbarState,
   AlertSnackbarSeverity,
-} from "../../components/snackbar";
+} from "../../components/alertsnackbar";
 
 interface FilterData {
   label: string;
