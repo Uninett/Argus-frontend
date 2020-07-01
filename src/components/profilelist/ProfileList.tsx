@@ -230,7 +230,8 @@ const ProfileList: React.FC = () => {
     if (availableTimeslots.size < 1 || !timeslots) {
       alert("All timeslots are in use");
     } else if (newProfile === undefined) {
-      setNewProfile({ media: [], active: true, filters: [], timeslot: timeslots.values().next().value });
+      const firstAvailable = availableTimeslots.values().next().value;
+      setNewProfile({ media: [], active: true, filters: [], timeslot: timeslots.get(firstAvailable) });
     } else {
       displaySnackbar("Already working on new filter. Create or delete that one first!", "error");
       return;
