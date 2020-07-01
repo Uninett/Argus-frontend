@@ -22,6 +22,7 @@ import Selector from "../selector";
 type ProfileProps = {
   // if not set this means that it doesn't exist in the database
   pk?: NotificationProfilePK;
+  disabled?: boolean;
 
   active: boolean;
   exists?: boolean;
@@ -50,6 +51,7 @@ type ProfileProps = {
 
 const Profile: React.FC<ProfileProps> = ({
   pk,
+  disabled,
   active,
   exists,
   unsavedChanges,
@@ -70,6 +72,7 @@ const Profile: React.FC<ProfileProps> = ({
   onSavedUpdate,
 }: ProfileProps) => {
   const [hasChanged, setHasChanged] = useStateWithDynamicDefault<boolean>(unsavedChanges);
+  const [isDisabled, setIsDisabled] = useStateWithDynamicDefault<boolean | undefined>(disabled);
 
   const [changedTimeslot, setChangedTimeslot] = useState<boolean>(false);
   const [updateLoading, setUpdateLoading] = useState(false);
@@ -91,6 +94,7 @@ const Profile: React.FC<ProfileProps> = ({
       profile.timeslot !== undefined
     ) {
       if (exists && pk !== undefined && !changedTimeslot) {
+        setIsDisabled(true);
         onSavedUpdate({
           pk: pk,
           timeslot: profile.timeslot,
@@ -99,6 +103,7 @@ const Profile: React.FC<ProfileProps> = ({
           active: profile.active,
         });
       } else {
+        setIsDisabled(true);
         if (exists && pk !== undefined && changedTimeslot) {
           // Delete the previous profile using the old timeslot.
           // TODO: This could probably be done better.
@@ -196,6 +201,14 @@ const Profile: React.FC<ProfileProps> = ({
     return (!exists && !pk) || changedTimeslot;
   };
 
+  const saveButtonMsg = (): string => {
+    return isNew() ? (updateLoading ? "Creating" : "Create") : updateLoading ? "Saving" : "Save";
+  };
+
+  const deleteButtonMsg = (): string => {
+    return isNew() ? (deleteLoading ? "Aborting" : "Abort") : deleteLoading ? "Deleting" : "Delete";
+  };
+
   return (
     <div className="notification-container">
       <div className="check-box">
@@ -208,6 +221,7 @@ const Profile: React.FC<ProfileProps> = ({
           inputProps={{
             "aria-label": "secondary checkbox",
           }}
+          disabled={isDisabled}
         />
       </div>
       <div className="filtername-box">
@@ -221,6 +235,7 @@ const Profile: React.FC<ProfileProps> = ({
             options={filters}
             enabledOptionsKeys={enabledFiltersKeys}
             onSelectChange={onSelectFilters}
+            disabled={isDisabled}
           />
         </div>
       </div>
@@ -233,6 +248,7 @@ const Profile: React.FC<ProfileProps> = ({
             enabledOptionsKeys={enabledTimeslotKeys}
             onSelectChange={onSelectTimeslot}
             isOptionDisabled={(timeslot: Timeslot): boolean => isTimeslotInUse(timeslot)}
+            disabled={isDisabled}
           />
         </div>
       </div>
@@ -248,6 +264,7 @@ const Profile: React.FC<ProfileProps> = ({
             )}
             enabledOptionsKeys={new Set<MediaAlternative>([...selectedMediums.values()])}
             onSelectChange={onSelectMediums}
+            disabled={isDisabled}
           />
         </div>
       </div>
@@ -258,14 +275,13 @@ const Profile: React.FC<ProfileProps> = ({
             color="primary"
             size="small"
             onClick={() => {
-              console.log("set loading");
               setUpdateLoading(true);
               saveProfile(profile);
             }}
             startIcon={updateLoading ? <Spinning shouldSpin /> : <SaveIcon />}
-            disabled={!hasChanged}
+            disabled={!hasChanged || isDisabled}
           >
-            {isNew() ? "Create" : "Save"}
+            {saveButtonMsg()}
           </Button>
         </div>
         <div className="button-delete">
@@ -274,14 +290,16 @@ const Profile: React.FC<ProfileProps> = ({
             color="secondary"
             size="small"
             onClick={() => {
+              setIsDisabled(true);
               setDeleteLoading(true);
               if (pk) {
                 onSavedDelete(pk);
               } else onNewDelete(undefined);
             }}
             startIcon={deleteLoading ? <Spinning shouldSpin /> : <DeleteIcon />}
+            disabled={isDisabled}
           >
-            {isNew() ? "Abort" : "Delete"}
+            {deleteButtonMsg()}
           </Button>
         </div>
       </div>

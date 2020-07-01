@@ -42,6 +42,7 @@ export type SelectorPropsType<T, K> = {
   onSelectChange?: (target: T[] | T | undefined) => void;
 
   isOptionDisabled?: (option: T) => boolean;
+  disabled?: boolean;
 };
 
 export function Selector<T extends { name: string; pk: K }, K extends number | string>({
@@ -50,6 +51,7 @@ export function Selector<T extends { name: string; pk: K }, K extends number | s
   multiSelect,
   onSelectChange,
   isOptionDisabled,
+  disabled,
 }: SelectorPropsType<T, K>) {
   const enabledOptions = mapToSelectOption<T>(
     removeUndefined([...enabledOptionsKeys.values()].map((key: K) => options.get(key))),
@@ -86,6 +88,7 @@ export function Selector<T extends { name: string; pk: K }, K extends number | s
       values={enabledOptions as any}
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       isOptionDisabled={(option: any): boolean => (isOptionDisabled && isOptionDisabled(option.value as T)) || false}
+      isDisabled={disabled && true}
     />
   );
 }
