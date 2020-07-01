@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React from "react";
 import { TextField } from "@material-ui/core";
 import TimeIntervalSelector from "../timeintervalselector/TimeIntervalSelector";

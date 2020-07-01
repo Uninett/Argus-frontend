@@ -1,9 +1,9 @@
-import axios, { AxiosRequestConfig, AxiosResponse, AxiosInstance } from "axios";
+import axios, { AxiosRequestConfig, AxiosResponse, AxiosInstance, AxiosError } from "axios";
 
-import auth from "./auth";
+import auth from "../auth";
 
-import { BACKEND_URL } from "./config";
-import { debuglog } from "./utils";
+import { BACKEND_URL } from "../config";
+import { ErrorType, debuglog } from "../utils";
 
 export interface AuthUserResponse {
   username: string;
@@ -22,7 +22,7 @@ export interface User {
 export type Token = string;
 
 const apiConfig = {
-  returnRejectedPromiseOnError: true,
+  returnRejectedPromiseOnError: false,
   // withCredentials: true,
   baseURL: BACKEND_URL,
 };
@@ -70,11 +70,10 @@ export const EmptyFilterDefinition = {
   problemTypeIds: [],
 };
 
-export type MediaAlternative = "Email" | "SMS" | "Slack";
+export type MediaAlternative = "EM" | "SM" | "SL";
 
 export type NotificationProfilePK = number;
 export interface NotificationProfileKeyed {
-  // eslint-disable-next-line
   timeslot: TimeslotPK;
   filters: FilterPK[];
   media: MediaAlternative[];
@@ -151,12 +150,18 @@ export function defaultResolver<T, P = T>(data: T): T {
   return data;
 }
 
-// eslint-disable-next-line
-export type ErrorCreator = (error: any) => Error;
+export type ApiErrorType = ErrorType | AxiosError;
+export type ErrorCreator = (error: ApiErrorType) => Error;
 
-// eslint-disable-next-line
-export function defaultError(error: any): Error {
+export function defaultError(error: ErrorType): Error {
   return new Error(`${error}`);
+}
+
+export function defaultErrorHandler(callback?: (message: string) => void): (error: Error) => void {
+  return (error: Error) => {
+    console.log("[API] Got Error", error);
+    callback && callback(error.message);
+  };
 }
 
 function resolveOrReject<T, P = T>(
@@ -197,7 +202,7 @@ export class ApiClient {
   }
 
   // eslint-disable-next-line
-  public registerUnauthorizedCallback(callback: (response: AxiosResponse, error: any) => void) {
+  public registerUnauthorizedCallback(callback: (response: AxiosResponse, error: ErrorType) => void) {
     this.api.interceptors.response.use(
       (response) => response,
       (error) => {
@@ -267,7 +272,6 @@ export class ApiClient {
       this.authPut<NotificationProfileSuccessResponse, NotificationProfileRequest>(
         `/api/v1/notificationprofiles/${timeslot}`,
         {
-          // eslint-disable-next-line
           timeslot: timeslot,
           filters,
           media,
@@ -298,15 +302,15 @@ export class ApiClient {
     );
   }
 
-  public deleteNotificationProfile(timeslot: TimeslotPK): Promise<boolean> {
+  public deleteNotificationProfile(profile: NotificationProfilePK): Promise<boolean> {
     return this.authDelete<NotificationProfileSuccessResponse, DeleteNotificationProfileRequest>(
-      `/api/v1/notificationprofiles/${timeslot}`,
+      `/api/v1/notificationprofiles/${profile}`,
     )
       .then(() => {
         return Promise.resolve(true);
       })
       .catch((error) => {
-        return Promise.reject(new Error(`Failed to delete notification profile ${timeslot}: ${error}`));
+        return Promise.reject(new Error(`Failed to delete notification profile ${profile}: ${error}`));
       });
   }
 

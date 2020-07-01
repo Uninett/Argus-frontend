@@ -1,6 +1,28 @@
+/* eslint-disable */
 import React, { useEffect, useState } from "react";
 import Timeslot from "../timeslot/Timeslot";
 import api, { Timeslot as TimeslotType } from "../../api";
+
+const convertDay = (day: any) => {
+  switch (day) {
+    case "MO":
+      return [{ value: "MO", label: "Monday" }];
+    case "TU":
+      return [{ value: "TU", label: "Tuesday" }];
+    case "WE":
+      return [{ value: "WE", label: "Wednesday" }];
+    case "TH":
+      return [{ value: "TH", label: "Thursday" }];
+    case "FR":
+      return [{ value: "FR", label: "Friday" }];
+    case "SA":
+      return [{ value: "SA", label: "Saturday" }];
+    case "SU":
+      return [{ value: "SU", label: "Sunday" }];
+    default:
+      return undefined;
+  }
+};
 
 const TimeIntervals: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -74,28 +96,8 @@ const TimeIntervals: React.FC = () => {
 
   useEffect(() => {
     getTimeslot(true, initialTimeslotKey, initialTimeIntervalKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const convertDay = (day: any) => {
-    switch (day) {
-      case "MO":
-        return [{ value: "MO", label: "Monday" }];
-      case "TU":
-        return [{ value: "TU", label: "Tuesday" }];
-      case "WE":
-        return [{ value: "WE", label: "Wednesday" }];
-      case "TH":
-        return [{ value: "TH", label: "Thursday" }];
-      case "FR":
-        return [{ value: "FR", label: "Friday" }];
-      case "SA":
-        return [{ value: "SA", label: "Saturday" }];
-      case "SU":
-        return [{ value: "SU", label: "Sunday" }];
-      default:
-        return undefined;
-    }
-  };
 
   const buildDataTimeIntervals = (timeslotKey: any) => {
     const _timeIntervals: any = [];

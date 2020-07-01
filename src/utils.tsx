@@ -3,6 +3,8 @@ import api, { Alert, User, Token } from "./api";
 import auth from "./auth";
 import { DEBUG } from "./config";
 
+export type ErrorType = string | Error;
+
 export interface AlertWithFormattedTimestamp extends Alert {
   formattedTimestamp: string;
 }
@@ -55,3 +57,26 @@ export function getPropertyByPath<T>(obj: T, path: string): any {
 
 // eslint-disable-next-line
 export const debuglog = DEBUG ? console.log.bind(null, "[DEBUG]") : () => {};
+
+export function identity<T>(inp: T): T {
+  return inp;
+}
+
+export function removeUndefined<T>(unsafe: (T | undefined)[]): T[] {
+  const safe: T[] = [];
+  for (let i = 0; i < unsafe.length; i++) {
+    const elem: T | undefined = unsafe[i];
+    if (elem !== undefined) {
+      safe.push(elem);
+    }
+  }
+  return safe;
+}
+
+export function toMap<K extends number | string, T>(elements: T[], getter: (elem: T, index: number) => K): Map<K, T> {
+  return new Map<K, T>(elements.map((elem: T, index: number): [K, T] => [getter(elem, index), elem]));
+}
+
+export function pkGetter<K, T extends { pk: K }>(elem: T): K {
+  return elem.pk;
+}

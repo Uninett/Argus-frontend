@@ -8,6 +8,7 @@
     "@devexpress/dx-react-scheduler-material-ui": "*",
     "@material-ui/core": "*",
     "@material-ui/icons": "*",
+    "@material-ui/lab": "^4.0.0-alpha.56",
     "@types/jest": "^26.0.0",
     "@types/react-dom": "^16.9.8",
     "@types/react-router-dom": "*",

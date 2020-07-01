@@ -3,7 +3,17 @@ import { Route, Redirect } from "react-router-dom";
 import auth from "./auth";
 import handleFeide from "./handleFeide";
 
-export const ProtectedRoute = ({ component: Component, ...rest }: any) => {
+type ProtectedRoutePropsType = {
+  // Should be able to take all components, so any is probably acceptable here?
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  component: React.ComponentType<any>;
+  [key: string]: unknown;
+};
+
+export const ProtectedRoute: React.SFC<ProtectedRoutePropsType> = ({
+  component: Component,
+  ...rest
+}: ProtectedRoutePropsType) => {
   return (
     <Route
       {...rest}

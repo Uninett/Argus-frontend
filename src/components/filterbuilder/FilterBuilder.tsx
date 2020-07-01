@@ -34,10 +34,12 @@ const FilterBuilder: React.FC<FilterBuilderPropsType> = ({
   const [filter, setFilter] = useState<FilterDefinition>(defaultFilter);
   const [name, setName] = useState<string>("");
 
+  // eslint-disable-next-line
   const handleChange = (value: any, property: string) => {
     setFilter({ ...filter, [property]: value ? value.map((metadata: Metadata) => metadata.value) : [] });
   };
 
+  // eslint-disable-next-line
   const handleNameChanged = (e: any) => {
     setName(e.target.value);
   };

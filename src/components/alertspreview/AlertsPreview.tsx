@@ -1,38 +1,26 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 
 import AlertTable from "../../components/alerttable/AlertTable";
-import api, { Alert, FilterDefinition } from "../../api";
-import { alertWithFormattedTimestamp, AlertWithFormattedTimestamp } from "../../utils";
+import api, { FilterDefinition } from "../../api";
+import { useApiAlerts } from "../../api/hooks";
 
-const LOADING_TEXT = "Loading...";
-const NO_DATA_TEXT = "No data";
+import { LOADING_TEXT, ERROR_TEXT, NO_DATA_TEXT } from "../../constants";
 
 type AlertsPreviewProps = {
   filter?: FilterDefinition;
 };
 
 const AlertsPreview: React.FC<AlertsPreviewProps> = ({ filter }: AlertsPreviewProps) => {
-  const [noDataText, setNoDataText] = useState<string>(LOADING_TEXT);
-  const [previewAlerts, setPreviewAlerts] = useState<AlertWithFormattedTimestamp[]>([]);
+  const [{ result, isLoading, isError }, setPromise] = useApiAlerts();
 
   useEffect(() => {
-    const getAlerts = (filter: FilterDefinition) => {
-      const promise = api.postFilterPreview(filter);
-      promise.then((alerts: Alert[]) => {
-        const formattedAlerts = alerts.map(alertWithFormattedTimestamp);
-        setNoDataText(alerts.length === 0 ? NO_DATA_TEXT : LOADING_TEXT);
-        setPreviewAlerts(formattedAlerts);
-      });
-    };
-
-    if (!filter) {
-      setPreviewAlerts([]);
-    } else {
-      getAlerts(filter);
+    if (filter) {
+      setPromise(api.postFilterPreview(filter));
     }
-  }, [filter]);
+  }, [filter, setPromise]);
 
-  return <AlertTable alerts={previewAlerts} noDataText={noDataText} />;
+  const noDataText = isLoading ? LOADING_TEXT : isError ? ERROR_TEXT : NO_DATA_TEXT;
+  return <AlertTable alerts={result || []} noDataText={noDataText} />;
 };
 
 export default AlertsPreview;
