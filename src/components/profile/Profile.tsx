@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Checkbox from "@material-ui/core/Checkbox";
 import Button from "@material-ui/core/Button";
 import SaveIcon from "@material-ui/icons/Save";
@@ -15,7 +15,7 @@ import {
   TimeslotPK,
   MediaAlternative,
 } from "../../api";
-import { pkGetter, toMap } from "../../utils";
+import { useStateWithDynamicDefault, pkGetter, toMap } from "../../utils";
 import Selector from "../selector";
 
 type ProfileProps = {
@@ -24,7 +24,7 @@ type ProfileProps = {
 
   active: boolean;
   exists?: boolean;
-  unsavedChanges?: boolean;
+  unsavedChanges: boolean;
 
   filters: Map<FilterPK, Filter>;
   timeslots: Map<TimeslotPK, Timeslot>;
@@ -68,11 +68,7 @@ const Profile: React.FC<ProfileProps> = ({
   onNewCreate,
   onSavedUpdate,
 }: ProfileProps) => {
-  const [hasChanged, setHasChanged] = useState<boolean>((unsavedChanges && true) || !exists);
-
-  useEffect(() => {
-    setHasChanged((unsavedChanges && true) || !exists);
-  }, [unsavedChanges, exists]);
+  const [hasChanged, setHasChanged] = useStateWithDynamicDefault<boolean>(unsavedChanges);
 
   const [changedTimeslot, setChangedTimeslot] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);

@@ -47,9 +47,18 @@ type Action = {
   completed: boolean;
 };
 
+// To correctly update the list of profiles with the updated ones
+// we store a revision number with the profiles. When an update occours
+// old profile component instance is replaced with a new one with a
+// higher revision number. We need the revision number to detect
+// that it has changed.
+interface RevisedNotificationProfile extends NotificationProfile {
+  revision?: number;
+}
+
 const ProfileList: React.FC = () => {
-  const [profiles, setProfiles] = useState<Map<NotificationProfilePK, NotificationProfile>>(
-    new Map<NotificationProfilePK, NotificationProfile>(),
+  const [profiles, setProfiles] = useState<Map<NotificationProfilePK, RevisedNotificationProfile>>(
+    new Map<NotificationProfilePK, RevisedNotificationProfile>(),
   );
   const [timeslots, setTimeslots] = useState<Map<TimeslotPK, Timeslot>>(new Map<TimeslotPK, Timeslot>());
   const [availableTimeslots, setAvailableTimeslots] = useState<Set<TimeslotPK>>(new Set<TimeslotPK>());
@@ -96,7 +105,7 @@ const ProfileList: React.FC = () => {
     if (combinedResult === undefined) {
       return;
     }
-    setProfiles(combinedResult.profiles || new Map<NotificationProfilePK, NotificationProfile>());
+    setProfiles(combinedResult.profiles || new Map<NotificationProfilePK, RevisedNotificationProfile>());
     setTimeslots(combinedResult.timeslots || new Map<TimeslotPK, Timeslot>());
   }, [combinedResult]);
 
@@ -150,8 +159,8 @@ const ProfileList: React.FC = () => {
     api
       .deleteNotificationProfile(pk)
       .then((success: boolean) => {
-        setProfiles((profiles: Map<NotificationProfilePK, NotificationProfile>) => {
-          const newProfiles = new Map<NotificationProfilePK, NotificationProfile>(profiles);
+        setProfiles((profiles: Map<NotificationProfilePK, RevisedNotificationProfile>) => {
+          const newProfiles = new Map<NotificationProfilePK, RevisedNotificationProfile>(profiles);
           newProfiles.delete(pk);
           return newProfiles;
         });
@@ -186,9 +195,10 @@ const ProfileList: React.FC = () => {
           });
         }
 
-        setProfiles((profiles: Map<NotificationProfilePK, NotificationProfile>) => {
-          const newProfiles = new Map<NotificationProfilePK, NotificationProfile>(profiles);
-          newProfiles.set(profile.pk, newProfile);
+        setProfiles((profiles: Map<NotificationProfilePK, RevisedNotificationProfile>) => {
+          const newProfiles = new Map<NotificationProfilePK, RevisedNotificationProfile>(profiles);
+          const revisedProfile = profiles.get(profile.pk);
+          newProfiles.set(profile.pk, { ...newProfile, revision: (revisedProfile?.revision || 0) + 1 });
           return newProfiles;
         });
         displaySnackbar(`Updated profile: ${profile.timeslot.name}`, "success");
@@ -212,9 +222,9 @@ const ProfileList: React.FC = () => {
       .postNotificationProfile(profile.timeslot, profile.filters, profile.media, profile.active)
       .then((profile: NotificationProfile) => {
         setNewProfile(undefined);
-        setProfiles((profiles: Map<NotificationProfilePK, NotificationProfile>) => {
-          const newProfiles = new Map<NotificationProfilePK, NotificationProfile>(profiles);
-          newProfiles.set(profile.pk, profile);
+        setProfiles((profiles: Map<NotificationProfilePK, RevisedNotificationProfile>) => {
+          const newProfiles = new Map<NotificationProfilePK, RevisedNotificationProfile>(profiles);
+          newProfiles.set(profile.pk, { ...profile, revision: 1 });
           return newProfiles;
         });
         displaySnackbar(`Created new profile: ${profile.timeslot.name}`, "success");
@@ -242,6 +252,7 @@ const ProfileList: React.FC = () => {
 
   const newProfileComponent = newProfile ? (
     <Profile
+      unsavedChanges={true}
       active={newProfile.active || false}
       filters={filters || new Map<FilterPK, Filter>()}
       timeslots={timeslots || new Map<TimeslotPK, Timeslot>()}
@@ -275,20 +286,22 @@ const ProfileList: React.FC = () => {
         ) : profiles && profilesKeys.length > 0 ? (
           removeUndefined(
             profilesKeys.map((pk: NotificationProfilePK) => {
-              const profile: NotificationProfile | undefined = profiles.get(pk);
+              const profile: RevisedNotificationProfile | undefined = profiles.get(pk);
               if (!profile) {
                 return undefined;
               }
 
+              const unsavedChanges = unsavedProfiles.has(profile.timeslot.pk);
+
               return (
                 <Profile
-                  unsavedChanges={unsavedProfiles.has(profile.timeslot.pk)}
+                  unsavedChanges={unsavedChanges}
                   exists
                   active={profile.active}
                   filters={filters || new Map<FilterPK, Filter>()}
                   timeslots={timeslots || new Map<TimeslotPK, Timeslot>()}
                   isTimeslotInUse={(timeslot: Timeslot): boolean => usedTimeslots.has(timeslot.name)}
-                  key={JSON.stringify(profile)}
+                  key={`${profile.pk}-${profile.revision}`}
                   pk={profile.pk}
                   mediums={mediaOptions}
                   selectedMediums={profile.media}
