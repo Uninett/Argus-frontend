@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import Checkbox from "@material-ui/core/Checkbox";
 import Button from "@material-ui/core/Button";
 import SaveIcon from "@material-ui/icons/Save";
-import Dialogue from "../dialogue/Dialogue";
-import Spinner from "../spinners/Spinner";
+import DeleteIcon from "@material-ui/icons/Delete";
+import Spinning from "../spinning";
+
 import "./Profile.css";
 import {
   NotificationProfile,
@@ -71,7 +72,8 @@ const Profile: React.FC<ProfileProps> = ({
   const [hasChanged, setHasChanged] = useStateWithDynamicDefault<boolean>(unsavedChanges);
 
   const [changedTimeslot, setChangedTimeslot] = useState<boolean>(false);
-  const [loading, setLoading] = useState(false);
+  const [updateLoading, setUpdateLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const [profile, setProfile] = useState<Partial<NotificationProfile>>({
     active,
@@ -97,19 +99,18 @@ const Profile: React.FC<ProfileProps> = ({
           active: profile.active,
         });
       } else {
-        onNewCreate({
-          timeslot: profile.timeslot.pk,
-          filters: profile.filters.map((filter: Filter): FilterPK => pkGetter<FilterPK, Filter>(filter)),
-          media: profile.media,
-          active: profile.active,
-        });
-
         if (exists && pk !== undefined && changedTimeslot) {
           // Delete the previous profile using the old timeslot.
           // TODO: This could probably be done better.
           onSavedDelete(pk);
           setChangedTimeslot(false);
         }
+        onNewCreate({
+          timeslot: profile.timeslot.pk,
+          filters: profile.filters.map((filter: Filter): FilterPK => pkGetter<FilterPK, Filter>(filter)),
+          media: profile.media,
+          active: profile.active,
+        });
       }
       // setHasChanged(false);
     } else {
@@ -252,36 +253,36 @@ const Profile: React.FC<ProfileProps> = ({
       </div>
       <div className="buttons-container">
         <div className="button-save">
-          {loading ? (
-            <Spinner />
-          ) : hasChanged ? (
-            <Button
-              variant="contained"
-              color="primary"
-              size="small"
-              onClick={() => {
-                setLoading(true);
-                saveProfile(profile);
-                setLoading(false);
-              }}
-              startIcon={<SaveIcon />}
-            >
-              {isNew() ? "Create" : "Save"}
-            </Button>
-          ) : (
-            <Button disabled variant="contained" color="primary" size="small" startIcon={<SaveIcon />}>
-              {isNew() ? "Create" : "Save"}
-            </Button>
-          )}
+          <Button
+            variant="contained"
+            color="primary"
+            size="small"
+            onClick={() => {
+              console.log("set loading");
+              setUpdateLoading(true);
+              saveProfile(profile);
+            }}
+            startIcon={updateLoading ? <Spinning shouldSpin /> : <SaveIcon />}
+            disabled={!hasChanged}
+          >
+            {isNew() ? "Create" : "Save"}
+          </Button>
         </div>
         <div className="button-delete">
-          <Dialogue
-            handleDelete={() => {
+          <Button
+            variant="contained"
+            color="secondary"
+            size="small"
+            onClick={() => {
+              setDeleteLoading(true);
               if (pk) {
                 onSavedDelete(pk);
               } else onNewDelete(undefined);
             }}
-          />
+            startIcon={deleteLoading ? <Spinning shouldSpin /> : <DeleteIcon />}
+          >
+            {isNew() ? "Abort" : "Delete"}
+          </Button>
         </div>
       </div>
     </div>
