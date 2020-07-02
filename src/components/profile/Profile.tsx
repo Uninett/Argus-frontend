@@ -4,6 +4,7 @@ import Button from "@material-ui/core/Button";
 import SaveIcon from "@material-ui/icons/Save";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Spinning from "../spinning";
+import ConfirmationButton from "../buttons/ConfirmationButton";
 
 import "./Profile.css";
 import {
@@ -285,22 +286,26 @@ const Profile: React.FC<ProfileProps> = ({
           </Button>
         </div>
         <div className="button-delete">
-          <Button
-            variant="contained"
-            color="secondary"
-            size="small"
-            onClick={() => {
+          <ConfirmationButton
+            title={`${deleteButtonMsg()} profile`}
+            question="Are you sure you want to remove this profile?"
+            buttonProps={{
+              variant: "contained",
+              color: "secondary",
+              size: "small",
+              startIcon: deleteLoading ? <Spinning shouldSpin /> : <DeleteIcon />,
+              disabled: isDisabled,
+            }}
+            onConfirm={() => {
               setIsDisabled(true);
               setDeleteLoading(true);
               if (pk) {
                 onSavedDelete(pk);
               } else onNewDelete(undefined);
             }}
-            startIcon={deleteLoading ? <Spinning shouldSpin /> : <DeleteIcon />}
-            disabled={isDisabled}
           >
             {deleteButtonMsg()}
-          </Button>
+          </ConfirmationButton>
         </div>
       </div>
     </div>

@@ -3,7 +3,7 @@ import React from "react";
 import { TextField } from "@material-ui/core";
 import TimeIntervalSelector from "../timeintervalselector/TimeIntervalSelector";
 import Button from "@material-ui/core/Button";
-import Dialog from "../dialogue/Dialogue";
+import ConfirmationButton from "../buttons/ConfirmationButton";
 
 type timeslotProp = {
   timeIntervals: any;
@@ -79,7 +79,18 @@ const Timeslot: React.FC<timeslotProp> = (props: timeslotProp) => {
       </Button>
       <div className="saveDelete">
         <div className="timeslot-delete">
-          <Dialog handleDelete={() => props.deleteTimeslot(props.timeslotKey)} />
+          <ConfirmationButton
+            title="Delete timeslot"
+            question="Are you sure you want to delete this timeslot?"
+            buttonProps={{
+              variant: "contained",
+              color: "secondary",
+              size: "small",
+            }}
+            onConfirm={() => props.deleteTimeslot(props.timeslotKey)}
+          >
+            Delete
+          </ConfirmationButton>
         </div>
         <div className="timeslot-save">
           <Button
