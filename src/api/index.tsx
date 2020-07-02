@@ -36,8 +36,21 @@ export interface AuthTokenSuccessResponse {
   token: string;
 }
 
+export type TimeIntervalDay = "MO" | "TU" | "WE" | "TH" | "FR" | "SA" | "SU";
+export const TIME_INTERVAL_DAY_IN_ORDER: TimeIntervalDay[] = ["MO", "TU", "WE", "TH", "FR", "SA", "SU"];
+
+export const TimeIntervalDayNameMap: Record<TimeIntervalDay, string> = {
+  MO: "Monday",
+  TU: "Tuesday",
+  WE: "Wednesday",
+  TH: "Thursday",
+  FR: "Friday",
+  SA: "Saturday",
+  SU: "Sunday",
+};
+
 export interface TimeInterval {
-  day: string;
+  day: TimeIntervalDay;
   start: string;
   end: string;
 }
