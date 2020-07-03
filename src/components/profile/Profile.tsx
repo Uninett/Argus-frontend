@@ -4,7 +4,7 @@ import Button from "@material-ui/core/Button";
 import SaveIcon from "@material-ui/icons/Save";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Spinning from "../spinning";
-import ConfirmationButton from "../buttons/ConfirmationButton";
+import { makeConfirmationButton } from "../buttons/ConfirmationButton";
 
 import "./Profile.css";
 import {
@@ -210,6 +210,18 @@ const Profile: React.FC<ProfileProps> = ({
     return isNew() ? (deleteLoading ? "Aborting" : "Abort") : deleteLoading ? "Deleting" : "Delete";
   };
 
+  const DeleteProfileConfirmationButton = makeConfirmationButton({
+    title: `${deleteButtonMsg()} profile`,
+    question: "Are you sure you want to remove this profile?",
+    onConfirm: () => {
+      setIsDisabled(true);
+      setDeleteLoading(true);
+      if (pk) {
+        onSavedDelete(pk);
+      } else onNewDelete(undefined);
+    },
+  });
+
   return (
     <div className="notification-container">
       <div className="check-box">
@@ -286,26 +298,15 @@ const Profile: React.FC<ProfileProps> = ({
           </Button>
         </div>
         <div className="button-delete">
-          <ConfirmationButton
-            title={`${deleteButtonMsg()} profile`}
-            question="Are you sure you want to remove this profile?"
-            buttonProps={{
-              variant: "contained",
-              color: "secondary",
-              size: "small",
-              startIcon: deleteLoading ? <Spinning shouldSpin /> : <DeleteIcon />,
-              disabled: isDisabled,
-            }}
-            onConfirm={() => {
-              setIsDisabled(true);
-              setDeleteLoading(true);
-              if (pk) {
-                onSavedDelete(pk);
-              } else onNewDelete(undefined);
-            }}
+          <DeleteProfileConfirmationButton
+            variant="contained"
+            color="secondary"
+            size="small"
+            startIcon={deleteLoading ? <Spinning shouldSpin /> : <DeleteIcon />}
+            disabled={isDisabled}
           >
             {deleteButtonMsg()}
-          </ConfirmationButton>
+          </DeleteProfileConfirmationButton>
         </div>
       </div>
     </div>

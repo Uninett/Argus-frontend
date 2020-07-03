@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 
 import { Theme, createStyles, makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
@@ -19,14 +19,9 @@ import api, {
   TimeIntervalDayNameMap,
 } from "../../api";
 import { useApiTimeslots } from "../../api/hooks";
-import { debuglog, dateFromTimeOfDayString } from "../../utils";
+import { dateFromTimeOfDayString } from "../../utils";
 
-import {
-  useAlertSnackbar,
-  UseAlertSnackbarResultType,
-  AlertSnackbarState,
-  AlertSnackbarSeverity,
-} from "../../components/alertsnackbar";
+import { useAlertSnackbar, UseAlertSnackbarResultType } from "../../components/alertsnackbar";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -54,7 +49,9 @@ type TimeslotListPropsType = {};
 const TimeslotList: React.FC<TimeslotListPropsType> = () => {
   const classes = useStyles();
 
-  const [{ result: timeslotsResponse }, setTimeslotsPromise] = useApiTimeslots(() => undefined)();
+  const [{ result: timeslotsResponse, error: timeslotsIsError }, setTimeslotsPromise] = useApiTimeslots(
+    () => undefined,
+  )();
 
   useEffect(() => {
     setTimeslotsPromise(api.getAllTimeslots());
@@ -69,14 +66,7 @@ const TimeslotList: React.FC<TimeslotListPropsType> = () => {
 
   const [unsavedTimeslots, setUnsavedTimeslots] = useState<Set<TimeslotPK>>(new Set());
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [alertSnackbar, alertSnackbarState, setAlertSnackbarState]: UseAlertSnackbarResultType = useAlertSnackbar();
-
-  function displaySnackbar(message: string, severity?: AlertSnackbarSeverity) {
-    debuglog(`Displaying message with severity ${severity}: ${message}`);
-    setAlertSnackbarState((state: AlertSnackbarState) => {
-      return { ...state, open: true, message, severity: severity || "success" };
-    });
-  }
+  const { alertSnackbar, displayAlertSnackbar }: UseAlertSnackbarResultType = useAlertSnackbar();
 
   const responseToInternalTimeslot = (timeslot: Timeslot): InternalTimeslot => {
     const days: Partial<Record<TimeIntervalDay, TimeslotIntervalDay>> = {};
@@ -134,6 +124,11 @@ const TimeslotList: React.FC<TimeslotListPropsType> = () => {
     setTimeslots(toMap<TimeslotPK, InternalTimeslot>(mappedTimeslots, (timeslot: InternalTimeslot) => timeslot.pk));
   }, [timeslotsResponse]);
 
+  useMemo(() => {
+    if (!timeslotsIsError) return;
+    displayAlertSnackbar("Unable to fetch timeslots", "error");
+  }, [timeslotsIsError, displayAlertSnackbar]);
+
   const resetNewTimeslot = () => {
     setNewTimeslot((timeslot: Partial<InternalTimeslot>) => {
       return { ...timeslot, revision: (timeslot.revision || 0) + 1 };
@@ -166,11 +161,11 @@ const TimeslotList: React.FC<TimeslotListPropsType> = () => {
           });
           return newTimeslots;
         });
-        displaySnackbar(`Updated timeslot: ${name}`, "success");
+        displayAlertSnackbar(`Updated timeslot: ${name}`, "success");
       })
       .catch(
         defaultErrorHandler((msg: string) => {
-          displaySnackbar(msg, "error");
+          displayAlertSnackbar(msg, "error");
 
           // Special case: handle when the update function failes.
           setUnsavedTimeslots((unsavedTimeslots: Set<TimeslotPK>) => {
@@ -192,11 +187,11 @@ const TimeslotList: React.FC<TimeslotListPropsType> = () => {
           newTimeslots.set(newTimeslot.pk, { ...responseToInternalTimeslot(newTimeslot), revision: 1 });
           return newTimeslots;
         });
-        displaySnackbar(`Created new timeslot: ${newTimeslot.name}`, "success");
+        displayAlertSnackbar(`Created new timeslot: ${newTimeslot.name}`, "success");
       })
       .catch(
         defaultErrorHandler((msg: string) => {
-          displaySnackbar(msg, "error");
+          displayAlertSnackbar(msg, "error");
         }),
       );
   };
@@ -210,11 +205,11 @@ const TimeslotList: React.FC<TimeslotListPropsType> = () => {
           newTimeslots.delete(pk);
           return newTimeslots;
         });
-        displaySnackbar(`Deleted timeslot: ${name}`, "warning");
+        displayAlertSnackbar(`Deleted timeslot: ${name}`, "warning");
       })
       .catch(
         defaultErrorHandler((msg: string) => {
-          displaySnackbar(msg, "error");
+          displayAlertSnackbar(msg, "error");
         }),
       );
   };

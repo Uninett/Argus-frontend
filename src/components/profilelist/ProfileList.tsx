@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import "./ProfileList.css";
 import Profile from "../profile/Profile";
 import Fab from "@material-ui/core/Fab";
@@ -17,14 +17,9 @@ import api, {
   MediaAlternative,
 } from "../../api";
 import { createUsePromise, useApiFilters } from "../../api/hooks";
-import { debuglog, toMap, pkGetter, removeUndefined } from "../../utils";
+import { toMap, pkGetter, removeUndefined } from "../../utils";
 
-import {
-  useAlertSnackbar,
-  UseAlertSnackbarResultType,
-  AlertSnackbarState,
-  AlertSnackbarSeverity,
-} from "../../components/alertsnackbar";
+import { useAlertSnackbar, UseAlertSnackbarResultType } from "../../components/alertsnackbar";
 
 interface FilterData {
   label: string;
@@ -80,26 +75,12 @@ const ProfileList: React.FC = () => {
   const useCombined = createUsePromise<[NotificationProfile[], Timeslot[]], ProfilesTimeslots>(mapper);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [alertSnackbar, alertSnackbarState, setAlertSnackbarState]: UseAlertSnackbarResultType = useAlertSnackbar();
-
-  function displaySnackbar(message: string, severity?: AlertSnackbarSeverity) {
-    debuglog(`Displaying message with severity ${severity}: ${message}`);
-    setAlertSnackbarState((state: AlertSnackbarState) => {
-      return { ...state, open: true, message, severity: severity || "success" };
-    });
-  }
+  const { alertSnackbar, displayAlertSnackbar }: UseAlertSnackbarResultType = useAlertSnackbar();
 
   const [
     { result: combinedResult, isLoading: combinedIsLoading, isError: combinedIsError },
     setCombinedPromise,
   ] = useCombined();
-
-  useEffect(() => {
-    if (!combinedIsError) return;
-    setAlertSnackbarState((state: AlertSnackbarState) => {
-      return { ...state, open: true, message: "Unable to get profiles and timeslots", severity: "error" };
-    });
-  }, [combinedIsError, setAlertSnackbarState]);
 
   useEffect(() => {
     if (combinedResult === undefined) {
@@ -136,12 +117,15 @@ const ProfileList: React.FC = () => {
     () => undefined,
   )();
 
-  useEffect(() => {
-    if (!filtersIsError) return;
-    setAlertSnackbarState((state: AlertSnackbarState) => {
-      return { ...state, open: true, message: "Unable to filters", severity: "error" };
-    });
-  }, [filtersIsError, setAlertSnackbarState]);
+  // useMemo(() => {
+  //   if (!filtersIsError) return;
+  //   displayAlertSnackbar("Unable to fetch filters", "error");
+  // }, [filtersIsError, displayAlertSnackbar]);
+
+  useMemo(() => {
+    if (!combinedIsError || !filtersIsError) return;
+    displayAlertSnackbar("Unable to get profiles and timeslots, or filters", "error");
+  }, [filtersIsError, combinedIsError, displayAlertSnackbar]);
 
   const mediaOptions: { label: string; value: MediaAlternative }[] = [
     { label: "Slack", value: "SL" },
@@ -165,12 +149,12 @@ const ProfileList: React.FC = () => {
           return newProfiles;
         });
         const profileName = profiles.get(pk)?.timeslot.name || "<unknown>";
-        displaySnackbar(
+        displayAlertSnackbar(
           success ? `Deleted notification profile: ${profileName}` : `Unable to delete profile: ${profileName}`,
           success ? "warning" : "error",
         );
       })
-      .catch(defaultErrorHandler((msg: string) => displaySnackbar(msg, "error")));
+      .catch(defaultErrorHandler((msg: string) => displayAlertSnackbar(msg, "error")));
   };
 
   const deleteNewProfile = () => {
@@ -201,11 +185,11 @@ const ProfileList: React.FC = () => {
           newProfiles.set(profile.pk, { ...newProfile, revision: (revisedProfile?.revision || 0) + 1 });
           return newProfiles;
         });
-        displaySnackbar(`Updated profile: ${profile.timeslot.name}`, "success");
+        displayAlertSnackbar(`Updated profile: ${profile.timeslot.name}`, "success");
       })
       .catch(
         defaultErrorHandler((msg: string) => {
-          displaySnackbar(msg, "error");
+          displayAlertSnackbar(msg, "error");
 
           // Special case: handle when the update function failes.
           setUnsavedProfiles((unsavedProfiles: Set<TimeslotPK>) => {
@@ -227,11 +211,11 @@ const ProfileList: React.FC = () => {
           newProfiles.set(profile.pk, { ...profile, revision: 1 });
           return newProfiles;
         });
-        displaySnackbar(`Created new profile: ${profile.timeslot.name}`, "success");
+        displayAlertSnackbar(`Created new profile: ${profile.timeslot.name}`, "success");
       })
       .catch(
         defaultErrorHandler((msg: string) => {
-          displaySnackbar(msg, "error");
+          displayAlertSnackbar(msg, "error");
         }),
       );
   };
@@ -243,7 +227,7 @@ const ProfileList: React.FC = () => {
       const firstAvailable = availableTimeslots.values().next().value;
       setNewProfile({ media: [], active: true, filters: [], timeslot: timeslots.get(firstAvailable) });
     } else {
-      displaySnackbar("Already working on new filter. Create or delete that one first!", "error");
+      displayAlertSnackbar("Already working on new filter. Create or delete that one first!", "error");
       return;
     }
   };
