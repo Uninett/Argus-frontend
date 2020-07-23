@@ -11,7 +11,8 @@ export function calculateTableCellWidth(cellString: string, cssMagicSpacing = 9)
   return cssMagicSpacing * cellString.length;
 }
 
-export type ColumnAccessorFunction<RowType> = (row: RowType) => string;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type ColumnAccessorFunction<RowType> = (row: RowType) => string | any;
 export type Accessor<RowType> = string | ColumnAccessorFunction<RowType>;
 export function getMaxColumnWidth<RowType>(
   rows: RowType[],
@@ -53,13 +54,29 @@ type TablePropsType<RowType> = {
   pageSize?: number;
   loading?: boolean;
   sorted?: SortingRule[];
+  onRowClick?: (data: RowType) => void;
 };
 
 type TableComponent<T> = React.FC<TablePropsType<T>>;
 
 class Table<RowType> extends React.Component<TablePropsType<RowType>> {
   render() {
-    const { data, columns, noDataText, pageSize, loading, sorted }: TablePropsType<RowType> = this.props;
+    const { data, columns, noDataText, pageSize, loading, sorted, onRowClick }: TablePropsType<RowType> = this.props;
+
+    const tableProps = {
+      ...(onRowClick
+        ? {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            getTrProps: (state: any, rowInfo: any) => {
+              if (rowInfo && rowInfo.row) {
+                return {
+                  onClick: () => onRowClick(rowInfo.row._original as RowType),
+                };
+              }
+            },
+          }
+        : {}),
+    };
 
     return (
       <ReactTable
@@ -70,6 +87,7 @@ class Table<RowType> extends React.Component<TablePropsType<RowType>> {
         data={data}
         pageSize={pageSize || data.length}
         showPaginationBottom={pageSize ? true : false}
+        {...tableProps}
       />
     );
   }
