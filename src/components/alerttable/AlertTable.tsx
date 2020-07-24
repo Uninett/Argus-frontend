@@ -6,6 +6,10 @@ import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import AppBar from "@material-ui/core/AppBar";
 import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
@@ -20,6 +24,7 @@ import Chip from "@material-ui/core/Chip";
 
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
+// import CardHeader from "@material-ui/core/CardHeader";
 
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
@@ -36,6 +41,9 @@ import Table, {
   calculateTableCellWidth,
   ConstraintFunction,
 } from "../table/Table";
+
+import { WHITE } from "../../colorscheme";
+import { makeConfirmationButton } from "../../components/buttons/ConfirmationButton";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -158,6 +166,131 @@ const TicketModifiableField: React.FC<TicketModifiableFieldPropsType> = ({
   );
 };
 
+type Timestamp = string;
+
+type Ack = {
+  user: string;
+  timestamp: Timestamp;
+  message: string;
+  expiresAt: Timestamp | undefined | null;
+};
+
+type AckListItemPropsType = {
+  ack: Ack;
+};
+
+const AckListItem: React.FC<AckListItemPropsType> = ({ ack }: AckListItemPropsType) => {
+  const classes = useStyles();
+  const ackDate = new Date(ack.timestamp);
+  const formattedAckDate = ackDate.toLocaleString();
+
+  let hasExpired = false;
+  let expiresMessage;
+  if (ack.expiresAt) {
+    const date = new Date(ack.expiresAt);
+    if (Date.parse(ack.expiresAt) < Date.now()) {
+      expiresMessage = `Expired ${date.toLocaleString()}`;
+      hasExpired = true;
+    } else {
+      expiresMessage = `Expires ${date.toLocaleString()}`;
+    }
+  }
+
+  return (
+    <ListItem style={{ textDecoration: hasExpired ? "line-through" : "none" }}>
+      <Card className={classes.root}>
+        {expiresMessage && <CardContent>{expiresMessage} </CardContent>}
+        <CardContent>{ack.message}</CardContent>
+        <CardContent>
+          <Typography color="textSecondary" variant="body2">
+            {ack.user} - {formattedAckDate}
+          </Typography>
+        </CardContent>
+      </Card>
+    </ListItem>
+  );
+};
+
+type ActiveItemPropsType = {
+  active: boolean;
+};
+
+const ActiveItem: React.FC<ActiveItemPropsType> = ({ active }: ActiveItemPropsType) => {
+  return <Chip variant="outlined" color={active ? "primary" : "secondary"} label={active ? "Open" : "Closed"} />;
+};
+
+type AckedItemPropsType = {
+  acked: boolean;
+};
+
+const AckedItem: React.FC<AckedItemPropsType> = ({ acked }: AckedItemPropsType) => {
+  return (
+    <Chip
+      variant="outlined"
+      color={acked ? "primary" : "secondary"}
+      label={acked ? "Acknowledged" : "Unacknowledged"}
+    />
+  );
+};
+
+const ManualClose: React.FC<{}> = () => {
+  const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+      dangerousButton: {
+        background: theme.palette.warning.main,
+        color: WHITE,
+      },
+      safeButton: {
+        background: theme.palette.primary.main,
+        color: WHITE,
+      },
+    }),
+  );
+
+  const classes = useStyles();
+
+  const [open, setOpen] = useState<boolean>(false);
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  const onConfirm = () => {
+    handleClose();
+    // TODO: close the incident/alert here.
+  };
+
+  const CloseButton = makeConfirmationButton({
+    title: "Manual close of incident",
+    question: "Are you sure you want to close this incident?",
+    confirmName: "yes",
+    rejectName: "no",
+    onConfirm,
+  });
+
+  return (
+    <div>
+      <Button onClick={handleOpen} className={classes.dangerousButton}>
+        Manual close
+      </Button>
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Manual close of incident</DialogTitle>
+        <DialogContent>
+          <DialogContentText>Write a messsage describing why this incident was closed manually.</DialogContentText>
+          <TextField autoFocus margin="dense" id="messsage" label="Messsage" type="text" fullWidth />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} className={classes.safeButton}>
+            Cancel
+          </Button>
+          <CloseButton variant="contained" className={classes.dangerousButton}>
+            Close now
+          </CloseButton>
+        </DialogActions>
+      </Dialog>
+    </div>
+  );
+};
+
 type AlertDetailPropsType = {
   alert?: AlertWithFormattedTimestamp;
 };
@@ -172,6 +305,11 @@ const AlertDetail: React.FC<AlertDetailPropsType> = ({ alert }: AlertDetailProps
     <div className={classes.root}>
       <Grid container direction="column" justify="flex-start" alignItems="flex-start">
         <Grid container spacing={2}>
+          <Grid container direction="row" justify="flex-start" alignItems="flex-start">
+            <ActiveItem active={alert.active_state} />
+            <AckedItem acked={true} />
+          </Grid>
+
           <Card>
             <Typography color="textSecondary" gutterBottom>
               Tags
@@ -194,7 +332,11 @@ const AlertDetail: React.FC<AlertDetailPropsType> = ({ alert }: AlertDetailProps
                 <AlertDetailListItem title="Parent object" detail={alert.parent_object.name} />
                 <AlertDetailListItem title="Object" detail={alert.object.name} />
                 <AlertDetailListItem title="Problem type" detail={alert.problem_type.name} />
+
                 <TicketModifiableField url={alert.ticket_url} />
+                <ListItem>
+                  <ManualClose />
+                </ListItem>
               </List>
             </CardContent>
           </Card>
@@ -209,6 +351,34 @@ const AlertDetail: React.FC<AlertDetailPropsType> = ({ alert }: AlertDetailProps
               <List>
                 <EventListItem event={{ name: "test event #1" }} />
                 <EventListItem event={{ name: "test event #1" }} />
+              </List>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid container spacing={1}>
+          <Card>
+            <CardContent>
+              <Typography color="textSecondary" gutterBottom>
+                Acknowledgements
+              </Typography>
+              <List>
+                <AckListItem
+                  ack={{
+                    user: "testuser",
+                    timestamp: "2020-01-15T03:04:14.387000+01:00",
+                    message: "Ack ack",
+                    expiresAt: null,
+                  }}
+                />
+                <AckListItem
+                  ack={{
+                    user: "testuser2",
+                    timestamp: "2020-01-14T03:04:14.387000+01:00",
+                    message: "Ack nack ack",
+                    expiresAt: "2020-02-14T03:04:14.387000+01:00",
+                  }}
+                />
               </List>
             </CardContent>
           </Card>
