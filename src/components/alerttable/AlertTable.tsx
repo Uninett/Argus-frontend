@@ -24,7 +24,6 @@ import Chip from "@material-ui/core/Chip";
 
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
-// import CardHeader from "@material-ui/core/CardHeader";
 
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
@@ -58,6 +57,11 @@ const useStyles = makeStyles((theme: Theme) =>
     title: {
       marginLeft: theme.spacing(2),
       flex: 1,
+    },
+    grid: {
+      "flex-wrap": "wrap",
+      "align-items": "stretch",
+      "align-content": "stretch",
     },
   }),
 );
@@ -123,10 +127,12 @@ const TagChip: React.FC<TagChipPropsType> = ({ tag }: TagChipPropsType) => {
 
 type TicketModifiableFieldPropsType = {
   url?: string;
+  saveChange: (newUrl: string) => void;
 };
 
 const TicketModifiableField: React.FC<TicketModifiableFieldPropsType> = ({
   url: urlProp,
+  saveChange,
 }: TicketModifiableFieldPropsType) => {
   const [changeUrl, setChangeUrl] = useState<boolean>(false);
   const [url, setUrl] = useStateWithDynamicDefault<string | undefined>(urlProp);
@@ -134,6 +140,11 @@ const TicketModifiableField: React.FC<TicketModifiableFieldPropsType> = ({
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUrl(event.target.value);
     setChangeUrl(true);
+  };
+
+  const handleSave = () => {
+    if (url && changeUrl) saveChange(url);
+    setChangeUrl(false);
   };
 
   if (url && !changeUrl) {
@@ -160,7 +171,7 @@ const TicketModifiableField: React.FC<TicketModifiableFieldPropsType> = ({
           }}
           onChange={handleChange}
         />
-        <Button onClick={() => setChangeUrl(false)}>Set ticket URL</Button>
+        <Button onClick={() => handleSave()}>Set ticket URL</Button>
       </div>
     </ListItem>
   );
@@ -198,7 +209,7 @@ const AckListItem: React.FC<AckListItemPropsType> = ({ ack }: AckListItemPropsTy
 
   return (
     <ListItem style={{ textDecoration: hasExpired ? "line-through" : "none" }}>
-      <Card className={classes.root}>
+      <Card variant="outlined" className={classes.root}>
         {expiresMessage && <CardContent>{expiresMessage} </CardContent>}
         <CardContent>{ack.message}</CardContent>
         <CardContent>
@@ -233,7 +244,21 @@ const AckedItem: React.FC<AckedItemPropsType> = ({ acked }: AckedItemPropsType) 
   );
 };
 
-const ManualClose: React.FC<{}> = () => {
+type TicketItemPropsType = {
+  exists: boolean;
+};
+
+const TicketItem: React.FC<TicketItemPropsType> = ({ exists }: TicketItemPropsType) => {
+  return (
+    <Chip variant="outlined" color={exists ? "primary" : "secondary"} label={exists ? "Ticket exists" : "No ticket"} />
+  );
+};
+
+type ManualClosePropsType = {
+  onManualClose: () => void;
+};
+
+const ManualClose: React.FC<ManualClosePropsType> = ({ onManualClose }: ManualClosePropsType) => {
   const useStyles = makeStyles((theme: Theme) =>
     createStyles({
       dangerousButton: {
@@ -256,7 +281,7 @@ const ManualClose: React.FC<{}> = () => {
 
   const onConfirm = () => {
     handleClose();
-    // TODO: close the incident/alert here.
+    onManualClose();
   };
 
   const CloseButton = makeConfirmationButton({
@@ -298,94 +323,209 @@ type AlertDetailPropsType = {
 const AlertDetail: React.FC<AlertDetailPropsType> = ({ alert }: AlertDetailPropsType) => {
   const classes = useStyles();
 
+  const [ticketUrl, setTicketUrl] = useState<string | undefined>(alert && alert.ticket_url);
+  const [active, setActive] = useState<boolean>((alert && alert.active_state) || false);
+
+  const handleManualClose = () => {
+    setActive(false);
+  };
+
   if (!alert) return <h1>none</h1>;
   console.log("alert", alert);
 
   return (
     <div className={classes.root}>
-      <Grid container direction="column" justify="flex-start" alignItems="flex-start">
-        <Grid container spacing={2}>
-          <Grid container direction="row" justify="flex-start" alignItems="flex-start">
-            <ActiveItem active={alert.active_state} />
-            <AckedItem acked={true} />
+      <Grid container spacing={3} className={classes.grid}>
+        <Grid container item spacing={2} md alignItems="stretch" justify="space-evenly" direction="column">
+          <Grid item>
+            <Card>
+              <CardContent>
+                <Typography color="textSecondary" gutterBottom>
+                  Status
+                </Typography>
+                <ActiveItem active={active} />
+                <AckedItem acked={true} />
+                <TicketItem exists={!!ticketUrl} />
+              </CardContent>
+            </Card>
           </Grid>
 
-          <Card>
-            <Typography color="textSecondary" gutterBottom>
-              Tags
-            </Typography>
-            <CardContent>
-              <TagChip tag={{ key: "test_url", value: "https://uninett.no" }} />
-              <TagChip tag={{ key: "test_host", value: "uninett.no" }} />
-            </CardContent>
-          </Card>
+          <Grid item>
+            <Card>
+              <CardContent>
+                <Typography color="textSecondary" gutterBottom>
+                  Tags
+                </Typography>
+                <TagChip tag={{ key: "test_url", value: "https://uninett.no" }} />
+                <TagChip tag={{ key: "test_host", value: "uninett.no" }} />
+                <TagChip tag={{ key: "host", value: "uninett.no" }} />
+                <TagChip tag={{ key: "timestamp", value: "123123123" }} />
+                <TagChip tag={{ key: "bytes", value: "askldfjalskdf" }} />
+                <TagChip tag={{ key: "origin_src", value: "something.tst" }} />
+              </CardContent>
+            </Card>
+          </Grid>
 
-          <Card>
-            <Typography color="textSecondary" gutterBottom>
-              Primary details
-            </Typography>
-            <CardContent>
-              <List>
-                <AlertDetailListItem title="Description" detail={alert.description} />
-                <AlertDetailListItem title="Timestamp" detail={alert.timestamp} />
-                <AlertDetailListItem title="Source" detail={alert.source.name} />
-                <AlertDetailListItem title="Parent object" detail={alert.parent_object.name} />
-                <AlertDetailListItem title="Object" detail={alert.object.name} />
-                <AlertDetailListItem title="Problem type" detail={alert.problem_type.name} />
+          <Grid item>
+            <Card>
+              <CardContent>
+                <Typography color="textSecondary" gutterBottom>
+                  Primary details
+                </Typography>
+                <List>
+                  <AlertDetailListItem title="Description" detail={alert.description} />
+                  <AlertDetailListItem title="Timestamp" detail={alert.timestamp} />
+                  <AlertDetailListItem title="Source" detail={alert.source.name} />
+                  <AlertDetailListItem title="Details URL" detail={alert.details_url} />
 
-                <TicketModifiableField url={alert.ticket_url} />
-                <ListItem>
-                  <ManualClose />
-                </ListItem>
-              </List>
-            </CardContent>
-          </Card>
+                  <TicketModifiableField url={ticketUrl} saveChange={(url: string) => setTicketUrl(url)} />
+                  <ListItem>
+                    <ManualClose onManualClose={handleManualClose} />
+                  </ListItem>
+                </List>
+              </CardContent>
+            </Card>
+          </Grid>
         </Grid>
 
-        <Grid container spacing={2}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Related events
-              </Typography>
-              <List>
-                <EventListItem event={{ name: "test event #1" }} />
-                <EventListItem event={{ name: "test event #1" }} />
-              </List>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid container spacing={1}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Acknowledgements
-              </Typography>
-              <List>
-                <AckListItem
-                  ack={{
-                    user: "testuser",
-                    timestamp: "2020-01-15T03:04:14.387000+01:00",
-                    message: "Ack ack",
-                    expiresAt: null,
-                  }}
-                />
-                <AckListItem
-                  ack={{
-                    user: "testuser2",
-                    timestamp: "2020-01-14T03:04:14.387000+01:00",
-                    message: "Ack nack ack",
-                    expiresAt: "2020-02-14T03:04:14.387000+01:00",
-                  }}
-                />
-              </List>
-            </CardContent>
-          </Card>
+        <Grid container item spacing={2} md direction="column">
+          <Grid item>
+            <Card>
+              <CardContent>
+                <Typography color="textSecondary" gutterBottom>
+                  Acknowledgements
+                </Typography>
+                <List>
+                  <AckListItem
+                    ack={{
+                      user: "testuser",
+                      timestamp: "2020-01-15T03:04:14.387000+01:00",
+                      message: "Ack ack",
+                      expiresAt: null,
+                    }}
+                  />
+                  <AckListItem
+                    ack={{
+                      user: "testuser2",
+                      timestamp: "2020-01-14T03:04:14.387000+01:00",
+                      message: "Ack nack ack",
+                      expiresAt: "2020-02-14T03:04:14.387000+01:00",
+                    }}
+                  />
+                </List>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item>
+            <Card>
+              <CardContent>
+                <Typography color="textSecondary" gutterBottom>
+                  Related events
+                </Typography>
+                <List>
+                  <EventListItem event={{ name: "test event #1" }} />
+                  <EventListItem event={{ name: "test event #1" }} />
+                </List>
+              </CardContent>
+            </Card>
+          </Grid>
         </Grid>
       </Grid>
     </div>
   );
+
+  /*
+  return (
+    <div className={classes.root}>
+      <Grid container spacing={2} direction="row" justify="flex-start" alignItems="flex-start">
+        <Grid container item spacing={2} direction="column" justify="flex-start" alignItems="flex-start">
+          <Grid container direction="row" justify="space-evenly" alignItems="center">
+            <ActiveItem active={alert.active_state} />
+            <AckedItem acked={true} />
+          </Grid>
+
+          <Grid item>
+            <Card>
+              <CardContent>
+                <Typography color="textSecondary" gutterBottom>
+                  Tags
+                </Typography>
+                <TagChip tag={{ key: "test_url", value: "https://uninett.no" }} />
+                <TagChip tag={{ key: "test_host", value: "uninett.no" }} />
+              </CardContent>
+            </Card>
+          </Grid>
+
+          <Grid item>
+            <Card>
+              <CardContent>
+                <Typography color="textSecondary" gutterBottom>
+                  Primary details
+                </Typography>
+                <List>
+                  <AlertDetailListItem title="Description" detail={alert.description} />
+                  <AlertDetailListItem title="Timestamp" detail={alert.timestamp} />
+                  <AlertDetailListItem title="Source" detail={alert.source.name} />
+                  <AlertDetailListItem title="Parent object" detail={alert.parent_object.name} />
+                  <AlertDetailListItem title="Object" detail={alert.object.name} />
+                  <AlertDetailListItem title="Problem type" detail={alert.problem_type.name} />
+
+                  <TicketModifiableField url={alert.ticket_url} />
+                  <ListItem>
+                    <ManualClose />
+                  </ListItem>
+                </List>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+        <Grid container item spacing={2} direction="column" justify="flex-start" alignItems="flex-start">
+          <Grid item>
+            <Card>
+              <CardContent>
+                <Typography color="textSecondary" gutterBottom>
+                  Related events
+                </Typography>
+                <List>
+                  <EventListItem event={{ name: "test event #1" }} />
+                  <EventListItem event={{ name: "test event #1" }} />
+                </List>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          <Grid item>
+            <Card>
+              <CardContent>
+                <Typography color="textSecondary" gutterBottom>
+                  Acknowledgements
+                </Typography>
+                <List>
+                  <AckListItem
+                    ack={{
+                      user: "testuser",
+                      timestamp: "2020-01-15T03:04:14.387000+01:00",
+                      message: "Ack ack",
+                      expiresAt: null,
+                    }}
+                  />
+                  <AckListItem
+                    ack={{
+                      user: "testuser2",
+                      timestamp: "2020-01-14T03:04:14.387000+01:00",
+                      message: "Ack nack ack",
+                      expiresAt: "2020-02-14T03:04:14.387000+01:00",
+                    }}
+                  />
+                </List>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+      </Grid>
+    </div>
+  );
+  */
 };
 
 type AlertsProps = {
@@ -474,6 +614,7 @@ const AlertTable: React.FC<AlertsProps> = ({ alerts }: AlertsProps) => {
           onClose={() => setAlertForDetail(undefined)}
           aria-labelledby="simple-modal-title"
           aria-describedby="simple-modal-description"
+          maxWidth={"lg"}
         >
           <div>
             <AppBar position="static">
