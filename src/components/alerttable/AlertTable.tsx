@@ -119,7 +119,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 type AlertDetailListItemPropsType = {
   title: string;
-  detail: string;
+  detail: string | React.ReactNode;
 };
 
 const AlertDetailListItem: React.FC<AlertDetailListItemPropsType> = ({
@@ -340,17 +340,26 @@ const AckedItem: React.FC<AckedItemPropsType> = ({ acked, expiresAt }: AckedItem
 };
 
 type TicketItemPropsType = {
-  exists: boolean;
+  ticketUrl?: string;
 };
 
-const TicketItem: React.FC<TicketItemPropsType> = ({ exists }: TicketItemPropsType) => {
+const TicketItem: React.FC<TicketItemPropsType> = ({ ticketUrl }: TicketItemPropsType) => {
   const classes = useStyles();
+
+  const chipProps =
+    (ticketUrl && {
+      component: "a",
+      href: ticketUrl,
+      clickable: true,
+    }) ||
+    {};
 
   return (
     <Chip
       variant="outlined"
-      className={exists ? classes.ticketed : classes.notticketed}
-      label={exists ? "Ticket exists" : "No ticket"}
+      className={ticketUrl ? classes.ticketed : classes.notticketed}
+      label={ticketUrl ? `Ticket ${ticketUrl}` : "No ticket"}
+      {...chipProps}
     />
   );
 };
@@ -628,7 +637,7 @@ const AlertDetail: React.FC<AlertDetailPropsType> = ({ alert, onAlertChange }: A
                 <CenterContainer>
                   <ActiveItem active={alert.active_state} />
                   <AckedItem acked={true} expiresAt={ackExpiryDate} />
-                  <TicketItem exists={!!alert.ticket_url} />
+                  <TicketItem ticketUrl={alert.ticket_url} />
                 </CenterContainer>
               </CardContent>
             </Card>
@@ -676,7 +685,10 @@ const AlertDetail: React.FC<AlertDetailPropsType> = ({ alert, onAlertChange }: A
                   <AlertDetailListItem title="Description" detail={alert.description} />
                   <AlertDetailListItem title="Timestamp" detail={alert.timestamp} />
                   <AlertDetailListItem title="Source" detail={alert.source.name} />
-                  <AlertDetailListItem title="Details URL" detail={alert.details_url} />
+                  <AlertDetailListItem
+                    title="Details URL"
+                    detail={<a href={alert.details_url}>{alert.details_url}</a>}
+                  />
 
                   <TicketModifiableField
                     url={alert.ticket_url}
