@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import Checkbox from "@material-ui/core/Checkbox";
 import Button from "@material-ui/core/Button";
 import SaveIcon from "@material-ui/icons/Save";
-import Dialogue from "../dialogue/Dialogue";
-import Spinner from "../spinners/Spinner";
+import DeleteIcon from "@material-ui/icons/Delete";
+import Spinning from "../spinning";
+import ConfirmationButton from "../buttons/ConfirmationButton";
+
 import "./Profile.css";
 import {
   NotificationProfile,
@@ -21,6 +23,7 @@ import Selector from "../selector";
 type ProfileProps = {
   // if not set this means that it doesn't exist in the database
   pk?: NotificationProfilePK;
+  disabled?: boolean;
 
   active: boolean;
   exists?: boolean;
@@ -49,6 +52,7 @@ type ProfileProps = {
 
 const Profile: React.FC<ProfileProps> = ({
   pk,
+  disabled,
   active,
   exists,
   unsavedChanges,
@@ -69,9 +73,11 @@ const Profile: React.FC<ProfileProps> = ({
   onSavedUpdate,
 }: ProfileProps) => {
   const [hasChanged, setHasChanged] = useStateWithDynamicDefault<boolean>(unsavedChanges);
+  const [isDisabled, setIsDisabled] = useStateWithDynamicDefault<boolean | undefined>(disabled);
 
   const [changedTimeslot, setChangedTimeslot] = useState<boolean>(false);
-  const [loading, setLoading] = useState(false);
+  const [updateLoading, setUpdateLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const [profile, setProfile] = useState<Partial<NotificationProfile>>({
     active,
@@ -89,6 +95,7 @@ const Profile: React.FC<ProfileProps> = ({
       profile.timeslot !== undefined
     ) {
       if (exists && pk !== undefined && !changedTimeslot) {
+        setIsDisabled(true);
         onSavedUpdate({
           pk: pk,
           timeslot: profile.timeslot,
@@ -97,19 +104,19 @@ const Profile: React.FC<ProfileProps> = ({
           active: profile.active,
         });
       } else {
-        onNewCreate({
-          timeslot: profile.timeslot.pk,
-          filters: profile.filters.map((filter: Filter): FilterPK => pkGetter<FilterPK, Filter>(filter)),
-          media: profile.media,
-          active: profile.active,
-        });
-
+        setIsDisabled(true);
         if (exists && pk !== undefined && changedTimeslot) {
           // Delete the previous profile using the old timeslot.
           // TODO: This could probably be done better.
           onSavedDelete(pk);
           setChangedTimeslot(false);
         }
+        onNewCreate({
+          timeslot: profile.timeslot.pk,
+          filters: profile.filters.map((filter: Filter): FilterPK => pkGetter<FilterPK, Filter>(filter)),
+          media: profile.media,
+          active: profile.active,
+        });
       }
       // setHasChanged(false);
     } else {
@@ -195,6 +202,14 @@ const Profile: React.FC<ProfileProps> = ({
     return (!exists && !pk) || changedTimeslot;
   };
 
+  const saveButtonMsg = (): string => {
+    return isNew() ? (updateLoading ? "Creating" : "Create") : updateLoading ? "Saving" : "Save";
+  };
+
+  const deleteButtonMsg = (): string => {
+    return isNew() ? (deleteLoading ? "Aborting" : "Abort") : deleteLoading ? "Deleting" : "Delete";
+  };
+
   return (
     <div className="notification-container">
       <div className="check-box">
@@ -207,6 +222,7 @@ const Profile: React.FC<ProfileProps> = ({
           inputProps={{
             "aria-label": "secondary checkbox",
           }}
+          disabled={isDisabled}
         />
       </div>
       <div className="filtername-box">
@@ -220,6 +236,7 @@ const Profile: React.FC<ProfileProps> = ({
             options={filters}
             enabledOptionsKeys={enabledFiltersKeys}
             onSelectChange={onSelectFilters}
+            disabled={isDisabled}
           />
         </div>
       </div>
@@ -232,6 +249,7 @@ const Profile: React.FC<ProfileProps> = ({
             enabledOptionsKeys={enabledTimeslotKeys}
             onSelectChange={onSelectTimeslot}
             isOptionDisabled={(timeslot: Timeslot): boolean => isTimeslotInUse(timeslot)}
+            disabled={isDisabled}
           />
         </div>
       </div>
@@ -247,41 +265,47 @@ const Profile: React.FC<ProfileProps> = ({
             )}
             enabledOptionsKeys={new Set<MediaAlternative>([...selectedMediums.values()])}
             onSelectChange={onSelectMediums}
+            disabled={isDisabled}
           />
         </div>
       </div>
       <div className="buttons-container">
         <div className="button-save">
-          {loading ? (
-            <Spinner />
-          ) : hasChanged ? (
-            <Button
-              variant="contained"
-              color="primary"
-              size="small"
-              onClick={() => {
-                setLoading(true);
-                saveProfile(profile);
-                setLoading(false);
-              }}
-              startIcon={<SaveIcon />}
-            >
-              {isNew() ? "Create" : "Save"}
-            </Button>
-          ) : (
-            <Button disabled variant="contained" color="primary" size="small" startIcon={<SaveIcon />}>
-              {isNew() ? "Create" : "Save"}
-            </Button>
-          )}
+          <Button
+            variant="contained"
+            color="primary"
+            size="small"
+            onClick={() => {
+              setUpdateLoading(true);
+              saveProfile(profile);
+            }}
+            startIcon={updateLoading ? <Spinning shouldSpin /> : <SaveIcon />}
+            disabled={!hasChanged || isDisabled}
+          >
+            {saveButtonMsg()}
+          </Button>
         </div>
         <div className="button-delete">
-          <Dialogue
-            handleDelete={() => {
+          <ConfirmationButton
+            title={`${deleteButtonMsg()} profile`}
+            question="Are you sure you want to remove this profile?"
+            buttonProps={{
+              variant: "contained",
+              color: "secondary",
+              size: "small",
+              startIcon: deleteLoading ? <Spinning shouldSpin /> : <DeleteIcon />,
+              disabled: isDisabled,
+            }}
+            onConfirm={() => {
+              setIsDisabled(true);
+              setDeleteLoading(true);
               if (pk) {
                 onSavedDelete(pk);
               } else onNewDelete(undefined);
             }}
-          />
+          >
+            {deleteButtonMsg()}
+          </ConfirmationButton>
         </div>
       </div>
     </div>
