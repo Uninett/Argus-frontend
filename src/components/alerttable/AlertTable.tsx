@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import "./alerttable.css";
 import "react-table/react-table.css";
 
@@ -19,6 +19,7 @@ import Grid from "@material-ui/core/Grid";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
+import Divider from "@material-ui/core/Divider";
 
 import Chip from "@material-ui/core/Chip";
 
@@ -26,13 +27,18 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 
 import TextField from "@material-ui/core/TextField";
-import Typography from "@material-ui/core/Typography";
+import Typography, { TypographyProps } from "@material-ui/core/Typography";
 
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 
+import { CardActionArea, CardActions } from "@material-ui/core";
+
+import DateFnsUtils from "@date-io/date-fns";
+import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
+
 // TODO: remove alertWithFormattedTimestamp
 // use regular alert instead.
-import { AlertWithFormattedTimestamp, useStateWithDynamicDefault } from "../../utils";
+import { useStateWithDynamicDefault, toMap, pkGetter } from "../../utils";
 import Table, {
   Accessor,
   getMaxColumnWidth,
@@ -43,6 +49,10 @@ import Table, {
 
 import { WHITE } from "../../colorscheme";
 import { makeConfirmationButton } from "../../components/buttons/ConfirmationButton";
+import { useAlertSnackbar, UseAlertSnackbarResultType } from "../../components/alertsnackbar";
+import CenterContainer from "../../components/centercontainer";
+
+import api, { Alert, Ack, Timestamp } from "../../api";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -62,6 +72,47 @@ const useStyles = makeStyles((theme: Theme) =>
       "flex-wrap": "wrap",
       "align-items": "stretch",
       "align-content": "stretch",
+    },
+    dangerousButton: {
+      background: theme.palette.warning.main,
+      color: WHITE,
+    },
+    safeButton: {
+      background: theme.palette.primary.main,
+      color: WHITE,
+    },
+    closed: {
+      background: theme.palette.success.main,
+      color: WHITE,
+    },
+    open: {
+      background: theme.palette.warning.main,
+      color: WHITE,
+    },
+    acknowledged: {
+      background: theme.palette.success.main,
+      color: WHITE,
+    },
+    unacknowledged: {
+      background: theme.palette.warning.main,
+      color: WHITE,
+    },
+    notticketed: {
+      background: theme.palette.warning.main,
+      color: WHITE,
+    },
+    ticketed: {
+      background: theme.palette.success.main,
+      color: WHITE,
+    },
+    message: {
+      backgroundColor: theme.palette.background.paper,
+      boxShadow: theme.shadows[2],
+      padding: theme.spacing(2, 4, 3),
+    },
+    closedMessage: {
+      backgroundColor: theme.palette.success.main,
+      color: WHITE,
     },
   }),
 );
@@ -127,13 +178,15 @@ const TagChip: React.FC<TagChipPropsType> = ({ tag }: TagChipPropsType) => {
 
 type TicketModifiableFieldPropsType = {
   url?: string;
-  saveChange: (newUrl: string) => void;
+  saveChange: (newUrl?: string) => void;
 };
 
 const TicketModifiableField: React.FC<TicketModifiableFieldPropsType> = ({
   url: urlProp,
   saveChange,
 }: TicketModifiableFieldPropsType) => {
+  const classes = useStyles();
+
   const [changeUrl, setChangeUrl] = useState<boolean>(false);
   const [url, setUrl] = useStateWithDynamicDefault<string | undefined>(urlProp);
 
@@ -143,47 +196,85 @@ const TicketModifiableField: React.FC<TicketModifiableFieldPropsType> = ({
   };
 
   const handleSave = () => {
-    if (url && changeUrl) saveChange(url);
+    // If url is empty string ("") store it as undefined.
+    if (url !== undefined && changeUrl) saveChange(url || undefined);
     setChangeUrl(false);
   };
 
-  if (url && !changeUrl) {
-    return (
-      <ListItem>
-        <Grid container direction="row">
-          <ListItemText primary="Ticket" secondary={url} />
-          <Button endIcon={<EditIcon />} onClick={() => setChangeUrl(true)}>
-            Edit
-          </Button>
-        </Grid>
-      </ListItem>
-    );
-  }
+  // if (url && !changeUrl) {
+  //   return (
+  //     <ListItem>
+  //       <Grid container direction="row" justify="space-between">
+  //         <ListItemText primary="Ticket" secondary={url} />
+  //         <Button endIcon={<EditIcon />} onClick={() => setChangeUrl(true)}>
+  //           Edit
+  //         </Button>
+  //       </Grid>
+  //     </ListItem>
+  //   );
+  // }
 
   return (
     <ListItem>
-      <div>
+      <Grid container direction="row" justify="space-between">
         <TextField
           label="Ticket"
           defaultValue={url || ""}
           InputProps={{
-            readOnly: false,
+            readOnly: !changeUrl,
           }}
           onChange={handleChange}
         />
-        <Button onClick={() => handleSave()}>Set ticket URL</Button>
-      </div>
+        {(!changeUrl && (
+          <Button endIcon={<EditIcon />} onClick={() => setChangeUrl(true)}>
+            Edit
+          </Button>
+        )) || (
+          <Button className={classes.safeButton} onClick={() => handleSave()}>
+            Set ticket URL
+          </Button>
+        )}
+      </Grid>
     </ListItem>
   );
 };
 
-type Timestamp = string;
-
-type Ack = {
+type SignedMessagePropsType = {
+  message: string;
   user: string;
   timestamp: Timestamp;
-  message: string;
-  expiresAt: Timestamp | undefined | null;
+
+  content?: React.ReactNode;
+  TextComponent?: React.ComponentType;
+};
+
+const SignedMessage: React.FC<SignedMessagePropsType> = ({
+  message,
+  user,
+  timestamp,
+  content,
+  TextComponent,
+}: SignedMessagePropsType) => {
+  const classes = useStyles();
+  const ackDate = new Date(timestamp);
+  const formattedAckDate = ackDate.toLocaleString();
+
+  const Component: React.ComponentType = TextComponent || ListItemText;
+
+  return (
+    <Grid container direction="column" spacing={2}>
+      {content || <Component>{message}</Component>}
+
+      <Grid container direction="row" spacing={2}>
+        <Grid item sm>
+          <Component>{user}</Component>
+        </Grid>
+        <Grid item container sm alignItems="flex-end" justify="space-evenly">
+          <Component>{formattedAckDate}</Component>
+        </Grid>
+      </Grid>
+    </Grid>
+  );
 };
 
 type AckListItemPropsType = {
@@ -192,6 +283,7 @@ type AckListItemPropsType = {
 
 const AckListItem: React.FC<AckListItemPropsType> = ({ ack }: AckListItemPropsType) => {
   const classes = useStyles();
+
   const ackDate = new Date(ack.timestamp);
   const formattedAckDate = ackDate.toLocaleString();
 
@@ -208,17 +300,23 @@ const AckListItem: React.FC<AckListItemPropsType> = ({ ack }: AckListItemPropsTy
   }
 
   return (
-    <ListItem style={{ textDecoration: hasExpired ? "line-through" : "none" }}>
-      <Card variant="outlined" className={classes.root}>
-        {expiresMessage && <CardContent>{expiresMessage} </CardContent>}
-        <CardContent>{ack.message}</CardContent>
-        <CardContent>
-          <Typography color="textSecondary" variant="body2">
-            {ack.user} - {formattedAckDate}
-          </Typography>
-        </CardContent>
-      </Card>
-    </ListItem>
+    <div className={classes.message}>
+      <SignedMessage
+        message={ack.message}
+        timestamp={formattedAckDate}
+        user={ack.user}
+        content={
+          <ListItemText
+            primary={expiresMessage || ""}
+            secondary={
+              <Typography paragraph style={{ textDecoration: hasExpired ? "line-through" : "none" }}>
+                {ack.message}
+              </Typography>
+            }
+          />
+        }
+      />
+    </div>
   );
 };
 
@@ -227,19 +325,25 @@ type ActiveItemPropsType = {
 };
 
 const ActiveItem: React.FC<ActiveItemPropsType> = ({ active }: ActiveItemPropsType) => {
-  return <Chip variant="outlined" color={active ? "primary" : "secondary"} label={active ? "Open" : "Closed"} />;
+  const classes = useStyles();
+  return (
+    <Chip variant="outlined" className={active ? classes.open : classes.closed} label={active ? "Open" : "Closed"} />
+  );
 };
 
 type AckedItemPropsType = {
   acked: boolean;
+  expiresAt?: Timestamp | null;
 };
 
-const AckedItem: React.FC<AckedItemPropsType> = ({ acked }: AckedItemPropsType) => {
+const AckedItem: React.FC<AckedItemPropsType> = ({ acked, expiresAt }: AckedItemPropsType) => {
+  const classes = useStyles();
+
+  const expiryDate = expiresAt && new Date(expiresAt);
   return (
     <Chip
-      variant="outlined"
-      color={acked ? "primary" : "secondary"}
-      label={acked ? "Acknowledged" : "Unacknowledged"}
+      className={acked ? classes.acknowledged : classes.unacknowledged}
+      label={acked ? (expiryDate ? `Acknowledged until ${expiryDate}` : "Acknowledged") : "Unacknowledged"}
     />
   );
 };
@@ -249,66 +353,94 @@ type TicketItemPropsType = {
 };
 
 const TicketItem: React.FC<TicketItemPropsType> = ({ exists }: TicketItemPropsType) => {
+  const classes = useStyles();
+
   return (
-    <Chip variant="outlined" color={exists ? "primary" : "secondary"} label={exists ? "Ticket exists" : "No ticket"} />
+    <Chip
+      variant="outlined"
+      className={exists ? classes.ticketed : classes.notticketed}
+      label={exists ? "Ticket exists" : "No ticket"}
+    />
   );
 };
 
-type ManualClosePropsType = {
-  onManualClose: () => void;
+type SignOffActionPropsType = {
+  dialogTitle: string;
+  dialogContentText: string;
+  dialogCancelText: string;
+  dialogSubmitText: string;
+  dialogButtonText: string;
+  title: string;
+  question: string;
+  confirmName?: string;
+  rejectName?: string;
+  onSubmit: (msg: string) => void;
+  children?: React.Props<{}>["children"];
 };
 
-const ManualClose: React.FC<ManualClosePropsType> = ({ onManualClose }: ManualClosePropsType) => {
-  const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-      dangerousButton: {
-        background: theme.palette.warning.main,
-        color: WHITE,
-      },
-      safeButton: {
-        background: theme.palette.primary.main,
-        color: WHITE,
-      },
-    }),
-  );
-
+const SignOffAction: React.FC<SignOffActionPropsType> = ({
+  dialogTitle,
+  dialogContentText,
+  dialogCancelText,
+  dialogSubmitText,
+  dialogButtonText,
+  title,
+  question,
+  confirmName,
+  rejectName,
+  onSubmit,
+  children,
+}: SignOffActionPropsType) => {
   const classes = useStyles();
 
   const [open, setOpen] = useState<boolean>(false);
+  const [message, setMessage] = useState<string | undefined>(undefined);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   const onConfirm = () => {
     handleClose();
-    onManualClose();
+    if (message) onSubmit(message);
   };
 
+  const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => setMessage(e.target.value);
+
   const CloseButton = makeConfirmationButton({
-    title: "Manual close of incident",
-    question: "Are you sure you want to close this incident?",
-    confirmName: "yes",
-    rejectName: "no",
+    title,
+    question,
+    confirmName,
+    rejectName,
     onConfirm,
   });
 
   return (
     <div>
       <Button onClick={handleOpen} className={classes.dangerousButton}>
-        Manual close
+        {dialogButtonText}
       </Button>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Manual close of incident</DialogTitle>
+        <DialogTitle>{dialogTitle}</DialogTitle>
         <DialogContent>
-          <DialogContentText>Write a messsage describing why this incident was closed manually.</DialogContentText>
-          <TextField autoFocus margin="dense" id="messsage" label="Messsage" type="text" fullWidth />
+          <DialogContentText>{dialogContentText}</DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="messsage"
+            label="Messsage"
+            type="text"
+            fullWidth
+            value={message || ""}
+            onChange={handleMessageChange}
+          />
+          {children}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} className={classes.safeButton}>
-            Cancel
+            {dialogCancelText}
           </Button>
-          <CloseButton variant="contained" className={classes.dangerousButton}>
-            Close now
+          <CloseButton onClick={onConfirm} variant="contained" className={classes.dangerousButton}>
+            {dialogSubmitText}
           </CloseButton>
         </DialogActions>
       </Dialog>
@@ -316,25 +448,184 @@ const ManualClose: React.FC<ManualClosePropsType> = ({ onManualClose }: ManualCl
   );
 };
 
-type AlertDetailPropsType = {
-  alert?: AlertWithFormattedTimestamp;
+type ManualClosePropsType = {
+  active: boolean;
+  onManualClose: (msg: string) => void;
+  onManualOpen: () => void;
 };
 
-const AlertDetail: React.FC<AlertDetailPropsType> = ({ alert }: AlertDetailPropsType) => {
+const ManualClose: React.FC<ManualClosePropsType> = ({ active, onManualClose, onManualOpen }: ManualClosePropsType) => {
   const classes = useStyles();
 
-  const [ticketUrl, setTicketUrl] = useState<string | undefined>(alert && alert.ticket_url);
-  const [active, setActive] = useState<boolean>((alert && alert.active_state) || false);
+  if (active) {
+    return (
+      <SignOffAction
+        dialogTitle="Manually close incident"
+        dialogContentText="Write a message describing why the incident was manually closed"
+        dialogSubmitText="Close now"
+        dialogCancelText="Cancel"
+        dialogButtonText="Close incident"
+        title="Manually close incident"
+        question="Are you sure you want to close this incident?"
+        onSubmit={onManualClose}
+      />
+    );
+  } else {
+    const ReopenButton = makeConfirmationButton({
+      title: "Reopen incident",
+      question: "Are you sure you want to reopen this incident?",
+      onConfirm: onManualOpen,
+    });
 
-  const handleManualClose = () => {
-    setActive(false);
+    return (
+      <ReopenButton variant="contained" className={classes.dangerousButton}>
+        Reopen incident
+      </ReopenButton>
+    );
+  }
+};
+
+type CreateAckPropsType = {
+  onSubmitAck: (ack: Ack) => void;
+};
+
+const CreateAck: React.FC<CreateAckPropsType> = ({ onSubmitAck }: CreateAckPropsType) => {
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+
+  const handleSubmit = (msg: string) => {
+    // TODO: switch to use API when implemented in backend
+    onSubmitAck({
+      user: "test",
+      message: msg,
+      timestamp: new Date().toUTCString(),
+      expiresAt: selectedDate && selectedDate.toUTCString(),
+    });
+  };
+
+  const handleDateChange = (date: Date | null) => {
+    setSelectedDate(date);
+  };
+
+  return (
+    <SignOffAction
+      dialogTitle="Submit acknowledment"
+      dialogContentText="Write a message describing why this incident was acknowledged "
+      dialogSubmitText="Submit"
+      dialogCancelText="Cancel"
+      dialogButtonText="Create acknowledegment"
+      title="Submit acknowledment"
+      question="Are you sure you want to acknowledge this incident?"
+      onSubmit={handleSubmit}
+    >
+      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <KeyboardDatePicker
+          disableToolbar
+          format="MM/dd/yyyy"
+          margin="normal"
+          id="expiry-date"
+          label="Expiry date"
+          value={selectedDate}
+          onChange={handleDateChange}
+          KeyboardButtonProps={{
+            "aria-label": "change date",
+          }}
+        />
+      </MuiPickersUtilsProvider>
+    </SignOffAction>
+  );
+};
+
+type AlertDetailPropsType = {
+  alert?: Alert;
+  onAlertChange: (alert: Alert) => void;
+};
+
+const AlertDetail: React.FC<AlertDetailPropsType> = ({ alert, onAlertChange }: AlertDetailPropsType) => {
+  const classes = useStyles();
+
+  // const [ticketUrl, setTicketUrl] = useState<string | undefined>(alert && alert.ticket_url);
+  // const [active, setActive] = useState<boolean>((alert && alert.active_state) || false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { alertSnackbar, displayAlertSnackbar }: UseAlertSnackbarResultType = useAlertSnackbar();
+  // TODO: handle close message
+
+  const defaultAcks = [
+    {
+      user: "testuser2",
+      timestamp: "2020-01-14T03:04:14.387000+01:00",
+      message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris vulputate id erat non pretium.",
+      expiresAt: "2020-02-14T03:04:14.387000+01:00",
+    },
+    {
+      user: "testuser",
+      timestamp: "2020-01-15T03:04:14.387000+01:00",
+      message: "Ack ack",
+      expiresAt: null,
+    },
+  ];
+
+  const [acks, setAcks] = useState<Ack[]>(defaultAcks);
+
+  const chronoAcks = useMemo<Ack[]>(() => {
+    return [...acks].sort((first: Ack, second: Ack) => {
+      const firstTime = Date.parse(first.timestamp);
+      const secondTime = Date.parse(second.timestamp);
+      if (firstTime < secondTime) {
+        return 1;
+      } else if (firstTime > secondTime) {
+        return -1;
+      }
+      if (first.expiresAt && second.expiresAt) {
+        const firstExpires = Date.parse(first.expiresAt);
+        const secondExpires = Date.parse(second.expiresAt);
+        return firstExpires < secondExpires ? 1 : firstExpires > secondExpires ? -1 : 0;
+      }
+      return first.expiresAt ? 1 : -1;
+    });
+  }, [acks]);
+
+  const handleManualClose = (msg: string) => {
+    if (!alert) return;
+    api // eslint-disable-next-line @typescript-eslint/camelcase
+      .putAlertActive(alert.pk, false)
+      .then((alert: Alert) => {
+        displayAlertSnackbar(`Closed incident ${alert && alert.alert_id}`, "success");
+        onAlertChange(alert);
+      })
+      .catch((error: any) => {
+        displayAlertSnackbar(`Failed to close incident ${alert && alert.alert_id}`, "error");
+      });
+  };
+
+  const handleManualOpen = () => {
+    if (!alert) return;
+    api // eslint-disable-next-line @typescript-eslint/camelcase
+      .putAlertActive(alert.pk, true)
+      .then((alert: Alert) => {
+        displayAlertSnackbar(`Reopened incident ${alert && alert.alert_id}`, "success");
+        onAlertChange(alert);
+      })
+      .catch((error: any) => {
+        displayAlertSnackbar(`Failed to reopen incident ${alert && alert.alert_id}`, "error");
+      });
   };
 
   if (!alert) return <h1>none</h1>;
-  console.log("alert", alert);
+
+  const ackExpiryDate = undefined;
+
+  const tags = [
+    { key: "test_url", value: "https://uninett.no" },
+    { key: "test_host", value: "uninett.no" },
+    { key: "host", value: "uninett.no" },
+    { key: "timestamp", value: "123123123" },
+    { key: "bytes", value: "askldfjalskdf" },
+    { key: "origin_src", value: "something.tst" },
+  ];
 
   return (
     <div className={classes.root}>
+      {alertSnackbar}
       <Grid container spacing={3} className={classes.grid}>
         <Grid container item spacing={2} md alignItems="stretch" justify="space-evenly" direction="column">
           <Grid item>
@@ -343,12 +634,33 @@ const AlertDetail: React.FC<AlertDetailPropsType> = ({ alert }: AlertDetailProps
                 <Typography color="textSecondary" gutterBottom>
                   Status
                 </Typography>
-                <ActiveItem active={active} />
-                <AckedItem acked={true} />
-                <TicketItem exists={!!ticketUrl} />
+                <CenterContainer>
+                  <ActiveItem active={alert.active_state} />
+                  <AckedItem acked={true} expiresAt={ackExpiryDate} />
+                  <TicketItem exists={!!alert.ticket_url} />
+                </CenterContainer>
               </CardContent>
             </Card>
           </Grid>
+
+          {!alert.active_state && (
+            <Grid item>
+              <Card>
+                <CardContent>
+                  <Typography color="textSecondary" gutterBottom>
+                    Incident closed
+                  </Typography>
+                  <SignedMessage
+                    message={"Incident was resolved on servicerestart"}
+                    content={<Typography paragraph>Incident was resolved on servicerestart</Typography>}
+                    timestamp={new Date().toUTCString()}
+                    user={"you"}
+                    TextComponent={Typography}
+                  />
+                </CardContent>
+              </Card>
+            </Grid>
+          )}
 
           <Grid item>
             <Card>
@@ -356,12 +668,9 @@ const AlertDetail: React.FC<AlertDetailPropsType> = ({ alert }: AlertDetailProps
                 <Typography color="textSecondary" gutterBottom>
                   Tags
                 </Typography>
-                <TagChip tag={{ key: "test_url", value: "https://uninett.no" }} />
-                <TagChip tag={{ key: "test_host", value: "uninett.no" }} />
-                <TagChip tag={{ key: "host", value: "uninett.no" }} />
-                <TagChip tag={{ key: "timestamp", value: "123123123" }} />
-                <TagChip tag={{ key: "bytes", value: "askldfjalskdf" }} />
-                <TagChip tag={{ key: "origin_src", value: "something.tst" }} />
+                {tags.map((tag: Tag) => (
+                  <TagChip key={tag.key} tag={tag} />
+                ))}
               </CardContent>
             </Card>
           </Grid>
@@ -378,9 +687,29 @@ const AlertDetail: React.FC<AlertDetailPropsType> = ({ alert }: AlertDetailProps
                   <AlertDetailListItem title="Source" detail={alert.source.name} />
                   <AlertDetailListItem title="Details URL" detail={alert.details_url} />
 
-                  <TicketModifiableField url={ticketUrl} saveChange={(url: string) => setTicketUrl(url)} />
+                  <TicketModifiableField
+                    url={alert.ticket_url}
+                    saveChange={(url?: string) => {
+                      // TODO: api
+                      api
+                        .putAlertTicketUrl(alert.pk, url || "")
+                        .then((alert: Alert) => {
+                          displayAlertSnackbar(`Updated ticket URL for ${alert && alert.alert_id}`, "success");
+                          onAlertChange(alert);
+                        })
+                        .catch((error) => {
+                          displayAlertSnackbar(`Failed to updated ticket URL ${error}`, "error");
+                        });
+                    }}
+                  />
                   <ListItem>
-                    <ManualClose onManualClose={handleManualClose} />
+                    <CenterContainer>
+                      <ManualClose
+                        active={alert.active_state}
+                        onManualClose={handleManualClose}
+                        onManualOpen={handleManualOpen}
+                      />
+                    </CenterContainer>
                   </ListItem>
                 </List>
               </CardContent>
@@ -390,31 +719,32 @@ const AlertDetail: React.FC<AlertDetailPropsType> = ({ alert }: AlertDetailProps
 
         <Grid container item spacing={2} md direction="column">
           <Grid item>
-            <Card>
-              <CardContent>
-                <Typography color="textSecondary" gutterBottom>
-                  Acknowledgements
-                </Typography>
-                <List>
-                  <AckListItem
-                    ack={{
-                      user: "testuser",
-                      timestamp: "2020-01-15T03:04:14.387000+01:00",
-                      message: "Ack ack",
-                      expiresAt: null,
-                    }}
-                  />
-                  <AckListItem
-                    ack={{
-                      user: "testuser2",
-                      timestamp: "2020-01-14T03:04:14.387000+01:00",
-                      message: "Ack nack ack",
-                      expiresAt: "2020-02-14T03:04:14.387000+01:00",
-                    }}
-                  />
-                </List>
-              </CardContent>
-            </Card>
+            <Typography color="textSecondary" gutterBottom>
+              Acknowledgements
+            </Typography>
+            <List>
+              {chronoAcks.map((ack: Ack) => (
+                <AckListItem key={ack.timestamp} ack={ack} />
+              ))}
+            </List>
+            <CenterContainer>
+              <CreateAck
+                key={acks.length}
+                onSubmitAck={(ack: Ack) => {
+                  // TODO: handle ack submit here
+                  console.log(ack);
+                  api
+                    .postAck(ack)
+                    .then((ack: Ack) => {
+                      displayAlertSnackbar(`Submitted ack for ${alert && alert.alert_id}`, "success");
+                      setAcks([...acks, ack]);
+                    })
+                    .catch((error) => {
+                      displayAlertSnackbar(`Failed to post ack ${error}`, "error");
+                    });
+                }}
+              />
+            </CenterContainer>
           </Grid>
           <Grid item>
             <Card>
@@ -433,103 +763,10 @@ const AlertDetail: React.FC<AlertDetailPropsType> = ({ alert }: AlertDetailProps
       </Grid>
     </div>
   );
-
-  /*
-  return (
-    <div className={classes.root}>
-      <Grid container spacing={2} direction="row" justify="flex-start" alignItems="flex-start">
-        <Grid container item spacing={2} direction="column" justify="flex-start" alignItems="flex-start">
-          <Grid container direction="row" justify="space-evenly" alignItems="center">
-            <ActiveItem active={alert.active_state} />
-            <AckedItem acked={true} />
-          </Grid>
-
-          <Grid item>
-            <Card>
-              <CardContent>
-                <Typography color="textSecondary" gutterBottom>
-                  Tags
-                </Typography>
-                <TagChip tag={{ key: "test_url", value: "https://uninett.no" }} />
-                <TagChip tag={{ key: "test_host", value: "uninett.no" }} />
-              </CardContent>
-            </Card>
-          </Grid>
-
-          <Grid item>
-            <Card>
-              <CardContent>
-                <Typography color="textSecondary" gutterBottom>
-                  Primary details
-                </Typography>
-                <List>
-                  <AlertDetailListItem title="Description" detail={alert.description} />
-                  <AlertDetailListItem title="Timestamp" detail={alert.timestamp} />
-                  <AlertDetailListItem title="Source" detail={alert.source.name} />
-                  <AlertDetailListItem title="Parent object" detail={alert.parent_object.name} />
-                  <AlertDetailListItem title="Object" detail={alert.object.name} />
-                  <AlertDetailListItem title="Problem type" detail={alert.problem_type.name} />
-
-                  <TicketModifiableField url={alert.ticket_url} />
-                  <ListItem>
-                    <ManualClose />
-                  </ListItem>
-                </List>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-        <Grid container item spacing={2} direction="column" justify="flex-start" alignItems="flex-start">
-          <Grid item>
-            <Card>
-              <CardContent>
-                <Typography color="textSecondary" gutterBottom>
-                  Related events
-                </Typography>
-                <List>
-                  <EventListItem event={{ name: "test event #1" }} />
-                  <EventListItem event={{ name: "test event #1" }} />
-                </List>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          <Grid item>
-            <Card>
-              <CardContent>
-                <Typography color="textSecondary" gutterBottom>
-                  Acknowledgements
-                </Typography>
-                <List>
-                  <AckListItem
-                    ack={{
-                      user: "testuser",
-                      timestamp: "2020-01-15T03:04:14.387000+01:00",
-                      message: "Ack ack",
-                      expiresAt: null,
-                    }}
-                  />
-                  <AckListItem
-                    ack={{
-                      user: "testuser2",
-                      timestamp: "2020-01-14T03:04:14.387000+01:00",
-                      message: "Ack nack ack",
-                      expiresAt: "2020-02-14T03:04:14.387000+01:00",
-                    }}
-                  />
-                </List>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-      </Grid>
-    </div>
-  );
-  */
 };
 
 type AlertsProps = {
-  alerts: AlertWithFormattedTimestamp[];
+  alerts: Alert[];
   noDataText: string;
 };
 
@@ -543,17 +780,22 @@ const SourceDetailUrl = (row: { value: string; original: { details_url: string }
 };
 
 const AlertTable: React.FC<AlertsProps> = ({ alerts }: AlertsProps) => {
-  type A = AlertWithFormattedTimestamp;
+  const [alertForDetail, setAlertForDetail] = useState<Alert | undefined>(undefined);
 
-  const [alertForDetail, setAlertForDetail] = useState<A | undefined>(undefined);
+  const alertsDictFromProps = useMemo<Map<Alert["pk"], Alert>>(() => toMap<Alert["pk"], Alert>(alerts, pkGetter), [
+    alerts,
+  ]);
 
-  const timestampCellWidth: ConstraintFunction<A> = () => calculateTableCellWidth("2015-11-14T03:04:14.387000+01:00");
+  const [alertsDict, setAlertsDict] = useStateWithDynamicDefault<Map<Alert["pk"], Alert>>(alertsDictFromProps);
 
-  const showDetail = (alert: A) => {
+  const timestampCellWidth: ConstraintFunction<Alert> = () =>
+    calculateTableCellWidth("2015-11-14T03:04:14.387000+01:00");
+
+  const showDetail = (alert: Alert) => {
     setAlertForDetail(alert);
   };
 
-  const detailsAccessor: Accessor<A> = (row: A) => {
+  const detailsAccessor: Accessor<Alert> = (row: Alert) => {
     return (
       <Button variant="contained" onClick={() => showDetail(row)}>
         Details
@@ -564,30 +806,25 @@ const AlertTable: React.FC<AlertsProps> = ({ alerts }: AlertsProps) => {
   const columns = [
     {
       id: "timestamp_col",
-      ...maxWidthColumn<A>(alerts, "Timestamp", "timestamp", timestampCellWidth),
+      ...maxWidthColumn<Alert>(alerts, "Timestamp", "timestamp", timestampCellWidth),
     },
     {
       id: "source_col",
       Cell: SourceDetailUrl,
-      ...maxWidthColumn<A>(
-        alerts,
-        "Source",
-        (alert: AlertWithFormattedTimestamp) => String(alert.source.name),
-        getMaxColumnWidth,
-      ),
+      ...maxWidthColumn<Alert>(alerts, "Source", (alert: Alert) => String(alert.source.name), getMaxColumnWidth),
     },
-    {
-      id: "problem_type_col",
-      ...maxWidthColumn<A>(alerts, "Problem type", "problem_type.name", getMaxColumnWidth),
-    },
-    {
-      id: "object_col",
-      ...maxWidthColumn<A>(alerts, "Object", "object.name", getMaxColumnWidth),
-    },
-    {
-      id: "parent_object_col",
-      ...maxWidthColumn<A>(alerts, "Parent object", "parent_object.name", getMaxColumnWidth),
-    },
+    // {
+    //   id: "problem_type_col",
+    //   ...maxWidthColumn<A>(alerts, "Problem type", "problem_type.name", getMaxColumnWidth),
+    // },
+    // {
+    //   id: "object_col",
+    //   ...maxWidthColumn<A>(alerts, "Object", "object.name", getMaxColumnWidth),
+    // },
+    // {
+    //   id: "parent_object_col",
+    //   ...maxWidthColumn<A>(alerts, "Parent object", "parent_object.name", getMaxColumnWidth),
+    // },
     {
       id: "description_col",
       Header: "Description",
@@ -604,6 +841,27 @@ const AlertTable: React.FC<AlertsProps> = ({ alerts }: AlertsProps) => {
 
   const onModalClose = () => {
     setAlertForDetail(undefined);
+  };
+
+  const handleAlertChange = (alert: Alert) => {
+    setAlertsDict((oldDict: Map<Alert["pk"], Alert>) => {
+      const newDict = new Map<Alert["pk"], Alert>(oldDict);
+      const oldAlert = oldDict.get(alert.pk);
+      if (!oldAlert || alert.active_state != oldAlert.active_state) {
+        if (!alert.active_state) {
+          // closed
+          newDict.delete(alert.pk);
+        } else {
+          // opened (somehow)
+          newDict.set(alert.pk, alert);
+        }
+      } else {
+        // updated in some other way
+        newDict.set(alert.pk, alert);
+      }
+      return newDict;
+    });
+    setAlertForDetail(alert);
   };
 
   return (
@@ -633,10 +891,10 @@ const AlertTable: React.FC<AlertsProps> = ({ alerts }: AlertsProps) => {
                 </Typography>
               </Toolbar>
             </AppBar>
-            <AlertDetail key={alertForDetail?.alert_id} alert={alertForDetail} />
+            <AlertDetail key={alertForDetail?.alert_id} onAlertChange={handleAlertChange} alert={alertForDetail} />
           </div>
         </Dialog>
-        <Table data={alerts} columns={columns} sorted={[{ id: "timestamp_col", desc: true }]} />
+        <Table data={[...alertsDict.values()]} columns={columns} sorted={[{ id: "timestamp_col", desc: true }]} />
       </div>
     </ClickAwayListener>
   );

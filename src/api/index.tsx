@@ -142,6 +142,14 @@ export interface Alert {
   problem_type: AlertProblemType;
 }
 
+export type AlertActiveBody = {
+  active: boolean;
+};
+
+export type AlertTicketUrlBody = {
+  ticket_url: string;
+};
+
 export interface AlertMetadata {
   alertSources: AlertSource[];
   objectTypes: AlertObjectType[];
@@ -156,6 +164,15 @@ export type DeleteNotificationProfileRequest = Pick<NotificationProfileRequest, 
 
 export type FilterRequest = Omit<Filter, "pk">;
 export type FilterSuccessResponse = Filter;
+
+export type Timestamp = string;
+
+export type Ack = {
+  user: string;
+  timestamp: Timestamp;
+  message: string;
+  expiresAt: Timestamp | undefined | null;
+};
 
 export type Resolver<T, P> = (data: T) => P;
 
@@ -328,6 +345,35 @@ export class ApiClient {
   }
 
   // Alert
+  // WIP TODO untested
+  public putAlert(alert: Alert): Promise<Alert> {
+    if (Date.now() % 2 === 0) {
+      return Promise.reject(new Error(`Failed to put alert`));
+    }
+    return Promise.resolve(alert);
+    // return resolveOrReject(
+    //   this.authPut<Alert, Alert>(`/api/v1/alerts/${alert.pk}`, alert),
+    //   defaultResolver,
+    //   (error) => new Error(`Failed to put alert: ${error}`),
+    // );
+  }
+
+  public putAlertActive(pk: number, active: boolean): Promise<Alert> {
+    return resolveOrReject(
+      this.authPut<Alert, AlertActiveBody>(`/api/v1/alerts/${pk}/active`, { active }),
+      defaultResolver,
+      (error) => new Error(`Failed to put alert active: ${error}`),
+    );
+  }
+
+  public putAlertTicketUrl(pk: number, ticketUrl: string): Promise<Alert> {
+    return resolveOrReject(
+      this.authPut<Alert, AlertTicketUrlBody>(`/api/v1/alerts/${pk}/ticket_url`, { ticket_url: ticketUrl }),
+      defaultResolver,
+      (error) => new Error(`Failed to put alert ticket url: ${error}`),
+    );
+  }
+
   public getAllAlerts(): Promise<Alert[]> {
     return resolveOrReject(
       this.authGet<Alert[], never>(`/api/v1/alerts/`),
@@ -428,6 +474,23 @@ export class ApiClient {
       defaultResolver,
       (error) => new Error(`Failed to post notificationprofile timeslot: ${error}`),
     );
+  }
+
+  // Acknowledgements
+  // TODO implement with real API connection when backend support
+  // is implemeneted.
+  public postAck(ack: Ack): Promise<Ack> {
+    if (Date.now() % 2 === 0) {
+      return Promise.reject(new Error(`Failed to post ack`));
+    }
+    return Promise.resolve(ack);
+  }
+
+  public putAck(ack: Ack): Promise<Ack> {
+    if (Date.now() % 2 === 0) {
+      return Promise.reject(new Error(`Failed to put ack`));
+    }
+    return Promise.resolve(ack);
   }
 
   private post<T, B, R = AxiosResponse<T>>(url: string, data?: B, config?: AxiosRequestConfig): Promise<R> {
