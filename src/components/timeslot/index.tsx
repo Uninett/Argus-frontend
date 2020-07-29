@@ -20,9 +20,9 @@ import Spinning from "../spinning";
 import { useStateWithDynamicDefault } from "../../utils";
 import { makeConfirmationButton } from "../buttons/ConfirmationButton";
 
-import TimeslotDaySelector, { TimeslotIntervalDay } from "../timeslotdayselector";
+import TimeslotDaySelector, { TimeslotRecurrenceDay } from "../timeslotdayselector";
 
-import { TimeslotPK, TimeIntervalDay, TIME_INTERVAL_DAY_IN_ORDER, TimeIntervalDayNameMap } from "../../api";
+import { TimeslotPK, TimeRecurrenceDay, TIME_RECURRENCE_DAY_IN_ORDER, TimeRecurrenceDayNameMap } from "../../api";
 
 import { WHITE } from "../../colorscheme";
 
@@ -56,10 +56,10 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 type SelectDayDialogPropsType = {
-  remainingDays: TimeslotIntervalDay[];
+  remainingDays: TimeslotRecurrenceDay[];
   open: boolean;
-  selectedValue?: TimeslotIntervalDay;
-  onClose: (day?: TimeslotIntervalDay) => void;
+  selectedValue?: TimeslotRecurrenceDay;
+  onClose: (day?: TimeslotRecurrenceDay) => void;
 };
 
 const SelectDayDialog: React.FC<SelectDayDialogPropsType> = ({
@@ -72,7 +72,7 @@ const SelectDayDialog: React.FC<SelectDayDialogPropsType> = ({
     onClose(selectedValue);
   };
 
-  const handleDaySelect = (day: TimeslotIntervalDay) => {
+  const handleDaySelect = (day: TimeslotRecurrenceDay) => {
     onClose(day);
   };
 
@@ -80,7 +80,7 @@ const SelectDayDialog: React.FC<SelectDayDialogPropsType> = ({
     <Dialog onClose={handleClose} aria-labelledby="simple-dialog-title" open={open}>
       <DialogTitle>Select day</DialogTitle>
       <List>
-        {remainingDays.map((day: TimeslotIntervalDay) => (
+        {remainingDays.map((day: TimeslotRecurrenceDay) => (
           <ListItem button onClick={() => handleDaySelect(day)} key={day.pk}>
             <ListItemText primary={day.name} key={day.pk} />
           </ListItem>
@@ -90,7 +90,7 @@ const SelectDayDialog: React.FC<SelectDayDialogPropsType> = ({
   );
 };
 
-const defaultDay = (name: string, pk: TimeIntervalDay): TimeslotIntervalDay => ({
+const defaultDay = (name: string, pk: TimeRecurrenceDay): TimeslotRecurrenceDay => ({
   name: name,
   pk: pk,
   startTime: new Date("2014-08-18T08:00:00"),
@@ -101,14 +101,14 @@ const defaultDay = (name: string, pk: TimeIntervalDay): TimeslotIntervalDay => (
 export type TimeslotPropsType = {
   pk?: TimeslotPK;
   name?: string;
-  days: Partial<Record<TimeIntervalDay, TimeslotIntervalDay>>;
+  days: Partial<Record<TimeRecurrenceDay, TimeslotRecurrenceDay>>;
   exists?: boolean;
   unsavedChanges: boolean;
 
   onSave: (
     pk: TimeslotPK | undefined,
     name: string,
-    days: Partial<Record<TimeIntervalDay, TimeslotIntervalDay>>,
+    days: Partial<Record<TimeRecurrenceDay, TimeslotRecurrenceDay>>,
   ) => void;
   onDelete: (pk: TimeslotPK | undefined, name: string) => void;
 };
@@ -126,27 +126,29 @@ const TimeslotComponent: React.FC<TimeslotPropsType> = ({
 
   const [timeslotName, setTimeslotName] = useStateWithDynamicDefault<string>(nameProp || "");
   const [invalidTimeslotName, setInvalidTimeslotName] = useState<boolean>(false);
-  const [days, setDays] = useStateWithDynamicDefault<Partial<Record<TimeIntervalDay, TimeslotIntervalDay>>>(daysProp);
-  const [remainingDays, setRemainingDays] = useState<TimeslotIntervalDay[]>([]);
+  const [days, setDays] = useStateWithDynamicDefault<Partial<Record<TimeRecurrenceDay, TimeslotRecurrenceDay>>>(
+    daysProp,
+  );
+  const [remainingDays, setRemainingDays] = useState<TimeslotRecurrenceDay[]>([]);
   const [updateLoading, setUpdateLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [hasChanged, setHasChanged] = useStateWithDynamicDefault<boolean>(unsavedChanges);
 
   useEffect(() => {
-    const remaining = TIME_INTERVAL_DAY_IN_ORDER.filter(
-      (key: TimeIntervalDay) => !days[key],
-    ).map((key: TimeIntervalDay) => defaultDay(TimeIntervalDayNameMap[key], key));
+    const remaining = TIME_RECURRENCE_DAY_IN_ORDER.filter(
+      (key: TimeRecurrenceDay) => !days[key],
+    ).map((key: TimeRecurrenceDay) => defaultDay(TimeRecurrenceDayNameMap[key], key));
     setRemainingDays(remaining);
   }, [days]);
 
-  const onDayChange = (day: TimeslotIntervalDay) => {
+  const onDayChange = (day: TimeslotRecurrenceDay) => {
     setHasChanged(true);
-    setDays((days: Partial<Record<TimeIntervalDay, TimeslotIntervalDay>>) => ({ ...days, [day.pk]: day }));
+    setDays((days: Partial<Record<TimeRecurrenceDay, TimeslotRecurrenceDay>>) => ({ ...days, [day.pk]: day }));
   };
 
-  const onDayRemove = (day: TimeslotIntervalDay) => {
+  const onDayRemove = (day: TimeslotRecurrenceDay) => {
     setHasChanged(true);
-    setDays((days: Partial<Record<TimeIntervalDay, TimeslotIntervalDay>>) => {
+    setDays((days: Partial<Record<TimeRecurrenceDay, TimeslotRecurrenceDay>>) => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { [day.pk]: removedDay, ...newDays } = days;
       return { ...newDays, [day.pk]: undefined };
@@ -159,11 +161,11 @@ const TimeslotComponent: React.FC<TimeslotPropsType> = ({
     setSelectDialogIsOpen(true);
   };
 
-  const onSelectDialogClose = (day?: TimeslotIntervalDay) => {
+  const onSelectDialogClose = (day?: TimeslotRecurrenceDay) => {
     setSelectDialogIsOpen(false);
     if (day) {
       setHasChanged(true);
-      setDays((days: Partial<Record<TimeIntervalDay, TimeslotIntervalDay>>) => ({ ...days, [day.pk]: day }));
+      setDays((days: Partial<Record<TimeRecurrenceDay, TimeslotRecurrenceDay>>) => ({ ...days, [day.pk]: day }));
     }
   };
 
@@ -230,8 +232,8 @@ const TimeslotComponent: React.FC<TimeslotPropsType> = ({
               Add day
             </Button>
           </ButtonGroup>
-          {TIME_INTERVAL_DAY_IN_ORDER.map((key: TimeIntervalDay) => days[key] as TimeslotIntervalDay).map(
-            (day?: TimeslotIntervalDay) => {
+          {TIME_RECURRENCE_DAY_IN_ORDER.map((key: TimeRecurrenceDay) => days[key] as TimeslotRecurrenceDay).map(
+            (day?: TimeslotRecurrenceDay) => {
               if (!day) return undefined;
               return (
                 <div key={day.pk}>

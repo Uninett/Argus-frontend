@@ -5,7 +5,7 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 
 import TimeslotComponent from "../timeslot/index";
-import { TimeslotIntervalDay } from "../timeslotdayselector";
+import { TimeslotRecurrenceDay } from "../timeslotdayselector";
 
 import { toMap, removeUndefined } from "../../utils";
 
@@ -13,10 +13,10 @@ import api, {
   defaultErrorHandler,
   TimeslotPK,
   Timeslot,
-  TimeInterval,
-  TimeIntervalDay,
-  TIME_INTERVAL_DAY_IN_ORDER,
-  TimeIntervalDayNameMap,
+  TimeRecurrence,
+  TimeRecurrenceDay,
+  TIME_RECURRENCE_DAY_IN_ORDER,
+  TimeRecurrenceDayNameMap,
 } from "../../api";
 import { useApiTimeslots } from "../../api/hooks";
 import { dateFromTimeOfDayString } from "../../utils";
@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 // Used internally in this file
 type InternalTimeslot = {
-  days: Partial<Record<TimeIntervalDay, TimeslotIntervalDay>>;
+  days: Partial<Record<TimeRecurrenceDay, TimeslotRecurrenceDay>>;
   pk: Timeslot["pk"];
   name: Timeslot["name"];
 
@@ -69,15 +69,16 @@ const TimeslotList: React.FC<TimeslotListPropsType> = () => {
   const { alertSnackbar, displayAlertSnackbar }: UseAlertSnackbarResultType = useAlertSnackbar();
 
   const responseToInternalTimeslot = (timeslot: Timeslot): InternalTimeslot => {
-    const days: Partial<Record<TimeIntervalDay, TimeslotIntervalDay>> = {};
-    for (const interval of timeslot.time_intervals) {
+    const days: Partial<Record<TimeRecurrenceDay, TimeslotRecurrenceDay>> = {};
+    for (const interval of timeslot.time_recurrences) {
       const startTime = dateFromTimeOfDayString(interval.start);
       const endTime = dateFromTimeOfDayString(interval.end);
       const allDay = false;
 
-      days[interval.day] = {
-        pk: interval.day,
-        name: TimeIntervalDayNameMap[interval.day],
+      // FIXME: only cares about the first day.
+      days[interval.days[0]] = {
+        pk: interval.days[0],
+        name: TimeRecurrenceDayNameMap[interval.days[0]],
         startTime,
         endTime,
         allDay,
@@ -95,20 +96,20 @@ const TimeslotList: React.FC<TimeslotListPropsType> = () => {
     return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
   };
 
-  const timeslotIntervalDayToTimeInterval = (interval: TimeslotIntervalDay): TimeInterval => {
+  const timeslotIntervalDayToTimeInterval = (interval: TimeslotRecurrenceDay): TimeRecurrence => {
     const start = (!interval.allDay && interval.startTime && dateTimeToTimeOfDay(interval.startTime)) || "0:0:0";
     const end = (!interval.allDay && interval.endTime && dateTimeToTimeOfDay(interval.endTime)) || "23:59:59:999999";
 
     return {
-      day: interval.pk,
+      days: [interval.pk],
       start,
       end,
     };
   };
 
-  const daysToTimeInterval = (days: Partial<Record<TimeIntervalDay, TimeslotIntervalDay>>): TimeInterval[] => {
+  const daysToTimeInterval = (days: Partial<Record<TimeRecurrenceDay, TimeslotRecurrenceDay>>): TimeRecurrence[] => {
     return removeUndefined(
-      TIME_INTERVAL_DAY_IN_ORDER.map((day: TimeIntervalDay): TimeInterval | undefined => {
+      TIME_RECURRENCE_DAY_IN_ORDER.map((day: TimeRecurrenceDay): TimeRecurrence | undefined => {
         const intervalDay = days[day];
         return intervalDay && timeslotIntervalDayToTimeInterval(intervalDay);
       }),
@@ -138,7 +139,7 @@ const TimeslotList: React.FC<TimeslotListPropsType> = () => {
   const updateSavedTimeslot = (
     pk: TimeslotPK,
     name: string,
-    days: Partial<Record<TimeIntervalDay, TimeslotIntervalDay>>,
+    days: Partial<Record<TimeRecurrenceDay, TimeslotRecurrenceDay>>,
   ) => {
     api
       .putTimeslot(pk, name, daysToTimeInterval(days))
@@ -177,7 +178,7 @@ const TimeslotList: React.FC<TimeslotListPropsType> = () => {
       );
   };
 
-  const createNewTimeslot = (name: string, days: Partial<Record<TimeIntervalDay, TimeslotIntervalDay>>) => {
+  const createNewTimeslot = (name: string, days: Partial<Record<TimeRecurrenceDay, TimeslotRecurrenceDay>>) => {
     api
       .postTimeslot(name, daysToTimeInterval(days))
       .then((newTimeslot: Timeslot) => {
@@ -217,7 +218,7 @@ const TimeslotList: React.FC<TimeslotListPropsType> = () => {
   const onSave = (
     pk: TimeslotPK | undefined,
     name: string,
-    days: Partial<Record<TimeIntervalDay, TimeslotIntervalDay>>,
+    days: Partial<Record<TimeRecurrenceDay, TimeslotRecurrenceDay>>,
   ) => {
     if (pk) {
       updateSavedTimeslot(pk, name, days);

@@ -36,21 +36,21 @@ export interface AuthTokenSuccessResponse {
   token: string;
 }
 
-export type TimeIntervalDay = "MO" | "TU" | "WE" | "TH" | "FR" | "SA" | "SU";
-export const TIME_INTERVAL_DAY_IN_ORDER: TimeIntervalDay[] = ["MO", "TU", "WE", "TH", "FR", "SA", "SU"];
+export type TimeRecurrenceDay = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+export const TIME_RECURRENCE_DAY_IN_ORDER: TimeRecurrenceDay[] = [0, 1, 2, 3, 4, 5, 6];
 
-export const TimeIntervalDayNameMap: Record<TimeIntervalDay, string> = {
-  MO: "Monday",
-  TU: "Tuesday",
-  WE: "Wednesday",
-  TH: "Thursday",
-  FR: "Friday",
-  SA: "Saturday",
-  SU: "Sunday",
+export const TimeRecurrenceDayNameMap: Record<TimeRecurrenceDay, string> = {
+  0: "Monday",
+  1: "Tuesday",
+  2: "Wednesday",
+  3: "Thursday",
+  4: "Friday",
+  5: "Saturday",
+  6: "Sunday",
 };
 
-export interface TimeInterval {
-  day: TimeIntervalDay;
+export interface TimeRecurrence {
+  days: TimeRecurrenceDay[];
   start: string;
   end: string;
 }
@@ -59,7 +59,7 @@ export type TimeslotPK = string | number; // WIP: fix this
 export interface Timeslot {
   pk: number;
   name: string;
-  time_intervals: TimeInterval[];
+  time_recurrences: TimeRecurrence[];
 }
 
 export type FilterPK = number; // WIP: fix this
@@ -406,24 +406,24 @@ export class ApiClient {
     );
   }
 
-  public putTimeslot(timeslotPK: TimeslotPK, name: string, timeIntervals: TimeInterval[]): Promise<Timeslot> {
+  public putTimeslot(timeslotPK: TimeslotPK, name: string, timeRecurrences: TimeRecurrence[]): Promise<Timeslot> {
     return resolveOrReject(
       this.authPut<Timeslot, Omit<Timeslot, "pk">>(`/api/v1/notificationprofiles/timeslots/${timeslotPK}`, {
         name,
         // eslint-disable-next-line
-        time_intervals: timeIntervals,
+        time_recurrences: timeRecurrences,
       }),
       defaultResolver,
       (error) => new Error(`Failed to put notificationprofile timeslot: ${error}`),
     );
   }
 
-  public postTimeslot(name: string, timeIntervals: TimeInterval[]): Promise<Timeslot> {
+  public postTimeslot(name: string, timeRecurrences: TimeRecurrence[]): Promise<Timeslot> {
     return resolveOrReject(
       this.authPost<Timeslot, Omit<Timeslot, "pk">>(`/api/v1/notificationprofiles/timeslots/`, {
         name,
         // eslint-disable-next-line
-        time_intervals: timeIntervals,
+        time_recurrences: timeRecurrences,
       }),
       defaultResolver,
       (error) => new Error(`Failed to post notificationprofile timeslot: ${error}`),

@@ -1,6 +1,6 @@
 import React from "react";
 
-import { TimeIntervalDay } from "../../api";
+import { TimeRecurrenceDay } from "../../api";
 
 import { makeConfirmationButton } from "../buttons/ConfirmationButton";
 import { WHITE } from "../../colorscheme";
@@ -15,8 +15,8 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import RemoveIcon from "@material-ui/icons/Remove";
 
-export type TimeslotIntervalDay = {
-  pk: TimeIntervalDay;
+export type TimeslotRecurrenceDay = {
+  pk: TimeRecurrenceDay;
   name: string;
 
   startTime?: Date;
@@ -25,9 +25,9 @@ export type TimeslotIntervalDay = {
 };
 
 type TimeslotDaySelectorPropsType = {
-  day: TimeslotIntervalDay;
-  onRemove: (interval: TimeslotIntervalDay) => void;
-  onChange: (interval: TimeslotIntervalDay) => void;
+  day: TimeslotRecurrenceDay;
+  onRemove: (interval: TimeslotRecurrenceDay) => void;
+  onChange: (interval: TimeslotRecurrenceDay) => void;
 };
 
 const useStyles = makeStyles((theme: Theme) =>
