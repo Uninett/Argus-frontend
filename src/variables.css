@@ -1,5 +1,5 @@
 :root {
   --header-height: 9vh;
-  --alertbox-height: 50vh;
-  --alertbox-width: 70vw;
+  --incidentbox-height: 50vh;
+  --incidentbox-width: 70vw;
 }

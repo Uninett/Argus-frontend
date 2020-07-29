@@ -13,7 +13,7 @@ type FilterBuilderPropsType = {
   onFilterCreate: (name: string, filter: FilterDefinition) => void;
   onFilterPreview: (filter: FilterDefinition) => void;
 
-  sourceIds: Metadata[];
+  sourceSystemIds: Metadata[];
   objectTypeIds: Metadata[];
   parentObjectIds: Metadata[];
   problemTypeIds: Metadata[];
@@ -22,14 +22,14 @@ type FilterBuilderPropsType = {
 const FilterBuilder: React.FC<FilterBuilderPropsType> = ({
   onFilterCreate,
   onFilterPreview,
-  sourceIds,
+  sourceSystemIds,
   objectTypeIds,
   parentObjectIds,
   problemTypeIds,
 }: FilterBuilderPropsType) => {
   // const LOADING_TEXT = "Loading...";
   // const NO_DATA_TEXT = "No data";
-  // const NO_MATCHING_ALERTS_TEXT = "No matching alerts";
+  // const NO_MATCHING_INCIDENTS_TEXT = "No matching incidents";
 
   const [filter, setFilter] = useState<FilterDefinition>(defaultFilter);
   const [name, setName] = useState<string>("");
@@ -101,13 +101,13 @@ const FilterBuilder: React.FC<FilterBuilderPropsType> = ({
             ></Select>
           </div>
           <div className="filterSelect">
-            <p>Select alert sources</p>
+            <p>Select incident sources</p>
             <Select
               className="selector"
               isMulti
               name="boissss"
-              options={sourceIds}
-              onChange={(value) => handleChange(value, "sourceIds")}
+              options={sourceSystemIds}
+              onChange={(value) => handleChange(value, "sourceSystemIds")}
             ></Select>
           </div>
           <div className="ButtonDiv">
@@ -118,7 +118,7 @@ const FilterBuilder: React.FC<FilterBuilderPropsType> = ({
             </div>
             <div className="preview">
               <Button onClick={() => onFilterPreview(filter)} variant="contained" color="primary" size="large">
-                Preview Alerts
+                Preview Incidents
               </Button>
             </div>
           </div>

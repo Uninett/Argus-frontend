@@ -1,19 +1,19 @@
 import { useState, useEffect, Dispatch, SetStateAction } from "react";
 import moment from "moment";
-import api, { Alert, User, Token } from "./api";
+import api, { Incident, User, Token } from "./api";
 import auth from "./auth";
 import { DEBUG } from "./config";
 
 export type ErrorType = string | Error;
 
-export interface AlertWithFormattedTimestamp extends Alert {
+export interface IncidentWithFormattedTimestamp extends Incident {
   formattedTimestamp: string;
 }
 
-export function alertWithFormattedTimestamp(alert: Alert): AlertWithFormattedTimestamp {
+export function incidentWithFormattedTimestamp(incident: Incident): IncidentWithFormattedTimestamp {
   return {
-    ...alert,
-    formattedTimestamp: moment(alert.timestamp).format("YYYY.MM.DD  hh:mm:ss"),
+    ...incident,
+    formattedTimestamp: moment(incident.timestamp).format("YYYY.MM.DD  hh:mm:ss"),
   };
 }
 

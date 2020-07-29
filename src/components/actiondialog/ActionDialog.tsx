@@ -1,5 +1,5 @@
 import React from "react";
-import "../../components/alerttable/alerttable.css";
+import "../../components/incidenttable/incidenttable.css";
 
 import Dialog from "@material-ui/core/Dialog";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";

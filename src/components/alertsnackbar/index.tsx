@@ -63,7 +63,7 @@ export type AlertSnackbarState = {
 };
 
 export type UseAlertSnackbarResultType = {
-  alertSnackbar: React.ReactElement;
+  incidentSnackbar: React.ReactElement;
   state: AlertSnackbarState;
   setState: Dispatch<SetStateAction<AlertSnackbarState>>;
   displayAlertSnackbar: (message: string, severity?: AlertSnackbarSeverity) => void;
@@ -95,7 +95,7 @@ export const useAlertSnackbar = (): UseAlertSnackbarResultType => {
     });
   };
 
-  return { alertSnackbar: component, state, setState, displayAlertSnackbar };
+  return { incidentSnackbar: component, state, setState, displayAlertSnackbar };
 };
 
 export default AlertSnackbar;

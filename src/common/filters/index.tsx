@@ -6,7 +6,7 @@ export type Metadata = { label: string; value: string | number };
 export const defaultResponse = [{ label: "none", value: "none" }];
 
 export const defaultFilter: FilterDefinition = {
-  sourceIds: [],
+  sourceSystemIds: [],
   objectTypeIds: [],
   parentObjectIds: [],
   problemTypeIds: [],

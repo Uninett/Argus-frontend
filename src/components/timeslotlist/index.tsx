@@ -66,7 +66,7 @@ const TimeslotList: React.FC<TimeslotListPropsType> = () => {
 
   const [unsavedTimeslots, setUnsavedTimeslots] = useState<Set<TimeslotPK>>(new Set());
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { alertSnackbar, displayAlertSnackbar }: UseAlertSnackbarResultType = useAlertSnackbar();
+  const { incidentSnackbar, displayAlertSnackbar }: UseAlertSnackbarResultType = useAlertSnackbar();
 
   const responseToInternalTimeslot = (timeslot: Timeslot): InternalTimeslot => {
     const days: Partial<Record<TimeRecurrenceDay, TimeslotRecurrenceDay>> = {};
@@ -247,7 +247,7 @@ const TimeslotList: React.FC<TimeslotListPropsType> = () => {
 
   return (
     <div className={classes.root}>
-      {alertSnackbar}
+      {incidentSnackbar}
       <Grid key="new-timeslot-grid-item" item xs={12} className={classes.timeslot}>
         <Typography>Create new timeslot</Typography>
         {newTimeslotComponent}

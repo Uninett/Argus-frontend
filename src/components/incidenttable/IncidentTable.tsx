@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import "./alerttable.css";
+import "./incidenttable.css";
 import "react-table/react-table.css";
 
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
@@ -19,7 +19,6 @@ import Grid from "@material-ui/core/Grid";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
-import Divider from "@material-ui/core/Divider";
 
 import Chip from "@material-ui/core/Chip";
 
@@ -27,17 +26,15 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 
 import TextField from "@material-ui/core/TextField";
-import Typography, { TypographyProps } from "@material-ui/core/Typography";
+import Typography from "@material-ui/core/Typography";
 
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
-
-import { CardActionArea, CardActions } from "@material-ui/core";
 
 import DateFnsUtils from "@date-io/date-fns";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 
-// TODO: remove alertWithFormattedTimestamp
-// use regular alert instead.
+// TODO: remove incidentWithFormattedTimestamp
+// use regular incident instead.
 import { useStateWithDynamicDefault, toMap, pkGetter } from "../../utils";
 import Table, {
   Accessor,
@@ -52,7 +49,7 @@ import { makeConfirmationButton } from "../../components/buttons/ConfirmationBut
 import { useAlertSnackbar, UseAlertSnackbarResultType } from "../../components/alertsnackbar";
 import CenterContainer from "../../components/centercontainer";
 
-import api, { Alert, Ack, Timestamp } from "../../api";
+import api, { Incident, Ack, Timestamp } from "../../api";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -117,15 +114,15 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-type AlertDetailListItemPropsType = {
+type IncidentDetailListItemPropsType = {
   title: string;
   detail: string | React.ReactNode;
 };
 
-const AlertDetailListItem: React.FC<AlertDetailListItemPropsType> = ({
+const IncidentDetailListItem: React.FC<IncidentDetailListItemPropsType> = ({
   title,
   detail,
-}: AlertDetailListItemPropsType) => {
+}: IncidentDetailListItemPropsType) => {
   return (
     <ListItem>
       <ListItemText primary={title} secondary={detail} />
@@ -246,7 +243,6 @@ const SignedMessage: React.FC<SignedMessagePropsType> = ({
   content,
   TextComponent,
 }: SignedMessagePropsType) => {
-  const classes = useStyles();
   const ackDate = new Date(timestamp);
   const formattedAckDate = ackDate.toLocaleString();
 
@@ -535,18 +531,18 @@ const CreateAck: React.FC<CreateAckPropsType> = ({ onSubmitAck }: CreateAckProps
   );
 };
 
-type AlertDetailPropsType = {
-  alert?: Alert;
-  onAlertChange: (alert: Alert) => void;
+type IncidentDetailPropsType = {
+  incident?: Incident;
+  onIncidentChange: (incident: Incident) => void;
 };
 
-const AlertDetail: React.FC<AlertDetailPropsType> = ({ alert, onAlertChange }: AlertDetailPropsType) => {
+const IncidentDetail: React.FC<IncidentDetailPropsType> = ({ incident, onIncidentChange }: IncidentDetailPropsType) => {
   const classes = useStyles();
 
-  // const [ticketUrl, setTicketUrl] = useState<string | undefined>(alert && alert.ticket_url);
-  // const [active, setActive] = useState<boolean>((alert && alert.active_state) || false);
+  // const [ticketUrl, setTicketUrl] = useState<string | undefined>(incident && incident.ticket_url);
+  // const [active, setActive] = useState<boolean>((incident && incident.active_state) || false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { alertSnackbar, displayAlertSnackbar }: UseAlertSnackbarResultType = useAlertSnackbar();
+  const { incidentSnackbar, displayAlertSnackbar }: UseAlertSnackbarResultType = useAlertSnackbar();
   // TODO: handle close message
 
   const defaultAcks = [
@@ -584,33 +580,34 @@ const AlertDetail: React.FC<AlertDetailPropsType> = ({ alert, onAlertChange }: A
     });
   }, [acks]);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleManualClose = (msg: string) => {
-    if (!alert) return;
+    if (!incident) return;
     api // eslint-disable-next-line @typescript-eslint/camelcase
-      .putAlertActive(alert.pk, false)
-      .then((alert: Alert) => {
-        displayAlertSnackbar(`Closed incident ${alert && alert.alert_id}`, "success");
-        onAlertChange(alert);
+      .putIncidentActive(incident.pk, false)
+      .then((incident: Incident) => {
+        displayAlertSnackbar(`Closed incident ${incident && incident.pk}`, "success");
+        onIncidentChange(incident);
       })
-      .catch((error: any) => {
-        displayAlertSnackbar(`Failed to close incident ${alert && alert.alert_id}`, "error");
+      .catch((error) => {
+        displayAlertSnackbar(`Failed to close incident ${incident && incident.pk} - ${error}`, "error");
       });
   };
 
   const handleManualOpen = () => {
-    if (!alert) return;
+    if (!incident) return;
     api // eslint-disable-next-line @typescript-eslint/camelcase
-      .putAlertActive(alert.pk, true)
-      .then((alert: Alert) => {
-        displayAlertSnackbar(`Reopened incident ${alert && alert.alert_id}`, "success");
-        onAlertChange(alert);
+      .putIncidentActive(incident.pk, true)
+      .then((incident: Incident) => {
+        displayAlertSnackbar(`Reopened incident ${incident && incident.pk}`, "success");
+        onIncidentChange(incident);
       })
-      .catch((error: any) => {
-        displayAlertSnackbar(`Failed to reopen incident ${alert && alert.alert_id}`, "error");
+      .catch((error) => {
+        displayAlertSnackbar(`Failed to reopen incident ${incident && incident.pk} - ${error}`, "error");
       });
   };
 
-  if (!alert) return <h1>none</h1>;
+  if (!incident) return <h1>none</h1>;
 
   const ackExpiryDate = undefined;
 
@@ -625,7 +622,7 @@ const AlertDetail: React.FC<AlertDetailPropsType> = ({ alert, onAlertChange }: A
 
   return (
     <div className={classes.root}>
-      {alertSnackbar}
+      {incidentSnackbar}
       <Grid container spacing={3} className={classes.grid}>
         <Grid container item spacing={2} md alignItems="stretch" justify="space-evenly" direction="column">
           <Grid item>
@@ -635,15 +632,15 @@ const AlertDetail: React.FC<AlertDetailPropsType> = ({ alert, onAlertChange }: A
                   Status
                 </Typography>
                 <CenterContainer>
-                  <ActiveItem active={alert.active_state} />
+                  <ActiveItem active={incident.active_state} />
                   <AckedItem acked={true} expiresAt={ackExpiryDate} />
-                  <TicketItem ticketUrl={alert.ticket_url} />
+                  <TicketItem ticketUrl={incident.ticket_url} />
                 </CenterContainer>
               </CardContent>
             </Card>
           </Grid>
 
-          {!alert.active_state && (
+          {!incident.active_state && (
             <Grid item>
               <Card>
                 <CardContent>
@@ -682,23 +679,23 @@ const AlertDetail: React.FC<AlertDetailPropsType> = ({ alert, onAlertChange }: A
                   Primary details
                 </Typography>
                 <List>
-                  <AlertDetailListItem title="Description" detail={alert.description} />
-                  <AlertDetailListItem title="Timestamp" detail={alert.timestamp} />
-                  <AlertDetailListItem title="Source" detail={alert.source.name} />
-                  <AlertDetailListItem
+                  <IncidentDetailListItem title="Description" detail={incident.description} />
+                  <IncidentDetailListItem title="Timestamp" detail={incident.timestamp} />
+                  <IncidentDetailListItem title="Source" detail={incident.source.name} />
+                  <IncidentDetailListItem
                     title="Details URL"
-                    detail={<a href={alert.details_url}>{alert.details_url}</a>}
+                    detail={<a href={incident.details_url}>{incident.details_url}</a>}
                   />
 
                   <TicketModifiableField
-                    url={alert.ticket_url}
+                    url={incident.ticket_url}
                     saveChange={(url?: string) => {
                       // TODO: api
                       api
-                        .putAlertTicketUrl(alert.pk, url || "")
-                        .then((alert: Alert) => {
-                          displayAlertSnackbar(`Updated ticket URL for ${alert && alert.alert_id}`, "success");
-                          onAlertChange(alert);
+                        .putIncidentTicketUrl(incident.pk, url || "")
+                        .then((incident: Incident) => {
+                          displayAlertSnackbar(`Updated ticket URL for ${incident && incident.pk}`, "success");
+                          onIncidentChange(incident);
                         })
                         .catch((error) => {
                           displayAlertSnackbar(`Failed to updated ticket URL ${error}`, "error");
@@ -708,7 +705,7 @@ const AlertDetail: React.FC<AlertDetailPropsType> = ({ alert, onAlertChange }: A
                   <ListItem>
                     <CenterContainer>
                       <ManualClose
-                        active={alert.active_state}
+                        active={incident.active_state}
                         onManualClose={handleManualClose}
                         onManualOpen={handleManualOpen}
                       />
@@ -739,7 +736,7 @@ const AlertDetail: React.FC<AlertDetailPropsType> = ({ alert, onAlertChange }: A
                   api
                     .postAck(ack)
                     .then((ack: Ack) => {
-                      displayAlertSnackbar(`Submitted ack for ${alert && alert.alert_id}`, "success");
+                      displayAlertSnackbar(`Submitted ack for ${incident && incident.pk}`, "success");
                       setAcks([...acks, ack]);
                     })
                     .catch((error) => {
@@ -768,8 +765,8 @@ const AlertDetail: React.FC<AlertDetailPropsType> = ({ alert, onAlertChange }: A
   );
 };
 
-type AlertsProps = {
-  alerts: Alert[];
+type IncidentsProps = {
+  incidents: Incident[];
   noDataText: string;
 };
 
@@ -782,23 +779,26 @@ const SourceDetailUrl = (row: { value: string; original: { details_url: string }
   );
 };
 
-const AlertTable: React.FC<AlertsProps> = ({ alerts }: AlertsProps) => {
-  const [alertForDetail, setAlertForDetail] = useState<Alert | undefined>(undefined);
+const IncidentTable: React.FC<IncidentsProps> = ({ incidents }: IncidentsProps) => {
+  const [incidentForDetail, setIncidentForDetail] = useState<Incident | undefined>(undefined);
 
-  const alertsDictFromProps = useMemo<Map<Alert["pk"], Alert>>(() => toMap<Alert["pk"], Alert>(alerts, pkGetter), [
-    alerts,
-  ]);
+  const incidentsDictFromProps = useMemo<Map<Incident["pk"], Incident>>(
+    () => toMap<Incident["pk"], Incident>(incidents, pkGetter),
+    [incidents],
+  );
 
-  const [alertsDict, setAlertsDict] = useStateWithDynamicDefault<Map<Alert["pk"], Alert>>(alertsDictFromProps);
+  const [incidentsDict, setIncidentsDict] = useStateWithDynamicDefault<Map<Incident["pk"], Incident>>(
+    incidentsDictFromProps,
+  );
 
-  const timestampCellWidth: ConstraintFunction<Alert> = () =>
+  const timestampCellWidth: ConstraintFunction<Incident> = () =>
     calculateTableCellWidth("2015-11-14T03:04:14.387000+01:00");
 
-  const showDetail = (alert: Alert) => {
-    setAlertForDetail(alert);
+  const showDetail = (incident: Incident) => {
+    setIncidentForDetail(incident);
   };
 
-  const detailsAccessor: Accessor<Alert> = (row: Alert) => {
+  const detailsAccessor: Accessor<Incident> = (row: Incident) => {
     return (
       <Button variant="contained" onClick={() => showDetail(row)}>
         Details
@@ -809,24 +809,29 @@ const AlertTable: React.FC<AlertsProps> = ({ alerts }: AlertsProps) => {
   const columns = [
     {
       id: "timestamp_col",
-      ...maxWidthColumn<Alert>(alerts, "Timestamp", "timestamp", timestampCellWidth),
+      ...maxWidthColumn<Incident>(incidents, "Timestamp", "timestamp", timestampCellWidth),
     },
     {
       id: "source_col",
       Cell: SourceDetailUrl,
-      ...maxWidthColumn<Alert>(alerts, "Source", (alert: Alert) => String(alert.source.name), getMaxColumnWidth),
+      ...maxWidthColumn<Incident>(
+        incidents,
+        "Source",
+        (incident: Incident) => String(incident.source.name),
+        getMaxColumnWidth,
+      ),
     },
     // {
     //   id: "problem_type_col",
-    //   ...maxWidthColumn<A>(alerts, "Problem type", "problem_type.name", getMaxColumnWidth),
+    //   ...maxWidthColumn<A>(incidents, "Problem type", "problem_type.name", getMaxColumnWidth),
     // },
     // {
     //   id: "object_col",
-    //   ...maxWidthColumn<A>(alerts, "Object", "object.name", getMaxColumnWidth),
+    //   ...maxWidthColumn<A>(incidents, "Object", "object.name", getMaxColumnWidth),
     // },
     // {
     //   id: "parent_object_col",
-    //   ...maxWidthColumn<A>(alerts, "Parent object", "parent_object.name", getMaxColumnWidth),
+    //   ...maxWidthColumn<A>(incidents, "Parent object", "parent_object.name", getMaxColumnWidth),
     // },
     {
       id: "description_col",
@@ -843,36 +848,36 @@ const AlertTable: React.FC<AlertsProps> = ({ alerts }: AlertsProps) => {
   const classes = useStyles();
 
   const onModalClose = () => {
-    setAlertForDetail(undefined);
+    setIncidentForDetail(undefined);
   };
 
-  const handleAlertChange = (alert: Alert) => {
-    setAlertsDict((oldDict: Map<Alert["pk"], Alert>) => {
-      const newDict = new Map<Alert["pk"], Alert>(oldDict);
-      const oldAlert = oldDict.get(alert.pk);
-      if (!oldAlert || alert.active_state != oldAlert.active_state) {
-        if (!alert.active_state) {
+  const handleIncidentChange = (incident: Incident) => {
+    setIncidentsDict((oldDict: Map<Incident["pk"], Incident>) => {
+      const newDict = new Map<Incident["pk"], Incident>(oldDict);
+      const oldIncident = oldDict.get(incident.pk);
+      if (!oldIncident || incident.active_state != oldIncident.active_state) {
+        if (!incident.active_state) {
           // closed
-          newDict.delete(alert.pk);
+          newDict.delete(incident.pk);
         } else {
           // opened (somehow)
-          newDict.set(alert.pk, alert);
+          newDict.set(incident.pk, incident);
         }
       } else {
         // updated in some other way
-        newDict.set(alert.pk, alert);
+        newDict.set(incident.pk, incident);
       }
       return newDict;
     });
-    setAlertForDetail(alert);
+    setIncidentForDetail(incident);
   };
 
   return (
     <ClickAwayListener onClickAway={onModalClose}>
       <div>
         <Dialog
-          open={!!alertForDetail}
-          onClose={() => setAlertForDetail(undefined)}
+          open={!!incidentForDetail}
+          onClose={() => setIncidentForDetail(undefined)}
           aria-labelledby="simple-modal-title"
           aria-describedby="simple-modal-description"
           maxWidth={"lg"}
@@ -890,17 +895,21 @@ const AlertTable: React.FC<AlertsProps> = ({ alerts }: AlertsProps) => {
                   <CloseIcon />
                 </IconButton>
                 <Typography variant="h6" className={classes.title}>
-                  Alert Details
+                  Incident Details
                 </Typography>
               </Toolbar>
             </AppBar>
-            <AlertDetail key={alertForDetail?.alert_id} onAlertChange={handleAlertChange} alert={alertForDetail} />
+            <IncidentDetail
+              key={incidentForDetail?.pk}
+              onIncidentChange={handleIncidentChange}
+              incident={incidentForDetail}
+            />
           </div>
         </Dialog>
-        <Table data={[...alertsDict.values()]} columns={columns} sorted={[{ id: "timestamp_col", desc: true }]} />
+        <Table data={[...incidentsDict.values()]} columns={columns} sorted={[{ id: "timestamp_col", desc: true }]} />
       </div>
     </ClickAwayListener>
   );
 };
 
-export default AlertTable;
+export default IncidentTable;

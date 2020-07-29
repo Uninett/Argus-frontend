@@ -1,7 +1,7 @@
 import React from "react";
 import "./variables.css";
 import "./colorscheme.css";
-import AlertView from "./views/alert/AlertView";
+import IncidentView from "./views/incident/IncidentView";
 import LoginView from "./views/login/LoginView";
 import { Route, Switch, useHistory } from "react-router-dom";
 import { ProtectedRoute } from "./protected.route";
@@ -27,7 +27,7 @@ const App: React.SFC = () => {
     <div>
       <ThemeProvider theme={MUI_THEME}>
         <Switch>
-          <ProtectedRoute exact path="/" component={AlertView} />
+          <ProtectedRoute exact path="/" component={IncidentView} />
           <ProtectedRoute path="/notificationprofiles" component={NotificationProfileView} />
           <ProtectedRoute path="/timeslots" component={TimeslotView} />
           <Route path="/login" component={LoginView} />

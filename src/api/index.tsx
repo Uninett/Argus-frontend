@@ -70,7 +70,7 @@ export interface Filter {
 }
 
 export interface FilterDefinition {
-  sourceIds: string[];
+  sourceSystemIds: string[];
   objectTypeIds: string[];
   parentObjectIds: string[];
   problemTypeIds: string[];
@@ -101,60 +101,60 @@ export interface NotificationProfile {
   active: boolean;
 }
 
-export interface AlertSource {
+export interface SourceSystem {
   pk: number;
   name: string;
   type: string;
 }
 
-export interface AlertObjectType {
+export interface IncidentObjectType {
   pk: number;
   name: string;
 }
 
-export interface AlertObject {
-  pk: number;
-  name: string;
-  object_id: string;
-  url: string;
-  type: AlertObjectType;
-}
-
-export interface AlertProblemType {
+export interface IncidentObject {
   pk: number;
   name: string;
   object_id: string;
   url: string;
+  type: IncidentObjectType;
 }
 
-export interface Alert {
+export interface IncidentProblemType {
+  pk: number;
+  name: string;
+  object_id: string;
+  url: string;
+}
+
+export interface Incident {
   pk: number;
   timestamp: string;
-  alert_id: string;
+  incident_id: string;
   details_url: string;
   description: string;
   ticket_url: string;
   active_state: boolean;
 
-  source: AlertSource;
-  object: AlertObject;
-  parent_object: AlertObject;
-  problem_type: AlertProblemType;
+  source: SourceSystem;
+  object: IncidentObject;
+  parent_object: IncidentObject;
+  problem_type: IncidentProblemType;
 }
 
-export type AlertActiveBody = {
+export type IncidentActiveBody = {
   active: boolean;
 };
 
-export type AlertTicketUrlBody = {
+export type IncidentTicketUrlBody = {
   ticket_url: string;
 };
 
-export interface AlertMetadata {
-  alertSources: AlertSource[];
-  objectTypes: AlertObjectType[];
-  parentObjects: AlertObject[];
-  problemTypes: AlertProblemType[];
+export interface IncidentMetadata {
+  sourceSystems: SourceSystem[];
+  objectTypes: IncidentObjectType[];
+  parentObjects: IncidentObject[];
+  problemTypes: IncidentProblemType[];
 }
 
 export type NotificationProfileRequest = NotificationProfileKeyed;
@@ -344,65 +344,66 @@ export class ApiClient {
       });
   }
 
-  // Alert
+  // Incident
   // WIP TODO untested
-  public putAlert(alert: Alert): Promise<Alert> {
+  public putIncident(incident: Incident): Promise<Incident> {
     if (Date.now() % 2 === 0) {
-      return Promise.reject(new Error(`Failed to put alert`));
+      return Promise.reject(new Error(`Failed to put incident`));
     }
-    return Promise.resolve(alert);
+    return Promise.resolve(incident);
     // return resolveOrReject(
-    //   this.authPut<Alert, Alert>(`/api/v1/alerts/${alert.pk}`, alert),
+    //   this.authPut<Incident, Incident>(`/api/v1/incidents/${incident.pk}`, incident),
     //   defaultResolver,
-    //   (error) => new Error(`Failed to put alert: ${error}`),
+    //   (error) => new Error(`Failed to put incident: ${error}`),
     // );
   }
 
-  public putAlertActive(pk: number, active: boolean): Promise<Alert> {
+  public putIncidentActive(pk: number, active: boolean): Promise<Incident> {
     return resolveOrReject(
-      this.authPut<Alert, AlertActiveBody>(`/api/v1/alerts/${pk}/active`, { active }),
+      this.authPut<Incident, IncidentActiveBody>(`/api/v1/incidents/${pk}/active`, { active }),
       defaultResolver,
-      (error) => new Error(`Failed to put alert active: ${error}`),
+      (error) => new Error(`Failed to put incident active: ${error}`),
     );
   }
 
-  public putAlertTicketUrl(pk: number, ticketUrl: string): Promise<Alert> {
+  public putIncidentTicketUrl(pk: number, ticketUrl: string): Promise<Incident> {
     return resolveOrReject(
-      this.authPut<Alert, AlertTicketUrlBody>(`/api/v1/alerts/${pk}/ticket_url`, { ticket_url: ticketUrl }),
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      this.authPut<Incident, IncidentTicketUrlBody>(`/api/v1/incidents/${pk}/ticket_url`, { ticket_url: ticketUrl }),
       defaultResolver,
-      (error) => new Error(`Failed to put alert ticket url: ${error}`),
+      (error) => new Error(`Failed to put incident ticket url: ${error}`),
     );
   }
 
-  public getAllAlerts(): Promise<Alert[]> {
+  public getAllIncidents(): Promise<Incident[]> {
     return resolveOrReject(
-      this.authGet<Alert[], never>(`/api/v1/alerts/`),
+      this.authGet<Incident[], never>(`/api/v1/incidents/`),
       defaultResolver,
-      (error) => new Error(`Failed to get alerts: ${error}`),
+      (error) => new Error(`Failed to get incidents: ${error}`),
     );
   }
 
-  public getActiveAlerts(): Promise<Alert[]> {
+  public getActiveIncidents(): Promise<Incident[]> {
     return resolveOrReject(
-      this.authGet<Alert[], never>(`/api/v1/alerts/active/`),
+      this.authGet<Incident[], never>(`/api/v1/incidents/active/`),
       defaultResolver,
-      (error) => new Error(`Failed to get alerts: ${error}`),
+      (error) => new Error(`Failed to get incidents: ${error}`),
     );
   }
 
-  public getAllAlertsMetadata(): Promise<AlertMetadata> {
+  public getAllIncidentsMetadata(): Promise<IncidentMetadata> {
     return resolveOrReject(
-      this.authGet<AlertMetadata, never>(`/api/v1/alerts/metadata/`),
+      this.authGet<IncidentMetadata, never>(`/api/v1/incidents/metadata/`),
       defaultResolver,
-      (error) => new Error(`Failed to get alerts metadata: ${error}`),
+      (error) => new Error(`Failed to get incidents metadata: ${error}`),
     );
   }
 
-  public postFilterPreview(filterDefinition: FilterDefinition): Promise<Alert[]> {
+  public postFilterPreview(filterDefinition: FilterDefinition): Promise<Incident[]> {
     return resolveOrReject(
-      this.authPost<Alert[], FilterDefinition>(`/api/v1/notificationprofiles/filterpreview/`, filterDefinition),
+      this.authPost<Incident[], FilterDefinition>(`/api/v1/notificationprofiles/filterpreview/`, filterDefinition),
       defaultResolver,
-      (error) => new Error(`Failed to get filtered alerts: ${error}`),
+      (error) => new Error(`Failed to get filtered incidents: ${error}`),
     );
   }
 

@@ -1,4 +1,4 @@
-# Aggregated Alert System Frontend contributors
+# Argus Frontend contributors
 
 *Listed in order of appearance in the commit log:*
 
@@ -8,3 +8,4 @@
 * [Karoline Bonnerud](https://github.com/karolbon) \<kbonnerud at gmail.com\>
 * [Alexander Michael Staff](https://github.com/tralphium) \<alexandermstaff at gmail.com\>
 * [Anders Hovden](https://github.com/ddabble) \<andershovden at protonmail.com\>
+* [Jørgen Bele Reinfjell](https://github.com/jorgenbele) \<jorgen.bele at gmail.com\>

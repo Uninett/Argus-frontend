@@ -75,7 +75,7 @@ const ProfileList: React.FC = () => {
   const useCombined = createUsePromise<[NotificationProfile[], Timeslot[]], ProfilesTimeslots>(mapper);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { alertSnackbar, displayAlertSnackbar }: UseAlertSnackbarResultType = useAlertSnackbar();
+  const { incidentSnackbar, displayAlertSnackbar }: UseAlertSnackbarResultType = useAlertSnackbar();
 
   const [
     { result: combinedResult, isLoading: combinedIsLoading, isError: combinedIsError },
@@ -257,7 +257,7 @@ const ProfileList: React.FC = () => {
   return (
     <>
       <div className="profile-container">
-        {alertSnackbar}
+        {incidentSnackbar}
         <ActionDialog
           key="actiondialog"
           message={action.message}
