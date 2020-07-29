@@ -201,18 +201,7 @@ const TicketModifiableField: React.FC<TicketModifiableFieldPropsType> = ({
     setChangeUrl(false);
   };
 
-  // if (url && !changeUrl) {
-  //   return (
-  //     <ListItem>
-  //       <Grid container direction="row" justify="space-between">
-  //         <ListItemText primary="Ticket" secondary={url} />
-  //         <Button endIcon={<EditIcon />} onClick={() => setChangeUrl(true)}>
-  //           Edit
-  //         </Button>
-  //       </Grid>
-  //     </ListItem>
-  //   );
-  // }
+  const error = useMemo(() => !isValidUrl(url || ""), [url]);
 
   return (
     <ListItem>
@@ -224,13 +213,15 @@ const TicketModifiableField: React.FC<TicketModifiableFieldPropsType> = ({
             readOnly: !changeUrl,
           }}
           onChange={handleChange}
+          error={error}
+          helperText={error && "Invalid URL"}
         />
         {(!changeUrl && (
           <Button endIcon={<EditIcon />} onClick={() => setChangeUrl(true)}>
             Edit
           </Button>
         )) || (
-          <Button className={classes.safeButton} onClick={() => handleSave()}>
+          <Button className={classes.safeButton} onClick={() => handleSave()} disabled={error}>
             Set ticket URL
           </Button>
         )}
