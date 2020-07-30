@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import "./incidenttable.css";
 import "react-table/react-table.css";
 
@@ -11,9 +11,13 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import Toolbar from "@material-ui/core/Toolbar";
+import Tooltip from "@material-ui/core/Tooltip";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import EditIcon from "@material-ui/icons/Edit";
+import FilterListIcon from "@material-ui/icons/FilterList";
+import CheckSharpIcon from "@material-ui/icons/CheckSharp";
+import LinkSharpIcon from "@material-ui/icons/LinkSharp";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import Box from "@material-ui/core/Box";
@@ -43,6 +47,7 @@ import TableCell, { TableCellProps } from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
+import TablePagination from "@material-ui/core/TablePagination";
 
 // TODO: remove incidentWithFormattedTimestamp
 // use regular incident instead.
@@ -922,6 +927,99 @@ const IncidentComponent: React.FC<IncidentPropsType> = ({ incident, onShowDetail
   );
 };
 
+const useToolbarStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      paddingLeft: theme.spacing(2),
+      paddingRight: theme.spacing(1),
+    },
+    title: {
+      flex: "1 1 100%",
+    },
+  }),
+);
+
+interface TableToolbarPropsType {
+  selectedIncidents: Set<Incident["pk"]> | "SelectedAll";
+}
+
+const TableToolbar: React.FC<TableToolbarPropsType> = ({ selectedIncidents }: TableToolbarPropsType) => {
+  const classes = useToolbarStyles();
+  const rootClasses = useStyles();
+
+  return (
+    <Toolbar className={classes.root}>
+      {selectedIncidents === "SelectedAll" || selectedIncidents.size > 0 ? (
+        <Typography className={classes.title} color="inherit" variant="subtitle1" component="div">
+          {selectedIncidents === "SelectedAll" ? "All" : selectedIncidents.size} selected
+        </Typography>
+      ) : (
+        <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
+          Incidents
+        </Typography>
+      )}
+
+      {selectedIncidents === "SelectedAll" || selectedIncidents.size > 0 ? (
+        <>
+          <Tooltip title="Link">
+            <IconButton aria-label="link" className={rootClasses.safeButton}>
+              <LinkSharpIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Acknowledge" className={rootClasses.dangerousButton}>
+            <IconButton aria-label="acknowledge">
+              <CheckSharpIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Close" className={rootClasses.dangerousButton}>
+            <IconButton aria-label="close">
+              <CloseIcon />
+            </IconButton>
+          </Tooltip>
+        </>
+      ) : (
+        <Tooltip title="Filter list">
+          <IconButton aria-label="filter list">
+            <FilterListIcon />
+          </IconButton>
+        </Tooltip>
+      )}
+    </Toolbar>
+  );
+};
+
+function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
+  if (b[orderBy] < a[orderBy]) {
+    return -1;
+  }
+  if (b[orderBy] > a[orderBy]) {
+    return 1;
+  }
+  return 0;
+}
+
+// TODO: refactor
+type Order = "asc" | "desc";
+
+function getComparator<Key extends keyof any>(
+  order: Order,
+  orderBy: Key,
+): (a: { [key in Key]: number | string }, b: { [key in Key]: number | string }) => number {
+  return order === "desc"
+    ? (a, b) => descendingComparator(a, b, orderBy)
+    : (a, b) => -descendingComparator(a, b, orderBy);
+}
+
+function stableSort<T>(array: T[], comparator: (a: T, b: T) => number) {
+  const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
+  stabilizedThis.sort((a, b) => {
+    const order = comparator(a[0], b[0]);
+    if (order !== 0) return order;
+    return a[1] - b[1];
+  });
+  return stabilizedThis.map((el) => el[0]);
+}
+
 type MUIIncidentTablePropsType = {
   incidents: Incident[];
   onShowDetail: (incide: Incident) => void;
@@ -934,6 +1032,27 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
   const classes = useStyles();
   type SelectionState = "SelectedAll" | Set<Incident["pk"]>;
   const [selectedIncidents, setSelectedIncidents] = useState<SelectionState>(new Set<Incident["pk"]>([]));
+
+  const [rowsPerPage, setRowsPerPage] = useState<number>(25);
+  const [page, setPage] = useState<number>(0);
+
+  const [order, setOrder] = React.useState<Order>("desc");
+  const [orderBy, setOrderBy] = React.useState<any>("timestamp");
+
+  const resetSelectedIncidents = () => {
+    setSelectedIncidents(new Set<Incident["pk"]>());
+  };
+
+  const handleChangePage = (event: unknown, page: number) => {
+    setPage(page);
+    resetSelectedIncidents();
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value));
+    setPage(0);
+    resetSelectedIncidents();
+  };
 
   const handleRowClick = (event: React.MouseEvent<unknown>, incident: Incident) => {
     onShowDetail(incident);
@@ -965,130 +1084,112 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
     });
   };
 
+  const displayedIncidents = useMemo(() => {
+    return incidents.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  }, [incidents, page, rowsPerPage]);
+
   return (
-    <TableContainer component={Paper}>
-      <MuiTable aria-label="incident table">
-        <TableHead>
-          <TableRow>
-            <TableCell padding="checkbox" onClick={() => handleToggleSelectAll()}>
-              <Checkbox checked={selectedIncidents === "SelectedAll"} />
-            </TableCell>
-            <TableCell>Timestamp</TableCell>
-            <TableCell>Status</TableCell>
-            <TableCell>Id</TableCell>
-            <TableCell>Source</TableCell>
-            <TableCell>Description</TableCell>
-            <TableCell>Details</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {incidents.map((incident: Incident) => {
-            const ClickableCell = (props: TableCellProps) => (
-              <TableCell onClick={(event) => handleRowClick(event, incident)} {...props} />
-            );
+    <Paper>
+      <TableToolbar selectedIncidents={selectedIncidents} />
+      <TableContainer component={Paper}>
+        <MuiTable size="small" aria-label="incident table">
+          <TableHead>
+            <TableRow>
+              <TableCell padding="checkbox" onClick={() => handleToggleSelectAll()}>
+                <Checkbox checked={selectedIncidents === "SelectedAll"} />
+              </TableCell>
+              <TableCell>Id</TableCell>
+              <TableCell>Timestamp</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell>Source</TableCell>
+              <TableCell>Description</TableCell>
+              <TableCell>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {stableSort<Incident>(displayedIncidents, getComparator<"timestamp">(order, orderBy)).map(
+              (incident: Incident) => {
+                const ClickableCell = (props: TableCellProps) => (
+                  <TableCell onClick={(event) => handleRowClick(event, incident)} {...props} />
+                );
 
-            const isSelected = selectedIncidents === "SelectedAll" || selectedIncidents.has(incident.pk);
+                const isSelected = selectedIncidents === "SelectedAll" || selectedIncidents.has(incident.pk);
 
-            return (
-              <TableRow
-                hover
-                key={incident.pk}
-                selected={isSelected}
-                style={{
-                  cursor: "pointer",
-                }}
-              >
-                <TableCell padding="checkbox" onClick={() => handleSelectIncident(incident)}>
-                  <Checkbox checked={isSelected} />
-                </TableCell>
-                <ClickableCell>{new Date(incident.timestamp).toLocaleString()}</ClickableCell>
-                <ClickableCell component="th" scope="row">
-                  <ActiveItem small active={incident.active_state} />
-                  <TicketItem small ticketUrl={incident.ticket_url} />
-                  <AckedItem small acked />
-                </ClickableCell>
-                <ClickableCell>{incident.pk}</ClickableCell>
-                <ClickableCell>{incident.source.name}</ClickableCell>
-                <ClickableCell>{incident.description}</ClickableCell>
-                <TableCell>
-                  <Button className={classes.safeButton} onClick={() => onShowDetail(incident)}>
-                    Details
-                  </Button>
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </MuiTable>
-    </TableContainer>
+                return (
+                  <TableRow
+                    hover
+                    key={incident.pk}
+                    selected={isSelected}
+                    style={{
+                      cursor: "pointer",
+                    }}
+                  >
+                    <TableCell padding="checkbox" onClick={() => handleSelectIncident(incident)}>
+                      <Checkbox checked={isSelected} />
+                    </TableCell>
+                    <ClickableCell>{incident.pk}</ClickableCell>
+                    <ClickableCell>{new Date(incident.timestamp).toLocaleString()}</ClickableCell>
+                    <ClickableCell component="th" scope="row">
+                      <ActiveItem small active={incident.active_state} />
+                      <TicketItem small ticketUrl={incident.ticket_url} />
+                      <AckedItem small acked />
+                    </ClickableCell>
+                    <ClickableCell>{incident.source.name}</ClickableCell>
+                    <ClickableCell>{incident.description}</ClickableCell>
+                    <TableCell>
+                      <Button className={classes.safeButton} onClick={() => onShowDetail(incident)}>
+                        Details
+                      </Button>
+                      {true && (
+                        <Button className={classes.safeButton} href="https://localhost.com">
+                          Ticket
+                        </Button>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              },
+            )}
+          </TableBody>
+        </MuiTable>
+      </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[10, 25, 50, 100]}
+        component="div"
+        count={incidents.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onChangePage={handleChangePage}
+        onChangeRowsPerPage={handleChangeRowsPerPage}
+      />
+    </Paper>
   );
 };
+
+type Revisioned<T> = T & { revision?: number };
 
 const IncidentTable: React.FC<IncidentsProps> = ({ incidents }: IncidentsProps) => {
   const [incidentForDetail, setIncidentForDetail] = useState<Incident | undefined>(undefined);
 
-  const incidentsDictFromProps = useMemo<Map<Incident["pk"], Incident>>(
+  const incidentsDictFromProps = useMemo<Revisioned<Map<Incident["pk"], Incident>>>(
     () => toMap<Incident["pk"], Incident>(incidents, pkGetter),
     [incidents],
   );
 
-  const [incidentsDict, setIncidentsDict] = useStateWithDynamicDefault<Map<Incident["pk"], Incident>>(
+  const [incidentsDict, setIncidentsDict] = useStateWithDynamicDefault<Revisioned<Map<Incident["pk"], Incident>>>(
     incidentsDictFromProps,
   );
 
-  const timestampCellWidth: ConstraintFunction<Incident> = () =>
-    calculateTableCellWidth("2015-11-14T03:04:14.387000+01:00");
+  const [incidentsUpdated, setIncidentsUpdated] = useState<Revisioned<Incident[]>>(incidents);
+
+  useEffect(() => {
+    console.log("updating incidents");
+    setIncidentsUpdated([...incidentsDict.values()]);
+  }, [incidentsDict]);
 
   const handleShowDetail = (incident: Incident) => {
     setIncidentForDetail(incident);
   };
-
-  const detailsAccessor: Accessor<Incident> = (row: Incident) => {
-    return (
-      <Button variant="contained" onClick={() => handleShowDetail(row)}>
-        Details
-      </Button>
-    );
-  };
-
-  const columns = [
-    {
-      id: "timestamp_col",
-      ...maxWidthColumn<Incident>(incidents, "Timestamp", "timestamp", timestampCellWidth),
-    },
-    {
-      id: "source_col",
-      Cell: SourceDetailUrl,
-      ...maxWidthColumn<Incident>(
-        incidents,
-        "Source",
-        (incident: Incident) => String(incident.source.name),
-        getMaxColumnWidth,
-      ),
-    },
-    // {
-    //   id: "problem_type_col",
-    //   ...maxWidthColumn<A>(incidents, "Problem type", "problem_type.name", getMaxColumnWidth),
-    // },
-    // {
-    //   id: "object_col",
-    //   ...maxWidthColumn<A>(incidents, "Object", "object.name", getMaxColumnWidth),
-    // },
-    // {
-    //   id: "parent_object_col",
-    //   ...maxWidthColumn<A>(incidents, "Parent object", "parent_object.name", getMaxColumnWidth),
-    // },
-    {
-      id: "description_col",
-      Header: "Description",
-      accessor: "description",
-    },
-    {
-      id: "details_col",
-      Header: "Details",
-      accessor: detailsAccessor,
-    },
-  ];
 
   const classes = useStyles();
 
@@ -1097,8 +1198,8 @@ const IncidentTable: React.FC<IncidentsProps> = ({ incidents }: IncidentsProps) 
   };
 
   const handleIncidentChange = (incident: Incident) => {
-    setIncidentsDict((oldDict: Map<Incident["pk"], Incident>) => {
-      const newDict = new Map<Incident["pk"], Incident>(oldDict);
+    setIncidentsDict((oldDict: Revisioned<Map<Incident["pk"], Incident>>) => {
+      const newDict: typeof oldDict = new Map<Incident["pk"], Incident>(oldDict);
       const oldIncident = oldDict.get(incident.pk);
       if (!oldIncident || incident.active_state != oldIncident.active_state) {
         if (!incident.active_state) {
@@ -1112,10 +1213,43 @@ const IncidentTable: React.FC<IncidentsProps> = ({ incidents }: IncidentsProps) 
         // updated in some other way
         newDict.set(incident.pk, incident);
       }
+      newDict.revision = (newDict.revision || 1) + 1;
+      console.log("revision", newDict.revision);
       return newDict;
     });
-    setIncidentForDetail(incident);
+    if (incidentForDetail && incidentForDetail.pk === incident.pk) setIncidentForDetail(incident);
   };
+
+  useEffect(() => {
+    const ws = new WebSocket("ws://localhost:8000/active/");
+    console.log("websocket", ws);
+    /*
+    {
+        "action": "an_async_action",
+        "request_id": 42,
+        "some": "value passed as keyword argument to action"
+    }
+  */
+
+    const msg = {
+      action: "subscribe",
+      // action: "list",
+      request_id: "1",
+    };
+    ws.onmessage = function (e) {
+      const data = JSON.parse(e.data);
+      if (data.type === "modified") {
+        console.log("Modified", data);
+        const modifiedIncident: Incident = data.payload;
+        handleIncidentChange(modifiedIncident);
+      }
+    };
+
+    ws.onopen = function (e) {
+      console.log("onopen");
+      ws.send(JSON.stringify(msg));
+    };
+  }, []);
 
   return (
     <ClickAwayListener onClickAway={onModalClose}>
@@ -1160,7 +1294,7 @@ const IncidentTable: React.FC<IncidentsProps> = ({ incidents }: IncidentsProps) 
           ))}
         </List>
             */}
-        <MUIIncidentTable incidents={[...incidentsDict.values()]} onShowDetail={handleShowDetail} />
+        <MUIIncidentTable incidents={incidentsUpdated} onShowDetail={handleShowDetail} />
       </div>
     </ClickAwayListener>
   );
