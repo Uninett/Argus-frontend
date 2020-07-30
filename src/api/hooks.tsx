@@ -1,7 +1,7 @@
 import { useState, useEffect, Dispatch, SetStateAction } from "react";
-import { Alert } from ".";
+import { Incident } from ".";
 // TODO: fix this
-import { alertWithFormattedTimestamp, AlertWithFormattedTimestamp } from "../utils";
+import { incidentWithFormattedTimestamp, IncidentWithFormattedTimestamp } from "../utils";
 import {
   ApiErrorType,
   NotificationProfile,
@@ -62,8 +62,8 @@ function asMap<K extends string | number, V extends { pk: K }>(elems: V[]): Map<
   return toMap<K, V>(elems, pkGetter);
 }
 
-export const useApiAlerts = createUsePromise<Alert[], AlertWithFormattedTimestamp[]>(
-  (alerts: Alert[]): AlertWithFormattedTimestamp[] => alerts.map(alertWithFormattedTimestamp),
+export const useApiIncidents = createUsePromise<Incident[], IncidentWithFormattedTimestamp[]>(
+  (incidents: Incident[]): IncidentWithFormattedTimestamp[] => incidents.map(incidentWithFormattedTimestamp),
   () => undefined,
 );
 

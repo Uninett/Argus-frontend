@@ -1,10 +1,10 @@
-.alertbox {
+.incidentbox {
   word-wrap: break-word;
-  width: var(--alertbox-width);
+  width: var(--incidentbox-width);
   background-color: white;
   text-align: left;
   padding: 10px;
-  margin-left: calc(calc(100vw - var(--alertbox-width)) * 0.5);
+  margin-left: calc(calc(100vw - var(--incidentbox-width)) * 0.5);
   box-shadow: var(--boxshadow);
 }
 

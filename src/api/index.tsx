@@ -36,21 +36,21 @@ export interface AuthTokenSuccessResponse {
   token: string;
 }
 
-export type TimeIntervalDay = "MO" | "TU" | "WE" | "TH" | "FR" | "SA" | "SU";
-export const TIME_INTERVAL_DAY_IN_ORDER: TimeIntervalDay[] = ["MO", "TU", "WE", "TH", "FR", "SA", "SU"];
+export type TimeRecurrenceDay = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+export const TIME_RECURRENCE_DAY_IN_ORDER: TimeRecurrenceDay[] = [0, 1, 2, 3, 4, 5, 6];
 
-export const TimeIntervalDayNameMap: Record<TimeIntervalDay, string> = {
-  MO: "Monday",
-  TU: "Tuesday",
-  WE: "Wednesday",
-  TH: "Thursday",
-  FR: "Friday",
-  SA: "Saturday",
-  SU: "Sunday",
+export const TimeRecurrenceDayNameMap: Record<TimeRecurrenceDay, string> = {
+  0: "Monday",
+  1: "Tuesday",
+  2: "Wednesday",
+  3: "Thursday",
+  4: "Friday",
+  5: "Saturday",
+  6: "Sunday",
 };
 
-export interface TimeInterval {
-  day: TimeIntervalDay;
+export interface TimeRecurrence {
+  days: TimeRecurrenceDay[];
   start: string;
   end: string;
 }
@@ -59,7 +59,7 @@ export type TimeslotPK = string | number; // WIP: fix this
 export interface Timeslot {
   pk: number;
   name: string;
-  time_intervals: TimeInterval[];
+  time_recurrences: TimeRecurrence[];
 }
 
 export type FilterPK = number; // WIP: fix this
@@ -70,7 +70,7 @@ export interface Filter {
 }
 
 export interface FilterDefinition {
-  sourceIds: string[];
+  sourceSystemIds: string[];
   objectTypeIds: string[];
   parentObjectIds: string[];
   problemTypeIds: string[];
@@ -101,52 +101,60 @@ export interface NotificationProfile {
   active: boolean;
 }
 
-export interface AlertSource {
+export interface SourceSystem {
   pk: number;
   name: string;
   type: string;
 }
 
-export interface AlertObjectType {
+export interface IncidentObjectType {
   pk: number;
   name: string;
 }
 
-export interface AlertObject {
-  pk: number;
-  name: string;
-  object_id: string;
-  url: string;
-  type: AlertObjectType;
-}
-
-export interface AlertProblemType {
+export interface IncidentObject {
   pk: number;
   name: string;
   object_id: string;
   url: string;
+  type: IncidentObjectType;
 }
 
-export interface Alert {
+export interface IncidentProblemType {
+  pk: number;
+  name: string;
+  object_id: string;
+  url: string;
+}
+
+export interface Incident {
   pk: number;
   timestamp: string;
-  alert_id: string;
+  incident_id: string;
   details_url: string;
   description: string;
   ticket_url: string;
   active_state: boolean;
 
-  source: AlertSource;
-  object: AlertObject;
-  parent_object: AlertObject;
-  problem_type: AlertProblemType;
+  source: SourceSystem;
+  object: IncidentObject;
+  parent_object: IncidentObject;
+  problem_type: IncidentProblemType;
 }
 
-export interface AlertMetadata {
-  alertSources: AlertSource[];
-  objectTypes: AlertObjectType[];
-  parentObjects: AlertObject[];
-  problemTypes: AlertProblemType[];
+export type IncidentActiveBody = {
+  active: boolean;
+};
+
+export type IncidentTicketUrlBody = {
+  ticket_url: string;
+};
+
+export interface IncidentMetadata {
+  sourceSystems: SourceSystem[];
+  objectTypes: IncidentObjectType[];
+  parentObjects: IncidentObject[];
+  problemTypes: IncidentProblemType[];
 }
 
 export type NotificationProfileRequest = NotificationProfileKeyed;
@@ -156,6 +164,15 @@ export type DeleteNotificationProfileRequest = Pick<NotificationProfileRequest, 
 
 export type FilterRequest = Omit<Filter, "pk">;
 export type FilterSuccessResponse = Filter;
+
+export type Timestamp = string;
+
+export type Ack = {
+  user: string;
+  timestamp: Timestamp;
+  message: string;
+  expiresAt: Timestamp | undefined | null;
+};
 
 export type Resolver<T, P> = (data: T) => P;
 
@@ -327,36 +344,66 @@ export class ApiClient {
       });
   }
 
-  // Alert
-  public getAllAlerts(): Promise<Alert[]> {
+  // Incident
+  // WIP TODO untested
+  public putIncident(incident: Incident): Promise<Incident> {
+    if (Date.now() % 2 === 0) {
+      return Promise.reject(new Error(`Failed to put incident`));
+    }
+    return Promise.resolve(incident);
+    // return resolveOrReject(
+    //   this.authPut<Incident, Incident>(`/api/v1/incidents/${incident.pk}`, incident),
+    //   defaultResolver,
+    //   (error) => new Error(`Failed to put incident: ${error}`),
+    // );
+  }
+
+  public putIncidentActive(pk: number, active: boolean): Promise<Incident> {
     return resolveOrReject(
-      this.authGet<Alert[], never>(`/api/v1/alerts/`),
+      this.authPut<Incident, IncidentActiveBody>(`/api/v1/incidents/${pk}/active`, { active }),
       defaultResolver,
-      (error) => new Error(`Failed to get alerts: ${error}`),
+      (error) => new Error(`Failed to put incident active: ${error}`),
     );
   }
 
-  public getActiveAlerts(): Promise<Alert[]> {
+  public putIncidentTicketUrl(pk: number, ticketUrl: string): Promise<Incident> {
     return resolveOrReject(
-      this.authGet<Alert[], never>(`/api/v1/alerts/active/`),
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      this.authPut<Incident, IncidentTicketUrlBody>(`/api/v1/incidents/${pk}/ticket_url`, { ticket_url: ticketUrl }),
       defaultResolver,
-      (error) => new Error(`Failed to get alerts: ${error}`),
+      (error) => new Error(`Failed to put incident ticket url: ${error}`),
     );
   }
 
-  public getAllAlertsMetadata(): Promise<AlertMetadata> {
+  public getAllIncidents(): Promise<Incident[]> {
     return resolveOrReject(
-      this.authGet<AlertMetadata, never>(`/api/v1/alerts/metadata/`),
+      this.authGet<Incident[], never>(`/api/v1/incidents/`),
       defaultResolver,
-      (error) => new Error(`Failed to get alerts metadata: ${error}`),
+      (error) => new Error(`Failed to get incidents: ${error}`),
     );
   }
 
-  public postFilterPreview(filterDefinition: FilterDefinition): Promise<Alert[]> {
+  public getActiveIncidents(): Promise<Incident[]> {
     return resolveOrReject(
-      this.authPost<Alert[], FilterDefinition>(`/api/v1/notificationprofiles/filterpreview/`, filterDefinition),
+      this.authGet<Incident[], never>(`/api/v1/incidents/active/`),
       defaultResolver,
-      (error) => new Error(`Failed to get filtered alerts: ${error}`),
+      (error) => new Error(`Failed to get incidents: ${error}`),
+    );
+  }
+
+  public getAllIncidentsMetadata(): Promise<IncidentMetadata> {
+    return resolveOrReject(
+      this.authGet<IncidentMetadata, never>(`/api/v1/incidents/metadata/`),
+      defaultResolver,
+      (error) => new Error(`Failed to get incidents metadata: ${error}`),
+    );
+  }
+
+  public postFilterPreview(filterDefinition: FilterDefinition): Promise<Incident[]> {
+    return resolveOrReject(
+      this.authPost<Incident[], FilterDefinition>(`/api/v1/notificationprofiles/filterpreview/`, filterDefinition),
+      defaultResolver,
+      (error) => new Error(`Failed to get filtered incidents: ${error}`),
     );
   }
 
@@ -406,28 +453,45 @@ export class ApiClient {
     );
   }
 
-  public putTimeslot(timeslotPK: TimeslotPK, name: string, timeIntervals: TimeInterval[]): Promise<Timeslot> {
+  public putTimeslot(timeslotPK: TimeslotPK, name: string, timeRecurrences: TimeRecurrence[]): Promise<Timeslot> {
     return resolveOrReject(
       this.authPut<Timeslot, Omit<Timeslot, "pk">>(`/api/v1/notificationprofiles/timeslots/${timeslotPK}`, {
         name,
         // eslint-disable-next-line
-        time_intervals: timeIntervals,
+        time_recurrences: timeRecurrences,
       }),
       defaultResolver,
       (error) => new Error(`Failed to put notificationprofile timeslot: ${error}`),
     );
   }
 
-  public postTimeslot(name: string, timeIntervals: TimeInterval[]): Promise<Timeslot> {
+  public postTimeslot(name: string, timeRecurrences: TimeRecurrence[]): Promise<Timeslot> {
     return resolveOrReject(
       this.authPost<Timeslot, Omit<Timeslot, "pk">>(`/api/v1/notificationprofiles/timeslots/`, {
         name,
         // eslint-disable-next-line
-        time_intervals: timeIntervals,
+        time_recurrences: timeRecurrences,
       }),
       defaultResolver,
       (error) => new Error(`Failed to post notificationprofile timeslot: ${error}`),
     );
+  }
+
+  // Acknowledgements
+  // TODO implement with real API connection when backend support
+  // is implemeneted.
+  public postAck(ack: Ack): Promise<Ack> {
+    if (Date.now() % 2 === 0) {
+      return Promise.reject(new Error(`Failed to post ack`));
+    }
+    return Promise.resolve(ack);
+  }
+
+  public putAck(ack: Ack): Promise<Ack> {
+    if (Date.now() % 2 === 0) {
+      return Promise.reject(new Error(`Failed to put ack`));
+    }
+    return Promise.resolve(ack);
   }
 
   private post<T, B, R = AxiosResponse<T>>(url: string, data?: B, config?: AxiosRequestConfig): Promise<R> {

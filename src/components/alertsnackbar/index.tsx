@@ -1,6 +1,9 @@
-import MaterialUISnackbar from "@material-ui/core/Snackbar";
-import Alert from "@material-ui/lab/Alert";
 import React, { useState, Dispatch, SetStateAction } from "react";
+
+import Alert from "@material-ui/lab/Alert";
+import MaterialUISnackbar from "@material-ui/core/Snackbar";
+
+import { debuglog } from "../../utils";
 
 export type AlertSnackbarSeverity = "error" | "warning" | "info" | "success";
 
@@ -11,6 +14,7 @@ export type AlertSnackbarPropsType = {
   autoHideDuration?: number;
 
   open: boolean;
+  keepOpen?: boolean;
 
   onOpen: () => void;
   onClose: () => void;
@@ -22,6 +26,7 @@ const AlertSnackbar: React.SFC<AlertSnackbarPropsType> = ({
   autoHideDuration,
 
   open,
+  keepOpen,
 
   onClose,
 }: AlertSnackbarPropsType): React.ReactElement => {
@@ -30,8 +35,14 @@ const AlertSnackbar: React.SFC<AlertSnackbarPropsType> = ({
     onClose();
   };
 
+  console.log("keepOpen", keepOpen);
+
   return (
-    <MaterialUISnackbar open={open} onClose={handleClose} autoHideDuration={autoHideDuration}>
+    <MaterialUISnackbar
+      open={open}
+      onClose={handleClose}
+      autoHideDuration={(!keepOpen && autoHideDuration) || undefined}
+    >
       <Alert elevation={6} variant="filled" severity={severity} onClose={() => handleClose()}>
         {message}
       </Alert>
@@ -48,13 +59,15 @@ export type AlertSnackbarState = {
   message: string;
   severity: AlertSnackbarSeverity;
   open: boolean;
+  keepOpen?: boolean;
 };
 
-export type UseAlertSnackbarResultType = [
-  React.ReactElement,
-  AlertSnackbarState,
-  Dispatch<SetStateAction<AlertSnackbarState>>,
-];
+export type UseAlertSnackbarResultType = {
+  incidentSnackbar: React.ReactElement;
+  state: AlertSnackbarState;
+  setState: Dispatch<SetStateAction<AlertSnackbarState>>;
+  displayAlertSnackbar: (message: string, severity?: AlertSnackbarSeverity) => void;
+};
 
 export const useAlertSnackbar = (): UseAlertSnackbarResultType => {
   const [state, setState] = useState<AlertSnackbarState>({
@@ -68,12 +81,21 @@ export const useAlertSnackbar = (): UseAlertSnackbarResultType => {
   };
 
   const onClose = () => {
-    setState((state: AlertSnackbarState) => ({ ...state, open: false }));
+    setState((state: AlertSnackbarState) => ({ ...state, open: false, keepOpen: false }));
   };
 
   const component = <AlertSnackbar onOpen={onOpen} onClose={onClose} {...state} />;
 
-  return [component, state, setState];
+  const displayAlertSnackbar = (message: string, severity?: AlertSnackbarSeverity) => {
+    if (message === state.message && severity === state.severity && state.open) return;
+
+    debuglog(`Displaying message with severity ${severity}: ${message}`);
+    setState((state: AlertSnackbarState) => {
+      return { ...state, open: true, message, severity: severity || "success", keepOpen: severity === "error" };
+    });
+  };
+
+  return { incidentSnackbar: component, state, setState, displayAlertSnackbar };
 };
 
 export default AlertSnackbar;

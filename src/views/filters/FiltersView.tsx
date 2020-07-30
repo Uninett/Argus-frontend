@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import Header from "../../components/header/Header";
-import "../../components/alerttable/alerttable.css";
+import "../../components/incidenttable/incidenttable.css";
 import FilterBuilder from "../../components/filterbuilder/FilterBuilder";
 import { withRouter } from "react-router-dom";
 import api, {
-  AlertSource,
-  AlertObjectType,
-  AlertObject,
-  AlertProblemType,
-  AlertMetadata,
+  SourceSystem,
+  IncidentObjectType,
+  IncidentObject,
+  IncidentProblemType,
+  IncidentMetadata,
   Filter,
   FilterDefinition,
   FilterPK,
@@ -18,7 +18,7 @@ import Dialog from "@material-ui/core/Dialog";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 
 import Table, { Accessor } from "../../components/table/Table";
-import AlertsPreview from "../../components/alertspreview/AlertsPreview";
+import IncidentsPreview from "../../components/incidentspreview/IncidentsPreview";
 
 import { Metadata, defaultResponse, mapToMetadata } from "../../common/filters";
 
@@ -41,17 +41,17 @@ interface FilterWithNames {
   pk: FilterPK;
   name: Name;
 
-  sources: IdNameTuple[];
+  sourceSystems: IdNameTuple[];
   objectTypes: IdNameTuple[];
   parentObjects: IdNameTuple[];
   problemTypes: IdNameTuple[];
 }
 
 type FilterDefinitionDict = {
-  sources: Dict<AlertSource>;
-  objectTypes: Dict<AlertObjectType>;
-  parentObjects: Dict<AlertObject>;
-  problemTypes: Dict<AlertProblemType>;
+  sourceSystems: Dict<SourceSystem>;
+  objectTypes: Dict<IncidentObjectType>;
+  parentObjects: Dict<IncidentObject>;
+  problemTypes: Dict<IncidentProblemType>;
 };
 
 enum IdNameField {
@@ -74,7 +74,7 @@ function filterWithNamesToDefinition(filterWithNames: FilterWithNames): FilterDe
   const idGetter = (element: IdNameTuple) => element[IdNameField.ID];
 
   return {
-    sourceIds: filterWithNames.sources.map(idGetter),
+    sourceSystemIds: filterWithNames.sourceSystems.map(idGetter),
     objectTypeIds: filterWithNames.objectTypes.map(idGetter),
     parentObjectIds: filterWithNames.parentObjects.map(idGetter),
     problemTypeIds: filterWithNames.problemTypes.map(idGetter),
@@ -83,7 +83,9 @@ function filterWithNamesToDefinition(filterWithNames: FilterWithNames): FilterDe
 
 function filterToFilterWithNames(definition: FilterDefinitionDict, filter: Filter): FilterWithNames {
   const filterDefinition: FilterDefinition = JSON.parse(filter.filter_string);
-  const sources = filterDefinition.sourceIds.map((id: string): IdNameTuple => [id, definition.sources[id].name]);
+  const sourceSystems = filterDefinition.sourceSystemIds.map(
+    (id: string): IdNameTuple => [id, definition.sourceSystems[id].name],
+  );
   const objectTypes = filterDefinition.objectTypeIds.map(
     (id: string): IdNameTuple => [id, definition.objectTypes[id].name],
   );
@@ -93,7 +95,7 @@ function filterToFilterWithNames(definition: FilterDefinitionDict, filter: Filte
   const problemTypes = filterDefinition.problemTypeIds.map(
     (id: string): IdNameTuple => [id, definition.problemTypes[id].name],
   );
-  return { pk: filter.pk, name: filter.name, sources, objectTypes, parentObjects, problemTypes };
+  return { pk: filter.pk, name: filter.name, sourceSystems, objectTypes, parentObjects, problemTypes };
 }
 
 type FilterTablePropType = {
@@ -126,7 +128,7 @@ const FilterTable: React.FC<FilterTablePropType> = ({ filters, onFilterDelete, o
 
   const columns = [
     withCell("name_col", "Filter name", "name"),
-    withCell("sources_col", "Sources", namesFrom("sources")),
+    withCell("sources_col", "Sources", namesFrom("sourceSystems")),
     withCell("objectTypes_col", "Object Types", namesFrom("objectTypes")),
     withCell("parentObjects_col", "Parent objects", namesFrom("parentObjects")),
     withCell("problemTypes_col", "Problem Types", namesFrom("problemTypes")),
@@ -152,21 +154,21 @@ type FiltersViewPropType = {
   history: any;
 };
 
-const alertSourcesResponse: Metadata[] = [];
+const sourceSystemsResponse: Metadata[] = [];
 const objectTypesResponse: Metadata[] = [];
 const parentObjectsResponse: Metadata[] = [];
 const problemTypesResponse: Metadata[] = [];
 
 const FiltersView: React.FC<FiltersViewPropType> = () => {
-  const [sourceIds, setSourceIds] = useState<Metadata[]>(defaultResponse);
+  const [sourceSystemIds, setSourceSystemIds] = useState<Metadata[]>(defaultResponse);
   const [objectTypeIds, setObjectTypeIds] = useState<Metadata[]>(defaultResponse);
   const [parentObjectIds, setParentObjectIds] = useState<Metadata[]>(defaultResponse);
   const [problemTypeIds, setProblemTypeIds] = useState<Metadata[]>(defaultResponse);
 
-  const [sources, setSources] = useState<Dict<AlertSource>>({});
-  const [objectTypes, setObjectTypes] = useState<Dict<AlertObjectType>>({});
-  const [parentObjects, setParentObjects] = useState<Dict<AlertObject>>({});
-  const [problemTypes, setProblemTypes] = useState<Dict<AlertProblemType>>({});
+  const [sourceSystems, setSourceSystems] = useState<Dict<SourceSystem>>({});
+  const [objectTypes, setObjectTypes] = useState<Dict<IncidentObjectType>>({});
+  const [parentObjects, setParentObjects] = useState<Dict<IncidentObject>>({});
+  const [problemTypes, setProblemTypes] = useState<Dict<IncidentProblemType>>({});
 
   const [loading, setLoading] = useState<boolean>(true);
   const [showDialog, setShowDialog] = useState<[boolean, string]>([false, ""]);
@@ -197,7 +199,7 @@ const FiltersView: React.FC<FiltersViewPropType> = () => {
       .postFilter(name, JSON.stringify(filter))
       .then((filter: Filter) => {
         setFilters({
-          [filter.pk]: filterToFilterWithNames({ sources, objectTypes, parentObjects, problemTypes }, filter),
+          [filter.pk]: filterToFilterWithNames({ sourceSystems, objectTypes, parentObjects, problemTypes }, filter),
           ...filters,
         });
         setShowDialog([true, "Successfully saved filter"]);
@@ -223,24 +225,24 @@ const FiltersView: React.FC<FiltersViewPropType> = () => {
 
   useEffect(() => {
     const fetchProblemTypes = async () => {
-      const alertMetadata: AlertMetadata = await api.getAllAlertsMetadata();
+      const incidentMetadata: IncidentMetadata = await api.getAllIncidentsMetadata();
 
-      const sources = reducer<AlertSource>(alertMetadata.alertSources);
-      const objectTypes = reducer<AlertObjectType>(alertMetadata.objectTypes);
-      const parentObjects = reducer<AlertObject>(alertMetadata.parentObjects);
-      const problemTypes = reducer<AlertProblemType>(alertMetadata.problemTypes);
+      const sourceSystems = reducer<SourceSystem>(incidentMetadata.sourceSystems);
+      const objectTypes = reducer<IncidentObjectType>(incidentMetadata.objectTypes);
+      const parentObjects = reducer<IncidentObject>(incidentMetadata.parentObjects);
+      const problemTypes = reducer<IncidentProblemType>(incidentMetadata.problemTypes);
 
-      setSources(sources);
+      setSourceSystems(sourceSystems);
       setObjectTypes(objectTypes);
       setParentObjects(parentObjects);
       setProblemTypes(problemTypes);
 
-      alertMetadata.alertSources.map(mapToMetadata).forEach((m: Metadata) => alertSourcesResponse.push(m));
-      alertMetadata.objectTypes.map(mapToMetadata).forEach((m: Metadata) => objectTypesResponse.push(m));
-      alertMetadata.parentObjects.map(mapToMetadata).forEach((m: Metadata) => parentObjectsResponse.push(m));
-      alertMetadata.problemTypes.map(mapToMetadata).forEach((m: Metadata) => problemTypesResponse.push(m));
+      incidentMetadata.sourceSystems.map(mapToMetadata).forEach((m: Metadata) => sourceSystemsResponse.push(m));
+      incidentMetadata.objectTypes.map(mapToMetadata).forEach((m: Metadata) => objectTypesResponse.push(m));
+      incidentMetadata.parentObjects.map(mapToMetadata).forEach((m: Metadata) => parentObjectsResponse.push(m));
+      incidentMetadata.problemTypes.map(mapToMetadata).forEach((m: Metadata) => problemTypesResponse.push(m));
 
-      setSourceIds(alertSourcesResponse);
+      setSourceSystemIds(sourceSystemsResponse);
       setParentObjectIds(parentObjectsResponse);
       setObjectTypeIds(objectTypesResponse);
       setProblemTypeIds(problemTypesResponse);
@@ -249,7 +251,7 @@ const FiltersView: React.FC<FiltersViewPropType> = () => {
       setFilters(
         reducer<FilterWithNames>(
           filters.map((filter: Filter) => {
-            return filterToFilterWithNames({ sources, objectTypes, parentObjects, problemTypes }, filter);
+            return filterToFilterWithNames({ sourceSystems, objectTypes, parentObjects, problemTypes }, filter);
           }),
         ),
       );
@@ -281,7 +283,7 @@ const FiltersView: React.FC<FiltersViewPropType> = () => {
       <h1 className={"filterHeader"}>Build custom filter </h1>
       <FilterBuilder
         onFilterPreview={(filter: FilterDefinition) => onPreviewFilterByDefinition(filter)}
-        sourceIds={sourceIds}
+        sourceSystemIds={sourceSystemIds}
         objectTypeIds={objectTypeIds}
         parentObjectIds={parentObjectIds}
         problemTypeIds={problemTypeIds}
@@ -289,7 +291,7 @@ const FiltersView: React.FC<FiltersViewPropType> = () => {
       />
       <h1 className={"filterHeader"}>Preview</h1>
       <div className="previewList">
-        <AlertsPreview key={previewFilterCounter} filter={previewFilter} />
+        <IncidentsPreview key={previewFilterCounter} filter={previewFilter} />
       </div>
     </div>
   );
