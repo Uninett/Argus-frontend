@@ -15,6 +15,9 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import EditIcon from "@material-ui/icons/Edit";
 import Grid from "@material-ui/core/Grid";
+import Paper from "@material-ui/core/Paper";
+import Box from "@material-ui/core/Box";
+import Checkbox from "@material-ui/core/Checkbox";
 
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -24,6 +27,7 @@ import Chip from "@material-ui/core/Chip";
 
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
+import CardActionArea from "@material-ui/core/CardActionArea";
 
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
@@ -32,6 +36,13 @@ import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 
 import DateFnsUtils from "@date-io/date-fns";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
+
+import MuiTable from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell, { TableCellProps } from "@material-ui/core/TableCell";
+import TableContainer from "@material-ui/core/TableContainer";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
 
 // TODO: remove incidentWithFormattedTimestamp
 // use regular incident instead.
@@ -153,6 +164,7 @@ type Tag = {
 
 type TagChipPropsType = {
   tag: Tag;
+  small?: boolean;
 };
 
 const isValidUrl = (url: string) => {
@@ -166,11 +178,19 @@ const isValidUrl = (url: string) => {
   return true;
 };
 
-const TagChip: React.FC<TagChipPropsType> = ({ tag }: TagChipPropsType) => {
+const TagChip: React.FC<TagChipPropsType> = ({ tag, small }: TagChipPropsType) => {
   if (isValidUrl(tag.value)) {
-    return <Chip label={`${tag.key}=${tag.value}`} component="a" href={tag.value} clickable />;
+    return (
+      <Chip
+        size={(small && "small") || undefined}
+        label={`${tag.key}=${tag.value}`}
+        component="a"
+        href={tag.value}
+        clickable
+      />
+    );
   }
-  return <Chip label={`${tag.key}=${tag.value}`} />;
+  return <Chip size={(small && "small") || undefined} label={`${tag.key}=${tag.value}`} />;
 };
 
 type TicketModifiableFieldPropsType = {
@@ -309,24 +329,40 @@ const AckListItem: React.FC<AckListItemPropsType> = ({ ack }: AckListItemPropsTy
 
 type ActiveItemPropsType = {
   active: boolean;
+  small?: boolean;
 };
 
-const ActiveItem: React.FC<ActiveItemPropsType> = ({ active }: ActiveItemPropsType) => {
+const ActiveItem: React.FC<ActiveItemPropsType> = ({ active, small }: ActiveItemPropsType) => {
   const classes = useStyles();
   return (
-    <Chip variant="outlined" className={active ? classes.open : classes.closed} label={active ? "Open" : "Closed"} />
+    <Chip
+      size={(small && "small") || undefined}
+      variant="outlined"
+      className={active ? classes.open : classes.closed}
+      label={active ? "Open" : "Closed"}
+    />
   );
 };
 
 type AckedItemPropsType = {
   acked: boolean;
   expiresAt?: Timestamp | null;
+  small?: boolean;
 };
 
-const AckedItem: React.FC<AckedItemPropsType> = ({ acked, expiresAt }: AckedItemPropsType) => {
+const AckedItem: React.FC<AckedItemPropsType> = ({ acked, expiresAt, small }: AckedItemPropsType) => {
   const classes = useStyles();
 
   const expiryDate = expiresAt && new Date(expiresAt);
+  if (small) {
+    return (
+      <Chip
+        size="small"
+        className={acked ? classes.acknowledged : classes.unacknowledged}
+        label={acked ? "Acked" : "Non-acked"}
+      />
+    );
+  }
   return (
     <Chip
       className={acked ? classes.acknowledged : classes.unacknowledged}
@@ -337,9 +373,10 @@ const AckedItem: React.FC<AckedItemPropsType> = ({ acked, expiresAt }: AckedItem
 
 type TicketItemPropsType = {
   ticketUrl?: string;
+  small?: boolean;
 };
 
-const TicketItem: React.FC<TicketItemPropsType> = ({ ticketUrl }: TicketItemPropsType) => {
+const TicketItem: React.FC<TicketItemPropsType> = ({ ticketUrl, small }: TicketItemPropsType) => {
   const classes = useStyles();
 
   const chipProps =
@@ -349,6 +386,18 @@ const TicketItem: React.FC<TicketItemPropsType> = ({ ticketUrl }: TicketItemProp
       clickable: true,
     }) ||
     {};
+
+  if (small) {
+    return (
+      <Chip
+        size="small"
+        variant="outlined"
+        className={ticketUrl ? classes.ticketed : classes.notticketed}
+        label={ticketUrl ? `Ticket` : "No ticket"}
+        {...chipProps}
+      />
+    );
+  }
 
   return (
     <Chip
@@ -779,6 +828,202 @@ const SourceDetailUrl = (row: { value: string; original: { details_url: string }
   );
 };
 
+type IncidentPropsType = {
+  incident: Incident;
+  onShowDetail: (incident: Incident) => void;
+};
+
+const IncidentComponent: React.FC<IncidentPropsType> = ({ incident, onShowDetail }: IncidentPropsType) => {
+  const classes = useStyles();
+
+  // TODO: copy pasted
+  const tags = [
+    { key: "test_url", value: "https://uninett.no" },
+    { key: "test_host", value: "uninett.no" },
+    { key: "host", value: "uninett.no" },
+    { key: "timestamp", value: "123123123" },
+    { key: "bytes", value: "askldfjalskdf" },
+    { key: "origin_src", value: "something.tst" },
+  ];
+
+  const selectedTags = new Set<string>(["test_url", "bytes"]);
+
+  type Column = "status" | "source" | "description" | "tags" | "actions" | "timestamp" | "argusId";
+  const columnsInOrder: Column[] = ["status", "source", "description", "tags", "actions", "timestamp", "argusId"];
+  const displayedColumns = new Set<Column>(columnsInOrder);
+
+  // displayedColumns.delete("tags");
+
+  return (
+    <Box width={1}>
+      <Card>
+        <CardActionArea onClick={() => onShowDetail(incident)}>
+          <CardContent>
+            <Grid container spacing={2} xl justify="space-evenly" direction="row" alignItems="flex-start">
+              {displayedColumns.has("status") && (
+                <Grid item container spacing={2} justify="flex-start" direction="row">
+                  <ActiveItem small active={incident.active_state} />
+                  <TicketItem small ticketUrl={incident.ticket_url} />
+                  <AckedItem small acked />
+                </Grid>
+              )}
+
+              {displayedColumns.has("argusId") && (
+                <Grid item md="auto">
+                  <Typography color="textSecondary" gutterBottom>
+                    Id
+                  </Typography>
+                  <Typography color="textSecondary">{incident.pk}</Typography>
+                </Grid>
+              )}
+
+              {displayedColumns.has("timestamp") && (
+                <Grid item md="auto">
+                  <Typography color="textSecondary" gutterBottom>
+                    Timestamp
+                  </Typography>
+                  <Typography color="textSecondary">{new Date(incident.timestamp).toLocaleString()}</Typography>
+                </Grid>
+              )}
+
+              {displayedColumns.has("source") && (
+                <Grid item md>
+                  <Typography color="textSecondary" gutterBottom>
+                    Source
+                  </Typography>
+                  <Typography color="textSecondary">{incident.source.name}</Typography>
+                </Grid>
+              )}
+
+              {displayedColumns.has("description") && (
+                <Grid item md>
+                  <Typography>Description</Typography>
+                  <Typography noWrap color="textSecondary">
+                    {incident.description}
+                  </Typography>
+                </Grid>
+              )}
+
+              {displayedColumns.has("tags") && (
+                <Grid item md>
+                  <Typography>Tags</Typography>
+                  {tags
+                    .filter((tag: Tag) => selectedTags.has(tag.key))
+                    .map((tag: Tag) => (
+                      <TagChip small key={tag.key} tag={tag} />
+                    ))}
+                </Grid>
+              )}
+            </Grid>
+          </CardContent>
+        </CardActionArea>
+      </Card>
+    </Box>
+  );
+};
+
+type MUIIncidentTablePropsType = {
+  incidents: Incident[];
+  onShowDetail: (incide: Incident) => void;
+};
+
+const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
+  incidents,
+  onShowDetail,
+}: MUIIncidentTablePropsType) => {
+  const classes = useStyles();
+  type SelectionState = "SelectedAll" | Set<Incident["pk"]>;
+  const [selectedIncidents, setSelectedIncidents] = useState<SelectionState>(new Set<Incident["pk"]>([]));
+
+  const handleRowClick = (event: React.MouseEvent<unknown>, incident: Incident) => {
+    onShowDetail(incident);
+  };
+
+  const handleToggleSelectAll = () => {
+    setSelectedIncidents((oldSelectedIncidents: SelectionState) => {
+      if (oldSelectedIncidents === "SelectedAll") {
+        return new Set<Incident["pk"]>([]);
+      }
+      return "SelectedAll";
+    });
+  };
+
+  const handleSelectIncident = (incident: Incident) => {
+    setSelectedIncidents((oldSelectedIncidents: SelectionState) => {
+      if (oldSelectedIncidents === "SelectedAll") {
+        const newSelected = new Set<Incident["pk"]>([...incidents.map((incident: Incident) => incident.pk)]);
+        newSelected.delete(incident.pk);
+        return newSelected;
+      }
+      const newSelectedIncidents = new Set<Incident["pk"]>(oldSelectedIncidents);
+      if (oldSelectedIncidents.has(incident.pk)) {
+        newSelectedIncidents.delete(incident.pk);
+      } else {
+        newSelectedIncidents.add(incident.pk);
+      }
+      return newSelectedIncidents;
+    });
+  };
+
+  return (
+    <TableContainer component={Paper}>
+      <MuiTable aria-label="incident table">
+        <TableHead>
+          <TableRow>
+            <TableCell padding="checkbox" onClick={() => handleToggleSelectAll()}>
+              <Checkbox checked={selectedIncidents === "SelectedAll"} />
+            </TableCell>
+            <TableCell>Timestamp</TableCell>
+            <TableCell>Status</TableCell>
+            <TableCell>Id</TableCell>
+            <TableCell>Source</TableCell>
+            <TableCell>Description</TableCell>
+            <TableCell>Details</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {incidents.map((incident: Incident) => {
+            const ClickableCell = (props: TableCellProps) => (
+              <TableCell onClick={(event) => handleRowClick(event, incident)} {...props} />
+            );
+
+            const isSelected = selectedIncidents === "SelectedAll" || selectedIncidents.has(incident.pk);
+
+            return (
+              <TableRow
+                hover
+                key={incident.pk}
+                selected={isSelected}
+                style={{
+                  cursor: "pointer",
+                }}
+              >
+                <TableCell padding="checkbox" onClick={() => handleSelectIncident(incident)}>
+                  <Checkbox checked={isSelected} />
+                </TableCell>
+                <ClickableCell>{new Date(incident.timestamp).toLocaleString()}</ClickableCell>
+                <ClickableCell component="th" scope="row">
+                  <ActiveItem small active={incident.active_state} />
+                  <TicketItem small ticketUrl={incident.ticket_url} />
+                  <AckedItem small acked />
+                </ClickableCell>
+                <ClickableCell>{incident.pk}</ClickableCell>
+                <ClickableCell>{incident.source.name}</ClickableCell>
+                <ClickableCell>{incident.description}</ClickableCell>
+                <TableCell>
+                  <Button className={classes.safeButton} onClick={() => onShowDetail(incident)}>
+                    Details
+                  </Button>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </MuiTable>
+    </TableContainer>
+  );
+};
+
 const IncidentTable: React.FC<IncidentsProps> = ({ incidents }: IncidentsProps) => {
   const [incidentForDetail, setIncidentForDetail] = useState<Incident | undefined>(undefined);
 
@@ -794,13 +1039,13 @@ const IncidentTable: React.FC<IncidentsProps> = ({ incidents }: IncidentsProps) 
   const timestampCellWidth: ConstraintFunction<Incident> = () =>
     calculateTableCellWidth("2015-11-14T03:04:14.387000+01:00");
 
-  const showDetail = (incident: Incident) => {
+  const handleShowDetail = (incident: Incident) => {
     setIncidentForDetail(incident);
   };
 
   const detailsAccessor: Accessor<Incident> = (row: Incident) => {
     return (
-      <Button variant="contained" onClick={() => showDetail(row)}>
+      <Button variant="contained" onClick={() => handleShowDetail(row)}>
         Details
       </Button>
     );
@@ -906,7 +1151,16 @@ const IncidentTable: React.FC<IncidentsProps> = ({ incidents }: IncidentsProps) 
             />
           </div>
         </Dialog>
-        <Table data={[...incidentsDict.values()]} columns={columns} sorted={[{ id: "timestamp_col", desc: true }]} />
+        {/*
+        <List>
+          {[...incidentsDict.values()].map((incident: Incident) => (
+            <ListItem key={incident.pk}>
+              <IncidentComponent incident={incident} onShowDetail={handleShowDetail} />
+            </ListItem>
+          ))}
+        </List>
+            */}
+        <MUIIncidentTable incidents={[...incidentsDict.values()]} onShowDetail={handleShowDetail} />
       </div>
     </ClickAwayListener>
   );
