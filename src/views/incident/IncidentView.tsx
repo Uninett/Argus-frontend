@@ -27,7 +27,7 @@ const IncidentView: React.FC<IncidentViewPropsType> = () => {
       </header>
       <h1 className={"filterHeader"}>Active Incidents </h1>
       <div className="table">
-        <IncidentTable incidents={incidents || []} noDataText={noDataText} />
+        <IncidentTable realtime incidents={incidents || []} noDataText={noDataText} />
       </div>
     </div>
   );

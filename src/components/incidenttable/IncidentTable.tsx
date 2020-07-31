@@ -819,11 +819,6 @@ const IncidentDetail: React.FC<IncidentDetailPropsType> = ({ incident, onInciden
   );
 };
 
-type IncidentsProps = {
-  incidents: Incident[];
-  noDataText: string;
-};
-
 const SourceDetailUrl = (row: { value: string; original: { details_url: string } }) => {
   return (
     <a href={row.original.details_url} rel="noopener noreferrer" target="_blank">
@@ -1102,6 +1097,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
               <TableCell>Timestamp</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Source</TableCell>
+              <TableCell>Details</TableCell>
               <TableCell>Description</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
@@ -1135,6 +1131,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                       <AckedItem small acked />
                     </ClickableCell>
                     <ClickableCell>{incident.source.name}</ClickableCell>
+                    <ClickableCell>{<a href={incident.details_url}>{incident.details_url}</a>}</ClickableCell>
                     <ClickableCell>{incident.description}</ClickableCell>
                     <TableCell>
                       <Button className={classes.safeButton} onClick={() => onShowDetail(incident)}>
@@ -1168,7 +1165,13 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
 
 type Revisioned<T> = T & { revision?: number };
 
-const IncidentTable: React.FC<IncidentsProps> = ({ incidents }: IncidentsProps) => {
+type IncidentsProps = {
+  incidents: Incident[];
+  noDataText: string;
+  realtime?: boolean;
+};
+
+const IncidentTable: React.FC<IncidentsProps> = ({ incidents, realtime }: IncidentsProps) => {
   const [incidentForDetail, setIncidentForDetail] = useState<Incident | undefined>(undefined);
 
   const incidentsDictFromProps = useMemo<Revisioned<Map<Incident["pk"], Incident>>>(
@@ -1181,6 +1184,7 @@ const IncidentTable: React.FC<IncidentsProps> = ({ incidents }: IncidentsProps) 
   );
 
   const [incidentsUpdated, setIncidentsUpdated] = useState<Revisioned<Incident[]>>(incidents);
+  const { incidentSnackbar, displayAlertSnackbar }: UseAlertSnackbarResultType = useAlertSnackbar();
 
   useEffect(() => {
     console.log("updating incidents");
@@ -1221,33 +1225,81 @@ const IncidentTable: React.FC<IncidentsProps> = ({ incidents }: IncidentsProps) 
   };
 
   useEffect(() => {
+    if (!realtime) return;
+
     const ws = new WebSocket("ws://localhost:8000/active/");
+    // cookies.set("token", token, { path: "/", secure: USE_SECURE_COOKIE });
     console.log("websocket", ws);
-    /*
-    {
-        "action": "an_async_action",
-        "request_id": 42,
-        "some": "value passed as keyword argument to action"
-    }
-  */
 
     const msg = {
       action: "subscribe",
-      // action: "list",
-      request_id: "1",
     };
     ws.onmessage = function (e) {
       const data = JSON.parse(e.data);
-      if (data.type === "modified") {
-        console.log("Modified", data);
-        const modifiedIncident: Incident = data.payload;
-        handleIncidentChange(modifiedIncident);
+      console.log("onmessage", data);
+
+      switch (data.type) {
+        case "modified":
+          const modifiedIncident: Incident = data.payload;
+          handleIncidentChange(modifiedIncident);
+          break;
+        case "created":
+          console.log("Created", data);
+          const createdIncident: Incident = data.payload;
+
+          if (!createdIncident.active_state) {
+            // TODO: how to handle this?
+            break;
+          }
+
+          setIncidentsDict((oldDict: Revisioned<Map<Incident["pk"], Incident>>) => {
+            const newDict: typeof oldDict = new Map<Incident["pk"], Incident>(oldDict);
+            newDict.revision = (newDict.revision || 1) + 1;
+            newDict.set(createdIncident.pk, createdIncident);
+            return newDict;
+          });
+          break;
+
+        case "deleted":
+          console.log("Deleted", data);
+          const deletedIncident: Incident = data.payload;
+
+          // if (!incidentsDict.has(deletedIncident.pk)) break;
+
+          setIncidentsDict((oldDict: Revisioned<Map<Incident["pk"], Incident>>) => {
+            const newDict: typeof oldDict = new Map<Incident["pk"], Incident>(oldDict);
+            newDict.revision = (newDict.revision || 1) + 1;
+            newDict.delete(deletedIncident.pk);
+            return newDict;
+          });
+          break;
+
+        case "subscribed":
+          const incidents: Incident[] = data.start_incidents;
+          setIncidentsDict((oldDict: Revisioned<Map<Incident["pk"], Incident>>) => {
+            const newDict: typeof oldDict = new Map<Incident["pk"], Incident>(oldDict);
+            newDict.revision = (newDict.revision || 1) + 1;
+            incidents.map((incident: Incident) => newDict.set(incident.pk, incident));
+            return newDict;
+          });
+          displayAlertSnackbar(`Subscribed for realtime updates`, "success");
+          break;
+
+        default:
+          displayAlertSnackbar(`Unhandled WebSockets message type: ${data.type}`, "warning");
+          break;
       }
     };
 
     ws.onopen = function (e) {
       console.log("onopen");
       ws.send(JSON.stringify(msg));
+    };
+
+    ws.onclose = function (e) {
+      console.log("onclose");
+      ws.close();
+      displayAlertSnackbar(`Realtime updates disabled`, "success");
     };
   }, []);
 
@@ -1294,7 +1346,9 @@ const IncidentTable: React.FC<IncidentsProps> = ({ incidents }: IncidentsProps) 
           ))}
         </List>
             */}
+        {realtime && <Typography>Realtime</Typography>}
         <MUIIncidentTable incidents={incidentsUpdated} onShowDetail={handleShowDetail} />
+        {incidentSnackbar}
       </div>
     </ClickAwayListener>
   );
