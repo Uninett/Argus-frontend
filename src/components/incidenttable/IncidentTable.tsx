@@ -57,6 +57,7 @@ import { useAlertSnackbar, UseAlertSnackbarResultType } from "../../components/a
 import CenterContainer from "../../components/centercontainer";
 
 import api, { Incident, Ack, Timestamp } from "../../api";
+import { BACKEND_WS_URL } from "../../config";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -1215,7 +1216,7 @@ const IncidentTable: React.FC<IncidentsProps> = ({ incidents, realtime, active }
   useEffect(() => {
     if (!realtime) return;
 
-    const ws = new WebSocket("ws://localhost:8000/active/");
+    const ws = new WebSocket(`${BACKEND_WS_URL}/active/`);
     // cookies.set("token", token, { path: "/", secure: USE_SECURE_COOKIE });
     console.log("websocket", ws);
 
