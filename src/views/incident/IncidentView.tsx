@@ -17,6 +17,7 @@ import Paper from "@material-ui/core/Paper";
 import Select from "@material-ui/core/Select";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
+import MenuItem from "@material-ui/core/MenuItem";
 
 import api, { Incident } from "../../api";
 import { useApiIncidents } from "../../api/hooks";
@@ -153,9 +154,9 @@ type IncidentViewPropsType = {};
 
 const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType) => {
   const [realtime, setRealtime] = useState<boolean>(true);
-  const [onlyShowActive, setOnlyShowActive] = useState<boolean>(true);
   const [tagsFilter, setTagsFilter] = useState<Tag[]>([]);
   const [sources, setSources] = useState<Set<string> | "AllSources">("AllSources");
+  const [show, setShow] = useState<"open" | "closed" | "both">("open");
 
   const [tags, setTags] = useState<Tag[]>([
     { key: "url", value: "https://test.test" },
@@ -165,9 +166,9 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
   const [{ result: incidents, isLoading, isError }, setPromise] = useApiIncidents();
 
   useEffect(() => {
-    if (onlyShowActive) setPromise(api.getActiveIncidents());
+    if (show === "open") setPromise(api.getActiveIncidents());
     else setPromise(api.getAllIncidents());
-  }, [setPromise, onlyShowActive]);
+  }, [setPromise, show]);
 
   const noDataText = isLoading ? LOADING_TEXT : isError ? ERROR_TEXT : NO_DATA_TEXT;
 
@@ -185,20 +186,27 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
 
     const filterOnSources = (incident: Incident) => sources === "AllSources" || sources.has(incident.source.name);
 
+    // TODO: filtering on active_state should be done in the backend API
     return (
       (incidents &&
         incidents
-          .filter((incident: Incident) => !onlyShowActive || incident.active_state)
+          .filter((incident: Incident) =>
+            show === "open" ? incident.active_state : show === "closed" ? !incident.active_state : true,
+          )
           .filter(filterOnTags)
           .filter(filterOnSources)) ||
       []
     );
-  }, [incidents, onlyShowActive, tagsFilter, sources]);
+  }, [incidents, show, tagsFilter, sources]);
 
   const sourceAlts = useMemo(
     () => [...new Set([...(incidents || []).map((incident: Incident) => incident.source.name)]).values()],
     [incidents],
   );
+
+  const handleShowChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setShow(event.target.value as "open" | "closed" | "both");
+  };
 
   return (
     <div>
@@ -210,14 +218,18 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
         <CardContent>
           <Grid container xl direction="row" justify="space-evenly" alignItems="stretch">
             <Grid item md>
-              <Typography>Show closed</Typography>
-              <Checkbox checked={!onlyShowActive} onClick={() => setOnlyShowActive((old) => !old)} />
+              <Typography>Show open/closed</Typography>
+              <Select variant="outlined" value={show} onChange={handleShowChange}>
+                <MenuItem value={"open"}>Open</MenuItem>
+                <MenuItem value={"closed"}>Closed</MenuItem>
+                <MenuItem value={"both"}>Both</MenuItem>
+              </Select>
             </Grid>
+
             <Grid item md>
               <Typography>Realtime</Typography>
               <Checkbox checked={realtime} onClick={() => setRealtime((old) => !old)} />
             </Grid>
-
             <Grid item md>
               <Typography>Sources to display</Typography>
               <SourceSelector
@@ -245,7 +257,7 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
       <div className="table">
         <IncidentTable
           realtime={realtime}
-          active={onlyShowActive}
+          active={show === "open"}
           incidents={filteredIncidents}
           noDataText={noDataText}
         />
