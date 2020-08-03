@@ -1070,10 +1070,6 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
     });
   };
 
-  const displayedIncidents = useMemo(() => {
-    return incidents.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-  }, [incidents, page, rowsPerPage]);
-
   return (
     <Paper>
       <TableToolbar selectedIncidents={selectedIncidents} />
@@ -1094,8 +1090,9 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
             </TableRow>
           </TableHead>
           <TableBody>
-            {stableSort<Incident>(displayedIncidents, getComparator<"timestamp">(order, orderBy)).map(
-              (incident: Incident) => {
+            {stableSort<Incident>(incidents, getComparator<"timestamp">(order, orderBy))
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((incident: Incident) => {
                 const ClickableCell = (props: TableCellProps) => (
                   <TableCell onClick={(event) => handleRowClick(event, incident)} {...props} />
                 );
@@ -1136,8 +1133,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                     </TableCell>
                   </TableRow>
                 );
-              },
-            )}
+              })}
           </TableBody>
         </MuiTable>
       </TableContainer>
@@ -1318,7 +1314,7 @@ const IncidentTable: React.FC<IncidentsProps> = ({ incidents, realtime, active }
                   <CloseIcon />
                 </IconButton>
                 <Typography variant="h6" className={classes.title}>
-                  Incident Details
+                  Incident {incidentForDetail && incidentForDetail.pk}
                 </Typography>
               </Toolbar>
             </AppBar>
