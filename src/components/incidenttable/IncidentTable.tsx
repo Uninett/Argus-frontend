@@ -49,16 +49,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import TablePagination from "@material-ui/core/TablePagination";
 
-// TODO: remove incidentWithFormattedTimestamp
-// use regular incident instead.
 import { useStateWithDynamicDefault, toMap, pkGetter } from "../../utils";
-import Table, {
-  Accessor,
-  getMaxColumnWidth,
-  maxWidthColumn,
-  calculateTableCellWidth,
-  ConstraintFunction,
-} from "../table/Table";
 
 import { WHITE } from "../../colorscheme";
 import { makeConfirmationButton } from "../../components/buttons/ConfirmationButton";
@@ -1169,9 +1160,10 @@ type IncidentsProps = {
   incidents: Incident[];
   noDataText: string;
   realtime?: boolean;
+  active?: boolean;
 };
 
-const IncidentTable: React.FC<IncidentsProps> = ({ incidents, realtime }: IncidentsProps) => {
+const IncidentTable: React.FC<IncidentsProps> = ({ incidents, realtime, active }: IncidentsProps) => {
   const [incidentForDetail, setIncidentForDetail] = useState<Incident | undefined>(undefined);
 
   const incidentsDictFromProps = useMemo<Revisioned<Map<Incident["pk"], Incident>>>(
@@ -1247,7 +1239,7 @@ const IncidentTable: React.FC<IncidentsProps> = ({ incidents, realtime }: Incide
           console.log("Created", data);
           const createdIncident: Incident = data.payload;
 
-          if (!createdIncident.active_state) {
+          if (active && !createdIncident.active_state) {
             // TODO: how to handle this?
             break;
           }
