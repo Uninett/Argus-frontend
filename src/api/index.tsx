@@ -278,7 +278,7 @@ export class ApiClient {
   // NotificationProfile
   public getNotificationProfile(timeslot: TimeslotPK): Promise<NotificationProfile> {
     return resolveOrReject(
-      this.authGet<NotificationProfile, GetNotificationProfileRequest>(`/api/v1/notificationprofile/${timeslot}`),
+      this.authGet<NotificationProfile, GetNotificationProfileRequest>(`/api/v1/notificationprofile/${timeslot}/`),
       defaultResolver,
       (error) => new Error(`Failed to get notification profile: ${error}`),
     );
@@ -300,7 +300,7 @@ export class ApiClient {
   ): Promise<NotificationProfile> {
     return resolveOrReject(
       this.authPut<NotificationProfileSuccessResponse, NotificationProfileRequest>(
-        `/api/v1/notificationprofiles/${timeslot}`,
+        `/api/v1/notificationprofiles/${timeslot}/`,
         {
           timeslot: timeslot,
           filters,
@@ -334,7 +334,7 @@ export class ApiClient {
 
   public deleteNotificationProfile(profile: NotificationProfilePK): Promise<boolean> {
     return this.authDelete<NotificationProfileSuccessResponse, DeleteNotificationProfileRequest>(
-      `/api/v1/notificationprofiles/${profile}`,
+      `/api/v1/notificationprofiles/${profile}/`,
     )
       .then(() => {
         return Promise.resolve(true);
@@ -360,7 +360,7 @@ export class ApiClient {
 
   public putIncidentActive(pk: number, active: boolean): Promise<Incident> {
     return resolveOrReject(
-      this.authPut<Incident, IncidentActiveBody>(`/api/v1/incidents/${pk}/active`, { active }),
+      this.authPut<Incident, IncidentActiveBody>(`/api/v1/incidents/${pk}/active/`, { active }),
       defaultResolver,
       (error) => new Error(`Failed to put incident active: ${error}`),
     );
@@ -369,7 +369,7 @@ export class ApiClient {
   public putIncidentTicketUrl(pk: number, ticketUrl: string): Promise<Incident> {
     return resolveOrReject(
       // eslint-disable-next-line @typescript-eslint/camelcase
-      this.authPut<Incident, IncidentTicketUrlBody>(`/api/v1/incidents/${pk}/ticket_url`, { ticket_url: ticketUrl }),
+      this.authPut<Incident, IncidentTicketUrlBody>(`/api/v1/incidents/${pk}/ticket_url/`, { ticket_url: ticketUrl }),
       defaultResolver,
       (error) => new Error(`Failed to put incident ticket url: ${error}`),
     );
@@ -430,7 +430,7 @@ export class ApiClient {
 
   public deleteFilter(pk: FilterPK): Promise<void> {
     return resolveOrReject(
-      this.authDelete<never, never>(`/api/v1/notificationprofiles/filters/${pk}`),
+      this.authDelete<never, never>(`/api/v1/notificationprofiles/filters/${pk}/`),
       defaultResolver,
       (error) => new Error(`Failed to delete notification filter ${pk}: ${error}`),
     );
@@ -447,7 +447,7 @@ export class ApiClient {
 
   public deleteTimeslot(timeslotPK: TimeslotPK): Promise<boolean> {
     return resolveOrReject(
-      this.authDelete<boolean, never>(`/api/v1/notificationprofiles/timeslots/${timeslotPK}`),
+      this.authDelete<boolean, never>(`/api/v1/notificationprofiles/timeslots/${timeslotPK}/`),
       () => true,
       (error) => new Error(`Failed to delete notificationprofile timeslots: ${error}`),
     );
@@ -455,7 +455,7 @@ export class ApiClient {
 
   public putTimeslot(timeslotPK: TimeslotPK, name: string, timeRecurrences: TimeRecurrence[]): Promise<Timeslot> {
     return resolveOrReject(
-      this.authPut<Timeslot, Omit<Timeslot, "pk">>(`/api/v1/notificationprofiles/timeslots/${timeslotPK}`, {
+      this.authPut<Timeslot, Omit<Timeslot, "pk">>(`/api/v1/notificationprofiles/timeslots/${timeslotPK}/`, {
         name,
         // eslint-disable-next-line
         time_recurrences: timeRecurrences,
