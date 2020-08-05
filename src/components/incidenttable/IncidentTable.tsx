@@ -586,7 +586,7 @@ const IncidentDetail: React.FC<IncidentDetailPropsType> = ({ incident, onInciden
   const classes = useStyles();
 
   // const [ticketUrl, setTicketUrl] = useState<string | undefined>(incident && incident.ticket_url);
-  // const [active, setActive] = useState<boolean>((incident && incident.active_state) || false);
+  // const [active, setActive] = useState<boolean>((incident && incident.active) || false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { incidentSnackbar, displayAlertSnackbar }: UseAlertSnackbarResultType = useAlertSnackbar();
   // TODO: handle close message
@@ -678,7 +678,7 @@ const IncidentDetail: React.FC<IncidentDetailPropsType> = ({ incident, onInciden
                   Status
                 </Typography>
                 <CenterContainer>
-                  <ActiveItem active={incident.active_state} />
+                  <ActiveItem active={incident.active} />
                   <AckedItem acked={true} expiresAt={ackExpiryDate} />
                   <TicketItem ticketUrl={incident.ticket_url} />
                 </CenterContainer>
@@ -686,7 +686,7 @@ const IncidentDetail: React.FC<IncidentDetailPropsType> = ({ incident, onInciden
             </Card>
           </Grid>
 
-          {!incident.active_state && (
+          {!incident.active && (
             <Grid item>
               <Card>
                 <CardContent>
@@ -726,7 +726,7 @@ const IncidentDetail: React.FC<IncidentDetailPropsType> = ({ incident, onInciden
                 </Typography>
                 <List>
                   <IncidentDetailListItem title="Description" detail={incident.description} />
-                  <IncidentDetailListItem title="Timestamp" detail={incident.timestamp} />
+                  <IncidentDetailListItem title="Start time" detail={incident.start_time} />
                   <IncidentDetailListItem title="Source" detail={incident.source.name} />
                   <IncidentDetailListItem
                     title="Details URL"
@@ -751,7 +751,7 @@ const IncidentDetail: React.FC<IncidentDetailPropsType> = ({ incident, onInciden
                   <ListItem>
                     <CenterContainer>
                       <ManualClose
-                        active={incident.active_state}
+                        active={incident.active}
                         onManualClose={handleManualClose}
                         onManualOpen={handleManualOpen}
                       />
@@ -854,7 +854,7 @@ const IncidentComponent: React.FC<IncidentPropsType> = ({ incident, onShowDetail
             <Grid container spacing={2} xl justify="space-evenly" direction="row" alignItems="flex-start">
               {displayedColumns.has("status") && (
                 <Grid item container spacing={2} justify="flex-start" direction="row">
-                  <ActiveItem small active={incident.active_state} />
+                  <ActiveItem small active={incident.active} />
                   <TicketItem small ticketUrl={incident.ticket_url} />
                   <AckedItem small acked />
                 </Grid>
@@ -872,9 +872,9 @@ const IncidentComponent: React.FC<IncidentPropsType> = ({ incident, onShowDetail
               {displayedColumns.has("timestamp") && (
                 <Grid item md="auto">
                   <Typography color="textSecondary" gutterBottom>
-                    Timestamp
+                    Start time
                   </Typography>
-                  <Typography color="textSecondary">{new Date(incident.timestamp).toLocaleString()}</Typography>
+                  <Typography color="textSecondary">{new Date(incident.start_time).toLocaleString()}</Typography>
                 </Grid>
               )}
 
@@ -1024,7 +1024,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
   const [page, setPage] = useState<number>(0);
 
   const [order, setOrder] = React.useState<Order>("desc");
-  const [orderBy, setOrderBy] = React.useState<any>("timestamp");
+  const [orderBy, setOrderBy] = React.useState<any>("start_time");
 
   const resetSelectedIncidents = () => {
     setSelectedIncidents(new Set<Incident["pk"]>());
@@ -1091,7 +1091,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
             </TableRow>
           </TableHead>
           <TableBody>
-            {stableSort<Incident>(incidents, getComparator<"timestamp">(order, orderBy))
+            {stableSort<Incident>(incidents, getComparator<"start_time">(order, orderBy))
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((incident: Incident) => {
                 const ClickableCell = (props: TableCellProps) => (
@@ -1113,9 +1113,9 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                       <Checkbox checked={isSelected} />
                     </TableCell>
                     <ClickableCell>{incident.pk}</ClickableCell>
-                    <ClickableCell>{new Date(incident.timestamp).toLocaleString()}</ClickableCell>
+                    <ClickableCell>{new Date(incident.start_time).toLocaleString()}</ClickableCell>
                     <ClickableCell component="th" scope="row">
-                      <ActiveItem small active={incident.active_state} />
+                      <ActiveItem small active={incident.active} />
                       <TicketItem small ticketUrl={incident.ticket_url} />
                       <AckedItem small acked />
                     </ClickableCell>
@@ -1194,8 +1194,8 @@ const IncidentTable: React.FC<IncidentsProps> = ({ incidents, realtime, active }
     setIncidentsDict((oldDict: Revisioned<Map<Incident["pk"], Incident>>) => {
       const newDict: typeof oldDict = new Map<Incident["pk"], Incident>(oldDict);
       const oldIncident = oldDict.get(incident.pk);
-      if (!oldIncident || incident.active_state != oldIncident.active_state) {
-        if (!incident.active_state) {
+      if (!oldIncident || incident.active != oldIncident.active) {
+        if (!incident.active) {
           // closed
           newDict.delete(incident.pk);
         } else {
@@ -1236,7 +1236,7 @@ const IncidentTable: React.FC<IncidentsProps> = ({ incidents, realtime, active }
           console.log("Created", data);
           const createdIncident: Incident = data.payload;
 
-          if (active && !createdIncident.active_state) {
+          if (active && !createdIncident.active) {
             // TODO: how to handle this?
             break;
           }

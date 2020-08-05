@@ -186,12 +186,12 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
 
     const filterOnSources = (incident: Incident) => sources === "AllSources" || sources.has(incident.source.name);
 
-    // TODO: filtering on active_state should be done in the backend API
+    // TODO: filtering on active should be done in the backend API
     return (
       (incidents &&
         incidents
           .filter((incident: Incident) =>
-            show === "open" ? incident.active_state : show === "closed" ? !incident.active_state : true,
+            show === "open" ? incident.active : show === "closed" ? !incident.active : true,
           )
           .filter(filterOnTags)
           .filter(filterOnSources)) ||

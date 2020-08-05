@@ -13,7 +13,7 @@ export interface IncidentWithFormattedTimestamp extends Incident {
 export function incidentWithFormattedTimestamp(incident: Incident): IncidentWithFormattedTimestamp {
   return {
     ...incident,
-    formattedTimestamp: moment(incident.timestamp).format("YYYY.MM.DD  hh:mm:ss"),
+    formattedTimestamp: moment(incident.start_time).format("YYYY.MM.DD  hh:mm:ss"),
   };
 }
 

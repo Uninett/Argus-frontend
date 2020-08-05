@@ -129,12 +129,14 @@ export interface IncidentProblemType {
 
 export interface Incident {
   pk: number;
-  timestamp: string;
+  start_time: string;
+  end_time?: string;
+  stateful: boolean;
   incident_id: string;
   details_url: string;
   description: string;
   ticket_url: string;
-  active_state: boolean;
+  active: boolean;
 
   source: SourceSystem;
   object: IncidentObject;
