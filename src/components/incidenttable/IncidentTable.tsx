@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useMemo } from "react";
-import "react-table/react-table.css";
 
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";

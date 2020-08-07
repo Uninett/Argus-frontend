@@ -1,7 +1,38 @@
 import React from "react";
 import Chip from "@material-ui/core/Chip";
-import { useStyles } from "./styles";
 import { Timestamp } from "../../api";
+
+import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
+import { WHITE } from "../../colorscheme";
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    closed: {
+      background: theme.palette.success.main,
+      color: WHITE,
+    },
+    open: {
+      background: theme.palette.warning.main,
+      color: WHITE,
+    },
+    acknowledged: {
+      background: theme.palette.success.main,
+      color: WHITE,
+    },
+    unacknowledged: {
+      background: theme.palette.warning.main,
+      color: WHITE,
+    },
+    notticketed: {
+      background: theme.palette.warning.main,
+      color: WHITE,
+    },
+    ticketed: {
+      background: theme.palette.success.main,
+      color: WHITE,
+    },
+  }),
+);
 
 export type ActiveItemPropsType = {
   active: boolean;

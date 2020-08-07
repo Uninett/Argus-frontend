@@ -28,30 +28,6 @@ export const useStyles = makeStyles((theme: Theme) =>
       background: theme.palette.primary.main,
       color: WHITE,
     },
-    closed: {
-      background: theme.palette.success.main,
-      color: WHITE,
-    },
-    open: {
-      background: theme.palette.warning.main,
-      color: WHITE,
-    },
-    acknowledged: {
-      background: theme.palette.success.main,
-      color: WHITE,
-    },
-    unacknowledged: {
-      background: theme.palette.warning.main,
-      color: WHITE,
-    },
-    notticketed: {
-      background: theme.palette.warning.main,
-      color: WHITE,
-    },
-    ticketed: {
-      background: theme.palette.success.main,
-      color: WHITE,
-    },
     message: {
       backgroundColor: theme.palette.background.paper,
       boxShadow: theme.shadows[2],
