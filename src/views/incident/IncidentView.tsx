@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import "./IncidentView.css";
 import Header from "../../components/header/Header";
 import IncidentTable from "../../components/incidenttable/IncidentTable";
@@ -12,8 +12,6 @@ import CardContent from "@material-ui/core/CardContent";
 import Grid from "@material-ui/core/Grid";
 
 import Typography from "@material-ui/core/Typography";
-import Chip from "@material-ui/core/Chip";
-import Paper from "@material-ui/core/Paper";
 import Select from "@material-ui/core/Select";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
@@ -27,22 +25,6 @@ import { LOADING_TEXT, ERROR_TEXT, NO_DATA_TEXT } from "../../constants";
 type Tag = {
   key: string;
   value: string;
-};
-
-type TagListPropsType = {
-  tags: Tag[];
-};
-
-const TagList: React.FC<TagListPropsType> = ({ tags }: TagListPropsType) => {
-  const makeLabel = (tag: Tag) => `${tag.key}=${tag.value}`;
-
-  return (
-    <>
-      {tags.map((tag: Tag) => (
-        <Chip key={tag.key} size="small" label={makeLabel(tag)} />
-      ))}
-    </>
-  );
 };
 
 type SourceSelectorPropsType = {
@@ -110,7 +92,7 @@ const TagSelector: React.FC<TagSelectorPropsType> = ({ tags, onSelectionChange }
 
   useEffect(() => {
     onSelectionChange(selectValue.map(toTag));
-  }, [selectValue]);
+  }, [selectValue, onSelectionChange]);
 
   return (
     <Autocomplete
@@ -158,6 +140,7 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
   const [sources, setSources] = useState<Set<string> | "AllSources">("AllSources");
   const [show, setShow] = useState<"open" | "closed" | "both">("open");
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [tags, setTags] = useState<Tag[]>([
     { key: "url", value: "https://test.test" },
     { key: "host", value: "localhost" },
@@ -245,10 +228,10 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
               <Typography>Tags filter</Typography>
               <TagSelector
                 tags={tags}
-                onSelectionChange={(selection: Tag[]) => {
+                onSelectionChange={useCallback((selection: Tag[]) => {
                   console.log("selection changed", selection);
                   setTagsFilter(selection);
-                }}
+                }, [])}
               />
             </Grid>
           </Grid>
