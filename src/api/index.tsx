@@ -134,7 +134,7 @@ export interface Incident {
   details_url: string;
   description: string;
   ticket_url: string;
-  active_state: boolean;
+  open: boolean;
   acked: boolean;
 
   source: SourceSystem;
@@ -428,9 +428,9 @@ export class ApiClient {
     );
   }
 
-  public getActiveIncidents(): Promise<Incident[]> {
+  public getOpenIncidents(): Promise<Incident[]> {
     return resolveOrReject(
-      this.authGet<Incident[], never>(`/api/v1/incidents/active/`),
+      this.authGet<Incident[], never>(`/api/v1/incidents/open/`),
       defaultResolver,
       (error) => new Error(`Failed to get incidents: ${error}`),
     );

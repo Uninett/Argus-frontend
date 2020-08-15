@@ -303,14 +303,14 @@ const AckListItem: React.FC<AckListItemPropsType> = ({ ack }: AckListItemPropsTy
   );
 };
 
-type ActiveItemPropsType = {
-  active: boolean;
+type OpenItemPropsType = {
+  open: boolean;
 };
 
-const ActiveItem: React.FC<ActiveItemPropsType> = ({ active }: ActiveItemPropsType) => {
+const OpenItem: React.FC<OpenItemPropsType> = ({ open }: OpenItemPropsType) => {
   const classes = useStyles();
   return (
-    <Chip variant="outlined" className={active ? classes.open : classes.closed} label={active ? "Open" : "Closed"} />
+    <Chip variant="outlined" className={open ? classes.open : classes.closed} label={open ? "Open" : "Closed"} />
   );
 };
 
@@ -441,15 +441,15 @@ const SignOffAction: React.FC<SignOffActionPropsType> = ({
 };
 
 type ManualClosePropsType = {
-  active: boolean;
+  open: boolean;
   onManualClose: (msg: string) => void;
   onManualOpen: () => void;
 };
 
-const ManualClose: React.FC<ManualClosePropsType> = ({ active, onManualClose, onManualOpen }: ManualClosePropsType) => {
+const ManualClose: React.FC<ManualClosePropsType> = ({ open, onManualClose, onManualOpen }: ManualClosePropsType) => {
   const classes = useStyles();
 
-  if (active) {
+  if (open) {
     return (
       <SignOffAction
         dialogTitle="Manually close incident"
@@ -536,7 +536,7 @@ const IncidentDetail: React.FC<IncidentDetailPropsType> = ({ incident, onInciden
   const classes = useStyles();
 
   // const [ticketUrl, setTicketUrl] = useState<string | undefined>(incident && incident.ticket_url);
-  // const [active, setActive] = useState<boolean>((incident && incident.active_state) || false);
+  // const [open, setOpen] = useState<boolean>((incident && incident.open) || false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { incidentSnackbar, displayAlertSnackbar }: UseAlertSnackbarResultType = useAlertSnackbar();
   // TODO: handle close message
@@ -649,7 +649,7 @@ const IncidentDetail: React.FC<IncidentDetailPropsType> = ({ incident, onInciden
                   Status
                 </Typography>
                 <CenterContainer>
-                  <ActiveItem active={incident.active_state} />
+                  <OpenItem open={incident.open} />
                   <AckedItem acked={true} expiration={ackExpiryDate} />
                   <TicketItem ticketUrl={incident.ticket_url} />
                 </CenterContainer>
@@ -657,7 +657,7 @@ const IncidentDetail: React.FC<IncidentDetailPropsType> = ({ incident, onInciden
             </Card>
           </Grid>
 
-          {!incident.active_state && (
+          {!incident.open && (
             <Grid item>
               <Card>
                 <CardContent>
@@ -722,7 +722,7 @@ const IncidentDetail: React.FC<IncidentDetailPropsType> = ({ incident, onInciden
                   <ListItem>
                     <CenterContainer>
                       <ManualClose
-                        active={incident.active_state}
+                        open={incident.open}
                         onManualClose={handleManualClose}
                         onManualOpen={handleManualOpen}
                       />
@@ -872,8 +872,8 @@ const IncidentTable: React.FC<IncidentsProps> = ({ incidents }: IncidentsProps) 
     setIncidentsDict((oldDict: Map<Incident["pk"], Incident>) => {
       const newDict = new Map<Incident["pk"], Incident>(oldDict);
       const oldIncident = oldDict.get(incident.pk);
-      if (!oldIncident || incident.active_state != oldIncident.active_state) {
-        if (!incident.active_state) {
+      if (!oldIncident || incident.open != oldIncident.open) {
+        if (!incident.open) {
           // closed
           newDict.delete(incident.pk);
         } else {
