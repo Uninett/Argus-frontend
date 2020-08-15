@@ -18,6 +18,7 @@ class Auth {
     if (callback) callback();
   }
   logout(callback?: () => void) {
+    // TODO: log out using `api.postLogout()`
     this.authenticated = false;
     this._token = undefined;
     cookies.remove("token");

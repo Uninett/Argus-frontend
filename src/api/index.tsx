@@ -300,7 +300,7 @@ export class ApiClient {
   }
 
   public postLogout(): Promise<void> {
-    return resolveOrReject(this.authGet<void, {}>("/api/v1/auth/logout/"), defaultResolver, defaultError);
+    return resolveOrReject(this.authPost<void, {}>("/api/v1/auth/logout/"), defaultResolver, defaultError);
   }
 
   // authUser: returns the information about an authenticated user
