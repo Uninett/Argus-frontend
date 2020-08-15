@@ -135,6 +135,7 @@ export interface Incident {
   description: string;
   ticket_url: string;
   active_state: boolean;
+  acked: boolean;
 
   source: SourceSystem;
   object: IncidentObject;
@@ -195,11 +196,19 @@ export type DeleteNotificationProfileRequest = Pick<NotificationProfileRequest, 
 export type FilterRequest = Omit<Filter, "pk">;
 export type FilterSuccessResponse = Filter;
 
-export type Ack = {
-  user: string;
-  timestamp: Timestamp;
-  message: string;
-  expiresAt: Timestamp | undefined | null;
+export interface Acknowledgement {
+  pk: number;
+  event: Event;
+  expiration: Timestamp | undefined | null;
+}
+
+export type AcknowledgementEventBody = {
+  description: string;
+};
+
+export type AcknowledgementBody = {
+  event: AcknowledgementEventBody;
+  expiration: Timestamp | undefined | null;
 };
 
 export type Resolver<T, P> = (data: T) => P;
@@ -514,20 +523,12 @@ export class ApiClient {
   }
 
   // Acknowledgements
-  // TODO implement with real API connection when backend support
-  // is implemeneted.
-  public postAck(ack: Ack): Promise<Ack> {
-    if (Date.now() % 2 === 0) {
-      return Promise.reject(new Error(`Failed to post ack`));
-    }
-    return Promise.resolve(ack);
-  }
-
-  public putAck(ack: Ack): Promise<Ack> {
-    if (Date.now() % 2 === 0) {
-      return Promise.reject(new Error(`Failed to put ack`));
-    }
-    return Promise.resolve(ack);
+  public postAck(incidentPK: number, ack: AcknowledgementBody): Promise<Acknowledgement> {
+    return resolveOrReject(
+        this.authPost<Acknowledgement, AcknowledgementBody>(`/api/v1/incidents/${incidentPK}/acks/`, ack),
+        defaultResolver,
+        (error) => new Error(`Failed to post incident ack: ${error}`),
+    );
   }
 
   private post<T, B, R = AxiosResponse<T>>(url: string, data?: B, config?: AxiosRequestConfig): Promise<R> {

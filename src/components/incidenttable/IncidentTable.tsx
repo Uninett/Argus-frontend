@@ -49,7 +49,7 @@ import { makeConfirmationButton } from "../../components/buttons/ConfirmationBut
 import { useAlertSnackbar, UseAlertSnackbarResultType } from "../../components/alertsnackbar";
 import CenterContainer from "../../components/centercontainer";
 
-import api, { Incident, Event, EventType, Ack, Timestamp } from "../../api";
+import api, { Incident, Event, EventType, Acknowledgement, AcknowledgementBody, Timestamp } from "../../api";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -225,7 +225,7 @@ const TicketModifiableField: React.FC<TicketModifiableFieldPropsType> = ({
 
 type SignedMessagePropsType = {
   message: string;
-  user: string;
+  user: number;
   timestamp: Timestamp;
 
   content?: React.ReactNode;
@@ -261,20 +261,20 @@ const SignedMessage: React.FC<SignedMessagePropsType> = ({
 };
 
 type AckListItemPropsType = {
-  ack: Ack;
+  ack: Acknowledgement;
 };
 
 const AckListItem: React.FC<AckListItemPropsType> = ({ ack }: AckListItemPropsType) => {
   const classes = useStyles();
 
-  const ackDate = new Date(ack.timestamp);
+  const ackDate = new Date(ack.event.timestamp);
   const formattedAckDate = ackDate.toLocaleString();
 
   let hasExpired = false;
   let expiresMessage;
-  if (ack.expiresAt) {
-    const date = new Date(ack.expiresAt);
-    if (Date.parse(ack.expiresAt) < Date.now()) {
+  if (ack.expiration) {
+    const date = new Date(ack.expiration);
+    if (Date.parse(ack.expiration) < Date.now()) {
       expiresMessage = `Expired ${date.toLocaleString()}`;
       hasExpired = true;
     } else {
@@ -285,15 +285,15 @@ const AckListItem: React.FC<AckListItemPropsType> = ({ ack }: AckListItemPropsTy
   return (
     <div className={classes.message}>
       <SignedMessage
-        message={ack.message}
+        message={ack.event.description}
         timestamp={formattedAckDate}
-        user={ack.user}
+        user={ack.event.actor}
         content={
           <ListItemText
             primary={expiresMessage || ""}
             secondary={
               <Typography paragraph style={{ textDecoration: hasExpired ? "line-through" : "none" }}>
-                {ack.message}
+                {ack.event.description}
               </Typography>
             }
           />
@@ -316,13 +316,13 @@ const ActiveItem: React.FC<ActiveItemPropsType> = ({ active }: ActiveItemPropsTy
 
 type AckedItemPropsType = {
   acked: boolean;
-  expiresAt?: Timestamp | null;
+  expiration?: Timestamp | null;
 };
 
-const AckedItem: React.FC<AckedItemPropsType> = ({ acked, expiresAt }: AckedItemPropsType) => {
+const AckedItem: React.FC<AckedItemPropsType> = ({ acked, expiration }: AckedItemPropsType) => {
   const classes = useStyles();
 
-  const expiryDate = expiresAt && new Date(expiresAt);
+  const expiryDate = expiration && new Date(expiration);
   return (
     <Chip
       className={acked ? classes.acknowledged : classes.unacknowledged}
@@ -478,7 +478,7 @@ const ManualClose: React.FC<ManualClosePropsType> = ({ active, onManualClose, on
 };
 
 type CreateAckPropsType = {
-  onSubmitAck: (ack: Ack) => void;
+  onSubmitAck: (ack: AcknowledgementBody) => void;
 };
 
 const CreateAck: React.FC<CreateAckPropsType> = ({ onSubmitAck }: CreateAckPropsType) => {
@@ -487,10 +487,10 @@ const CreateAck: React.FC<CreateAckPropsType> = ({ onSubmitAck }: CreateAckProps
   const handleSubmit = (msg: string) => {
     // TODO: switch to use API when implemented in backend
     onSubmitAck({
-      user: "test",
-      message: msg,
-      timestamp: new Date().toUTCString(),
-      expiresAt: selectedDate && selectedDate.toUTCString(),
+      event: {
+        description: msg,
+      },
+      expiration: selectedDate && selectedDate.toUTCString(),
     });
   };
 
@@ -545,57 +545,55 @@ const IncidentDetail: React.FC<IncidentDetailPropsType> = ({ incident, onInciden
     pk: 1,
     incident: 1,
     actor: 2,
-    timestamp: "2011-11-11T11:11:11+02:00",
+    timestamp: "2020-01-14T03:04:14.387000+01:00",
     type: {
-      value: EventType.INCIDENT_START,
-      display: "Incident start",
+      value: EventType.ACKNOWLEDGE,
+      display: "Acknowledge",
     },
-    description: "",
+    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris vulputate id erat non pretium.",
   };
   const defaultEvent2 = {
     pk: 2,
     incident: 1,
     actor: 1,
-    timestamp: "2011-11-12T11:11:11+02:00",
+    timestamp: "2020-01-15T03:04:14.387000+01:00",
     type: {
-      value: EventType.INCIDENT_END,
-      display: "Incident end",
+      value: EventType.ACKNOWLEDGE,
+      display: "Acknowledge",
     },
-    description: "",
+    description: "Ack ack",
   };
 
   const defaultAcks = [
     {
-      user: "testuser2",
-      timestamp: "2020-01-14T03:04:14.387000+01:00",
-      message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris vulputate id erat non pretium.",
-      expiresAt: "2020-02-14T03:04:14.387000+01:00",
+      pk: 1,
+      event: defaultEvent1,
+      expiration: "2020-02-14T15:04:14.387000+01:00",
     },
     {
-      user: "testuser",
-      timestamp: "2020-01-15T03:04:14.387000+01:00",
-      message: "Ack ack",
-      expiresAt: null,
+      pk: 2,
+      event: defaultEvent2,
+      expiration: null,
     },
   ];
 
-  const [acks, setAcks] = useState<Ack[]>(defaultAcks);
+  const [acks, setAcks] = useState<Acknowledgement[]>(defaultAcks);
 
-  const chronoAcks = useMemo<Ack[]>(() => {
-    return [...acks].sort((first: Ack, second: Ack) => {
-      const firstTime = Date.parse(first.timestamp);
-      const secondTime = Date.parse(second.timestamp);
+  const chronoAcks = useMemo<Acknowledgement[]>(() => {
+    return [...acks].sort((first: Acknowledgement, second: Acknowledgement) => {
+      const firstTime = Date.parse(first.event.timestamp);
+      const secondTime = Date.parse(second.event.timestamp);
       if (firstTime < secondTime) {
         return 1;
       } else if (firstTime > secondTime) {
         return -1;
       }
-      if (first.expiresAt && second.expiresAt) {
-        const firstExpires = Date.parse(first.expiresAt);
-        const secondExpires = Date.parse(second.expiresAt);
+      if (first.expiration && second.expiration) {
+        const firstExpires = Date.parse(first.expiration);
+        const secondExpires = Date.parse(second.expiration);
         return firstExpires < secondExpires ? 1 : firstExpires > secondExpires ? -1 : 0;
       }
-      return first.expiresAt ? 1 : -1;
+      return first.expiration ? 1 : -1;
     });
   }, [acks]);
 
@@ -652,7 +650,7 @@ const IncidentDetail: React.FC<IncidentDetailPropsType> = ({ incident, onInciden
                 </Typography>
                 <CenterContainer>
                   <ActiveItem active={incident.active_state} />
-                  <AckedItem acked={true} expiresAt={ackExpiryDate} />
+                  <AckedItem acked={true} expiration={ackExpiryDate} />
                   <TicketItem ticketUrl={incident.ticket_url} />
                 </CenterContainer>
               </CardContent>
@@ -670,7 +668,7 @@ const IncidentDetail: React.FC<IncidentDetailPropsType> = ({ incident, onInciden
                     message={"Incident was resolved on servicerestart"}
                     content={<Typography paragraph>Incident was resolved on servicerestart</Typography>}
                     timestamp={new Date().toUTCString()}
-                    user={"you"}
+                    user={1}
                     TextComponent={Typography}
                   />
                 </CardContent>
@@ -742,19 +740,19 @@ const IncidentDetail: React.FC<IncidentDetailPropsType> = ({ incident, onInciden
               Acknowledgements
             </Typography>
             <List>
-              {chronoAcks.map((ack: Ack) => (
-                <AckListItem key={ack.timestamp} ack={ack} />
+              {chronoAcks.map((ack: Acknowledgement) => (
+                <AckListItem key={ack.event.timestamp} ack={ack} />
               ))}
             </List>
             <CenterContainer>
               <CreateAck
                 key={acks.length}
-                onSubmitAck={(ack: Ack) => {
+                onSubmitAck={(ack: AcknowledgementBody) => {
                   // TODO: handle ack submit here
                   console.log(ack);
                   api
-                    .postAck(ack)
-                    .then((ack: Ack) => {
+                    .postAck(incident.pk, ack)
+                    .then((ack: Acknowledgement) => {
                       displayAlertSnackbar(`Submitted ack for ${incident && incident.pk}`, "success");
                       setAcks([...acks, ack]);
                     })
