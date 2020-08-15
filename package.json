@@ -19,6 +19,7 @@
     "@types/react-select": "*",
     "@types/react-table": "^6.0.0",
     "axios": "*",
+    "cross-env": "^7.0.2",
     "react": "*",
     "react-cookie": "*",
     "react-dom": "*",
@@ -30,7 +31,7 @@
     "typescript": "*"
   },
   "scripts": {
-    "start": "HTTPS=true PORT=4443 react-scripts start",
+    "start": "cross-env HTTPS=true PORT=4443 react-scripts start",
     "debug": "react-scripts start",
     "build": "react-scripts build",
     "lint": "eslint src --ext .ts,.tsx,.js",
