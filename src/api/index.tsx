@@ -304,11 +304,11 @@ export class ApiClient {
   }
 
   // authUser: returns the information about an authenticated user
-  public authGetUser(): Promise<User> {
+  public authGetCurrentUser(): Promise<User> {
     return resolveOrReject(
       this.authGet<User, {}>("/api/v1/auth/user/"),
       defaultResolver,
-      (error) => new Error(`Failed to get user: ${error}`),
+      (error) => new Error(`Failed to get current user: ${error}`),
     );
   }
 
