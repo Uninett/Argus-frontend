@@ -142,8 +142,38 @@ export interface Incident {
   problem_type: IncidentProblemType;
 }
 
-export type IncidentActiveBody = {
-  active: boolean;
+export enum EventType {
+  INCIDENT_START = "STA",
+  INCIDENT_END = "END",
+  CLOSE = "CLO",
+  REOPEN = "REO",
+  ACKNOWLEDGE = "ACK",
+  OTHER = "OTH",
+}
+
+export interface EventTypeTuple {
+  value: EventType;
+  display: string;
+}
+
+export type Timestamp = string;
+
+export interface Event {
+  pk: number;
+  incident: number;
+  actor: number;
+  timestamp: Timestamp;
+  type: EventTypeTuple;
+  description: string;
+}
+
+export type EventBody = {
+  type: EventType;
+  description: string;
+};
+
+export type EventWithoutDescriptionBody = {
+  type: EventType;
 };
 
 export type IncidentTicketUrlBody = {
@@ -164,8 +194,6 @@ export type DeleteNotificationProfileRequest = Pick<NotificationProfileRequest, 
 
 export type FilterRequest = Omit<Filter, "pk">;
 export type FilterSuccessResponse = Filter;
-
-export type Timestamp = string;
 
 export type Ack = {
   user: string;
@@ -358,11 +386,19 @@ export class ApiClient {
     // );
   }
 
-  public putIncidentActive(pk: number, active: boolean): Promise<Incident> {
+  public postIncidentReopenEvent(pk: number): Promise<Event> {
     return resolveOrReject(
-      this.authPut<Incident, IncidentActiveBody>(`/api/v1/incidents/${pk}/active`, { active }),
+      this.authPost<Event, EventWithoutDescriptionBody>(`/api/v1/incidents/${pk}/events/`, { type: EventType.REOPEN }),
       defaultResolver,
-      (error) => new Error(`Failed to put incident active: ${error}`),
+      (error) => new Error(`Failed to post incident reopen event: ${error}`),
+    );
+  }
+
+  public postIncidentCloseEvent(pk: number): Promise<Event> {
+    return resolveOrReject(
+        this.authPost<Event, EventWithoutDescriptionBody>(`/api/v1/incidents/${pk}/events/`, { type: EventType.CLOSE }),
+        defaultResolver,
+        (error) => new Error(`Failed to post incident close event: ${error}`),
     );
   }
 

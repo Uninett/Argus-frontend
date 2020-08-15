@@ -49,7 +49,7 @@ import { makeConfirmationButton } from "../../components/buttons/ConfirmationBut
 import { useAlertSnackbar, UseAlertSnackbarResultType } from "../../components/alertsnackbar";
 import CenterContainer from "../../components/centercontainer";
 
-import api, { Incident, Ack, Timestamp } from "../../api";
+import api, { Incident, Event, EventType, Ack, Timestamp } from "../../api";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -130,10 +130,6 @@ const IncidentDetailListItem: React.FC<IncidentDetailListItemPropsType> = ({
   );
 };
 
-type Event = {
-  name: string;
-};
-
 type EventListItemPropsType = {
   event: Event;
 };
@@ -141,7 +137,7 @@ type EventListItemPropsType = {
 const EventListItem: React.FC<EventListItemPropsType> = ({ event }: EventListItemPropsType) => {
   return (
     <ListItem>
-      <ListItemText primary="Name" secondary={event.name} />
+      <ListItemText primary="Name" secondary={event.type.display} />
     </ListItem>
   );
 };
@@ -545,6 +541,29 @@ const IncidentDetail: React.FC<IncidentDetailPropsType> = ({ incident, onInciden
   const { incidentSnackbar, displayAlertSnackbar }: UseAlertSnackbarResultType = useAlertSnackbar();
   // TODO: handle close message
 
+  const defaultEvent1 = {
+    pk: 1,
+    incident: 1,
+    actor: 2,
+    timestamp: "2011-11-11T11:11:11+02:00",
+    type: {
+      value: EventType.INCIDENT_START,
+      display: "Incident start",
+    },
+    description: "",
+  };
+  const defaultEvent2 = {
+    pk: 2,
+    incident: 1,
+    actor: 1,
+    timestamp: "2011-11-12T11:11:11+02:00",
+    type: {
+      value: EventType.INCIDENT_END,
+      display: "Incident end",
+    },
+    description: "",
+  };
+
   const defaultAcks = [
     {
       user: "testuser2",
@@ -584,8 +603,8 @@ const IncidentDetail: React.FC<IncidentDetailPropsType> = ({ incident, onInciden
   const handleManualClose = (msg: string) => {
     if (!incident) return;
     api // eslint-disable-next-line @typescript-eslint/camelcase
-      .putIncidentActive(incident.pk, false)
-      .then((incident: Incident) => {
+      .postIncidentCloseEvent(incident.pk)
+      .then((event: Event) => {
         displayAlertSnackbar(`Closed incident ${incident && incident.pk}`, "success");
         onIncidentChange(incident);
       })
@@ -597,8 +616,8 @@ const IncidentDetail: React.FC<IncidentDetailPropsType> = ({ incident, onInciden
   const handleManualOpen = () => {
     if (!incident) return;
     api // eslint-disable-next-line @typescript-eslint/camelcase
-      .putIncidentActive(incident.pk, true)
-      .then((incident: Incident) => {
+      .postIncidentReopenEvent(incident.pk)
+      .then((event: Event) => {
         displayAlertSnackbar(`Reopened incident ${incident && incident.pk}`, "success");
         onIncidentChange(incident);
       })
@@ -753,8 +772,8 @@ const IncidentDetail: React.FC<IncidentDetailPropsType> = ({ incident, onInciden
                   Related events
                 </Typography>
                 <List>
-                  <EventListItem event={{ name: "test event #1" }} />
-                  <EventListItem event={{ name: "test event #1" }} />
+                  <EventListItem event={defaultEvent1} />
+                  <EventListItem event={defaultEvent2} />
                 </List>
               </CardContent>
             </Card>
