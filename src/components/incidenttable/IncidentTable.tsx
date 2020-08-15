@@ -709,7 +709,7 @@ const IncidentDetail: React.FC<IncidentDetailPropsType> = ({ incident, onInciden
                     saveChange={(url?: string) => {
                       // TODO: api
                       api
-                        .putIncidentTicketUrl(incident.pk, url || "")
+                        .patchIncidentTicketUrl(incident.pk, url || "")
                         .then((incident: Incident) => {
                           displayAlertSnackbar(`Updated ticket URL for ${incident && incident.pk}`, "success");
                           onIncidentChange(incident);

@@ -411,10 +411,10 @@ export class ApiClient {
     );
   }
 
-  public putIncidentTicketUrl(pk: number, ticketUrl: string): Promise<Incident> {
+  public patchIncidentTicketUrl(pk: number, ticketUrl: string): Promise<Incident> {
     return resolveOrReject(
       // eslint-disable-next-line @typescript-eslint/camelcase
-      this.authPut<Incident, IncidentTicketUrlBody>(`/api/v1/incidents/${pk}/ticket_url`, { ticket_url: ticketUrl }),
+      this.authPatch<Incident, IncidentTicketUrlBody>(`/api/v1/incidents/${pk}/`, { ticket_url: ticketUrl }),
       defaultResolver,
       (error) => new Error(`Failed to put incident ticket url: ${error}`),
     );
@@ -564,6 +564,12 @@ export class ApiClient {
   private authPut<T, B, R = AxiosResponse<T>>(url: string, data?: B, config?: AxiosRequestConfig): Promise<R> {
     return this.mustBeAuthenticated((token: Token) =>
       this.api.put(url, data, configWithAuth(config || this.config, token)),
+    );
+  }
+
+  private authPatch<T, B, R = AxiosResponse<T>>(url: string, data?: B, config?: AxiosRequestConfig): Promise<R> {
+    return this.mustBeAuthenticated((token: Token) =>
+        this.api.patch(url, data, configWithAuth(config || this.config, token)),
     );
   }
 
