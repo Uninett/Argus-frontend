@@ -312,6 +312,14 @@ export class ApiClient {
     );
   }
 
+  public getUser(userPK: number): Promise<User> {
+    return resolveOrReject(
+        this.authGet<User, {}>(`/api/v1/auth/users/${userPK}/`),
+        defaultResolver,
+        (error) => new Error(`Failed to get user: ${error}`),
+    );
+  }
+
   // NotificationProfile
   public getNotificationProfile(timeslot: TimeslotPK): Promise<NotificationProfile> {
     return resolveOrReject(

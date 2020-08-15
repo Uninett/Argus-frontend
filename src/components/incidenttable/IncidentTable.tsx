@@ -250,6 +250,7 @@ const SignedMessage: React.FC<SignedMessagePropsType> = ({
 
       <Grid container direction="row" spacing={2}>
         <Grid item sm>
+          // TODO: get username / first+last name using `api.getUser(userPK)`
           <Component>User with PK {user}</Component>
         </Grid>
         <Grid item container sm alignItems="flex-end" justify="space-evenly">
