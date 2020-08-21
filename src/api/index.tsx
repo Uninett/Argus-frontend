@@ -134,7 +134,8 @@ export interface Incident {
   details_url: string;
   description: string;
   ticket_url: string;
-  active_state: boolean;
+  open: boolean;
+  acked: boolean;
 
   source: SourceSystem;
   object: IncidentObject;
@@ -142,8 +143,38 @@ export interface Incident {
   problem_type: IncidentProblemType;
 }
 
-export type IncidentActiveBody = {
-  active: boolean;
+export enum EventType {
+  INCIDENT_START = "STA",
+  INCIDENT_END = "END",
+  CLOSE = "CLO",
+  REOPEN = "REO",
+  ACKNOWLEDGE = "ACK",
+  OTHER = "OTH",
+}
+
+export interface EventTypeTuple {
+  value: EventType;
+  display: string;
+}
+
+export type Timestamp = string;
+
+export interface Event {
+  pk: number;
+  incident: number;
+  actor: number;
+  timestamp: Timestamp;
+  type: EventTypeTuple;
+  description: string;
+}
+
+export type EventBody = {
+  type: EventType;
+  description: string;
+};
+
+export type EventWithoutDescriptionBody = {
+  type: EventType;
 };
 
 export type IncidentTicketUrlBody = {
@@ -165,13 +196,19 @@ export type DeleteNotificationProfileRequest = Pick<NotificationProfileRequest, 
 export type FilterRequest = Omit<Filter, "pk">;
 export type FilterSuccessResponse = Filter;
 
-export type Timestamp = string;
+export interface Acknowledgement {
+  pk: number;
+  event: Event;
+  expiration: Timestamp | undefined | null;
+}
 
-export type Ack = {
-  user: string;
-  timestamp: Timestamp;
-  message: string;
-  expiresAt: Timestamp | undefined | null;
+export type AcknowledgementEventBody = {
+  description: string;
+};
+
+export type AcknowledgementBody = {
+  event: AcknowledgementEventBody;
+  expiration: Timestamp | undefined | null;
 };
 
 export type Resolver<T, P> = (data: T) => P;
@@ -263,15 +300,23 @@ export class ApiClient {
   }
 
   public postLogout(): Promise<void> {
-    return resolveOrReject(this.authGet<void, {}>("/api/v1/auth/logout/"), defaultResolver, defaultError);
+    return resolveOrReject(this.authPost<void, {}>("/api/v1/auth/logout/"), defaultResolver, defaultError);
   }
 
   // authUser: returns the information about an authenticated user
-  public authGetUser(): Promise<User> {
+  public authGetCurrentUser(): Promise<User> {
     return resolveOrReject(
       this.authGet<User, {}>("/api/v1/auth/user/"),
       defaultResolver,
-      (error) => new Error(`Failed to get user: ${error}`),
+      (error) => new Error(`Failed to get current user: ${error}`),
+    );
+  }
+
+  public getUser(userPK: number): Promise<User> {
+    return resolveOrReject(
+        this.authGet<User, {}>(`/api/v1/auth/users/${userPK}/`),
+        defaultResolver,
+        (error) => new Error(`Failed to get user: ${error}`),
     );
   }
 
@@ -358,18 +403,26 @@ export class ApiClient {
     // );
   }
 
-  public putIncidentActive(pk: number, active: boolean): Promise<Incident> {
+  public postIncidentReopenEvent(pk: number): Promise<Event> {
     return resolveOrReject(
-      this.authPut<Incident, IncidentActiveBody>(`/api/v1/incidents/${pk}/active`, { active }),
+      this.authPost<Event, EventWithoutDescriptionBody>(`/api/v1/incidents/${pk}/events/`, { type: EventType.REOPEN }),
       defaultResolver,
-      (error) => new Error(`Failed to put incident active: ${error}`),
+      (error) => new Error(`Failed to post incident reopen event: ${error}`),
     );
   }
 
-  public putIncidentTicketUrl(pk: number, ticketUrl: string): Promise<Incident> {
+  public postIncidentCloseEvent(pk: number): Promise<Event> {
+    return resolveOrReject(
+        this.authPost<Event, EventWithoutDescriptionBody>(`/api/v1/incidents/${pk}/events/`, { type: EventType.CLOSE }),
+        defaultResolver,
+        (error) => new Error(`Failed to post incident close event: ${error}`),
+    );
+  }
+
+  public patchIncidentTicketUrl(pk: number, ticketUrl: string): Promise<Incident> {
     return resolveOrReject(
       // eslint-disable-next-line @typescript-eslint/camelcase
-      this.authPut<Incident, IncidentTicketUrlBody>(`/api/v1/incidents/${pk}/ticket_url`, { ticket_url: ticketUrl }),
+      this.authPatch<Incident, IncidentTicketUrlBody>(`/api/v1/incidents/${pk}/`, { ticket_url: ticketUrl }),
       defaultResolver,
       (error) => new Error(`Failed to put incident ticket url: ${error}`),
     );
@@ -383,9 +436,9 @@ export class ApiClient {
     );
   }
 
-  public getActiveIncidents(): Promise<Incident[]> {
+  public getOpenIncidents(): Promise<Incident[]> {
     return resolveOrReject(
-      this.authGet<Incident[], never>(`/api/v1/incidents/active/`),
+      this.authGet<Incident[], never>(`/api/v1/incidents/open/`),
       defaultResolver,
       (error) => new Error(`Failed to get incidents: ${error}`),
     );
@@ -478,20 +531,12 @@ export class ApiClient {
   }
 
   // Acknowledgements
-  // TODO implement with real API connection when backend support
-  // is implemeneted.
-  public postAck(ack: Ack): Promise<Ack> {
-    if (Date.now() % 2 === 0) {
-      return Promise.reject(new Error(`Failed to post ack`));
-    }
-    return Promise.resolve(ack);
-  }
-
-  public putAck(ack: Ack): Promise<Ack> {
-    if (Date.now() % 2 === 0) {
-      return Promise.reject(new Error(`Failed to put ack`));
-    }
-    return Promise.resolve(ack);
+  public postAck(incidentPK: number, ack: AcknowledgementBody): Promise<Acknowledgement> {
+    return resolveOrReject(
+        this.authPost<Acknowledgement, AcknowledgementBody>(`/api/v1/incidents/${incidentPK}/acks/`, ack),
+        defaultResolver,
+        (error) => new Error(`Failed to post incident ack: ${error}`),
+    );
   }
 
   private post<T, B, R = AxiosResponse<T>>(url: string, data?: B, config?: AxiosRequestConfig): Promise<R> {
@@ -527,6 +572,12 @@ export class ApiClient {
   private authPut<T, B, R = AxiosResponse<T>>(url: string, data?: B, config?: AxiosRequestConfig): Promise<R> {
     return this.mustBeAuthenticated((token: Token) =>
       this.api.put(url, data, configWithAuth(config || this.config, token)),
+    );
+  }
+
+  private authPatch<T, B, R = AxiosResponse<T>>(url: string, data?: B, config?: AxiosRequestConfig): Promise<R> {
+    return this.mustBeAuthenticated((token: Token) =>
+        this.api.patch(url, data, configWithAuth(config || this.config, token)),
     );
   }
 

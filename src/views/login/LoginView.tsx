@@ -55,7 +55,7 @@ const LoginView: React.FC<LoginViewPropsType> = (props: LoginViewPropsType) => {
               <input
                 name={"username"}
                 value={username}
-                placeholder={"Email"}
+                placeholder={"Username"}
                 onChange={(e) => setUsername(e.target.value)}
               />
             </div>

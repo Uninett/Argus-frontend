@@ -49,7 +49,7 @@ import { makeConfirmationButton } from "../../components/buttons/ConfirmationBut
 import { useAlertSnackbar, UseAlertSnackbarResultType } from "../../components/alertsnackbar";
 import CenterContainer from "../../components/centercontainer";
 
-import api, { Incident, Ack, Timestamp } from "../../api";
+import api, { Incident, Event, EventType, Acknowledgement, AcknowledgementBody, Timestamp } from "../../api";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -130,10 +130,6 @@ const IncidentDetailListItem: React.FC<IncidentDetailListItemPropsType> = ({
   );
 };
 
-type Event = {
-  name: string;
-};
-
 type EventListItemPropsType = {
   event: Event;
 };
@@ -141,7 +137,7 @@ type EventListItemPropsType = {
 const EventListItem: React.FC<EventListItemPropsType> = ({ event }: EventListItemPropsType) => {
   return (
     <ListItem>
-      <ListItemText primary="Name" secondary={event.name} />
+      <ListItemText primary="Name" secondary={event.type.display} />
     </ListItem>
   );
 };
@@ -229,7 +225,7 @@ const TicketModifiableField: React.FC<TicketModifiableFieldPropsType> = ({
 
 type SignedMessagePropsType = {
   message: string;
-  user: string;
+  user: number;
   timestamp: Timestamp;
 
   content?: React.ReactNode;
@@ -254,7 +250,8 @@ const SignedMessage: React.FC<SignedMessagePropsType> = ({
 
       <Grid container direction="row" spacing={2}>
         <Grid item sm>
-          <Component>{user}</Component>
+          // TODO: get username / first+last name using `api.getUser(userPK)`
+          <Component>User with PK {user}</Component>
         </Grid>
         <Grid item container sm alignItems="flex-end" justify="space-evenly">
           <Component>{formattedAckDate}</Component>
@@ -265,20 +262,20 @@ const SignedMessage: React.FC<SignedMessagePropsType> = ({
 };
 
 type AckListItemPropsType = {
-  ack: Ack;
+  ack: Acknowledgement;
 };
 
 const AckListItem: React.FC<AckListItemPropsType> = ({ ack }: AckListItemPropsType) => {
   const classes = useStyles();
 
-  const ackDate = new Date(ack.timestamp);
+  const ackDate = new Date(ack.event.timestamp);
   const formattedAckDate = ackDate.toLocaleString();
 
   let hasExpired = false;
   let expiresMessage;
-  if (ack.expiresAt) {
-    const date = new Date(ack.expiresAt);
-    if (Date.parse(ack.expiresAt) < Date.now()) {
+  if (ack.expiration) {
+    const date = new Date(ack.expiration);
+    if (Date.parse(ack.expiration) < Date.now()) {
       expiresMessage = `Expired ${date.toLocaleString()}`;
       hasExpired = true;
     } else {
@@ -289,15 +286,15 @@ const AckListItem: React.FC<AckListItemPropsType> = ({ ack }: AckListItemPropsTy
   return (
     <div className={classes.message}>
       <SignedMessage
-        message={ack.message}
+        message={ack.event.description}
         timestamp={formattedAckDate}
-        user={ack.user}
+        user={ack.event.actor}
         content={
           <ListItemText
             primary={expiresMessage || ""}
             secondary={
               <Typography paragraph style={{ textDecoration: hasExpired ? "line-through" : "none" }}>
-                {ack.message}
+                {ack.event.description}
               </Typography>
             }
           />
@@ -307,26 +304,26 @@ const AckListItem: React.FC<AckListItemPropsType> = ({ ack }: AckListItemPropsTy
   );
 };
 
-type ActiveItemPropsType = {
-  active: boolean;
+type OpenItemPropsType = {
+  open: boolean;
 };
 
-const ActiveItem: React.FC<ActiveItemPropsType> = ({ active }: ActiveItemPropsType) => {
+const OpenItem: React.FC<OpenItemPropsType> = ({ open }: OpenItemPropsType) => {
   const classes = useStyles();
   return (
-    <Chip variant="outlined" className={active ? classes.open : classes.closed} label={active ? "Open" : "Closed"} />
+    <Chip variant="outlined" className={open ? classes.open : classes.closed} label={open ? "Open" : "Closed"} />
   );
 };
 
 type AckedItemPropsType = {
   acked: boolean;
-  expiresAt?: Timestamp | null;
+  expiration?: Timestamp | null;
 };
 
-const AckedItem: React.FC<AckedItemPropsType> = ({ acked, expiresAt }: AckedItemPropsType) => {
+const AckedItem: React.FC<AckedItemPropsType> = ({ acked, expiration }: AckedItemPropsType) => {
   const classes = useStyles();
 
-  const expiryDate = expiresAt && new Date(expiresAt);
+  const expiryDate = expiration && new Date(expiration);
   return (
     <Chip
       className={acked ? classes.acknowledged : classes.unacknowledged}
@@ -445,15 +442,15 @@ const SignOffAction: React.FC<SignOffActionPropsType> = ({
 };
 
 type ManualClosePropsType = {
-  active: boolean;
+  open: boolean;
   onManualClose: (msg: string) => void;
   onManualOpen: () => void;
 };
 
-const ManualClose: React.FC<ManualClosePropsType> = ({ active, onManualClose, onManualOpen }: ManualClosePropsType) => {
+const ManualClose: React.FC<ManualClosePropsType> = ({ open, onManualClose, onManualOpen }: ManualClosePropsType) => {
   const classes = useStyles();
 
-  if (active) {
+  if (open) {
     return (
       <SignOffAction
         dialogTitle="Manually close incident"
@@ -482,7 +479,7 @@ const ManualClose: React.FC<ManualClosePropsType> = ({ active, onManualClose, on
 };
 
 type CreateAckPropsType = {
-  onSubmitAck: (ack: Ack) => void;
+  onSubmitAck: (ack: AcknowledgementBody) => void;
 };
 
 const CreateAck: React.FC<CreateAckPropsType> = ({ onSubmitAck }: CreateAckPropsType) => {
@@ -491,10 +488,10 @@ const CreateAck: React.FC<CreateAckPropsType> = ({ onSubmitAck }: CreateAckProps
   const handleSubmit = (msg: string) => {
     // TODO: switch to use API when implemented in backend
     onSubmitAck({
-      user: "test",
-      message: msg,
-      timestamp: new Date().toUTCString(),
-      expiresAt: selectedDate && selectedDate.toUTCString(),
+      event: {
+        description: msg,
+      },
+      expiration: selectedDate && selectedDate.toUTCString(),
     });
   };
 
@@ -540,43 +537,64 @@ const IncidentDetail: React.FC<IncidentDetailPropsType> = ({ incident, onInciden
   const classes = useStyles();
 
   // const [ticketUrl, setTicketUrl] = useState<string | undefined>(incident && incident.ticket_url);
-  // const [active, setActive] = useState<boolean>((incident && incident.active_state) || false);
+  // const [open, setOpen] = useState<boolean>((incident && incident.open) || false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { incidentSnackbar, displayAlertSnackbar }: UseAlertSnackbarResultType = useAlertSnackbar();
   // TODO: handle close message
 
+  const defaultEvent1 = {
+    pk: 1,
+    incident: 1,
+    actor: 2,
+    timestamp: "2020-01-14T03:04:14.387000+01:00",
+    type: {
+      value: EventType.ACKNOWLEDGE,
+      display: "Acknowledge",
+    },
+    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris vulputate id erat non pretium.",
+  };
+  const defaultEvent2 = {
+    pk: 2,
+    incident: 1,
+    actor: 1,
+    timestamp: "2020-01-15T03:04:14.387000+01:00",
+    type: {
+      value: EventType.ACKNOWLEDGE,
+      display: "Acknowledge",
+    },
+    description: "Ack ack",
+  };
+
   const defaultAcks = [
     {
-      user: "testuser2",
-      timestamp: "2020-01-14T03:04:14.387000+01:00",
-      message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris vulputate id erat non pretium.",
-      expiresAt: "2020-02-14T03:04:14.387000+01:00",
+      pk: 1,
+      event: defaultEvent1,
+      expiration: "2020-02-14T15:04:14.387000+01:00",
     },
     {
-      user: "testuser",
-      timestamp: "2020-01-15T03:04:14.387000+01:00",
-      message: "Ack ack",
-      expiresAt: null,
+      pk: 2,
+      event: defaultEvent2,
+      expiration: null,
     },
   ];
 
-  const [acks, setAcks] = useState<Ack[]>(defaultAcks);
+  const [acks, setAcks] = useState<Acknowledgement[]>(defaultAcks);
 
-  const chronoAcks = useMemo<Ack[]>(() => {
-    return [...acks].sort((first: Ack, second: Ack) => {
-      const firstTime = Date.parse(first.timestamp);
-      const secondTime = Date.parse(second.timestamp);
+  const chronoAcks = useMemo<Acknowledgement[]>(() => {
+    return [...acks].sort((first: Acknowledgement, second: Acknowledgement) => {
+      const firstTime = Date.parse(first.event.timestamp);
+      const secondTime = Date.parse(second.event.timestamp);
       if (firstTime < secondTime) {
         return 1;
       } else if (firstTime > secondTime) {
         return -1;
       }
-      if (first.expiresAt && second.expiresAt) {
-        const firstExpires = Date.parse(first.expiresAt);
-        const secondExpires = Date.parse(second.expiresAt);
+      if (first.expiration && second.expiration) {
+        const firstExpires = Date.parse(first.expiration);
+        const secondExpires = Date.parse(second.expiration);
         return firstExpires < secondExpires ? 1 : firstExpires > secondExpires ? -1 : 0;
       }
-      return first.expiresAt ? 1 : -1;
+      return first.expiration ? 1 : -1;
     });
   }, [acks]);
 
@@ -584,8 +602,8 @@ const IncidentDetail: React.FC<IncidentDetailPropsType> = ({ incident, onInciden
   const handleManualClose = (msg: string) => {
     if (!incident) return;
     api // eslint-disable-next-line @typescript-eslint/camelcase
-      .putIncidentActive(incident.pk, false)
-      .then((incident: Incident) => {
+      .postIncidentCloseEvent(incident.pk)
+      .then((event: Event) => {
         displayAlertSnackbar(`Closed incident ${incident && incident.pk}`, "success");
         onIncidentChange(incident);
       })
@@ -597,8 +615,8 @@ const IncidentDetail: React.FC<IncidentDetailPropsType> = ({ incident, onInciden
   const handleManualOpen = () => {
     if (!incident) return;
     api // eslint-disable-next-line @typescript-eslint/camelcase
-      .putIncidentActive(incident.pk, true)
-      .then((incident: Incident) => {
+      .postIncidentReopenEvent(incident.pk)
+      .then((event: Event) => {
         displayAlertSnackbar(`Reopened incident ${incident && incident.pk}`, "success");
         onIncidentChange(incident);
       })
@@ -632,15 +650,15 @@ const IncidentDetail: React.FC<IncidentDetailPropsType> = ({ incident, onInciden
                   Status
                 </Typography>
                 <CenterContainer>
-                  <ActiveItem active={incident.active_state} />
-                  <AckedItem acked={true} expiresAt={ackExpiryDate} />
+                  <OpenItem open={incident.open} />
+                  <AckedItem acked={true} expiration={ackExpiryDate} />
                   <TicketItem ticketUrl={incident.ticket_url} />
                 </CenterContainer>
               </CardContent>
             </Card>
           </Grid>
 
-          {!incident.active_state && (
+          {!incident.open && (
             <Grid item>
               <Card>
                 <CardContent>
@@ -651,7 +669,7 @@ const IncidentDetail: React.FC<IncidentDetailPropsType> = ({ incident, onInciden
                     message={"Incident was resolved on servicerestart"}
                     content={<Typography paragraph>Incident was resolved on servicerestart</Typography>}
                     timestamp={new Date().toUTCString()}
-                    user={"you"}
+                    user={1}
                     TextComponent={Typography}
                   />
                 </CardContent>
@@ -692,7 +710,7 @@ const IncidentDetail: React.FC<IncidentDetailPropsType> = ({ incident, onInciden
                     saveChange={(url?: string) => {
                       // TODO: api
                       api
-                        .putIncidentTicketUrl(incident.pk, url || "")
+                        .patchIncidentTicketUrl(incident.pk, url || "")
                         .then((incident: Incident) => {
                           displayAlertSnackbar(`Updated ticket URL for ${incident && incident.pk}`, "success");
                           onIncidentChange(incident);
@@ -705,7 +723,7 @@ const IncidentDetail: React.FC<IncidentDetailPropsType> = ({ incident, onInciden
                   <ListItem>
                     <CenterContainer>
                       <ManualClose
-                        active={incident.active_state}
+                        open={incident.open}
                         onManualClose={handleManualClose}
                         onManualOpen={handleManualOpen}
                       />
@@ -723,19 +741,19 @@ const IncidentDetail: React.FC<IncidentDetailPropsType> = ({ incident, onInciden
               Acknowledgements
             </Typography>
             <List>
-              {chronoAcks.map((ack: Ack) => (
-                <AckListItem key={ack.timestamp} ack={ack} />
+              {chronoAcks.map((ack: Acknowledgement) => (
+                <AckListItem key={ack.event.timestamp} ack={ack} />
               ))}
             </List>
             <CenterContainer>
               <CreateAck
                 key={acks.length}
-                onSubmitAck={(ack: Ack) => {
+                onSubmitAck={(ack: AcknowledgementBody) => {
                   // TODO: handle ack submit here
                   console.log(ack);
                   api
-                    .postAck(ack)
-                    .then((ack: Ack) => {
+                    .postAck(incident.pk, ack)
+                    .then((ack: Acknowledgement) => {
                       displayAlertSnackbar(`Submitted ack for ${incident && incident.pk}`, "success");
                       setAcks([...acks, ack]);
                     })
@@ -753,8 +771,8 @@ const IncidentDetail: React.FC<IncidentDetailPropsType> = ({ incident, onInciden
                   Related events
                 </Typography>
                 <List>
-                  <EventListItem event={{ name: "test event #1" }} />
-                  <EventListItem event={{ name: "test event #1" }} />
+                  <EventListItem event={defaultEvent1} />
+                  <EventListItem event={defaultEvent2} />
                 </List>
               </CardContent>
             </Card>
@@ -855,8 +873,8 @@ const IncidentTable: React.FC<IncidentsProps> = ({ incidents }: IncidentsProps) 
     setIncidentsDict((oldDict: Map<Incident["pk"], Incident>) => {
       const newDict = new Map<Incident["pk"], Incident>(oldDict);
       const oldIncident = oldDict.get(incident.pk);
-      if (!oldIncident || incident.active_state != oldIncident.active_state) {
-        if (!incident.active_state) {
+      if (!oldIncident || incident.open != oldIncident.open) {
+        if (!incident.open) {
           // closed
           newDict.delete(incident.pk);
         } else {

@@ -24,7 +24,7 @@ const Userbutton: React.FC<UserbuttonPropsType> = (props: UserbuttonPropsType) =
             auth.logout(() => props.history.push("/login"));
           }}
         >
-          Logout
+          Log out
         </button>
       </div>
     </div>

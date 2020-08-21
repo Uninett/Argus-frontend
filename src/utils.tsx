@@ -20,7 +20,7 @@ export function incidentWithFormattedTimestamp(incident: Incident): IncidentWith
 export async function loginAndSetUser(token: Token): Promise<void> {
   return auth.login(token, () => {
     api
-      .authGetUser()
+      .authGetCurrentUser()
       .then((user: User) => {
         const userName: string = user.first_name.split(" ")[0];
         localStorage.setItem("user", userName);

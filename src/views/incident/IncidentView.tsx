@@ -15,7 +15,7 @@ const IncidentView: React.FC<IncidentViewPropsType> = () => {
   const [{ result: incidents, isLoading, isError }, setPromise] = useApiIncidents();
 
   useEffect(() => {
-    setPromise(api.getActiveIncidents());
+    setPromise(api.getOpenIncidents());
   }, [setPromise]);
 
   const noDataText = isLoading ? LOADING_TEXT : isError ? ERROR_TEXT : NO_DATA_TEXT;
@@ -25,7 +25,7 @@ const IncidentView: React.FC<IncidentViewPropsType> = () => {
       <header>
         <Header />
       </header>
-      <h1 className={"filterHeader"}>Active Incidents </h1>
+      <h1 className={"filterHeader"}>Open Incidents </h1>
       <div className="table">
         <IncidentTable incidents={incidents || []} noDataText={noDataText} />
       </div>
