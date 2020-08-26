@@ -371,6 +371,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
   const handleManualClose = (msg: string) => {
     api
       .postIncidentCloseEvent(incident.pk)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .then((event: Event) => {
         // TODO: add close event to list of events
         displayAlertSnackbar(`Closed incident ${incident && incident.pk}`, "success");
@@ -384,6 +385,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
   const handleManualOpen = () => {
     api
       .postIncidentReopenEvent(incident.pk)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .then((event: Event) => {
         // TODO: add open event to list of events
         displayAlertSnackbar(`Reopened incident ${incident && incident.pk}`, "success");

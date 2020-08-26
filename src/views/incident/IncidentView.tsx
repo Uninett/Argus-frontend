@@ -238,7 +238,7 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
       <div className="table">
         <IncidentTable
           realtime={realtime}
-          active={show === "open"}
+          open={show === "open"}
           incidents={filteredIncidents}
           noDataText={noDataText}
         />

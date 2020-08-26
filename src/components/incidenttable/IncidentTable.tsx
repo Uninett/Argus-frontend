@@ -29,7 +29,7 @@ import { useStateWithDynamicDefault, toMap, pkGetter } from "../../utils";
 
 import { useAlertSnackbar, UseAlertSnackbarResultType } from "../../components/alertsnackbar";
 
-import api, { Incident, Event, EventType, Acknowledgement, AcknowledgementBody, Timestamp } from "../../api";
+import { Incident } from "../../api";
 import { BACKEND_WS_URL } from "../../config";
 import { useStyles } from "../incident/styles";
 import { AckedItem, OpenItem, TicketItem } from "../incident/Chips";
@@ -285,10 +285,10 @@ type IncidentsProps = {
   incidents: Incident[];
   noDataText: string;
   realtime?: boolean;
-  active?: boolean;
+  open?: boolean;
 };
 
-const IncidentTable: React.FC<IncidentsProps> = ({ incidents, realtime, active }: IncidentsProps) => {
+const IncidentTable: React.FC<IncidentsProps> = ({ incidents, realtime, open }: IncidentsProps) => {
   const [incidentForDetail, setIncidentForDetail] = useState<Incident | undefined>(undefined);
 
   const incidentsDictFromProps = useMemo<Revisioned<Map<Incident["pk"], Incident>>>(
