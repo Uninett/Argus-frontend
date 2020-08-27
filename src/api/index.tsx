@@ -127,12 +127,17 @@ export interface IncidentProblemType {
   url: string;
 }
 
+export interface IncidentTag {
+  added_by: number;
+  added_time: Timestamp;
+  tag: string;
+}
+
 export interface Incident {
   pk: number;
   start_time: string;
   end_time?: string;
   stateful: boolean;
-  incident_id: string;
   details_url: string;
   description: string;
   ticket_url: string;
@@ -140,9 +145,9 @@ export interface Incident {
   acked: boolean;
 
   source: SourceSystem;
-  object: IncidentObject;
-  parent_object: IncidentObject;
-  problem_type: IncidentProblemType;
+  source_incident_id: string;
+
+  tags: IncidentTag[];
 }
 
 export enum EventType {
