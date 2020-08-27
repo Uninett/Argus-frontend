@@ -19,12 +19,14 @@ import MenuItem from "@material-ui/core/MenuItem";
 
 import api, { Incident } from "../../api";
 import { useApiIncidents } from "../../api/hooks";
+import { removeUndefined, groupBy } from "../../utils";
 
 import { LOADING_TEXT, ERROR_TEXT, NO_DATA_TEXT } from "../../constants";
 
 type Tag = {
   key: string;
   value: string;
+  original: string;
 };
 
 type SourceSelectorPropsType = {
@@ -69,7 +71,7 @@ const TagSelector: React.FC<TagSelectorPropsType> = ({ tags, onSelectionChange }
   // is probably needed.
   const toTag = (str: string): Tag => {
     const [key, value] = str.split("=", 2);
-    return { key, value };
+    return { key, value, original: str };
   };
 
   const handleSelectNew = (newValue: string[]) => {
@@ -142,8 +144,8 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [tags, setTags] = useState<Tag[]>([
-    { key: "url", value: "https://test.test" },
-    { key: "host", value: "localhost" },
+    { key: "url", value: "https://test.test", original: "url=https://test.test" },
+    { key: "host", value: "localhost", original: "host=localhost" },
   ]);
 
   const [{ result: incidents, isLoading, isError }, setPromise] = useApiIncidents();
@@ -155,30 +157,76 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
 
   const noDataText = isLoading ? LOADING_TEXT : isError ? ERROR_TEXT : NO_DATA_TEXT;
 
-  const filteredIncidents = useMemo<Incident[]>(() => {
-    // TODO: filtering on source for testing purposes.
-    const filterOnTags = (incident: Incident) => {
-      for (const tag of tagsFilter.filter((tag: Tag) => tag.key === "source")) {
-        if (incident.source.name === tag.value) {
-          return true;
+  const [incidentsMap, incidentsTags] = useMemo<
+    [Map<Incident["pk"], Incident>, Map<string, Set<Incident["pk"]>>]
+  >(() => {
+    const incidentsMap = new Map<Incident["pk"], Incident>();
+    const incidentsTags = new Map<string, Set<Incident["pk"]>>();
+    for (const incident of incidents || []) {
+      incidentsMap.set(incident.pk, incident);
+      for (const incidentTag of incident.tags) {
+        if (incidentsTags.has(incidentTag.tag)) {
+          const tagSet = incidentsTags.get(incidentTag.tag) || new Set<Incident["pk"]>();
+          tagSet.add(incident.pk);
+          incidentsTags.set(incidentTag.tag, tagSet);
+        } else {
+          incidentsTags.set(
+            incidentTag.tag,
+            new Set<Incident["pk"]>([incident.pk]),
+          );
         }
-        return false;
       }
-      return true;
+    }
+    return [incidentsMap, incidentsTags];
+  }, [incidents]);
+
+  const filteredIncidents = useMemo<Incident[]>(() => {
+    const filterOnSources = (incident: Incident) => sources === "AllSources" || sources.has(incident.source.name);
+
+    const tagsFilterByType = groupBy<Tag["key"], Tag>(tagsFilter, (elem: Tag) => elem.key);
+
+    // returns incidents matching any tag of that type
+    const getIncidentsMatchingType = (type: string): Set<Incident["pk"]> => {
+      const allMatching = new Set<Incident["pk"]>();
+
+      const tagsOfType = tagsFilterByType.get(type);
+      if (!tagsOfType) return new Set<Incident["pk"]>();
+
+      for (const tag of tagsOfType) {
+        const incidentsWithTag = incidentsTags.get(tag.original);
+        if (!incidentsWithTag) continue;
+
+        [...incidentsWithTag.values()].forEach((pk: Incident["pk"]) => allMatching.add(pk));
+      }
+      return allMatching;
     };
 
-    const filterOnSources = (incident: Incident) => sources === "AllSources" || sources.has(incident.source.name);
+    let filteredByTags: Incident[];
+    if (tagsFilter.length > 0) {
+      const matchingSets = getIncidentsMatchingType(tagsFilter[0].key);
+      if (!matchingSets) {
+        filteredByTags = [];
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        for (const [type, ...rest] of tagsFilterByType) {
+          const incidentsMatchingTag = getIncidentsMatchingType(type);
+          for (const pk of matchingSets) {
+            if (!incidentsMatchingTag.has(pk)) matchingSets.delete(pk);
+          }
+        }
+        filteredByTags = removeUndefined([...matchingSets.values()].map((pk: Incident["pk"]) => incidentsMap.get(pk)));
+      }
+    } else {
+      filteredByTags = [...incidentsMap.values()];
+    }
 
     // TODO: filtering on active should be done in the backend API
     return (
-      (incidents &&
-        incidents
-          .filter((incident: Incident) => (show === "open" ? incident.open : show === "closed" ? !incident.open : true))
-          .filter(filterOnTags)
-          .filter(filterOnSources)) ||
-      []
+      filteredByTags
+        .filter((incident: Incident) => (show === "open" ? incident.open : show === "closed" ? !incident.open : true))
+        .filter(filterOnSources) || []
     );
-  }, [incidents, show, tagsFilter, sources]);
+  }, [incidentsMap, incidentsTags, show, tagsFilter, sources]);
 
   const sourceAlts = useMemo(
     () => [...new Set([...(incidents || []).map((incident: Incident) => incident.source.name)]).values()],

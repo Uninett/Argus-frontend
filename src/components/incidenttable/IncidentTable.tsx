@@ -213,7 +213,6 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
               <TableCell>Timestamp</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Source</TableCell>
-              <TableCell>Details</TableCell>
               <TableCell>Description</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
@@ -245,10 +244,9 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                     <ClickableCell component="th" scope="row">
                       <OpenItem small open={incident.open} />
                       <TicketItem small ticketUrl={incident.ticket_url} />
-                      <AckedItem small acked />
+                      <AckedItem small acked={incident.acked} />
                     </ClickableCell>
                     <ClickableCell>{incident.source.name}</ClickableCell>
-                    <ClickableCell>{<a href={incident.details_url}>{incident.details_url}</a>}</ClickableCell>
                     <ClickableCell>{incident.description}</ClickableCell>
                     <TableCell>
                       <Button className={classes.safeButton} onClick={() => onShowDetail(incident)}>
