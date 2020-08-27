@@ -5,6 +5,8 @@ import auth from "../auth";
 import { BACKEND_URL } from "../config";
 import { ErrorType, debuglog } from "../utils";
 
+export type Timestamp = string;
+
 export interface AuthUserResponse {
   username: string;
   first_name: string;
@@ -163,8 +165,6 @@ export interface EventTypeTuple {
   value: EventType;
   display: string;
 }
-
-export type Timestamp = string;
 
 export interface Event {
   pk: number;
@@ -418,9 +418,33 @@ export class ApiClient {
     );
   }
 
-  public postIncidentCloseEvent(pk: number): Promise<Event> {
+  public getIncidentAcks(pk: number): Promise<Acknowledgement[]> {
     return resolveOrReject(
-      this.authPost<Event, EventWithoutDescriptionBody>(`/api/v1/incidents/${pk}/events/`, { type: EventType.CLOSE }),
+      this.authGet<Acknowledgement[], never>(`/api/v1/incidents/${pk}/acks/`),
+      defaultResolver,
+      (error) => new Error(`Failed to get incident acks: ${error}`),
+    );
+  }
+
+  public getIncidentEvents(pk: number): Promise<Event[]> {
+    return resolveOrReject(
+      this.authGet<Event[], never>(`/api/v1/incidents/${pk}/events/`),
+      defaultResolver,
+      (error) => new Error(`Failed to get incident events: ${error}`),
+    );
+  }
+
+  public postIncidentCloseEvent(pk: number, description?: string): Promise<Event> {
+    return resolveOrReject(
+      this.authPost<Event, EventBody | EventWithoutDescriptionBody>(
+        `/api/v1/incidents/${pk}/events/`,
+        description
+          ? {
+              type: EventType.CLOSE,
+              description,
+            }
+          : { type: EventType.CLOSE },
+      ),
       defaultResolver,
       (error) => new Error(`Failed to post incident close event: ${error}`),
     );

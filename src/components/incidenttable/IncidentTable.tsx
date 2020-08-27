@@ -244,7 +244,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                     <ClickableCell component="th" scope="row">
                       <OpenItem small open={incident.open} />
                       <TicketItem small ticketUrl={incident.ticket_url} />
-                      <AckedItem small acked />
+                      <AckedItem small acked={incident.acked} />
                     </ClickableCell>
                     <ClickableCell>{incident.source.name}</ClickableCell>
                     <ClickableCell>{incident.description}</ClickableCell>
