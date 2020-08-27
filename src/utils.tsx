@@ -78,6 +78,27 @@ export function toMap<K extends number | string, T>(elements: T[], getter: (elem
   return new Map<K, T>(elements.map((elem: T, index: number): [K, T] => [getter(elem, index), elem]));
 }
 
+export function groupBy<K extends number | string, T>(
+  elements: T[],
+  groupByGetter: (elem: T, index: number) => K,
+): Map<K, Set<T>> {
+  const map = new Map<K, Set<T>>();
+  elements.forEach((elem: T, index: number) => {
+    const group = groupByGetter(elem, index);
+    if (map.has(group)) {
+      const groupSet = map.get(group) || new Set();
+      groupSet.add(elem);
+      map.set(group, groupSet);
+    } else {
+      map.set(
+        group,
+        new Set<T>([elem]),
+      );
+    }
+  });
+  return map;
+}
+
 export function pkGetter<K, T extends { pk: K }>(elem: T): K {
   return elem.pk;
 }
