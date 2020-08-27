@@ -129,7 +129,9 @@ export interface IncidentProblemType {
 
 export interface Incident {
   pk: number;
-  timestamp: string;
+  start_time: string;
+  end_time?: string;
+  stateful: boolean;
   incident_id: string;
   details_url: string;
   description: string;
@@ -314,16 +316,16 @@ export class ApiClient {
 
   public getUser(userPK: number): Promise<User> {
     return resolveOrReject(
-        this.authGet<User, {}>(`/api/v1/auth/users/${userPK}/`),
-        defaultResolver,
-        (error) => new Error(`Failed to get user: ${error}`),
+      this.authGet<User, {}>(`/api/v1/auth/users/${userPK}/`),
+      defaultResolver,
+      (error) => new Error(`Failed to get user: ${error}`),
     );
   }
 
   // NotificationProfile
   public getNotificationProfile(timeslot: TimeslotPK): Promise<NotificationProfile> {
     return resolveOrReject(
-      this.authGet<NotificationProfile, GetNotificationProfileRequest>(`/api/v1/notificationprofile/${timeslot}`),
+      this.authGet<NotificationProfile, GetNotificationProfileRequest>(`/api/v1/notificationprofile/${timeslot}/`),
       defaultResolver,
       (error) => new Error(`Failed to get notification profile: ${error}`),
     );
@@ -345,7 +347,7 @@ export class ApiClient {
   ): Promise<NotificationProfile> {
     return resolveOrReject(
       this.authPut<NotificationProfileSuccessResponse, NotificationProfileRequest>(
-        `/api/v1/notificationprofiles/${timeslot}`,
+        `/api/v1/notificationprofiles/${timeslot}/`,
         {
           timeslot: timeslot,
           filters,
@@ -379,7 +381,7 @@ export class ApiClient {
 
   public deleteNotificationProfile(profile: NotificationProfilePK): Promise<boolean> {
     return this.authDelete<NotificationProfileSuccessResponse, DeleteNotificationProfileRequest>(
-      `/api/v1/notificationprofiles/${profile}`,
+      `/api/v1/notificationprofiles/${profile}/`,
     )
       .then(() => {
         return Promise.resolve(true);
@@ -413,9 +415,9 @@ export class ApiClient {
 
   public postIncidentCloseEvent(pk: number): Promise<Event> {
     return resolveOrReject(
-        this.authPost<Event, EventWithoutDescriptionBody>(`/api/v1/incidents/${pk}/events/`, { type: EventType.CLOSE }),
-        defaultResolver,
-        (error) => new Error(`Failed to post incident close event: ${error}`),
+      this.authPost<Event, EventWithoutDescriptionBody>(`/api/v1/incidents/${pk}/events/`, { type: EventType.CLOSE }),
+      defaultResolver,
+      (error) => new Error(`Failed to post incident close event: ${error}`),
     );
   }
 
@@ -483,7 +485,7 @@ export class ApiClient {
 
   public deleteFilter(pk: FilterPK): Promise<void> {
     return resolveOrReject(
-      this.authDelete<never, never>(`/api/v1/notificationprofiles/filters/${pk}`),
+      this.authDelete<never, never>(`/api/v1/notificationprofiles/filters/${pk}/`),
       defaultResolver,
       (error) => new Error(`Failed to delete notification filter ${pk}: ${error}`),
     );
@@ -500,7 +502,7 @@ export class ApiClient {
 
   public deleteTimeslot(timeslotPK: TimeslotPK): Promise<boolean> {
     return resolveOrReject(
-      this.authDelete<boolean, never>(`/api/v1/notificationprofiles/timeslots/${timeslotPK}`),
+      this.authDelete<boolean, never>(`/api/v1/notificationprofiles/timeslots/${timeslotPK}/`),
       () => true,
       (error) => new Error(`Failed to delete notificationprofile timeslots: ${error}`),
     );
@@ -508,7 +510,7 @@ export class ApiClient {
 
   public putTimeslot(timeslotPK: TimeslotPK, name: string, timeRecurrences: TimeRecurrence[]): Promise<Timeslot> {
     return resolveOrReject(
-      this.authPut<Timeslot, Omit<Timeslot, "pk">>(`/api/v1/notificationprofiles/timeslots/${timeslotPK}`, {
+      this.authPut<Timeslot, Omit<Timeslot, "pk">>(`/api/v1/notificationprofiles/timeslots/${timeslotPK}/`, {
         name,
         // eslint-disable-next-line
         time_recurrences: timeRecurrences,
@@ -533,9 +535,9 @@ export class ApiClient {
   // Acknowledgements
   public postAck(incidentPK: number, ack: AcknowledgementBody): Promise<Acknowledgement> {
     return resolveOrReject(
-        this.authPost<Acknowledgement, AcknowledgementBody>(`/api/v1/incidents/${incidentPK}/acks/`, ack),
-        defaultResolver,
-        (error) => new Error(`Failed to post incident ack: ${error}`),
+      this.authPost<Acknowledgement, AcknowledgementBody>(`/api/v1/incidents/${incidentPK}/acks/`, ack),
+      defaultResolver,
+      (error) => new Error(`Failed to post incident ack: ${error}`),
     );
   }
 
@@ -577,7 +579,7 @@ export class ApiClient {
 
   private authPatch<T, B, R = AxiosResponse<T>>(url: string, data?: B, config?: AxiosRequestConfig): Promise<R> {
     return this.mustBeAuthenticated((token: Token) =>
-        this.api.patch(url, data, configWithAuth(config || this.config, token)),
+      this.api.patch(url, data, configWithAuth(config || this.config, token)),
     );
   }
 
