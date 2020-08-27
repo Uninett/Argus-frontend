@@ -213,6 +213,17 @@ export type AcknowledgementBody = {
   expiration: Timestamp | undefined | null;
 };
 
+export type PhoneNumberPK = number;
+
+export type PhoneNumberRequest = Omit<PhoneNumber, "pk" | "user">;
+export type PhoneNumberSuccessResponse = PhoneNumber;
+
+export interface PhoneNumber {
+  pk: number;
+  user: number;
+  phone_number: string;
+}
+
 export type Resolver<T, P> = (data: T) => P;
 
 export function defaultResolver<T, P = T>(data: T): T {
@@ -319,6 +330,34 @@ export class ApiClient {
       this.authGet<User, {}>(`/api/v1/auth/users/${userPK}/`),
       defaultResolver,
       (error) => new Error(`Failed to get user: ${error}`),
+    );
+  }
+
+  // Phone number
+  public getAllPhoneNumbers(): Promise<PhoneNumber[]> {
+    return resolveOrReject(
+      this.authGet<PhoneNumber[], never>(`/api/v1/auth/phone-number/`),
+      defaultResolver,
+      (error) => new Error(`Failed to get phone numbers: ${error}`),
+    );
+  }
+
+  public postPhoneNumber(phoneNumber: string): Promise<PhoneNumber> {
+    return resolveOrReject(
+      this.authPost<PhoneNumberSuccessResponse, PhoneNumberRequest>(`/api/v1/auth/phone-number/`, {
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        phone_number: phoneNumber,
+      }),
+      defaultResolver,
+      (error) => new Error(`Failed to create phone number ${phoneNumber}: ${error}`),
+    );
+  }
+
+  public deletePhoneNumber(pk: PhoneNumberPK): Promise<void> {
+    return resolveOrReject(
+      this.authDelete<never, never>(`/api/v1/auth/phone-number/${pk}/`),
+      defaultResolver,
+      (error) => new Error(`Failed to delete phone number ${pk}: ${error}`),
     );
   }
 
