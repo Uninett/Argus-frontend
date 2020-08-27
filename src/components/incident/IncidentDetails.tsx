@@ -223,7 +223,7 @@ const CreateAck: React.FC<CreateAckPropsType> = ({ onSubmitAck }: CreateAckProps
       event: {
         description: msg,
       },
-      expiration: selectedDate && selectedDate.toUTCString(),
+      expiration: selectedDate && selectedDate.toISOString(),
     });
   };
 
