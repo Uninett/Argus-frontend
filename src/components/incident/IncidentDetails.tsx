@@ -503,9 +503,10 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                         `Submitted ${ack.event.type.display} for ${incident && incident.pk}`,
                         "success",
                       );
-                      // force reload everything
-                      setAcksPromise(api.getIncidentAcks(incident.pk));
-                      setEventsPromise(api.getIncidentEvents(incident.pk));
+                      // NOTE: this assumes that nothing about the incident
+                      // changes in the backend response other than the acked
+                      // field, which may not be true in the future.
+                      onIncidentChange({ ...incident, acked: true });
                     })
                     .catch((error) => {
                       displayAlertSnackbar(`Failed to post ack ${error}`, "error");
