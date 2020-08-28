@@ -152,9 +152,11 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
   const [{ result: incidents, isLoading, isError }, setPromise] = useApiIncidents();
 
   useEffect(() => {
-    if (show === "open") setPromise(api.getOpenIncidents());
-    else setPromise(api.getAllIncidents());
-  }, [setPromise, show]);
+    if (show === "open") {
+      if (showAcked) setPromise(api.getOpenIncidents());
+      else setPromise(api.getOpenUnAckedIncidents());
+    } else setPromise(api.getAllIncidents());
+  }, [setPromise, show, showAcked]);
 
   const noDataText = isLoading ? LOADING_TEXT : isError ? ERROR_TEXT : NO_DATA_TEXT;
 

@@ -475,6 +475,14 @@ export class ApiClient {
     );
   }
 
+  public getOpenUnAckedIncidents(): Promise<Incident[]> {
+    return resolveOrReject(
+      this.authGet<Incident[], never>(`/api/v1/incidents/open+unacked/`),
+      defaultResolver,
+      (error) => new Error(`Failed to get incidents: ${error}`),
+    );
+  }
+
   public getAllIncidentsMetadata(): Promise<IncidentMetadata> {
     return resolveOrReject(
       this.authGet<IncidentMetadata, never>(`/api/v1/incidents/metadata/`),
