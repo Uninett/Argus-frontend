@@ -3,11 +3,13 @@ import { Incident, PhoneNumber, PhoneNumberPK } from ".";
 // TODO: fix this
 import { incidentWithFormattedTimestamp, IncidentWithFormattedTimestamp } from "../utils";
 import {
+  Acknowledgement,
   ApiErrorType,
-  NotificationProfile,
-  NotificationProfilePK,
+  Event,
   Filter,
   FilterPK,
+  NotificationProfile,
+  NotificationProfilePK,
   Timeslot,
   TimeslotPK,
 } from "../api";
@@ -79,3 +81,13 @@ export const useApiTimeslots = (onResult?: (result: Map<TimeslotPK, Timeslot>) =
 
 export const useApiPhoneNumbers = (onResult?: (result: Map<PhoneNumberPK, PhoneNumber>) => void) =>
   createUsePromise<PhoneNumber[], Map<PhoneNumberPK, PhoneNumber>>(asMap, onResult);
+
+export const useApiIncidentAcks = createUsePromise<Acknowledgement[], Acknowledgement[]>(
+  (acks: Acknowledgement[]) => acks,
+  () => undefined,
+);
+
+export const useApiIncidentEvents = createUsePromise<Event[], Event[]>(
+  (events: Event[]) => events,
+  () => undefined,
+);

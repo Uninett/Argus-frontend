@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 // import "./incidenttable.css";
 import "react-table/react-table.css";
 
@@ -21,13 +21,16 @@ import Typography from "@material-ui/core/Typography";
 import DateFnsUtils from "@date-io/date-fns";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 
+import Skeleton from "@material-ui/lab/Skeleton";
+
 import { useStateWithDynamicDefault } from "../../utils";
 
 import { makeConfirmationButton } from "../../components/buttons/ConfirmationButton";
 import { UseAlertSnackbarResultType } from "../../components/alertsnackbar";
 import CenterContainer from "../../components/centercontainer";
 
-import api, { Event, EventType, Incident, Acknowledgement, AcknowledgementBody } from "../../api";
+import api, { Event, EventType, Incident, IncidentTag, Acknowledgement, AcknowledgementBody } from "../../api";
+import { useApiIncidentAcks, useApiIncidentEvents } from "../../api/hooks";
 
 import SignedMessage from "./SignedMessage";
 import SignOffAction from "./SignOffAction";
@@ -56,10 +59,21 @@ type EventListItemPropsType = {
 };
 
 const EventListItem: React.FC<EventListItemPropsType> = ({ event }: EventListItemPropsType) => {
+  const classes = useStyles();
   return (
-    <ListItem>
-      <ListItemText primary="Name" secondary={event.type.display} />
-    </ListItem>
+    <div className={classes.message}>
+      <SignedMessage
+        message={event.description}
+        timestamp={event.timestamp}
+        user={event.actor}
+        content={
+          <ListItemText
+            primary={event.type.display}
+            secondary={<Typography paragraph>{event.description}</Typography>}
+          />
+        }
+      />
+    </div>
   );
 };
 
@@ -209,7 +223,7 @@ const CreateAck: React.FC<CreateAckPropsType> = ({ onSubmitAck }: CreateAckProps
       event: {
         description: msg,
       },
-      expiration: selectedDate && selectedDate.toUTCString(),
+      expiration: selectedDate && selectedDate.toISOString(),
     });
   };
 
@@ -296,61 +310,16 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
 }: IncidentDetailsPropsType) => {
   const classes = useStyles();
 
-  // const [ticketUrl, setTicketUrl] = useState<string | undefined>(incident && incident.ticket_url);
-  // const [active, setActive] = useState<boolean>((incident && incident.active) || false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  //onst { incidentSnackbar, displayAlertSnackbar }: UseAlertSnackbarResultType = useAlertSnackbar();
-  // TODO: handle close message
+  const [{ result: acks, isLoading: isAcksLoading }, setAcksPromise] = useApiIncidentAcks();
+  const [{ result: events, isLoading: isEventsLoading }, setEventsPromise] = useApiIncidentEvents();
 
-  // TODO: users should be represented by username...
-  const defaultEvent1 = {
-    pk: 1,
-    incident: 1,
-    actor: 2,
-    timestamp: "2020-01-14T03:04:14.387000+01:00",
-    type: {
-      value: EventType.ACKNOWLEDGE,
-      display: "Acknowledge",
-    },
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris vulputate id erat non pretium.",
-  };
-  const defaultEvent2 = {
-    pk: 2,
-    incident: 1,
-    actor: 1,
-    timestamp: "2020-01-15T03:04:14.387000+01:00",
-    type: {
-      value: EventType.ACKNOWLEDGE,
-      display: "Acknowledge",
-    },
-    description: "Ack ack",
-  };
-
-  const defaultAcks = [
-    {
-      user: "testuser2",
-      timestamp: "2020-01-14T03:04:14.387000+01:00",
-      message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris vulputate id erat non pretium.",
-      expiresAt: "2020-02-14T03:04:14.387000+01:00",
-      pk: 1,
-      event: defaultEvent1,
-      expiration: "2020-02-14T15:04:14.387000+01:00",
-    },
-    {
-      user: "testuser",
-      timestamp: "2020-01-15T03:04:14.387000+01:00",
-      message: "Ack ack",
-      expiresAt: null,
-      pk: 2,
-      event: defaultEvent2,
-      expiration: null,
-    },
-  ];
-
-  const [acks, setAcks] = useState<Acknowledgement[]>(defaultAcks);
+  useEffect(() => {
+    setAcksPromise(api.getIncidentAcks(incident.pk));
+    setEventsPromise(api.getIncidentEvents(incident.pk));
+  }, [setAcksPromise, setEventsPromise, incident]);
 
   const chronoAcks = useMemo<Acknowledgement[]>(() => {
-    return [...acks].sort((first: Acknowledgement, second: Acknowledgement) => {
+    return [...(acks || [])].sort((first: Acknowledgement, second: Acknowledgement) => {
       const firstTime = Date.parse(first.event.timestamp);
       const secondTime = Date.parse(second.event.timestamp);
       if (firstTime < secondTime) {
@@ -370,7 +339,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleManualClose = (msg: string) => {
     api
-      .postIncidentCloseEvent(incident.pk)
+      .postIncidentCloseEvent(incident.pk, msg)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .then((event: Event) => {
         // TODO: add close event to list of events
@@ -399,20 +368,42 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
   const ackExpiryDate = undefined;
 
   // TODO: get tag from incident
-  const tags = [
-    { key: "test_url", value: "https://uninett.no" },
-    { key: "test_host", value: "uninett.no" },
-    { key: "host", value: "uninett.no" },
-    { key: "timestamp", value: "123123123" },
-    { key: "bytes", value: "askldfjalskdf" },
-    { key: "origin_src", value: "something.tst" },
-  ];
+  const tags = useMemo(
+    () =>
+      incident.tags.map((tag: IncidentTag) => {
+        const [key, value] = tag.tag.split("=", 2);
+        return { key, value };
+      }),
+    [incident],
+  );
 
-  // {incidentSnackbar}
+  // These are just used for "skeletons" that are displayed
+  // when the data is loading.
+  const defaultEvent = {
+    pk: 1,
+    incident: 1,
+    actor: 2,
+    timestamp: "2011-11-11T11:11:11+02:00",
+    type: {
+      value: EventType.INCIDENT_START,
+      display: "Incident start",
+    },
+    description: "",
+  };
+
+  const defaultAck = {
+    pk: 1,
+    event: defaultEvent,
+    user: "testuser2",
+    timestamp: "2020-01-14T03:04:14.387000+01:00",
+    message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris vulputate id erat non pretium.",
+    expiration: "2020-02-14T03:04:14.387000+01:00",
+  };
+
   return (
     <div className={classes.root}>
       <Grid container spacing={3} className={classes.grid}>
-        <Grid container item spacing={2} md alignItems="stretch" justify="space-evenly" direction="column">
+        <Grid container item spacing={2} md alignItems="stretch" direction="column">
           <Grid item>
             <Card>
               <CardContent>
@@ -421,31 +412,12 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                 </Typography>
                 <CenterContainer>
                   <OpenItem open={incident.open} />
-                  <AckedItem acked={true} expiration={ackExpiryDate} />
+                  <AckedItem acked={incident.acked} expiration={ackExpiryDate} />
                   <TicketItem ticketUrl={incident.ticket_url} />
                 </CenterContainer>
               </CardContent>
             </Card>
           </Grid>
-
-          {!incident.open && (
-            <Grid item>
-              <Card>
-                <CardContent>
-                  <Typography color="textSecondary" gutterBottom>
-                    Incident closed
-                  </Typography>
-                  <SignedMessage
-                    message={"Incident was resolved on servicerestart"}
-                    content={<Typography paragraph>Incident was resolved on servicerestart</Typography>}
-                    timestamp={new Date().toUTCString()}
-                    user={"you"}
-                    TextComponent={Typography}
-                  />
-                </CardContent>
-              </Card>
-            </Grid>
-          )}
 
           <Grid item>
             <Card>
@@ -511,21 +483,30 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
               Acknowledgements
             </Typography>
             <List>
-              {chronoAcks.map((ack: Acknowledgement) => (
-                <AckListItem key={ack.event.timestamp} ack={ack} />
-              ))}
+              {(isAcksLoading &&
+                Array.from(new Array(3)).map((item: number, index: number) => (
+                  <Skeleton key={index} variant="rect" animation="wave">
+                    {" "}
+                    <AckListItem ack={defaultAck} />
+                  </Skeleton>
+                ))) ||
+                chronoAcks.map((ack: Acknowledgement) => <AckListItem key={ack.event.timestamp} ack={ack} />)}
             </List>
             <CenterContainer>
               <CreateAck
-                key={acks.length}
+                key={(acks || []).length}
                 onSubmitAck={(ack: AcknowledgementBody) => {
-                  // TODO: handle ack submit here
-                  console.log(ack);
                   api
                     .postAck(incident.pk, ack)
                     .then((ack: Acknowledgement) => {
-                      displayAlertSnackbar(`Submitted ack for ${incident && incident.pk}`, "success");
-                      setAcks([...acks, ack]);
+                      displayAlertSnackbar(
+                        `Submitted ${ack.event.type.display} for ${incident && incident.pk}`,
+                        "success",
+                      );
+                      // NOTE: this assumes that nothing about the incident
+                      // changes in the backend response other than the acked
+                      // field, which may not be true in the future.
+                      onIncidentChange({ ...incident, acked: true });
                     })
                     .catch((error) => {
                       displayAlertSnackbar(`Failed to post ack ${error}`, "error");
@@ -534,18 +515,24 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
               />
             </CenterContainer>
           </Grid>
+        </Grid>
+        <Grid container item spacing={2} md direction="column">
           <Grid item>
-            <Card>
-              <CardContent>
-                <Typography color="textSecondary" gutterBottom>
-                  Related events
-                </Typography>
-                <List>
-                  <EventListItem event={defaultEvent1} />
-                  <EventListItem event={defaultEvent2} />
-                </List>
-              </CardContent>
-            </Card>
+            <Typography color="textSecondary" gutterBottom>
+              Related events
+            </Typography>
+            <List>
+              {(isEventsLoading &&
+                Array.from(new Array(3)).map((item: number, index: number) => (
+                  <Skeleton key={index} variant="rect" animation="wave">
+                    {" "}
+                    <EventListItem event={defaultEvent} />
+                  </Skeleton>
+                ))) ||
+                (events || [])
+                  .filter((event: Event) => event.type.value !== "ACK")
+                  .map((event: Event) => <EventListItem key={event.pk} event={event} />)}
+            </List>
           </Grid>
         </Grid>
       </Grid>
