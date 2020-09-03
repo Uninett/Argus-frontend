@@ -1,5 +1,5 @@
 import { useState, useEffect, Dispatch, SetStateAction } from "react";
-import { Incident } from ".";
+import { Incident, PhoneNumber, PhoneNumberPK } from ".";
 // TODO: fix this
 import { incidentWithFormattedTimestamp, IncidentWithFormattedTimestamp } from "../utils";
 import {
@@ -76,3 +76,6 @@ export const useApiFilters = (onResult?: (result: Map<FilterPK, Filter>) => void
 
 export const useApiTimeslots = (onResult?: (result: Map<TimeslotPK, Timeslot>) => void) =>
   createUsePromise<Timeslot[], Map<TimeslotPK, Timeslot>>(asMap, onResult);
+
+export const useApiPhoneNumbers = (onResult?: (result: Map<PhoneNumberPK, PhoneNumber>) => void) =>
+  createUsePromise<PhoneNumber[], Map<PhoneNumberPK, PhoneNumber>>(asMap, onResult);
