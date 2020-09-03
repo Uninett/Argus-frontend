@@ -342,6 +342,17 @@ export class ApiClient {
     );
   }
 
+  public putPhoneNumber(phoneNumberPK: PhoneNumberPK, phoneNumber: string): Promise<PhoneNumber> {
+    return resolveOrReject(
+      this.authPut<PhoneNumberSuccessResponse, PhoneNumberRequest>(`/api/v1/auth/phone-number/${phoneNumberPK}/`, {
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        phone_number: phoneNumber,
+      }),
+      defaultResolver,
+      (error) => new Error(`Failed to put phone number: ${error}`),
+    );
+  }
+
   public postPhoneNumber(phoneNumber: string): Promise<PhoneNumber> {
     return resolveOrReject(
       this.authPost<PhoneNumberSuccessResponse, PhoneNumberRequest>(`/api/v1/auth/phone-number/`, {
