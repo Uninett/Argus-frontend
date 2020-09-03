@@ -1,0 +1,133 @@
+import React, { useState } from "react";
+
+import { Theme, createStyles, makeStyles } from "@material-ui/core/styles";
+import Paper from "@material-ui/core/Paper";
+import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
+import SaveIcon from "@material-ui/icons/Save";
+import DeleteIcon from "@material-ui/icons/Delete";
+
+import Spinning from "../spinning";
+
+import { PhoneNumberPK } from "../../api";
+import { useStateWithDynamicDefault } from "../../utils";
+import { makeConfirmationButton } from "../buttons/ConfirmationButton";
+
+import { WHITE } from "../../colorscheme";
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      flexGrow: 1,
+    },
+    paper: {
+      padding: theme.spacing(1),
+      textAlign: "center",
+      color: theme.palette.text.secondary,
+      minWidth: 30,
+    },
+    dangerousButton: {
+      background: theme.palette.warning.main,
+      color: WHITE,
+    },
+    saveButton: {
+      background: theme.palette.primary.main,
+      color: WHITE,
+    },
+    phoneNumber: {
+      alignItems: "center",
+      padding: theme.spacing(3),
+    },
+    createDeleteButtonGroup: {
+      margin: theme.spacing(1),
+    },
+  }),
+);
+
+type PhoneNumberPropsType = {
+  pk?: PhoneNumberPK;
+  phoneNumber: string | undefined;
+  exists?: boolean;
+
+  onSave: (pk: PhoneNumberPK | undefined, phoneNumber: string) => void;
+  onDelete: (pk: PhoneNumberPK | undefined, phoneNumber: string) => void;
+};
+
+const PhoneNumberComponent: React.FC<PhoneNumberPropsType> = ({
+  pk,
+  phoneNumber: phoneNumberProp,
+  exists,
+  onSave,
+  onDelete,
+}: PhoneNumberPropsType) => {
+  const classes = useStyles();
+
+  const [phoneNumber, setPhoneNumber] = useStateWithDynamicDefault<string>(phoneNumberProp || "");
+  const [invalidPhoneNumber, setInvalidPhoneNumber] = useState<boolean>(false);
+  const [updateLoading, setUpdateLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [hasChanged, setHasChanged] = useState<boolean>(false);
+
+  const onPhoneNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newPhoneNumber = event.target.value;
+    if (newPhoneNumber !== phoneNumber) {
+      setHasChanged(true);
+      setPhoneNumber(event.target.value);
+      setInvalidPhoneNumber(newPhoneNumber === "");
+    }
+  };
+
+  const RemovePhoneNumberButton = makeConfirmationButton({
+    title: `Remove ${phoneNumber}`,
+    question: "Are you sure you want to remove this timeslot?",
+    onConfirm: () => {
+      setDeleteLoading(true);
+      onDelete(pk, phoneNumber);
+    },
+  });
+
+  return (
+    <div key={pk} className={classes.root}>
+      <Paper className={classes.paper}>
+        <form className={classes.root} noValidate autoComplete="off">
+          <TextField
+            error={invalidPhoneNumber}
+            required
+            label="Phone number"
+            variant="standard"
+            value={phoneNumber}
+            onChange={onPhoneNumberChange}
+          />
+          <Button
+            variant="contained"
+            size="small"
+            className={classes.saveButton}
+            onClick={() => {
+              setUpdateLoading(true);
+              onSave(pk, phoneNumber);
+            }}
+            disabled={!hasChanged || invalidPhoneNumber}
+            startIcon={updateLoading ? <Spinning shouldSpin /> : <SaveIcon />}
+          >
+            {exists ? "Save" : "Create"}
+          </Button>
+          <RemovePhoneNumberButton
+            variant="contained"
+            size="small"
+            className={classes.dangerousButton}
+            startIcon={deleteLoading ? <Spinning shouldSpin /> : <DeleteIcon />}
+            disabled={!exists}
+          >
+            Delete
+          </RemovePhoneNumberButton>
+        </form>
+      </Paper>
+    </div>
+  );
+};
+
+PhoneNumberComponent.defaultProps = {
+  exists: false,
+};
+
+export default PhoneNumberComponent;
