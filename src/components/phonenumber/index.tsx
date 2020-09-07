@@ -48,6 +48,7 @@ type PhoneNumberPropsType = {
   pk?: PhoneNumberPK;
   phoneNumber: string | undefined;
   exists?: boolean;
+  unsavedChanges: boolean;
 
   onSave: (pk: PhoneNumberPK | undefined, phoneNumber: string) => void;
   onDelete: (pk: PhoneNumberPK | undefined, phoneNumber: string) => void;
@@ -57,6 +58,7 @@ const PhoneNumberComponent: React.FC<PhoneNumberPropsType> = ({
   pk,
   phoneNumber: phoneNumberProp,
   exists,
+  unsavedChanges,
   onSave,
   onDelete,
 }: PhoneNumberPropsType) => {
@@ -66,7 +68,7 @@ const PhoneNumberComponent: React.FC<PhoneNumberPropsType> = ({
   const [invalidPhoneNumber, setInvalidPhoneNumber] = useState<boolean>(false);
   const [updateLoading, setUpdateLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
-  const [hasChanged, setHasChanged] = useState<boolean>(false);
+  const [hasChanged, setHasChanged] = useState<boolean>(unsavedChanges);
 
   const onPhoneNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newPhoneNumber = event.target.value;
