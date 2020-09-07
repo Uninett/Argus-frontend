@@ -138,6 +138,7 @@ type IncidentViewPropsType = {};
 
 const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType) => {
   const [realtime, setRealtime] = useState<boolean>(true);
+  const [showAcked, setShowAcked] = useState<boolean>(false);
   const [tagsFilter, setTagsFilter] = useState<Tag[]>([]);
   const [sources, setSources] = useState<Set<string> | "AllSources">("AllSources");
   const [show, setShow] = useState<"open" | "closed" | "both">("open");
@@ -151,9 +152,11 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
   const [{ result: incidents, isLoading, isError }, setPromise] = useApiIncidents();
 
   useEffect(() => {
-    if (show === "open") setPromise(api.getOpenIncidents());
-    else setPromise(api.getAllIncidents());
-  }, [setPromise, show]);
+    if (show === "open") {
+      if (showAcked) setPromise(api.getOpenIncidents());
+      else setPromise(api.getOpenUnAckedIncidents());
+    } else setPromise(api.getAllIncidents());
+  }, [setPromise, show, showAcked]);
 
   const noDataText = isLoading ? LOADING_TEXT : isError ? ERROR_TEXT : NO_DATA_TEXT;
 
@@ -224,9 +227,10 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
     return (
       filteredByTags
         .filter((incident: Incident) => (show === "open" ? incident.open : show === "closed" ? !incident.open : true))
+        .filter((incident: Incident) => showAcked || !incident.acked)
         .filter(filterOnSources) || []
     );
-  }, [incidentsMap, incidentsTags, show, tagsFilter, sources]);
+  }, [incidentsMap, incidentsTags, show, showAcked, tagsFilter, sources]);
 
   const sourceAlts = useMemo(
     () => [...new Set([...(incidents || []).map((incident: Incident) => incident.source.name)]).values()],
@@ -256,9 +260,15 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
             </Grid>
 
             <Grid item md>
+              <Typography>Show acked events</Typography>
+              <Checkbox checked={showAcked} onClick={() => setShowAcked((old) => !old)} />
+            </Grid>
+
+            <Grid item md>
               <Typography>Realtime</Typography>
               <Checkbox checked={realtime} onClick={() => setRealtime((old) => !old)} />
             </Grid>
+
             <Grid item md>
               <Typography>Sources to display</Typography>
               <SourceSelector

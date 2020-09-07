@@ -317,6 +317,11 @@ const IncidentTable: React.FC<IncidentsProps> = ({ incidents, realtime, open }: 
   };
 
   const handleIncidentChange = (incident: Incident) => {
+    // TODO: handle acked/unacked changes as well because there is now
+    // the showAcked variable in the "supercomponent" IncidentView that
+    // passes the incidents to the incidentstable.
+    // An alternative is to have a "filter" function that is passed to
+    // this component from the composing component.
     setIncidentsDict((oldDict: Revisioned<Map<Incident["pk"], Incident>>) => {
       const newDict: typeof oldDict = new Map<Incident["pk"], Incident>(oldDict);
       const oldIncident = oldDict.get(incident.pk);
