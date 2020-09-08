@@ -8,6 +8,7 @@ import { ProtectedRoute } from "./protected.route";
 import NotificationProfileView from "./views/notificationprofile/NotificationProfileView";
 import FiltersView from "./views/filters/FiltersView";
 import TimeslotView from "./views/timeslot/TimeslotView";
+import SettingsView from "./views/settings/SettingsView";
 
 import api from "./api";
 import auth from "./auth";
@@ -30,6 +31,7 @@ const App: React.SFC = () => {
           <ProtectedRoute exact path="/" component={IncidentView} />
           <ProtectedRoute path="/notificationprofiles" component={NotificationProfileView} />
           <ProtectedRoute path="/timeslots" component={TimeslotView} />
+          <ProtectedRoute path="/settings" component={SettingsView} />
           <Route path="/login" component={LoginView} />
           <ProtectedRoute path="/filters" component={FiltersView} />
           <Route
