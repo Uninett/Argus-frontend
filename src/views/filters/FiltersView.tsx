@@ -5,9 +5,6 @@ import FilterBuilder from "../../components/filterbuilder/FilterBuilder";
 import { withRouter } from "react-router-dom";
 import api, {
   SourceSystem,
-  IncidentObjectType,
-  IncidentObject,
-  IncidentProblemType,
   IncidentMetadata,
   Filter,
   FilterDefinition,
@@ -42,16 +39,10 @@ interface FilterWithNames {
   name: Name;
 
   sourceSystems: IdNameTuple[];
-  objectTypes: IdNameTuple[];
-  parentObjects: IdNameTuple[];
-  problemTypes: IdNameTuple[];
 }
 
 type FilterDefinitionDict = {
   sourceSystems: Dict<SourceSystem>;
-  objectTypes: Dict<IncidentObjectType>;
-  parentObjects: Dict<IncidentObject>;
-  problemTypes: Dict<IncidentProblemType>;
 };
 
 enum IdNameField {
@@ -75,9 +66,6 @@ function filterWithNamesToDefinition(filterWithNames: FilterWithNames): FilterDe
 
   return {
     sourceSystemIds: filterWithNames.sourceSystems.map(idGetter),
-    objectTypeIds: filterWithNames.objectTypes.map(idGetter),
-    parentObjectIds: filterWithNames.parentObjects.map(idGetter),
-    problemTypeIds: filterWithNames.problemTypes.map(idGetter),
   };
 }
 
@@ -86,16 +74,7 @@ function filterToFilterWithNames(definition: FilterDefinitionDict, filter: Filte
   const sourceSystems = filterDefinition.sourceSystemIds.map(
     (id: string): IdNameTuple => [id, definition.sourceSystems[id].name],
   );
-  const objectTypes = filterDefinition.objectTypeIds.map(
-    (id: string): IdNameTuple => [id, definition.objectTypes[id].name],
-  );
-  const parentObjects = filterDefinition.parentObjectIds.map(
-    (id: string): IdNameTuple => [id, definition.parentObjects[id].name],
-  );
-  const problemTypes = filterDefinition.problemTypeIds.map(
-    (id: string): IdNameTuple => [id, definition.problemTypes[id].name],
-  );
-  return { pk: filter.pk, name: filter.name, sourceSystems, objectTypes, parentObjects, problemTypes };
+  return { pk: filter.pk, name: filter.name, sourceSystems };
 }
 
 type FilterTablePropType = {
@@ -129,9 +108,6 @@ const FilterTable: React.FC<FilterTablePropType> = ({ filters, onFilterDelete, o
   const columns = [
     withCell("name_col", "Filter name", "name"),
     withCell("sources_col", "Sources", namesFrom("sourceSystems")),
-    withCell("objectTypes_col", "Object Types", namesFrom("objectTypes")),
-    withCell("parentObjects_col", "Parent objects", namesFrom("parentObjects")),
-    withCell("problemTypes_col", "Problem Types", namesFrom("problemTypes")),
     withCell("actions_col", "Actions", "name_col", (filter: FilterWithNames) => {
       return (
         <>
@@ -155,20 +131,11 @@ type FiltersViewPropType = {
 };
 
 const sourceSystemsResponse: Metadata[] = [];
-const objectTypesResponse: Metadata[] = [];
-const parentObjectsResponse: Metadata[] = [];
-const problemTypesResponse: Metadata[] = [];
 
 const FiltersView: React.FC<FiltersViewPropType> = () => {
   const [sourceSystemIds, setSourceSystemIds] = useState<Metadata[]>(defaultResponse);
-  const [objectTypeIds, setObjectTypeIds] = useState<Metadata[]>(defaultResponse);
-  const [parentObjectIds, setParentObjectIds] = useState<Metadata[]>(defaultResponse);
-  const [problemTypeIds, setProblemTypeIds] = useState<Metadata[]>(defaultResponse);
 
   const [sourceSystems, setSourceSystems] = useState<Dict<SourceSystem>>({});
-  const [objectTypes, setObjectTypes] = useState<Dict<IncidentObjectType>>({});
-  const [parentObjects, setParentObjects] = useState<Dict<IncidentObject>>({});
-  const [problemTypes, setProblemTypes] = useState<Dict<IncidentProblemType>>({});
 
   const [loading, setLoading] = useState<boolean>(true);
   const [showDialog, setShowDialog] = useState<[boolean, string]>([false, ""]);
@@ -199,7 +166,7 @@ const FiltersView: React.FC<FiltersViewPropType> = () => {
       .postFilter(name, JSON.stringify(filter))
       .then((filter: Filter) => {
         setFilters({
-          [filter.pk]: filterToFilterWithNames({ sourceSystems, objectTypes, parentObjects, problemTypes }, filter),
+          [filter.pk]: filterToFilterWithNames({ sourceSystems }, filter),
           ...filters,
         });
         setShowDialog([true, "Successfully saved filter"]);
@@ -228,30 +195,18 @@ const FiltersView: React.FC<FiltersViewPropType> = () => {
       const incidentMetadata: IncidentMetadata = await api.getAllIncidentsMetadata();
 
       const sourceSystems = reducer<SourceSystem>(incidentMetadata.sourceSystems);
-      const objectTypes = reducer<IncidentObjectType>(incidentMetadata.objectTypes);
-      const parentObjects = reducer<IncidentObject>(incidentMetadata.parentObjects);
-      const problemTypes = reducer<IncidentProblemType>(incidentMetadata.problemTypes);
 
       setSourceSystems(sourceSystems);
-      setObjectTypes(objectTypes);
-      setParentObjects(parentObjects);
-      setProblemTypes(problemTypes);
 
       incidentMetadata.sourceSystems.map(mapToMetadata).forEach((m: Metadata) => sourceSystemsResponse.push(m));
-      incidentMetadata.objectTypes.map(mapToMetadata).forEach((m: Metadata) => objectTypesResponse.push(m));
-      incidentMetadata.parentObjects.map(mapToMetadata).forEach((m: Metadata) => parentObjectsResponse.push(m));
-      incidentMetadata.problemTypes.map(mapToMetadata).forEach((m: Metadata) => problemTypesResponse.push(m));
 
       setSourceSystemIds(sourceSystemsResponse);
-      setParentObjectIds(parentObjectsResponse);
-      setObjectTypeIds(objectTypesResponse);
-      setProblemTypeIds(problemTypesResponse);
 
       const filters = await api.getAllFilters();
       setFilters(
         reducer<FilterWithNames>(
           filters.map((filter: Filter) => {
-            return filterToFilterWithNames({ sourceSystems, objectTypes, parentObjects, problemTypes }, filter);
+            return filterToFilterWithNames({ sourceSystems }, filter);
           }),
         ),
       );
@@ -284,9 +239,6 @@ const FiltersView: React.FC<FiltersViewPropType> = () => {
       <FilterBuilder
         onFilterPreview={(filter: FilterDefinition) => onPreviewFilterByDefinition(filter)}
         sourceSystemIds={sourceSystemIds}
-        objectTypeIds={objectTypeIds}
-        parentObjectIds={parentObjectIds}
-        problemTypeIds={problemTypeIds}
         onFilterCreate={createFilter}
       />
       <h1 className={"filterHeader"}>Preview</h1>

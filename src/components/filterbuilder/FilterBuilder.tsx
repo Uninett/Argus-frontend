@@ -14,18 +14,12 @@ type FilterBuilderPropsType = {
   onFilterPreview: (filter: FilterDefinition) => void;
 
   sourceSystemIds: Metadata[];
-  objectTypeIds: Metadata[];
-  parentObjectIds: Metadata[];
-  problemTypeIds: Metadata[];
 };
 
 const FilterBuilder: React.FC<FilterBuilderPropsType> = ({
   onFilterCreate,
   onFilterPreview,
   sourceSystemIds,
-  objectTypeIds,
-  parentObjectIds,
-  problemTypeIds,
 }: FilterBuilderPropsType) => {
   // const LOADING_TEXT = "Loading...";
   // const NO_DATA_TEXT = "No data";
@@ -69,36 +63,6 @@ const FilterBuilder: React.FC<FilterBuilderPropsType> = ({
                 margin="dense"
               />
             </div>
-          </div>
-          <div className="filterSelect">
-            <p>Select problem types</p>
-            <Select
-              className="selector"
-              isMulti
-              name="bois"
-              options={problemTypeIds}
-              onChange={(value) => handleChange(value, "problemTypeIds")}
-            ></Select>
-          </div>
-          <div className="filterSelect">
-            <p>Select object types</p>
-            <Select
-              className="selector"
-              isMulti
-              name="boiss"
-              options={objectTypeIds}
-              onChange={(value) => handleChange(value, "objectTypeIds")}
-            ></Select>
-          </div>
-          <div className="filterSelect">
-            <p>Select parent objects</p>
-            <Select
-              className="selector"
-              isMulti
-              name="boisss"
-              options={parentObjectIds}
-              onChange={(value) => handleChange(value, "parentObjectIds")}
-            ></Select>
           </div>
           <div className="filterSelect">
             <p>Select incident sources</p>

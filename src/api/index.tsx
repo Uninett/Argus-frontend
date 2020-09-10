@@ -73,16 +73,10 @@ export interface Filter {
 
 export interface FilterDefinition {
   sourceSystemIds: string[];
-  objectTypeIds: string[];
-  parentObjectIds: string[];
-  problemTypeIds: string[];
 }
 
 export const EmptyFilterDefinition = {
   sourceIds: [],
-  objectTypeIds: [],
-  parentObjectIds: [],
-  problemTypeIds: [],
 };
 
 export type MediaAlternative = "EM" | "SM" | "SL";
@@ -107,26 +101,6 @@ export interface SourceSystem {
   pk: number;
   name: string;
   type: string;
-}
-
-export interface IncidentObjectType {
-  pk: number;
-  name: string;
-}
-
-export interface IncidentObject {
-  pk: number;
-  name: string;
-  object_id: string;
-  url: string;
-  type: IncidentObjectType;
-}
-
-export interface IncidentProblemType {
-  pk: number;
-  name: string;
-  object_id: string;
-  url: string;
 }
 
 export interface IncidentTag {
@@ -190,9 +164,6 @@ export type IncidentTicketUrlBody = {
 
 export interface IncidentMetadata {
   sourceSystems: SourceSystem[];
-  objectTypes: IncidentObjectType[];
-  parentObjects: IncidentObject[];
-  problemTypes: IncidentProblemType[];
 }
 
 export type NotificationProfileRequest = NotificationProfileKeyed;
