@@ -68,21 +68,17 @@ export type FilterPK = number; // WIP: fix this
 export interface Filter {
   pk: FilterPK;
   name: string;
-  filter_string: string;
+  sourceSystemIds: string[] | number[];
+  tags: string[];
 }
 
 export interface FilterDefinition {
-  sourceSystemIds: string[];
-  objectTypeIds: string[];
-  parentObjectIds: string[];
-  problemTypeIds: string[];
+  sourceSystemIds: string[] | number[];
+  tags: string[];
 }
 
 export const EmptyFilterDefinition = {
   sourceIds: [],
-  objectTypeIds: [],
-  parentObjectIds: [],
-  problemTypeIds: [],
 };
 
 export type MediaAlternative = "EM" | "SM" | "SL";
@@ -107,26 +103,6 @@ export interface SourceSystem {
   pk: number;
   name: string;
   type: string;
-}
-
-export interface IncidentObjectType {
-  pk: number;
-  name: string;
-}
-
-export interface IncidentObject {
-  pk: number;
-  name: string;
-  object_id: string;
-  url: string;
-  type: IncidentObjectType;
-}
-
-export interface IncidentProblemType {
-  pk: number;
-  name: string;
-  object_id: string;
-  url: string;
 }
 
 export interface IncidentTag {
@@ -190,18 +166,29 @@ export type IncidentTicketUrlBody = {
 
 export interface IncidentMetadata {
   sourceSystems: SourceSystem[];
-  objectTypes: IncidentObjectType[];
-  parentObjects: IncidentObject[];
-  problemTypes: IncidentProblemType[];
 }
+
+export type IncidentsFilterOptions = {
+  acked?: boolean;
+  open?: boolean;
+  stateful?: boolean;
+  sourceSystemIds?: number[] | string[];
+  sourceSystemNames?: string[];
+  tags?: string[];
+  // NOT COMPLETE
+};
 
 export type NotificationProfileRequest = NotificationProfileKeyed;
 export type NotificationProfileSuccessResponse = NotificationProfile;
 export type GetNotificationProfileRequest = Pick<NotificationProfileRequest, "timeslot">;
 export type DeleteNotificationProfileRequest = Pick<NotificationProfileRequest, "timeslot">;
 
-export type FilterRequest = Omit<Filter, "pk">;
-export type FilterSuccessResponse = Filter;
+export type FilterRequest = {
+  name: string;
+  filter_string: string;
+};
+
+export type FilterSuccessResponse = FilterRequest & { pk: number };
 
 export interface Acknowledgement {
   pk: number;
@@ -509,6 +496,40 @@ export class ApiClient {
     );
   }
 
+  public getAllIncidentsFiltered(filter: IncidentsFilterOptions): Promise<Incident[]> {
+    const buildIncidentsQuery = (filter: IncidentsFilterOptions) => {
+      const params = [];
+      if (filter.acked !== undefined) {
+        params.push(`acked=${filter.acked}`);
+      }
+      if (filter.open !== undefined) {
+        params.push(`open=${filter.open}`);
+      }
+      if (filter.stateful !== undefined) {
+        params.push(`stateful=${filter.stateful}`);
+      }
+      if (filter.sourceSystemIds !== undefined) {
+        params.push(`source__id__in=${filter.sourceSystemIds.join(",")}`);
+      }
+      if (filter.sourceSystemNames !== undefined) {
+        params.push(`source__name__in=${filter.sourceSystemNames.join(",")}`);
+      }
+      if (filter.tags !== undefined) {
+        params.push(`tags=${filter.tags.join(",")}`);
+      }
+      if (params.length === 0) return "";
+      return "?" + params.join("&");
+    };
+
+    const queryString = buildIncidentsQuery(filter);
+
+    return resolveOrReject(
+      this.authGet<Incident[], never>(`/api/v1/incidents/${queryString}`),
+      defaultResolver,
+      (error) => new Error(`Failed to get incidents: ${error}`),
+    );
+  }
+
   public getAllIncidents(): Promise<Incident[]> {
     return resolveOrReject(
       this.authGet<Incident[], never>(`/api/v1/incidents/`),
@@ -552,18 +573,30 @@ export class ApiClient {
   // Filter
   public getAllFilters(): Promise<Filter[]> {
     return resolveOrReject(
-      this.authGet<Filter[], never>(`/api/v1/notificationprofiles/filters/`),
-      defaultResolver,
+      this.authGet<FilterSuccessResponse[], never>(`/api/v1/notificationprofiles/filters/`),
+      (resps: FilterSuccessResponse[]): Filter[] =>
+        resps.map(
+          (resp: FilterSuccessResponse): Filter => {
+            const definition: FilterDefinition = JSON.parse(resp.filter_string);
+
+            return {
+              pk: resp.pk,
+              name: resp.name,
+              ...definition,
+            };
+          },
+        ),
       (error) => new Error(`Failed to get notificationprofile filters: ${error}`),
     );
   }
 
-  public postFilter(name: string, filterString: string): Promise<Filter> {
+  public postFilter(name: string, definition: FilterDefinition): Promise<FilterSuccessResponse> {
     return resolveOrReject(
       this.authPost<FilterSuccessResponse, FilterRequest>(`/api/v1/notificationprofiles/filters/`, {
         name,
+        // This is really ugly
         // eslint-disable-next-line
-        filter_string: filterString,
+        filter_string: JSON.stringify(definition) as string,
       }),
       defaultResolver,
       (error) => new Error(`Failed to create notification filter ${name}: ${error}`),

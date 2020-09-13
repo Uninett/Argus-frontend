@@ -1,48 +1,59 @@
-import React, { useState } from "react";
-import Select from "react-select";
+import React, { useState, useCallback, useMemo } from "react";
 import "./FilterBuilder.css";
 
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import SaveIcon from "@material-ui/icons/Save";
 
-import { FilterDefinition } from "../../api";
-import { defaultFilter, Metadata } from "../../common/filters";
+import { FilterDefinition, SourceSystem } from "../../api";
+import { toMap, removeUndefined } from "../../utils";
+
+import TagSelector, { Tag } from "../../components/tagselector";
+import SourceSelector from "../../components/sourceselector";
 
 type FilterBuilderPropsType = {
   onFilterCreate: (name: string, filter: FilterDefinition) => void;
   onFilterPreview: (filter: FilterDefinition) => void;
 
-  sourceSystemIds: Metadata[];
-  objectTypeIds: Metadata[];
-  parentObjectIds: Metadata[];
-  problemTypeIds: Metadata[];
+  knownSources: SourceSystem[];
 };
 
 const FilterBuilder: React.FC<FilterBuilderPropsType> = ({
   onFilterCreate,
   onFilterPreview,
-  sourceSystemIds,
-  objectTypeIds,
-  parentObjectIds,
-  problemTypeIds,
+  knownSources,
 }: FilterBuilderPropsType) => {
-  // const LOADING_TEXT = "Loading...";
-  // const NO_DATA_TEXT = "No data";
-  // const NO_MATCHING_INCIDENTS_TEXT = "No matching incidents";
+  // TODO: copy pasted from IncidentsView. Should be refactored.
+  const [sources, setSources] = useState<Set<string> | "AllSources">("AllSources");
 
-  const [filter, setFilter] = useState<FilterDefinition>(defaultFilter);
+  const [tags, setTags] = useState<Tag[]>([]);
+
   const [name, setName] = useState<string>("");
-
-  // eslint-disable-next-line
-  const handleChange = (value: any, property: string) => {
-    setFilter({ ...filter, [property]: value ? value.map((metadata: Metadata) => metadata.value) : [] });
-  };
 
   // eslint-disable-next-line
   const handleNameChanged = (e: any) => {
     setName(e.target.value);
   };
+
+  const [knownSourceNames, knownSourcesMap] = useMemo(() => {
+    return [
+      knownSources.map((source: SourceSystem) => source.name),
+      toMap<SourceSystem["name"], SourceSystem>(knownSources, (elem: SourceSystem) => elem.name),
+    ];
+  }, [knownSources]);
+
+  const filter = useMemo<FilterDefinition>((): FilterDefinition => {
+    const sourcesArray = sources === "AllSources" ? [] : [...sources.values()];
+    const validSources = sourcesArray.filter((sourceName: string) => knownSourcesMap.has(sourceName));
+
+    const sourceSystemIds = removeUndefined(
+      validSources.map((sourceName: string) => knownSourcesMap.get(sourceName)?.pk),
+    );
+
+    // TODO: Handle missing sources???
+
+    return { tags: tags.map((tag: Tag) => `${tag.key}=${tag.value}`), sourceSystemIds };
+  }, [sources, tags, knownSourcesMap]);
 
   const handleCreate = () => {
     if (name === "") {
@@ -71,44 +82,22 @@ const FilterBuilder: React.FC<FilterBuilderPropsType> = ({
             </div>
           </div>
           <div className="filterSelect">
-            <p>Select problem types</p>
-            <Select
-              className="selector"
-              isMulti
-              name="bois"
-              options={problemTypeIds}
-              onChange={(value) => handleChange(value, "problemTypeIds")}
-            ></Select>
+            <p>Incident sources</p>
+            <SourceSelector
+              sources={knownSourceNames}
+              onSelectionChange={(selection: string[]) => {
+                setSources((selection.length !== 0 && new Set<string>(selection)) || "AllSources");
+              }}
+            />
           </div>
           <div className="filterSelect">
-            <p>Select object types</p>
-            <Select
-              className="selector"
-              isMulti
-              name="boiss"
-              options={objectTypeIds}
-              onChange={(value) => handleChange(value, "objectTypeIds")}
-            ></Select>
-          </div>
-          <div className="filterSelect">
-            <p>Select parent objects</p>
-            <Select
-              className="selector"
-              isMulti
-              name="boisss"
-              options={parentObjectIds}
-              onChange={(value) => handleChange(value, "parentObjectIds")}
-            ></Select>
-          </div>
-          <div className="filterSelect">
-            <p>Select incident sources</p>
-            <Select
-              className="selector"
-              isMulti
-              name="boissss"
-              options={sourceSystemIds}
-              onChange={(value) => handleChange(value, "sourceSystemIds")}
-            ></Select>
+            <p>Tags</p>
+            <TagSelector
+              tags={tags}
+              onSelectionChange={useCallback((selection: Tag[]) => {
+                setTags(selection);
+              }, [])}
+            ></TagSelector>
           </div>
           <div className="ButtonDiv">
             <div className="create">

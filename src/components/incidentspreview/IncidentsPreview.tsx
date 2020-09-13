@@ -15,7 +15,13 @@ const IncidentsPreview: React.FC<IncidentsPreviewProps> = ({ filter }: Incidents
 
   useEffect(() => {
     if (filter) {
-      setPromise(api.postFilterPreview(filter));
+      // Don't send any query parameters unless it is needed
+      // by setting them to undefined they won't be added.
+      const filterOptions = {
+        sourceSystemIds: filter.sourceSystemIds.length > 0 ? filter.sourceSystemIds : undefined,
+        tags: filter.tags.length > 0 ? filter.tags : undefined,
+      };
+      setPromise(api.getAllIncidentsFiltered(filterOptions));
     }
   }, [filter, setPromise]);
 

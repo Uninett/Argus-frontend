@@ -7,9 +7,7 @@ export const defaultResponse = [{ label: "none", value: "none" }];
 
 export const defaultFilter: FilterDefinition = {
   sourceSystemIds: [],
-  objectTypeIds: [],
-  parentObjectIds: [],
-  problemTypeIds: [],
+  tags: [],
 };
 
 export function mapToMetadata<T extends NameAndPK>(meta: T): Metadata {
