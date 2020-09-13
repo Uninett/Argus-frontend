@@ -1,128 +1,93 @@
 import React, { useState, useEffect } from "react";
-import Header from "../../components/header/Header";
+
+import Button from "@material-ui/core/Button";
+import Paper from "@material-ui/core/Paper";
+import MuiTable from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell, { TableCellProps } from "@material-ui/core/TableCell";
+import TableContainer from "@material-ui/core/TableContainer";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+
 import "../../components/incidenttable/incidenttable.css";
 import FilterBuilder from "../../components/filterbuilder/FilterBuilder";
 import { withRouter } from "react-router-dom";
-import api, {
-  SourceSystem,
-  IncidentMetadata,
-  Filter,
-  FilterDefinition,
-  FilterPK,
-} from "../../api";
-import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import CheckCircleIcon from "@material-ui/icons/CheckCircle";
+import api, { IncidentMetadata, Filter, FilterDefinition, SourceSystem, FilterSuccessResponse } from "../../api";
 
-import Table, { Accessor } from "../../components/table/Table";
+import { pkGetter, toMap } from "../../utils";
+
 import IncidentsPreview from "../../components/incidentspreview/IncidentsPreview";
 
-import { Metadata, defaultResponse, mapToMetadata } from "../../common/filters";
+import { useAlertSnackbar, UseAlertSnackbarResultType } from "../../components/alertsnackbar";
 
-interface Keyable {
-  pk: string | number;
-}
-
-type Dict<T> = {
-  [key: string]: T;
-};
-
-function reducer<T extends Keyable>(elements: T[], initial: Dict<T> = {}): Dict<T> {
-  return elements.reduce((acc: Dict<T>, curr: T) => ({ [curr.pk]: curr, ...acc }), initial);
-}
-
-type Id = string;
-type Name = string;
-type IdNameTuple = [Id, Name];
 interface FilterWithNames {
-  pk: FilterPK;
-  name: Name;
+  pk: Filter["pk"];
+  name: Filter["name"];
 
-  sourceSystems: IdNameTuple[];
+  sourceSystemIds: FilterDefinition["sourceSystemIds"];
+  tags: FilterDefinition["tags"];
 }
 
-type FilterDefinitionDict = {
-  sourceSystems: Dict<SourceSystem>;
+type FiltersTablePropsType = {
+  filters: Filter[];
+  knownSourcesMap: Map<SourceSystem["pk"], SourceSystem>;
+  onFilterPreview: (filter: Filter) => void;
+  onFilterDelete: (filter: Filter) => void;
 };
 
-enum IdNameField {
-  ID = 0,
-  NAME = 1,
-}
+const FiltersTable: React.FC<FiltersTablePropsType> = ({
+  knownSourcesMap,
+  filters,
+  onFilterDelete,
+  onFilterPreview,
+}: FiltersTablePropsType) => {
+  return (
+    <Paper>
+      <TableContainer component={Paper}>
+        <MuiTable size="small" aria-label="incident table">
+          <TableHead>
+            <TableRow>
+              <TableCell>Name</TableCell>
+              <TableCell>Sources</TableCell>
+              <TableCell>Tags</TableCell>
+              <TableCell>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filters.map((filter: Filter) => {
+              const ClickableCell = (props: TableCellProps) => (
+                <TableCell onClick={(event) => () => console.log("row clicked", event)} {...props} />
+              );
 
-type StringProperty<T> = {
-  [key: string]: T[];
-};
+              const sourceNames = [
+                ...(filter.sourceSystemIds as number[]).map(
+                  (id: number): string => knownSourcesMap.get(id)?.name || `[pk: ${id}]`,
+                ),
+              ].join(",");
 
-// TODO: fix this when new filter model is introduced
-// eslint-disable-next-line
-function fromIdNameTuple(property: string, field: IdNameField) {
-  // eslint-disable-next-line
-  return (row: any) => (property in row ? row[property].map((elem: any) => elem[field]) : undefined);
-}
-
-function filterWithNamesToDefinition(filterWithNames: FilterWithNames): FilterDefinition {
-  const idGetter = (element: IdNameTuple) => element[IdNameField.ID];
-
-  return {
-    sourceSystemIds: filterWithNames.sourceSystems.map(idGetter),
-  };
-}
-
-function filterToFilterWithNames(definition: FilterDefinitionDict, filter: Filter): FilterWithNames {
-  const filterDefinition: FilterDefinition = JSON.parse(filter.filter_string);
-  const sourceSystems = filterDefinition.sourceSystemIds.map(
-    (id: string): IdNameTuple => [id, definition.sourceSystems[id].name],
+              return (
+                <TableRow
+                  hover
+                  key={filter.pk}
+                  style={{
+                    cursor: "pointer",
+                  }}
+                >
+                  <ClickableCell>{filter.name}</ClickableCell>
+                  <ClickableCell>{sourceNames}</ClickableCell>
+                  <ClickableCell>{filter.tags.join(",")}</ClickableCell>
+                  <TableCell>
+                    <Button onClick={() => onFilterPreview(filter)}>Preview</Button>
+                    <Button onClick={() => onFilterDelete(filter)}>Delete</Button>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </MuiTable>
+      </TableContainer>
+    </Paper>
   );
-  return { pk: filter.pk, name: filter.name, sourceSystems };
-}
-
-type FilterTablePropType = {
-  filters: Dict<FilterWithNames>;
-  onFilterDelete: (filter: FilterWithNames) => void;
-  onFilterPreview: (filter: FilterWithNames) => void;
-};
-
-const FilterTable: React.FC<FilterTablePropType> = ({ filters, onFilterDelete, onFilterPreview }) => {
-  const withCell = (
-    id: string,
-    header: string,
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    accessor: Accessor<any>,
-    cellCreator?: (filter: FilterWithNames) => React.ReactNode,
-  ) => {
-    if (cellCreator) {
-      const cell = ({ original }: { original: FilterWithNames }) => cellCreator(original);
-      return { id, Header: header, accessor, Cell: cell };
-    }
-    return { id, Header: header, accessor };
-  };
-
-  // TODO: make type-safe
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const namesFrom = (property: string): Accessor<any> => (row: any) => {
-    return fromIdNameTuple(property, IdNameField.NAME)(row).join(", ");
-  };
-
-  const columns = [
-    withCell("name_col", "Filter name", "name"),
-    withCell("sources_col", "Sources", namesFrom("sourceSystems")),
-    withCell("actions_col", "Actions", "name_col", (filter: FilterWithNames) => {
-      return (
-        <>
-          <Button onClick={() => onFilterDelete(filter)} variant="contained" color="primary" size="small">
-            Delete
-          </Button>
-          <Button onClick={() => onFilterPreview(filter)} variant="contained" color="primary" size="small">
-            Preview
-          </Button>
-        </>
-      );
-    }),
-  ];
-
-  return <Table data={Object.values(filters)} columns={columns} sorted={[{ id: "name_col", desc: false }]} />;
 };
 
 type FiltersViewPropType = {
@@ -130,117 +95,79 @@ type FiltersViewPropType = {
   history: any;
 };
 
-const sourceSystemsResponse: Metadata[] = [];
-
 const FiltersView: React.FC<FiltersViewPropType> = () => {
-  const [sourceSystemIds, setSourceSystemIds] = useState<Metadata[]>(defaultResponse);
+  const [knownSources, setKnownSources] = useState<SourceSystem[]>([]);
+  const [knownSourcesMap, setKnownSourcesMap] = useState<Map<SourceSystem["pk"], SourceSystem>>(
+    new Map<SourceSystem["pk"], SourceSystem>(),
+  );
 
-  const [sourceSystems, setSourceSystems] = useState<Dict<SourceSystem>>({});
+  const { incidentSnackbar: filtersSnackbar, displayAlertSnackbar }: UseAlertSnackbarResultType = useAlertSnackbar();
 
-  const [loading, setLoading] = useState<boolean>(true);
-  const [showDialog, setShowDialog] = useState<[boolean, string]>([false, ""]);
-
-  const [filters, setFilters] = useState<Dict<FilterWithNames>>({});
+  const [filters, setFilters] = useState<Filter[]>([]);
 
   const [previewFilter, setPreviewFilter] = useState<FilterDefinition | undefined>(undefined);
   const [previewFilterCounter, setPreviewFilterCounter] = useState<number>(0);
 
-  // TODO: delete filters
-  function deleteFilter(filter: FilterWithNames) {
+  const onFilterPreview = (filter: FilterDefinition) => {
+    setPreviewFilter(filter);
+    setPreviewFilterCounter((counter) => counter + 1);
+  };
+
+  const onFilterCreate = (name: string, filter: FilterDefinition) => {
+    api
+      .postFilter(name, filter)
+      .then((newFilter: FilterSuccessResponse) => {
+        setFilters((filters: Filter[]) => {
+          return [...filters, { pk: newFilter.pk, name: newFilter.name, ...filter }];
+        });
+        displayAlertSnackbar(`Saved filter ${name}`, "success");
+      })
+      .catch((error) => {
+        displayAlertSnackbar(`Unable to create filter: ${name}. Try using a different name`, "error");
+        console.log(error);
+      });
+  };
+
+  const onFilterDelete = (filter: Filter) => {
     api
       .deleteFilter(filter.pk)
       .then(() => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { [filter.pk]: _, ...others } = filters;
-        setFilters(others);
-        setShowDialog([true, "Successfully deleted filter"]);
-      })
-      .catch((error) => {
-        console.log(error);
-        setShowDialog([true, `Unable to delete filter: ${filter.name}!`]);
-      });
-  }
-
-  function createFilter(name: string, filter: FilterDefinition) {
-    api
-      .postFilter(name, JSON.stringify(filter))
-      .then((filter: Filter) => {
-        setFilters({
-          [filter.pk]: filterToFilterWithNames({ sourceSystems }, filter),
-          ...filters,
+        setFilters((filters: Filter[]) => {
+          return [...filters.filter((f: Filter) => filter.pk !== f.pk)];
         });
-        setShowDialog([true, "Successfully saved filter"]);
+        displayAlertSnackbar("Deleted filter", "success");
       })
       .catch((error) => {
-        setShowDialog([true, `Unable to create filter: ${name}. Try using a different name`]);
+        displayAlertSnackbar(`Unable to delete filter: ${filter.name}!`, "error");
         console.log(error);
       });
-  }
-
-  function onPreviewFilterByDefinition(filter?: FilterDefinition) {
-    setPreviewFilterCounter((counter) => counter + 1);
-    setPreviewFilter(filter);
-  }
-
-  function onPreviewFilter(filter?: FilterWithNames) {
-    onPreviewFilterByDefinition((filter && filterWithNamesToDefinition(filter)) || undefined);
-  }
-
-  const handleClose = () => {
-    setShowDialog([false, ""]);
   };
 
   useEffect(() => {
     const fetchProblemTypes = async () => {
       const incidentMetadata: IncidentMetadata = await api.getAllIncidentsMetadata();
-
-      const sourceSystems = reducer<SourceSystem>(incidentMetadata.sourceSystems);
-
-      setSourceSystems(sourceSystems);
-
-      incidentMetadata.sourceSystems.map(mapToMetadata).forEach((m: Metadata) => sourceSystemsResponse.push(m));
-
-      setSourceSystemIds(sourceSystemsResponse);
+      setKnownSources(incidentMetadata.sourceSystems);
+      setKnownSourcesMap(toMap<SourceSystem["pk"], SourceSystem>(incidentMetadata.sourceSystems, pkGetter));
 
       const filters = await api.getAllFilters();
-      setFilters(
-        reducer<FilterWithNames>(
-          filters.map((filter: Filter) => {
-            return filterToFilterWithNames({ sourceSystems }, filter);
-          }),
-        ),
-      );
-      setLoading(false);
+      setFilters(filters);
     };
     fetchProblemTypes();
   }, []);
 
-  const filterTableOrLoading = (loading && <h1>Loading...</h1>) || (
-    <div>
-      <Dialog open={showDialog[0]} onClose={handleClose}>
-        <h1 className="dialogHeader">{showDialog[1]}</h1>
-        <div className="dialogDiv">
-          {showDialog[1] === " Successfully saved filter " ? <CheckCircleIcon color={"primary"} /> : ""}
-        </div>
-      </Dialog>
-      <FilterTable filters={filters} onFilterDelete={deleteFilter} onFilterPreview={onPreviewFilter} />
-    </div>
-  );
-
   return (
     <div>
-      <header>
-        {" "}
-        <Header />{" "}
-      </header>
+      {filtersSnackbar}
       <h1 className={"filterHeader"}>Your filters</h1>
-      {filterTableOrLoading}
-      <h1 className={"filterHeader"}>Build custom filter </h1>
-      <FilterBuilder
-        onFilterPreview={(filter: FilterDefinition) => onPreviewFilterByDefinition(filter)}
-        sourceSystemIds={sourceSystemIds}
-        onFilterCreate={createFilter}
+      <FiltersTable
+        knownSourcesMap={knownSourcesMap}
+        filters={filters}
+        onFilterDelete={onFilterDelete}
+        onFilterPreview={onFilterPreview}
       />
+      <h1 className={"filterHeader"}>Build custom filter </h1>
+      <FilterBuilder onFilterPreview={onFilterPreview} onFilterCreate={onFilterCreate} knownSources={knownSources} />
       <h1 className={"filterHeader"}>Preview</h1>
       <div className="previewList">
         <IncidentsPreview key={previewFilterCounter} filter={previewFilter} />
