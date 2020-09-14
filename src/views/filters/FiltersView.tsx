@@ -9,6 +9,8 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 
+import Header from "../../components/header/Header";
+
 import "../../components/incidenttable/incidenttable.css";
 import FilterBuilder from "../../components/filterbuilder/FilterBuilder";
 import { withRouter } from "react-router-dom";
@@ -158,6 +160,7 @@ const FiltersView: React.FC<FiltersViewPropType> = () => {
 
   return (
     <div>
+      <Header />
       {filtersSnackbar}
       <h1 className={"filterHeader"}>Your filters</h1>
       <FiltersTable
