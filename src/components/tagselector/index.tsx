@@ -12,9 +12,14 @@ export type Tag = {
 export type TagSelectorPropsType = {
   tags: Tag[];
   onSelectionChange: (tags: Tag[]) => void;
+  disabled?: boolean;
 };
 
-export const TagSelector: React.FC<TagSelectorPropsType> = ({ tags, onSelectionChange }: TagSelectorPropsType) => {
+export const TagSelector: React.FC<TagSelectorPropsType> = ({
+  tags,
+  onSelectionChange,
+  disabled,
+}: TagSelectorPropsType) => {
   const [value, setValue] = useState<string>("");
   const [selectValue, setSelectValue] = useState<string[]>([]);
 
@@ -55,6 +60,7 @@ export const TagSelector: React.FC<TagSelectorPropsType> = ({ tags, onSelectionC
       id="filter-select-tags"
       disableClearable
       options={tags.map((tag: Tag) => tag.key)}
+      disabled={disabled}
       onChange={(e: unknown, changeValue, reason: string) => {
         console.log("onChange", reason, changeValue);
         switch (reason) {

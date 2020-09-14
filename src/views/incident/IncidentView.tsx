@@ -84,7 +84,7 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
           <Grid container xl direction="row" justify="space-evenly" alignItems="stretch">
             <Grid item md>
               <Typography>Show open/closed</Typography>
-              <Select variant="outlined" value={show} onChange={handleShowChange}>
+              <Select disabled={isLoading} variant="outlined" value={show} onChange={handleShowChange}>
                 <MenuItem value={"open"}>Open</MenuItem>
                 <MenuItem value={"closed"}>Closed</MenuItem>
                 <MenuItem value={"both"}>Both</MenuItem>
@@ -93,17 +93,18 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
 
             <Grid item md>
               <Typography>Show acked events</Typography>
-              <Checkbox checked={showAcked} onClick={() => setShowAcked((old) => !old)} />
+              <Checkbox disabled={isLoading} checked={showAcked} onClick={() => setShowAcked((old) => !old)} />
             </Grid>
 
             <Grid item md>
               <Typography>Realtime</Typography>
-              <Checkbox checked={realtime} onClick={() => setRealtime((old) => !old)} />
+              <Checkbox disabled={isLoading} checked={realtime} onClick={() => setRealtime((old) => !old)} />
             </Grid>
 
             <Grid item md>
               <Typography>Sources to display</Typography>
               <SourceSelector
+                disabled={isLoading}
                 sources={knownSources}
                 onSelectionChange={(selection: string[]) => {
                   setSources((selection.length !== 0 && selection) || "AllSources");
@@ -114,6 +115,7 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
             <Grid item md>
               <Typography>Tags filter</Typography>
               <TagSelector
+                disabled={isLoading}
                 tags={tags}
                 onSelectionChange={useCallback((selection: Tag[]) => {
                   console.log("selection changed", selection);
@@ -125,7 +127,13 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
         </CardContent>
       </Card>
       <div className="table">
-        <IncidentTable realtime={realtime} open={show === "open"} incidents={incidents || []} noDataText={noDataText} />
+        <IncidentTable
+          isLoading={isLoading}
+          realtime={realtime}
+          open={show === "open"}
+          incidents={incidents || []}
+          noDataText={noDataText}
+        />
       </div>
     </div>
   );

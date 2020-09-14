@@ -49,9 +49,10 @@ const useToolbarStyles = makeStyles((theme: Theme) =>
 
 interface TableToolbarPropsType {
   selectedIncidents: Set<Incident["pk"]> | "SelectedAll";
+  isLoading?: boolean;
 }
 
-const TableToolbar: React.FC<TableToolbarPropsType> = ({ selectedIncidents }: TableToolbarPropsType) => {
+const TableToolbar: React.FC<TableToolbarPropsType> = ({ selectedIncidents, isLoading }: TableToolbarPropsType) => {
   const classes = useToolbarStyles();
   const rootClasses = useStyles();
 
@@ -63,7 +64,7 @@ const TableToolbar: React.FC<TableToolbarPropsType> = ({ selectedIncidents }: Ta
         </Typography>
       ) : (
         <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
-          Incidents
+          {(isLoading && "Loading incidents...") || "Incidents"}
         </Typography>
       )}
 
@@ -131,11 +132,13 @@ function stableSort<T>(array: T[], comparator: (a: T, b: T) => number) {
 type MUIIncidentTablePropsType = {
   incidents: Incident[];
   onShowDetail: (incide: Incident) => void;
+  isLoading?: boolean;
 };
 
 const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
   incidents,
   onShowDetail,
+  isLoading,
 }: MUIIncidentTablePropsType) => {
   const classes = useStyles();
   type SelectionState = "SelectedAll" | Set<Incident["pk"]>;
@@ -201,13 +204,13 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
 
   return (
     <Paper>
-      <TableToolbar selectedIncidents={selectedIncidents} />
+      <TableToolbar isLoading={isLoading} selectedIncidents={selectedIncidents} />
       <TableContainer component={Paper}>
         <MuiTable size="small" aria-label="incident table">
           <TableHead>
             <TableRow>
               <TableCell padding="checkbox" onClick={() => handleToggleSelectAll()}>
-                <Checkbox checked={selectedIncidents === "SelectedAll"} />
+                <Checkbox disabled={isLoading} checked={selectedIncidents === "SelectedAll"} />
               </TableCell>
               <TableCell>Id</TableCell>
               <TableCell>Timestamp</TableCell>
@@ -237,7 +240,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                     }}
                   >
                     <TableCell padding="checkbox" onClick={() => handleSelectIncident(incident)}>
-                      <Checkbox checked={isSelected} />
+                      <Checkbox disabled={isLoading} checked={isSelected} />
                     </TableCell>
                     <ClickableCell>{incident.pk}</ClickableCell>
                     <ClickableCell>{new Date(incident.start_time).toLocaleString()}</ClickableCell>
@@ -249,11 +252,15 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                     <ClickableCell>{incident.source.name}</ClickableCell>
                     <ClickableCell>{incident.description}</ClickableCell>
                     <TableCell>
-                      <Button className={classes.safeButton} onClick={() => onShowDetail(incident)}>
+                      <Button
+                        disabled={isLoading}
+                        className={classes.safeButton}
+                        onClick={() => onShowDetail(incident)}
+                      >
                         Details
                       </Button>
                       {true && (
-                        <Button className={classes.safeButton} href="https://localhost.com">
+                        <Button disabled={isLoading} className={classes.safeButton} href="https://localhost.com">
                           Ticket
                         </Button>
                       )}
@@ -284,9 +291,10 @@ type IncidentsProps = {
   noDataText: string;
   realtime?: boolean;
   open?: boolean;
+  isLoading?: boolean;
 };
 
-const IncidentTable: React.FC<IncidentsProps> = ({ incidents, realtime, open }: IncidentsProps) => {
+const IncidentTable: React.FC<IncidentsProps> = ({ incidents, realtime, open, isLoading }: IncidentsProps) => {
   const [incidentForDetail, setIncidentForDetail] = useState<Incident | undefined>(undefined);
 
   const incidentsDictFromProps = useMemo<Revisioned<Map<Incident["pk"], Incident>>>(
@@ -461,7 +469,7 @@ const IncidentTable: React.FC<IncidentsProps> = ({ incidents, realtime, open }: 
           )) || <h1>Empty</h1>}
         </Dialog>
         {realtime && <Typography>Realtime</Typography>}
-        <MUIIncidentTable incidents={incidentsUpdated} onShowDetail={handleShowDetail} />
+        <MUIIncidentTable isLoading={isLoading} incidents={incidentsUpdated} onShowDetail={handleShowDetail} />
         {incidentSnackbar}
       </div>
     </ClickAwayListener>
