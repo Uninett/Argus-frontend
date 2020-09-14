@@ -83,12 +83,25 @@ export const EmptyFilterDefinition = {
 
 export type MediaAlternative = "EM" | "SM" | "SL";
 
+export type PhoneNumberPK = number;
+
+export interface PhoneNumber {
+  pk: PhoneNumberPK;
+  user: number;
+  phone_number: string;
+}
+
+export type PhoneNumberRequest = Omit<PhoneNumber, "pk" | "user">;
+export type PhoneNumberSuccessResponse = PhoneNumber;
+
 export type NotificationProfilePK = number;
+
 export interface NotificationProfileKeyed {
   timeslot: TimeslotPK;
   filters: FilterPK[];
   media: MediaAlternative[];
   active: boolean;
+  phone_number: PhoneNumber["pk"] | null;
 }
 
 export interface NotificationProfile {
@@ -97,6 +110,7 @@ export interface NotificationProfile {
   filters: Filter[];
   media: MediaAlternative[];
   active: boolean;
+  phone_number: PhoneNumber | null;
 }
 
 export interface SourceSystem {
@@ -204,17 +218,6 @@ export type AcknowledgementBody = {
   event: AcknowledgementEventBody;
   expiration: Timestamp | undefined | null;
 };
-
-export type PhoneNumberPK = number;
-
-export type PhoneNumberRequest = Omit<PhoneNumber, "pk" | "user">;
-export type PhoneNumberSuccessResponse = PhoneNumber;
-
-export interface PhoneNumber {
-  pk: number;
-  user: number;
-  phone_number: string;
-}
 
 export type Resolver<T, P> = (data: T) => P;
 
@@ -386,6 +389,8 @@ export class ApiClient {
     filters: FilterPK[],
     media: MediaAlternative[],
     active: boolean,
+    // eslint-disable-next-line
+    phone_number?: PhoneNumberPK | null,
   ): Promise<NotificationProfile> {
     return resolveOrReject(
       this.authPut<NotificationProfileSuccessResponse, NotificationProfileRequest>(
@@ -395,6 +400,8 @@ export class ApiClient {
           filters,
           media,
           active,
+          // eslint-disable-next-line
+          phone_number: phone_number || null,
         },
       ),
       defaultResolver,
@@ -407,6 +414,8 @@ export class ApiClient {
     filters: FilterPK[],
     media: MediaAlternative[],
     active: boolean,
+    // eslint-disable-next-line
+    phone_number?: PhoneNumberPK | null,
   ): Promise<NotificationProfile> {
     return resolveOrReject(
       this.authPost<NotificationProfileSuccessResponse, NotificationProfileRequest>(`/api/v1/notificationprofiles/`, {
@@ -415,6 +424,8 @@ export class ApiClient {
         filters,
         media,
         active,
+        // eslint-disable-next-line
+        phone_number: phone_number || null,
       }),
       defaultResolver,
       (error) => new Error(`Failed to create notification profile ${timeslot}: ${error}`),

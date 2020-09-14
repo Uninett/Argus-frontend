@@ -15,6 +15,7 @@ import api, {
   Timeslot,
   TimeslotPK,
   MediaAlternative,
+  PhoneNumber,
 } from "../../api";
 import { createUsePromise, useApiFilters } from "../../api/hooks";
 import { toMap, pkGetter, removeUndefined } from "../../utils";
@@ -57,6 +58,14 @@ const ProfileList: React.FC = () => {
   );
   const [timeslots, setTimeslots] = useState<Map<TimeslotPK, Timeslot>>(new Map<TimeslotPK, Timeslot>());
   const [availableTimeslots, setAvailableTimeslots] = useState<Set<TimeslotPK>>(new Set<TimeslotPK>());
+
+  const [phoneNumbers, setPhoneNumbers] = useState<PhoneNumber[]>([]);
+
+  useEffect(() => {
+    api.getAllPhoneNumbers().then((phoneNumbers: PhoneNumber[]) => {
+      setPhoneNumbers(phoneNumbers);
+    });
+  }, []);
 
   const [action, setAction] = useState<Action>({ message: "", success: false, completed: false });
 
@@ -168,6 +177,7 @@ const ProfileList: React.FC = () => {
         removeUndefined(profile.filters).map((filter: Filter): FilterPK => filter.pk),
         profile.media,
         profile.active,
+        profile.phone_number?.pk || null,
       )
       .then((newProfile: NotificationProfile) => {
         // Special case: handle when the update function failes.
@@ -203,7 +213,13 @@ const ProfileList: React.FC = () => {
 
   const createNewProfile = (profile: Omit<NotificationProfileKeyed, "pk">) => {
     api
-      .postNotificationProfile(profile.timeslot, profile.filters, profile.media, profile.active)
+      .postNotificationProfile(
+        profile.timeslot,
+        profile.filters,
+        profile.media,
+        profile.active,
+        profile?.phone_number || null,
+      )
       .then((profile: NotificationProfile) => {
         setNewProfile(undefined);
         setProfiles((profiles: Map<NotificationProfilePK, RevisedNotificationProfile>) => {
@@ -241,9 +257,11 @@ const ProfileList: React.FC = () => {
       filters={filters || new Map<FilterPK, Filter>()}
       timeslots={timeslots || new Map<TimeslotPK, Timeslot>()}
       mediums={mediaOptions}
+      phoneNumbers={phoneNumbers || []}
       selectedMediums={newProfile?.media || []}
       selectedFilters={newProfile?.filters || []}
       selectedTimeslot={newProfile.timeslot}
+      phoneNumber={newProfile?.phone_number || null}
       isTimeslotInUse={(timeslot: Timeslot) => usedTimeslots.has(timeslot.name)}
       onNewDelete={deleteNewProfile}
       onSavedDelete={deleteSavedProfile}
@@ -284,6 +302,8 @@ const ProfileList: React.FC = () => {
                   active={profile.active}
                   filters={filters || new Map<FilterPK, Filter>()}
                   timeslots={timeslots || new Map<TimeslotPK, Timeslot>()}
+                  phoneNumbers={phoneNumbers || []}
+                  phoneNumber={profile.phone_number}
                   isTimeslotInUse={(timeslot: Timeslot): boolean => usedTimeslots.has(timeslot.name)}
                   key={`${profile.pk}-${profile.revision}`}
                   pk={profile.pk}
