@@ -487,10 +487,12 @@ export class ApiClient {
     );
   }
 
-  public patchIncidentTicketUrl(pk: number, ticketUrl: string): Promise<Incident> {
+  public patchIncidentTicketUrl(pk: number, ticketUrl: string): Promise<IncidentTicketUrlBody> {
     return resolveOrReject(
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      this.authPut<Incident, IncidentTicketUrlBody>(`/api/v1/incidents/${pk}/ticket_url/`, { ticket_url: ticketUrl }),
+      this.authPut<IncidentTicketUrlBody, IncidentTicketUrlBody>(`/api/v1/incidents/${pk}/ticket_url/`, {
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        ticket_url: ticketUrl,
+      }),
       defaultResolver,
       (error) => new Error(`Failed to put incident ticket url: ${error}`),
     );

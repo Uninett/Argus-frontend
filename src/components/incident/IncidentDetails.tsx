@@ -29,7 +29,15 @@ import { makeConfirmationButton } from "../../components/buttons/ConfirmationBut
 import { UseAlertSnackbarResultType } from "../../components/alertsnackbar";
 import CenterContainer from "../../components/centercontainer";
 
-import api, { Event, EventType, Incident, IncidentTag, Acknowledgement, AcknowledgementBody } from "../../api";
+import api, {
+  Event,
+  EventType,
+  Incident,
+  IncidentTag,
+  IncidentTicketUrlBody,
+  Acknowledgement,
+  AcknowledgementBody,
+} from "../../api";
 import { useApiIncidentAcks, useApiIncidentEvents } from "../../api/hooks";
 
 import SignedMessage from "./SignedMessage";
@@ -453,9 +461,12 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                       // TODO: api
                       api
                         .patchIncidentTicketUrl(incident.pk, url || "")
-                        .then((incident: Incident) => {
+                        // eslint-disable-next-line @typescript-eslint/camelcase
+                        .then(({ ticket_url }: IncidentTicketUrlBody) => {
                           displayAlertSnackbar(`Updated ticket URL for ${incident.pk}`, "success");
-                          onIncidentChange(incident);
+
+                          // eslint-disable-next-line @typescript-eslint/camelcase
+                          onIncidentChange({ ...incident, ticket_url });
                         })
                         .catch((error) => {
                           displayAlertSnackbar(`Failed to updated ticket URL ${error}`, "error");
