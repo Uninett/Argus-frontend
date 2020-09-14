@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import "./IncidentView.css";
 import Header from "../../components/header/Header";
 import IncidentTable from "../../components/incidenttable/IncidentTable";
@@ -15,9 +15,8 @@ import Typography from "@material-ui/core/Typography";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 
-import api, { Incident } from "../../api";
+import api, { IncidentMetadata, IncidentsFilterOptions, SourceSystem } from "../../api";
 import { useApiIncidents } from "../../api/hooks";
-import { removeUndefined, groupBy } from "../../utils";
 
 import TagSelector, { Tag } from "../../components/tagselector";
 import SourceSelector from "../../components/sourceselector";
@@ -30,8 +29,10 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
   const [realtime, setRealtime] = useState<boolean>(true);
   const [showAcked, setShowAcked] = useState<boolean>(false);
   const [tagsFilter, setTagsFilter] = useState<Tag[]>([]);
-  const [sources, setSources] = useState<Set<string> | "AllSources">("AllSources");
+  const [sources, setSources] = useState<string[] | "AllSources">("AllSources");
   const [show, setShow] = useState<"open" | "closed" | "both">("open");
+
+  const [knownSources, setKnownSources] = useState<string[]>([]);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [tags, setTags] = useState<Tag[]>([
@@ -42,90 +43,31 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
   const [{ result: incidents, isLoading, isError }, setPromise] = useApiIncidents();
 
   useEffect(() => {
-    if (show === "open") {
-      if (showAcked) setPromise(api.getOpenIncidents());
-      else setPromise(api.getOpenUnAckedIncidents());
-    } else setPromise(api.getAllIncidents());
-  }, [setPromise, show, showAcked]);
-
-  const noDataText = isLoading ? LOADING_TEXT : isError ? ERROR_TEXT : NO_DATA_TEXT;
-
-  const [incidentsMap, incidentsTags] = useMemo<
-    [Map<Incident["pk"], Incident>, Map<string, Set<Incident["pk"]>>]
-  >(() => {
-    const incidentsMap = new Map<Incident["pk"], Incident>();
-    const incidentsTags = new Map<string, Set<Incident["pk"]>>();
-    for (const incident of incidents || []) {
-      incidentsMap.set(incident.pk, incident);
-      for (const incidentTag of incident.tags) {
-        if (incidentsTags.has(incidentTag.tag)) {
-          const tagSet = incidentsTags.get(incidentTag.tag) || new Set<Incident["pk"]>();
-          tagSet.add(incident.pk);
-          incidentsTags.set(incidentTag.tag, tagSet);
-        } else {
-          incidentsTags.set(
-            incidentTag.tag,
-            new Set<Incident["pk"]>([incident.pk]),
-          );
-        }
-      }
-    }
-    return [incidentsMap, incidentsTags];
-  }, [incidents]);
-
-  const filteredIncidents = useMemo<Incident[]>(() => {
-    const filterOnSources = (incident: Incident) => sources === "AllSources" || sources.has(incident.source.name);
-
-    const tagsFilterByType = groupBy<Tag["key"], Tag>(tagsFilter, (elem: Tag) => elem.key);
-
-    // returns incidents matching any tag of that type
-    const getIncidentsMatchingType = (type: string): Set<Incident["pk"]> => {
-      const allMatching = new Set<Incident["pk"]>();
-
-      const tagsOfType = tagsFilterByType.get(type);
-      if (!tagsOfType) return new Set<Incident["pk"]>();
-
-      for (const tag of tagsOfType) {
-        const incidentsWithTag = incidentsTags.get(tag.original);
-        if (!incidentsWithTag) continue;
-
-        [...incidentsWithTag.values()].forEach((pk: Incident["pk"]) => allMatching.add(pk));
-      }
-      return allMatching;
+    const showToOpenMap: Record<"open" | "closed" | "both", boolean | undefined> = {
+      open: true,
+      closed: false,
+      both: undefined,
     };
 
-    let filteredByTags: Incident[];
-    if (tagsFilter.length > 0) {
-      const matchingSets = getIncidentsMatchingType(tagsFilter[0].key);
-      if (!matchingSets) {
-        filteredByTags = [];
-      } else {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        for (const [type, ...rest] of tagsFilterByType) {
-          const incidentsMatchingTag = getIncidentsMatchingType(type);
-          for (const pk of matchingSets) {
-            if (!incidentsMatchingTag.has(pk)) matchingSets.delete(pk);
-          }
-        }
-        filteredByTags = removeUndefined([...matchingSets.values()].map((pk: Incident["pk"]) => incidentsMap.get(pk)));
-      }
-    } else {
-      filteredByTags = [...incidentsMap.values()];
-    }
+    const filterOptions: IncidentsFilterOptions = {
+      open: showToOpenMap[show],
 
-    // TODO: filtering on active should be done in the backend API
-    return (
-      filteredByTags
-        .filter((incident: Incident) => (show === "open" ? incident.open : show === "closed" ? !incident.open : true))
-        .filter((incident: Incident) => showAcked || !incident.acked)
-        .filter(filterOnSources) || []
-    );
-  }, [incidentsMap, incidentsTags, show, showAcked, tagsFilter, sources]);
+      // The frontend is only conserned if acked incidents should be
+      // displayed, not that ONLY acked incidents should be displayed.
+      // Only filter on the acked property when
+      acked: showAcked === true ? undefined : false,
+      tags: tagsFilter.map((tag: Tag) => tag.original),
+      sourceSystemNames: sources === "AllSources" ? undefined : sources,
+    };
+    setPromise(api.getAllIncidentsFiltered(filterOptions));
 
-  const sourceAlts = useMemo(
-    () => [...new Set([...(incidents || []).map((incident: Incident) => incident.source.name)]).values()],
-    [incidents],
-  );
+    // Refresh metadata every time as well.
+    api.getAllIncidentsMetadata().then((incidentMetadata: IncidentMetadata) => {
+      setKnownSources(incidentMetadata.sourceSystems.map((source: SourceSystem) => source.name));
+    });
+  }, [setPromise, show, showAcked, tagsFilter, sources]);
+
+  const noDataText = isLoading ? LOADING_TEXT : isError ? ERROR_TEXT : NO_DATA_TEXT;
 
   const handleShowChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setShow(event.target.value as "open" | "closed" | "both");
@@ -162,10 +104,9 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
             <Grid item md>
               <Typography>Sources to display</Typography>
               <SourceSelector
-                sources={sourceAlts}
+                sources={knownSources}
                 onSelectionChange={(selection: string[]) => {
-                  console.log("source selection changed", selection);
-                  setSources((selection.length !== 0 && new Set<string>(selection)) || "AllSources");
+                  setSources((selection.length !== 0 && selection) || "AllSources");
                 }}
               />
             </Grid>
@@ -184,12 +125,7 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
         </CardContent>
       </Card>
       <div className="table">
-        <IncidentTable
-          realtime={realtime}
-          open={show === "open"}
-          incidents={filteredIncidents}
-          noDataText={noDataText}
-        />
+        <IncidentTable realtime={realtime} open={show === "open"} incidents={incidents || []} noDataText={noDataText} />
       </div>
     </div>
   );
