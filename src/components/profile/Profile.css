@@ -1,7 +1,7 @@
 .notification-container {
   display: grid;
-  grid-template-areas: "activeBox  timeslot filter media  buttons";
-  grid-template-columns: 1fr 3fr 8fr 5fr 140px;
+  grid-template-areas: "activeBox  timeslot filter media phonenumber buttons";
+  grid-template-columns: 1fr 3fr 5fr 5fr 3fr 140px;
   margin: auto;
   margin-top: 10px;
   border-radius: 5px;
@@ -18,6 +18,12 @@
   margin: 0 10px 10px 10px;
   grid-area: media;
 }
+
+.dropdown-phonenumber {
+  margin: 0 10px 10px 10px;
+  grid-area: phonenumber;
+}
+
 .dropdown-timeslots {
   margin: 0 10px 10px 10px;
   grid-area: timeslot;

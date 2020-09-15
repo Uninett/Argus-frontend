@@ -6,11 +6,13 @@ import TextField from "@material-ui/core/TextField";
 export type SourceSelectorPropsType = {
   sources: string[];
   onSelectionChange: (source: string[]) => void;
+  disabled?: boolean;
 };
 
 export const SourceSelector: React.FC<SourceSelectorPropsType> = ({
   sources,
   onSelectionChange,
+  disabled,
 }: SourceSelectorPropsType) => {
   return (
     <Autocomplete
@@ -20,6 +22,7 @@ export const SourceSelector: React.FC<SourceSelectorPropsType> = ({
       id="filter-select-tags"
       disableClearable
       options={sources}
+      disabled={disabled}
       renderInput={(params) => (
         <TextField {...params} variant="outlined" InputProps={{ ...params.InputProps, type: "search" }} />
       )}

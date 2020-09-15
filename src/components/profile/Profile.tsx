@@ -16,6 +16,7 @@ import {
   Timeslot,
   TimeslotPK,
   MediaAlternative,
+  PhoneNumber,
 } from "../../api";
 import { useStateWithDynamicDefault, pkGetter, toMap } from "../../utils";
 import Selector from "../selector";
@@ -31,6 +32,8 @@ type ProfileProps = {
 
   filters: Map<FilterPK, Filter>;
   timeslots: Map<TimeslotPK, Timeslot>;
+  phoneNumbers: PhoneNumber[];
+
   // TODO: Rename to media here (plural of medium),
   // and rename MediaAlternative to Medium
   mediums: { label: string; value: MediaAlternative }[];
@@ -38,6 +41,8 @@ type ProfileProps = {
   selectedFilters: Filter[];
   selectedMediums: MediaAlternative[];
   selectedTimeslot?: Timeslot;
+
+  phoneNumber: PhoneNumber | null;
 
   isTimeslotInUse: (timeslot: Timeslot) => boolean;
 
@@ -60,10 +65,13 @@ const Profile: React.FC<ProfileProps> = ({
   filters,
   timeslots,
   mediums,
+  phoneNumbers,
+
   selectedMediums,
   selectedFilters,
   selectedTimeslot,
 
+  phoneNumber,
   isTimeslotInUse,
 
   onNewDelete,
@@ -84,6 +92,8 @@ const Profile: React.FC<ProfileProps> = ({
     filters: [...selectedFilters.values()],
     timeslot: selectedTimeslot,
     media: [...selectedMediums.values()],
+    // eslint-disable-next-line @typescript-eslint/camelcase
+    phone_number: phoneNumber,
   });
 
   const saveProfile = async (profile: Partial<NotificationProfile>) => {
@@ -92,7 +102,8 @@ const Profile: React.FC<ProfileProps> = ({
       profile.active !== undefined &&
       profile.filters !== undefined &&
       profile.media !== undefined &&
-      profile.timeslot !== undefined
+      profile.timeslot !== undefined &&
+      profile.phone_number !== undefined
     ) {
       if (exists && pk !== undefined && !changedTimeslot) {
         setIsDisabled(true);
@@ -102,6 +113,8 @@ const Profile: React.FC<ProfileProps> = ({
           filters: profile.filters,
           media: profile.media,
           active: profile.active,
+          // eslint-disable-next-line @typescript-eslint/camelcase
+          phone_number: profile.phone_number,
         });
       } else {
         setIsDisabled(true);
@@ -116,6 +129,8 @@ const Profile: React.FC<ProfileProps> = ({
           filters: profile.filters.map((filter: Filter): FilterPK => pkGetter<FilterPK, Filter>(filter)),
           media: profile.media,
           active: profile.active,
+          // eslint-disable-next-line @typescript-eslint/camelcase
+          phone_number: profile.phone_number ? profile.phone_number.pk : null,
         });
       }
       // setHasChanged(false);
@@ -174,6 +189,20 @@ const Profile: React.FC<ProfileProps> = ({
     }
   }
 
+  function onSelectPhoneNumber(phoneNumbers?: SelectorPhoneNumberAlternative | SelectorPhoneNumberAlternative[]) {
+    if (Array.isArray(phoneNumbers)) {
+      // NOT SUPPORTED ?
+      return;
+    }
+
+    setHasChanged(true);
+    setProfile((profile: Partial<NotificationProfile>) => {
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      return { ...profile, phone_number: phoneNumbers?.phoneNumber || null || null };
+    });
+    return;
+  }
+
   function onActiveChanged() {
     setHasChanged(true);
     setProfile((profile: Partial<NotificationProfile>) => {
@@ -195,6 +224,20 @@ const Profile: React.FC<ProfileProps> = ({
     return mediums.map((medium: { label: string; value: MediaAlternative }) => ({
       pk: medium.value,
       name: medium.label,
+    }));
+  }
+
+  type SelectorPhoneNumberAlternative = {
+    pk: string;
+    name: string;
+    phoneNumber: PhoneNumber;
+  };
+
+  function phoneNumbersToOptions(phoneNumbers: PhoneNumber[]): SelectorPhoneNumberAlternative[] {
+    return phoneNumbers.map((phoneNumber: PhoneNumber) => ({
+      pk: phoneNumber.pk.toString(), // must convert to string and back...
+      name: phoneNumber.phone_number,
+      phoneNumber,
     }));
   }
 
@@ -277,6 +320,20 @@ const Profile: React.FC<ProfileProps> = ({
             )}
             enabledOptionsKeys={new Set<MediaAlternative>([...selectedMediums.values()])}
             onSelectChange={onSelectMediums}
+            disabled={isDisabled}
+          />
+        </div>
+      </div>
+      <div className="dropdown-phonenumber">
+        <h4>Phone number:</h4>
+        <div className="dropdown-media multi-select">
+          <Selector<SelectorPhoneNumberAlternative, PhoneNumber["phone_number"]>
+            key={"phonenumberselector"}
+            options={toMap<string, SelectorPhoneNumberAlternative>(phoneNumbersToOptions(phoneNumbers), pkGetter)}
+            enabledOptionsKeys={
+              profile.phone_number ? new Set<string>([profile.phone_number.pk.toString()]) : new Set()
+            }
+            onSelectChange={onSelectPhoneNumber}
             disabled={isDisabled}
           />
         </div>
