@@ -156,10 +156,15 @@ export interface EventTypeTuple {
   display: string;
 }
 
+export type EventActor = {
+  pk: number;
+  username: string;
+};
+
 export interface Event {
   pk: number;
   incident: number;
-  actor: number;
+  actor: EventActor;
   timestamp: Timestamp;
   type: EventTypeTuple;
   description: string;

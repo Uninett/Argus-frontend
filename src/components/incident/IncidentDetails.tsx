@@ -73,7 +73,7 @@ const EventListItem: React.FC<EventListItemPropsType> = ({ event }: EventListIte
       <SignedMessage
         message={event.description}
         timestamp={event.timestamp}
-        user={event.actor}
+        username={event.actor.username}
         content={
           <ListItemText
             primary={event.type.display}
@@ -202,7 +202,7 @@ const AckListItem: React.FC<AckListItemPropsType> = ({ ack }: AckListItemPropsTy
       <SignedMessage
         message={ack.event.description}
         timestamp={formattedAckDate}
-        user={ack.event.actor}
+        username={ack.event.actor.username}
         content={
           <ListItemText
             primary={expiresMessage || ""}
@@ -388,10 +388,10 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
 
   // These are just used for "skeletons" that are displayed
   // when the data is loading.
-  const defaultEvent = {
+  const defaultEvent: Event = {
     pk: 1,
     incident: 1,
-    actor: 2,
+    actor: { pk: 2, username: "test" },
     timestamp: "2011-11-11T11:11:11+02:00",
     type: {
       value: EventType.INCIDENT_START,
@@ -400,12 +400,9 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
     description: "",
   };
 
-  const defaultAck = {
+  const defaultAck: Acknowledgement = {
     pk: 1,
     event: defaultEvent,
-    user: "testuser2",
-    timestamp: "2020-01-14T03:04:14.387000+01:00",
-    message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris vulputate id erat non pretium.",
     expiration: "2020-02-14T03:04:14.387000+01:00",
   };
 
