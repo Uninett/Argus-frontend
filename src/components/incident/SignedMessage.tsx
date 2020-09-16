@@ -7,7 +7,7 @@ import { Timestamp } from "../../api";
 
 type SignedMessagePropsType = {
   message: string;
-  user: string | number; // FIXME: should be username of course...
+  username: string;
   timestamp: Timestamp;
 
   content?: React.ReactNode;
@@ -16,7 +16,7 @@ type SignedMessagePropsType = {
 
 const SignedMessage: React.FC<SignedMessagePropsType> = ({
   message,
-  user,
+  username,
   timestamp,
   content,
   TextComponent,
@@ -32,7 +32,7 @@ const SignedMessage: React.FC<SignedMessagePropsType> = ({
 
       <Grid container direction="row" spacing={2}>
         <Grid item sm>
-          <Component>{user}</Component>
+          <Component>{username}</Component>
         </Grid>
         <Grid item container sm alignItems="flex-end" justify="space-evenly">
           <Component>{formattedAckDate}</Component>
