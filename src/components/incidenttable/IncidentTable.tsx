@@ -52,6 +52,7 @@ interface TableToolbarPropsType {
   isLoading?: boolean;
 }
 
+/* TODO: Not implemented completely */
 const TableToolbar: React.FC<TableToolbarPropsType> = ({ selectedIncidents, isLoading }: TableToolbarPropsType) => {
   const classes = useToolbarStyles();
   const rootClasses = useStyles();
@@ -204,14 +205,20 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
 
   return (
     <Paper>
+      {/* TODO: Not implemented yet */}
+      { false &&
       <TableToolbar isLoading={isLoading} selectedIncidents={selectedIncidents} />
+      }
       <TableContainer component={Paper}>
         <MuiTable size="small" aria-label="incident table">
           <TableHead>
             <TableRow>
+              {/* TODO: Not implemented yet */}
+              { false &&
               <TableCell padding="checkbox" onClick={() => handleToggleSelectAll()}>
                 <Checkbox disabled={isLoading} checked={selectedIncidents === "SelectedAll"} />
               </TableCell>
+              }
               <TableCell>Id</TableCell>
               <TableCell>Timestamp</TableCell>
               <TableCell>Status</TableCell>
@@ -239,9 +246,12 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                       cursor: "pointer",
                     }}
                   >
+                    {/* TODO: Not implemented yet */}
+                    { false &&
                     <TableCell padding="checkbox" onClick={() => handleSelectIncident(incident)}>
                       <Checkbox disabled={isLoading} checked={isSelected} />
                     </TableCell>
+                    }
                     <ClickableCell>{incident.pk}</ClickableCell>
                     <ClickableCell>{new Date(incident.start_time).toLocaleString()}</ClickableCell>
                     <ClickableCell component="th" scope="row">
