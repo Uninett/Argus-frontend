@@ -118,3 +118,9 @@ export function dateFromTimeOfDayString(timeOfDay: string): Date {
   const [hours, minutes, seconds] = timeOfDay.split(":").map((str: string) => Number.parseInt(str));
   return new Date(1970, 1, 1, hours, minutes, seconds);
 }
+
+export function formatTimestamp(timestamp: Date | string): string {
+  /* TODO: Have (global?) setting on user to allow forcing of ISO 8601 */
+  const dateTimestamp = new Date(timestamp);
+  return dateTimestamp.toLocaleString();
+}
