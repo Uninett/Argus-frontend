@@ -259,7 +259,8 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                       >
                         Details
                       </Button>
-                      {true && (
+                      {/* TODO: Not implementd yet */}
+                      {false && (
                         <Button disabled={isLoading} className={classes.safeButton} href="https://localhost.com">
                           Ticket
                         </Button>
