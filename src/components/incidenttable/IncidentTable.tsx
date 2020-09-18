@@ -464,7 +464,7 @@ const IncidentTable: React.FC<IncidentsProps> = ({ incidents, realtime, open, is
                     <CloseIcon />
                   </IconButton>
                   <Typography variant="h6" className={classes.title}>
-                    Incident {incidentForDetail.pk}
+                    {incidentForDetail.pk}: {incidentForDetail.description}
                   </Typography>
                 </Toolbar>
               </AppBar>
