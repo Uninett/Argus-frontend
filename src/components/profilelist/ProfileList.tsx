@@ -137,7 +137,6 @@ const ProfileList: React.FC = () => {
   }, [filtersIsError, combinedIsError, displayAlertSnackbar]);
 
   const mediaOptions: { label: string; value: MediaAlternative }[] = [
-    { label: "Slack", value: "SL" },
     { label: "SMS", value: "SM" },
     { label: "Email", value: "EM" },
   ];
