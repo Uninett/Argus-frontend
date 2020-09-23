@@ -52,6 +52,7 @@ interface TableToolbarPropsType {
   isLoading?: boolean;
 }
 
+/* TODO: Not implemented completely */
 const TableToolbar: React.FC<TableToolbarPropsType> = ({ selectedIncidents, isLoading }: TableToolbarPropsType) => {
   const classes = useToolbarStyles();
   const rootClasses = useStyles();
@@ -204,11 +205,16 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
 
   return (
     <Paper>
+      {/* TODO: Not implemented yet */}
+      { false &&
       <TableToolbar isLoading={isLoading} selectedIncidents={selectedIncidents} />
+      }
       <TableContainer component={Paper}>
         <MuiTable size="small" aria-label="incident table">
           <TableHead>
             <TableRow>
+              {/* TODO: Not implemented yet */}
+              { false &&
               <TableCell padding="checkbox" onClick={() => handleToggleSelectAll()}>
                 <Checkbox disabled={isLoading} checked={selectedIncidents === "SelectedAll"} />
               </TableCell>
@@ -238,6 +244,8 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                       cursor: "pointer",
                     }}
                   >
+                    {/* TODO: Not implemented yet */}
+                    { false &&
                     <TableCell padding="checkbox" onClick={() => handleSelectIncident(incident)}>
                       <Checkbox disabled={isLoading} checked={isSelected} />
                     </TableCell>
@@ -257,7 +265,8 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                       >
                         Details
                       </Button>
-                      {true && (
+                      {/* TODO: Not implementd yet */}
+                      {false && (
                         <Button disabled={isLoading} className={classes.safeButton} href="https://localhost.com">
                           Ticket
                         </Button>
