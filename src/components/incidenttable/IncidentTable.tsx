@@ -218,6 +218,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
               <TableCell padding="checkbox" onClick={() => handleToggleSelectAll()}>
                 <Checkbox disabled={isLoading} checked={selectedIncidents === "SelectedAll"} />
               </TableCell>
+              }
               <TableCell>Timestamp</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Source</TableCell>
@@ -249,6 +250,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                     <TableCell padding="checkbox" onClick={() => handleSelectIncident(incident)}>
                       <Checkbox disabled={isLoading} checked={isSelected} />
                     </TableCell>
+                    }
                     <ClickableCell>{new Date(incident.start_time).toLocaleString()}</ClickableCell>
                     <ClickableCell component="th" scope="row">
                       <OpenItem small open={incident.open} />
