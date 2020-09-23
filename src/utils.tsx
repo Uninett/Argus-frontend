@@ -118,3 +118,11 @@ export function dateFromTimeOfDayString(timeOfDay: string): Date {
   const [hours, minutes, seconds] = timeOfDay.split(":").map((str: string) => Number.parseInt(str));
   return new Date(1970, 1, 1, hours, minutes, seconds);
 }
+
+export function truncateMultilineString(multilineString: string, length: number): string {
+    const truncatedString = multilineString.split('\n', 1)[0].slice(0, length) + "…";
+    if (truncatedString.length < multilineString.length) {
+        return truncatedString;
+    }
+   return multilineString;
+}
