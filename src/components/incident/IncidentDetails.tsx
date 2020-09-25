@@ -106,11 +106,11 @@ const isValidUrl = (url: string) => {
   return true;
 };
 
-const formatUrlOrIdentity = (url: string, title: string, empty: string = "") => {
-  if (isValidUrl(url || "")) {
+const hyperlinkIfAbsoluteUrl = (url: string, title: string) => {
+  if (isValidUrl(url)) {
     return <a href={url}>{title}</a>;
   } else {
-    return url || empty;
+    return url;
   }
 };
 
@@ -458,7 +458,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                   <IncidentDetailsListItem title="Source" detail={incident.source.name} />
                   <IncidentDetailsListItem
                     title="Details URL"
-                    detail={formatUrlOrIdentity(incident.details_url, "More details", "–")}
+                    detail={hyperlinkIfAbsoluteUrl(incident.details_url, "More details") || "–"}
                   />
 
                   <TicketModifiableField
