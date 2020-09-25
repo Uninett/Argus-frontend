@@ -124,3 +124,11 @@ export function formatTimestamp(timestamp: Date | string): string {
   const dateTimestamp = new Date(timestamp);
   return dateTimestamp.toLocaleString();
 }
+
+export function truncateMultilineString(multilineString: string, length: number): string {
+  const truncatedString = multilineString.split('\n', 1)[0].slice(0, length) + "…";
+  if (truncatedString.length < multilineString.length) {
+      return truncatedString;
+  }
+  return multilineString;
+}

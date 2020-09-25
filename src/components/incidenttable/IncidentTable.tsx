@@ -25,7 +25,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import TablePagination from "@material-ui/core/TablePagination";
 
-import { useStateWithDynamicDefault, toMap, pkGetter, formatTimestamp } from "../../utils";
+import { useStateWithDynamicDefault, toMap, pkGetter, truncateMultilineString, formatTimestamp } from "../../utils";
 
 import { useAlertSnackbar, UseAlertSnackbarResultType } from "../../components/alertsnackbar";
 
@@ -464,7 +464,7 @@ const IncidentTable: React.FC<IncidentsProps> = ({ incidents, realtime, open, is
                     <CloseIcon />
                   </IconButton>
                   <Typography variant="h6" className={classes.title}>
-                    Incident {incidentForDetail.pk}
+                    {truncateMultilineString(incidentForDetail.description, 50)}
                   </Typography>
                 </Toolbar>
               </AppBar>
