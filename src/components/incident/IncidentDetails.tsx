@@ -24,6 +24,7 @@ import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/picker
 import Skeleton from "@material-ui/lab/Skeleton";
 
 import { useStateWithDynamicDefault } from "../../utils";
+import { formatTimestamp } from "../../utils";
 
 import { makeConfirmationButton } from "../../components/buttons/ConfirmationButton";
 import { UseAlertSnackbarResultType } from "../../components/alertsnackbar";
@@ -183,17 +184,17 @@ const AckListItem: React.FC<AckListItemPropsType> = ({ ack }: AckListItemPropsTy
   const classes = useStyles();
 
   const ackDate = new Date(ack.event.timestamp);
-  const formattedAckDate = ackDate.toLocaleString();
+  const formattedAckDate = formatTimestamp(ackDate);
 
   let hasExpired = false;
   let expiresMessage;
   if (ack.expiration) {
     const date = new Date(ack.expiration);
     if (Date.parse(ack.expiration) < Date.now()) {
-      expiresMessage = `Expired ${date.toLocaleString()}`;
+      expiresMessage = `Expired ${formatTimestamp(date)}`;
       hasExpired = true;
     } else {
-      expiresMessage = `Expires ${date.toLocaleString()}`;
+      expiresMessage = `Expires ${formatTimestamp(date)}`;
     }
   }
 
@@ -446,7 +447,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                 </Typography>
                 <List>
                   <IncidentDetailsListItem title="Description" detail={incident.description} />
-                  <IncidentDetailsListItem title="Start time" detail={incident.start_time} />
+                  <IncidentDetailsListItem title="Start time" detail={formatTimestamp(incident.start_time)} />
                   <IncidentDetailsListItem title="Source" detail={incident.source.name} />
                   <IncidentDetailsListItem
                     title="Details URL"

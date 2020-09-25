@@ -119,10 +119,16 @@ export function dateFromTimeOfDayString(timeOfDay: string): Date {
   return new Date(1970, 1, 1, hours, minutes, seconds);
 }
 
+export function formatTimestamp(timestamp: Date | string): string {
+  /* TODO: Have (global?) setting on user to allow forcing of ISO 8601 */
+  const dateTimestamp = new Date(timestamp);
+  return dateTimestamp.toLocaleString();
+}
+
 export function truncateMultilineString(multilineString: string, length: number): string {
-    const truncatedString = multilineString.split('\n', 1)[0].slice(0, length) + "…";
-    if (truncatedString.length < multilineString.length) {
-        return truncatedString;
-    }
-   return multilineString;
+  const truncatedString = multilineString.split('\n', 1)[0].slice(0, length) + "…";
+  if (truncatedString.length < multilineString.length) {
+      return truncatedString;
+  }
+  return multilineString;
 }

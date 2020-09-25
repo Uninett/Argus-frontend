@@ -25,7 +25,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import TablePagination from "@material-ui/core/TablePagination";
 
-import { useStateWithDynamicDefault, toMap, pkGetter, truncateMultilineString } from "../../utils";
+import { useStateWithDynamicDefault, toMap, pkGetter, truncateMultilineString, formatTimestamp } from "../../utils";
 
 import { useAlertSnackbar, UseAlertSnackbarResultType } from "../../components/alertsnackbar";
 
@@ -251,7 +251,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                       <Checkbox disabled={isLoading} checked={isSelected} />
                     </TableCell>
                     }
-                    <ClickableCell>{new Date(incident.start_time).toLocaleString()}</ClickableCell>
+                    <ClickableCell>{formatTimestamp(incident.start_time)}</ClickableCell>
                     <ClickableCell component="th" scope="row">
                       <OpenItem small open={incident.open} />
                       <TicketItem small ticketUrl={incident.ticket_url} />

@@ -5,6 +5,8 @@ import Grid from "@material-ui/core/Grid";
 
 import { Timestamp } from "../../api";
 
+import { formatTimestamp } from "../../utils";
+
 type SignedMessagePropsType = {
   message: string;
   username: string;
@@ -22,7 +24,7 @@ const SignedMessage: React.FC<SignedMessagePropsType> = ({
   TextComponent,
 }: SignedMessagePropsType) => {
   const ackDate = new Date(timestamp);
-  const formattedAckDate = ackDate.toLocaleString();
+  const formattedAckDate = formatTimestamp(ackDate);
 
   const Component: React.ComponentType = TextComponent || ListItemText;
 
