@@ -81,7 +81,7 @@ export const EmptyFilterDefinition = {
   sourceIds: [],
 };
 
-export type MediaAlternative = "EM" | "SM" | "SL";
+export type MediaAlternative = "EM" | "SM";
 
 export type PhoneNumberPK = number;
 
