@@ -206,19 +206,17 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
   return (
     <Paper>
       {/* TODO: Not implemented yet */}
-      { false &&
-      <TableToolbar isLoading={isLoading} selectedIncidents={selectedIncidents} />
-      }
+      {false && <TableToolbar isLoading={isLoading} selectedIncidents={selectedIncidents} />}
       <TableContainer component={Paper}>
         <MuiTable size="small" aria-label="incident table">
           <TableHead>
             <TableRow>
               {/* TODO: Not implemented yet */}
-              { false &&
-              <TableCell padding="checkbox" onClick={() => handleToggleSelectAll()}>
-                <Checkbox disabled={isLoading} checked={selectedIncidents === "SelectedAll"} />
-              </TableCell>
-              }
+              {false && (
+                <TableCell padding="checkbox" onClick={() => handleToggleSelectAll()}>
+                  <Checkbox disabled={isLoading} checked={selectedIncidents === "SelectedAll"} />
+                </TableCell>
+              )}
               <TableCell>Timestamp</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Source</TableCell>
@@ -246,11 +244,11 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                     }}
                   >
                     {/* TODO: Not implemented yet */}
-                    { false &&
-                    <TableCell padding="checkbox" onClick={() => handleSelectIncident(incident)}>
-                      <Checkbox disabled={isLoading} checked={isSelected} />
-                    </TableCell>
-                    }
+                    {false && (
+                      <TableCell padding="checkbox" onClick={() => handleSelectIncident(incident)}>
+                        <Checkbox disabled={isLoading} checked={isSelected} />
+                      </TableCell>
+                    )}
                     <ClickableCell>{formatTimestamp(incident.start_time)}</ClickableCell>
                     <ClickableCell component="th" scope="row">
                       <OpenItem small open={incident.open} />
