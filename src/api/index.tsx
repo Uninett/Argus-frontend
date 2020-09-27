@@ -231,6 +231,16 @@ export function defaultResolver<T, P = T>(data: T): T {
   return data;
 }
 
+export type CursorPaginationResponse<T> = {
+  next: string | null;
+  previous: string | null;
+  results: T[];
+};
+
+export function paginationResponseResolver<T, P = CursorPaginationResponse<T>>(data: CursorPaginationResponse<T>): T[] {
+  return data.results;
+}
+
 export type ApiErrorType = ErrorType | AxiosError;
 export type ErrorCreator = (error: ApiErrorType) => Error;
 
@@ -543,32 +553,32 @@ export class ApiClient {
     const queryString = buildIncidentsQuery(filter);
 
     return resolveOrReject(
-      this.authGet<Incident[], never>(`/api/v1/incidents/${queryString}`),
-      defaultResolver,
+      this.authGet<CursorPaginationResponse<Incident>, never>(`/api/v1/incidents/${queryString}`),
+      paginationResponseResolver,
       (error) => new Error(`Failed to get incidents: ${error}`),
     );
   }
 
   public getAllIncidents(): Promise<Incident[]> {
     return resolveOrReject(
-      this.authGet<Incident[], never>(`/api/v1/incidents/`),
-      defaultResolver,
+      this.authGet<CursorPaginationResponse<Incident>, never>(`/api/v1/incidents/`),
+      paginationResponseResolver,
       (error) => new Error(`Failed to get incidents: ${error}`),
     );
   }
 
   public getOpenIncidents(): Promise<Incident[]> {
     return resolveOrReject(
-      this.authGet<Incident[], never>(`/api/v1/incidents/open/`),
-      defaultResolver,
+      this.authGet<CursorPaginationResponse<Incident>, never>(`/api/v1/incidents/open/`),
+      paginationResponseResolver,
       (error) => new Error(`Failed to get incidents: ${error}`),
     );
   }
 
   public getOpenUnAckedIncidents(): Promise<Incident[]> {
     return resolveOrReject(
-      this.authGet<Incident[], never>(`/api/v1/incidents/open+unacked/`),
-      defaultResolver,
+      this.authGet<CursorPaginationResponse<Incident>, never>(`/api/v1/incidents/open+unacked/`),
+      paginationResponseResolver,
       (error) => new Error(`Failed to get incidents: ${error}`),
     );
   }
