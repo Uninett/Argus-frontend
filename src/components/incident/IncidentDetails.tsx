@@ -107,6 +107,14 @@ const isValidUrl = (url: string) => {
   return true;
 };
 
+const hyperlinkIfAbsoluteUrl = (url: string, title: string) => {
+  if (isValidUrl(url)) {
+    return <a href={url}>{title}</a>;
+  } else {
+    return url;
+  }
+};
+
 const TagChip: React.FC<TagChipPropsType> = ({ tag, small }: TagChipPropsType) => {
   if (isValidUrl(tag.value)) {
     return (
@@ -451,7 +459,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                   <IncidentDetailsListItem title="Source" detail={incident.source.name} />
                   <IncidentDetailsListItem
                     title="Details URL"
-                    detail={<a href={incident.details_url}>{incident.details_url}</a>}
+                    detail={hyperlinkIfAbsoluteUrl(incident.details_url, "More details") || "–"}
                   />
 
                   <TicketModifiableField
