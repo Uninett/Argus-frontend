@@ -15,7 +15,6 @@ import Typography from "@material-ui/core/Typography";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import TablePagination from "@material-ui/core/TablePagination";
-import Pagination from "@material-ui/lab/Pagination";
 
 import api, { IncidentMetadata, IncidentsFilterOptions, SourceSystem } from "../../api";
 import { useApiPaginatedIncidents } from "../../api/hooks";
@@ -74,7 +73,7 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
   // const [{ result: incidents, isLoading, isError }, setPromise] = useApiIncidents();
   const [{ result: paginatedResult, isLoading, isError }, setPromise] = useApiPaginatedIncidents();
 
-  const [incidents, cursors] = [paginatedResult?.incidents, paginatedResult?.cursors];
+  const [incidents, cursors] = [paginatedResult?.incidents || [], paginatedResult?.cursors];
 
   useEffect(() => {
     const showToOpenMap: Record<"open" | "closed" | "both", boolean | undefined> = {
@@ -108,15 +107,12 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
     setShow(event.target.value as "open" | "closed" | "both");
   };
 
-  const { totalElements, lastVirtualPage } = useMemo(() => {
+  const totalElements = useMemo(() => {
     if (!cursors?.next && incidents) {
       const lastVirtualPage = virtCursor.currentVirtualPage;
-      return {
-        lastVirtualPage,
-        totalElements: paginationCursor.pageSize * lastVirtualPage + incidents.length,
-      };
+      return paginationCursor.pageSize * lastVirtualPage + incidents.length;
     } else {
-      return { lastVirtualPage: 0, totalElements: -1 };
+      return -1;
     }
   }, [paginationCursor, virtCursor, cursors, incidents]);
 
@@ -194,6 +190,12 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
     );
   }, [paginationCursor, cursors, virtCursor, isLoading, totalElements]);
 
+  // Reset pagination when any of the filter options are changed.
+  useEffect(() => {
+    setVirtCursor(DEFAULT_VIRT_CURSOR);
+    setPaginationCursor(DEFAULT_PAGINATION_CURSOR);
+  }, [showAcked, show, realtime, sources, tagsFilter]);
+
   return (
     <div>
       <header>
@@ -239,7 +241,6 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
                 disabled={isLoading}
                 tags={tags}
                 onSelectionChange={useCallback((selection: Tag[]) => {
-                  console.log("selection changed", selection);
                   setTagsFilter(selection);
                 }, [])}
               />
@@ -252,7 +253,7 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
           isLoading={isLoading}
           realtime={realtime}
           open={show === "open"}
-          incidents={incidents || []}
+          incidents={incidents}
           noDataText={noDataText}
           paginationComponent={paginationComponent}
         />

@@ -133,6 +133,7 @@ type MUIIncidentTablePropsType = {
   incidents: Incident[];
   onShowDetail: (incide: Incident) => void;
   isLoading?: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   paginationComponent?: any;
 };
 
@@ -146,9 +147,6 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
   type SelectionState = "SelectedAll" | Set<Incident["pk"]>;
   const [selectedIncidents, setSelectedIncidents] = useState<SelectionState>(new Set<Incident["pk"]>([]));
 
-  const [rowsPerPage, setRowsPerPage] = useState<number>(25);
-  const [page, setPage] = useState<number>(0);
-
   type IncidentOrderableFields = Pick<Incident, "start_time">;
 
   // TODO: implement proper ordering/sorting when support
@@ -158,21 +156,6 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
   // TODO: fix typing problems here without use of any
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [orderBy, setOrderBy] = React.useState<keyof IncidentOrderableFields>("start_time");
-
-  const resetSelectedIncidents = () => {
-    setSelectedIncidents(new Set<Incident["pk"]>());
-  };
-
-  const handleChangePage = (event: unknown, page: number) => {
-    setPage(page);
-    resetSelectedIncidents();
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value));
-    setPage(0);
-    resetSelectedIncidents();
-  };
 
   const handleRowClick = (event: React.MouseEvent<unknown>, incident: Incident) => {
     onShowDetail(incident);
@@ -227,7 +210,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
           </TableHead>
           <TableBody>
             {stableSort<Incident>(incidents, getComparator<IncidentOrderableFields>(order, orderBy))
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              //.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((incident: Incident) => {
                 const ClickableCell = (props: TableCellProps) => (
                   <TableCell onClick={(event) => handleRowClick(event, incident)} {...props} />
@@ -280,17 +263,6 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
         </MuiTable>
       </TableContainer>
       {paginationComponent}
-      {/*
-      <TablePagination
-        rowsPerPageOptions={[10, 25, 50, 100]}
-        component="div"
-        count={-1}
-        rowsPerPage={rowsPerPage}
-        page={1}
-        onChangePage={handleChangePage}
-        onChangeRowsPerPage={handleChangeRowsPerPage}
-      />
-              */}
     </Paper>
   );
 };
@@ -303,6 +275,7 @@ type IncidentsProps = {
   realtime?: boolean;
   open?: boolean;
   isLoading?: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   paginationComponent?: any;
 };
 
