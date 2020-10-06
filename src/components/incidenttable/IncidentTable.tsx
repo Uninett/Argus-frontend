@@ -23,7 +23,6 @@ import TableCell, { TableCellProps } from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
-import TablePagination from "@material-ui/core/TablePagination";
 
 import { useStateWithDynamicDefault, toMap, pkGetter, truncateMultilineString, formatTimestamp } from "../../utils";
 
@@ -134,12 +133,14 @@ type MUIIncidentTablePropsType = {
   incidents: Incident[];
   onShowDetail: (incide: Incident) => void;
   isLoading?: boolean;
+  paginationComponent?: any;
 };
 
 const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
   incidents,
   onShowDetail,
   isLoading,
+  paginationComponent,
 }: MUIIncidentTablePropsType) => {
   const classes = useStyles();
   type SelectionState = "SelectedAll" | Set<Incident["pk"]>;
@@ -278,15 +279,18 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
           </TableBody>
         </MuiTable>
       </TableContainer>
+      {paginationComponent}
+      {/*
       <TablePagination
         rowsPerPageOptions={[10, 25, 50, 100]}
         component="div"
-        count={incidents.length}
+        count={-1}
         rowsPerPage={rowsPerPage}
-        page={page}
+        page={1}
         onChangePage={handleChangePage}
         onChangeRowsPerPage={handleChangeRowsPerPage}
       />
+              */}
     </Paper>
   );
 };
@@ -299,9 +303,16 @@ type IncidentsProps = {
   realtime?: boolean;
   open?: boolean;
   isLoading?: boolean;
+  paginationComponent?: any;
 };
 
-const IncidentTable: React.FC<IncidentsProps> = ({ incidents, realtime, open, isLoading }: IncidentsProps) => {
+const IncidentTable: React.FC<IncidentsProps> = ({
+  incidents,
+  realtime,
+  open,
+  isLoading,
+  paginationComponent,
+}: IncidentsProps) => {
   const [incidentForDetail, setIncidentForDetail] = useState<Incident | undefined>(undefined);
 
   const incidentsDictFromProps = useMemo<Revisioned<Map<Incident["pk"], Incident>>>(
@@ -476,7 +487,12 @@ const IncidentTable: React.FC<IncidentsProps> = ({ incidents, realtime, open, is
           )) || <h1>Empty</h1>}
         </Dialog>
         {realtime && <Typography>Realtime</Typography>}
-        <MUIIncidentTable isLoading={isLoading} incidents={incidentsUpdated} onShowDetail={handleShowDetail} />
+        <MUIIncidentTable
+          isLoading={isLoading}
+          incidents={incidentsUpdated}
+          onShowDetail={handleShowDetail}
+          paginationComponent={paginationComponent}
+        />
         {incidentSnackbar}
       </div>
     </ClickAwayListener>

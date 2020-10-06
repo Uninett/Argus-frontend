@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useMemo } from "react";
 import "./IncidentView.css";
 import Header from "../../components/header/Header";
 import IncidentTable from "../../components/incidenttable/IncidentTable";
@@ -14,14 +14,42 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
+import TablePagination from "@material-ui/core/TablePagination";
+import Pagination from "@material-ui/lab/Pagination";
 
 import api, { IncidentMetadata, IncidentsFilterOptions, SourceSystem } from "../../api";
-import { useApiIncidents } from "../../api/hooks";
+import { useApiPaginatedIncidents } from "../../api/hooks";
 
 import TagSelector, { Tag } from "../../components/tagselector";
 import SourceSelector from "../../components/sourceselector";
 
 import { LOADING_TEXT, ERROR_TEXT, NO_DATA_TEXT } from "../../constants";
+
+type PaginationCursor = {
+  next: string | null;
+  previous: string | null;
+  current: string | null;
+  pageSize: number;
+};
+
+type VirtCursor = {
+  currentVirtualPage: number;
+  lastVirtualPage: number;
+  totalElements: number;
+};
+
+const DEFAULT_PAGINATION_CURSOR = {
+  next: null,
+  previous: null,
+  current: null,
+  pageSize: 10,
+};
+
+const DEFAULT_VIRT_CURSOR = {
+  currentVirtualPage: 0,
+  lastVirtualPage: 0,
+  totalElements: 0,
+};
 
 type IncidentViewPropsType = {};
 
@@ -32,6 +60,9 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
   const [sources, setSources] = useState<string[] | "AllSources">("AllSources");
   const [show, setShow] = useState<"open" | "closed" | "both">("open");
 
+  const [paginationCursor, setPaginationCursor] = useState<PaginationCursor>(DEFAULT_PAGINATION_CURSOR);
+  const [virtCursor, setVirtCursor] = useState<VirtCursor>(DEFAULT_VIRT_CURSOR);
+
   const [knownSources, setKnownSources] = useState<string[]>([]);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -40,7 +71,10 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
     { key: "host", value: "localhost", original: "host=localhost" },
   ]);
 
-  const [{ result: incidents, isLoading, isError }, setPromise] = useApiIncidents();
+  // const [{ result: incidents, isLoading, isError }, setPromise] = useApiIncidents();
+  const [{ result: paginatedResult, isLoading, isError }, setPromise] = useApiPaginatedIncidents();
+
+  const [incidents, cursors] = [paginatedResult?.incidents, paginatedResult?.cursors];
 
   useEffect(() => {
     const showToOpenMap: Record<"open" | "closed" | "both", boolean | undefined> = {
@@ -59,19 +93,115 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
       tags: tagsFilter.map((tag: Tag) => tag.original),
       sourceSystemNames: sources === "AllSources" ? undefined : sources,
     };
-    setPromise(api.getAllIncidentsFiltered(filterOptions));
+
+    setPromise(api.getPaginatedIncidentsFiltered(filterOptions, paginationCursor.current, paginationCursor.pageSize));
 
     // Refresh metadata every time as well.
     api.getAllIncidentsMetadata().then((incidentMetadata: IncidentMetadata) => {
       setKnownSources(incidentMetadata.sourceSystems.map((source: SourceSystem) => source.name));
     });
-  }, [setPromise, show, showAcked, tagsFilter, sources]);
+  }, [setPromise, show, showAcked, tagsFilter, sources, paginationCursor]);
 
   const noDataText = isLoading ? LOADING_TEXT : isError ? ERROR_TEXT : NO_DATA_TEXT;
 
   const handleShowChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setShow(event.target.value as "open" | "closed" | "both");
   };
+
+  const paginationComponent = useMemo(() => {
+    // The TablePagination component will only display
+    // the previous button if the page > 0, therefore we
+    // just pass 1 when there is a previous page and 0
+    // when there is not.
+    //
+    console.log("current virutal page", virtCursor);
+
+    const page = virtCursor.currentVirtualPage;
+
+    // We only know the count when we have encountered the end, so just keep it
+    // at -1 until that happens.
+    const count = virtCursor.lastVirtualPage > 0 ? virtCursor.totalElements : -1;
+    console.log("current page", page, "current count", count);
+
+    const handlePreviousPage = () => {
+      const previous = cursors?.previous;
+      console.log("previous page", previous, cursors);
+      if (previous) {
+        setPaginationCursor((old) => {
+          return { ...old, ...cursors, current: previous };
+        });
+        setVirtCursor((old) => {
+          return { ...old, currentVirtualPage: old.currentVirtualPage - 1 };
+        });
+        console.log("previous page", previous, "success");
+      } else {
+        console.log("previous page", previous, "failure");
+      }
+    };
+
+    const handleNextPage = () => {
+      const next = cursors?.next;
+      console.log("next page", next, cursors);
+      if (next) {
+        setPaginationCursor((old) => {
+          return { ...old, ...cursors, current: next };
+        });
+        setVirtCursor((old) => {
+          return { ...old, currentVirtualPage: old.currentVirtualPage + 1 };
+        });
+        console.log("next page", next, "success");
+      } else {
+        console.log("next page", next, "failure");
+      }
+    };
+
+    const handleChangePageSize = (event: React.ChangeEvent<HTMLInputElement>) => {
+      const size = parseInt(event.target.value);
+      console.log("changed page size", size);
+      setPaginationCursor((old) => {
+        return { ...old, pageSize: size, current: null, previous: null, next: null };
+      });
+      setVirtCursor(DEFAULT_VIRT_CURSOR);
+    };
+
+    return (
+      <TablePagination
+        rowsPerPageOptions={[10, 25, 50, 100]}
+        component="div"
+        count={count}
+        rowsPerPage={paginationCursor.pageSize}
+        page={page}
+        onChangePage={(event: unknown, newPage: number) => {
+          console.log("newPage", newPage, "old", page);
+          // Use the fact that the page number will either increase or
+          // decrease.
+          if (newPage > page) {
+            handleNextPage();
+          } else {
+            handlePreviousPage();
+          }
+        }}
+        onChangeRowsPerPage={handleChangePageSize}
+      />
+    );
+  }, [paginationCursor, cursors, virtCursor]);
+
+  useEffect(() => {
+    console.log("cursors", cursors);
+    if (!cursors?.next) {
+      setVirtCursor((old) => {
+        const lastVirtualPage = old.currentVirtualPage;
+
+        const r = {
+          ...old,
+          lastVirtualPage,
+          totalElements: paginationCursor.pageSize * lastVirtualPage + (incidents?.length || 0),
+        };
+        console.log("virt cursor", r);
+        return r;
+      });
+    }
+  }, [cursors, paginationCursor, incidents]);
 
   return (
     <div>
@@ -133,6 +263,7 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
           open={show === "open"}
           incidents={incidents || []}
           noDataText={noDataText}
+          paginationComponent={paginationComponent}
         />
       </div>
     </div>
