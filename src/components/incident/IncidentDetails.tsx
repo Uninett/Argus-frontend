@@ -24,7 +24,7 @@ import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/picker
 import Skeleton from "@material-ui/lab/Skeleton";
 
 import { useStateWithDynamicDefault } from "../../utils";
-import { formatTimestamp } from "../../utils";
+import { formatDuration, formatTimestamp } from "../../utils";
 
 import { makeConfirmationButton } from "../../components/buttons/ConfirmationButton";
 import { UseAlertSnackbarResultType } from "../../components/alertsnackbar";
@@ -448,6 +448,12 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                 <List>
                   <IncidentDetailsListItem title="Description" detail={incident.description} />
                   <IncidentDetailsListItem title="Start time" detail={formatTimestamp(incident.start_time)} />
+                  {incident.stateful && (
+                    <IncidentDetailsListItem
+                      title="Duration"
+                      detail={formatDuration(incident.start_time, incident.end_time || undefined)}
+                    />
+                  )}
                   <IncidentDetailsListItem title="Source" detail={incident.source.name} />
                   <IncidentDetailsListItem
                     title="Details URL"
