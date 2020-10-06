@@ -108,24 +108,32 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
     setShow(event.target.value as "open" | "closed" | "both");
   };
 
+  const { totalElements, lastVirtualPage } = useMemo(() => {
+    if (!cursors?.next && incidents) {
+      const lastVirtualPage = virtCursor.currentVirtualPage;
+      return {
+        lastVirtualPage,
+        totalElements: paginationCursor.pageSize * lastVirtualPage + incidents.length,
+      };
+    } else {
+      return { lastVirtualPage: 0, totalElements: -1 };
+    }
+  }, [paginationCursor, virtCursor, cursors, incidents]);
+
   const paginationComponent = useMemo(() => {
     // The TablePagination component will only display
     // the previous button if the page > 0, therefore we
     // just pass 1 when there is a previous page and 0
     // when there is not.
     //
-    console.log("current virutal page", virtCursor);
-
     const page = virtCursor.currentVirtualPage;
 
     // We only know the count when we have encountered the end, so just keep it
     // at -1 until that happens.
-    const count = virtCursor.lastVirtualPage > 0 ? virtCursor.totalElements : -1;
-    console.log("current page", page, "current count", count);
+    const count = totalElements;
 
     const handlePreviousPage = () => {
       const previous = cursors?.previous;
-      console.log("previous page", previous, cursors);
       if (previous) {
         setPaginationCursor((old) => {
           return { ...old, ...cursors, current: previous };
@@ -133,15 +141,11 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
         setVirtCursor((old) => {
           return { ...old, currentVirtualPage: old.currentVirtualPage - 1 };
         });
-        console.log("previous page", previous, "success");
-      } else {
-        console.log("previous page", previous, "failure");
       }
     };
 
     const handleNextPage = () => {
       const next = cursors?.next;
-      console.log("next page", next, cursors);
       if (next) {
         setPaginationCursor((old) => {
           return { ...old, ...cursors, current: next };
@@ -149,20 +153,22 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
         setVirtCursor((old) => {
           return { ...old, currentVirtualPage: old.currentVirtualPage + 1 };
         });
-        console.log("next page", next, "success");
-      } else {
-        console.log("next page", next, "failure");
       }
     };
 
     const handleChangePageSize = (event: React.ChangeEvent<HTMLInputElement>) => {
       const size = parseInt(event.target.value);
-      console.log("changed page size", size);
       setPaginationCursor((old) => {
         return { ...old, pageSize: size, current: null, previous: null, next: null };
       });
       setVirtCursor(DEFAULT_VIRT_CURSOR);
     };
+
+    const disabled = isLoading || false;
+
+    const nextButtonProps = { disabled: disabled || !cursors?.next || false };
+    const prevButtonProps = { disabled: disabled || !cursors?.previous || false };
+    const selectProps = { disabled };
 
     return (
       <TablePagination
@@ -172,7 +178,6 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
         rowsPerPage={paginationCursor.pageSize}
         page={page}
         onChangePage={(event: unknown, newPage: number) => {
-          console.log("newPage", newPage, "old", page);
           // Use the fact that the page number will either increase or
           // decrease.
           if (newPage > page) {
@@ -182,26 +187,12 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
           }
         }}
         onChangeRowsPerPage={handleChangePageSize}
+        nextIconButtonProps={nextButtonProps}
+        backIconButtonProps={prevButtonProps}
+        SelectProps={selectProps}
       />
     );
-  }, [paginationCursor, cursors, virtCursor]);
-
-  useEffect(() => {
-    console.log("cursors", cursors);
-    if (!cursors?.next) {
-      setVirtCursor((old) => {
-        const lastVirtualPage = old.currentVirtualPage;
-
-        const r = {
-          ...old,
-          lastVirtualPage,
-          totalElements: paginationCursor.pageSize * lastVirtualPage + (incidents?.length || 0),
-        };
-        console.log("virt cursor", r);
-        return r;
-      });
-    }
-  }, [cursors, paginationCursor, incidents]);
+  }, [paginationCursor, cursors, virtCursor, isLoading, totalElements]);
 
   return (
     <div>
