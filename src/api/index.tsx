@@ -525,8 +525,12 @@ export class ApiClient {
     );
   }
 
-  public getAllIncidentsFiltered(filter: IncidentsFilterOptions): Promise<Incident[]> {
-    const buildIncidentsQuery = (filter: IncidentsFilterOptions) => {
+  public getPaginatedIncidentsFiltered(
+    filter: IncidentsFilterOptions,
+    cursor: string | null,
+    pageSize?: number,
+  ): Promise<CursorPaginationResponse<Incident>> {
+    const buildIncidentsQuery = (filter: IncidentsFilterOptions, pageSize?: number) => {
       const params = [];
       if (filter.acked !== undefined) {
         params.push(`acked=${filter.acked}`);
@@ -546,17 +550,35 @@ export class ApiClient {
       if (filter.tags !== undefined) {
         params.push(`tags=${filter.tags.join(",")}`);
       }
+      if (pageSize !== undefined) {
+        params.push(`page_size=${pageSize}`);
+      }
+
       if (params.length === 0) return "";
       return "?" + params.join("&");
     };
 
-    const queryString = buildIncidentsQuery(filter);
+    if (!cursor) {
+      const queryString = buildIncidentsQuery(filter, pageSize);
 
-    return resolveOrReject(
-      this.authGet<CursorPaginationResponse<Incident>, never>(`/api/v1/incidents/${queryString}`),
-      paginationResponseResolver,
-      (error) => new Error(`Failed to get incidents: ${error}`),
-    );
+      return resolveOrReject(
+        this.authGet<CursorPaginationResponse<Incident>, never>(`/api/v1/incidents/${queryString}`),
+        defaultResolver,
+        (error) => new Error(`Failed to get incidents: ${error}`),
+      );
+    } else {
+      return resolveOrReject(
+        this.authGet<CursorPaginationResponse<Incident>, never>(cursor),
+        defaultResolver,
+        (error) => new Error(`Failed to get incidents: ${error}`),
+      );
+    }
+  }
+
+  // NOTE: This won't actually get all incidents anymore because of the pagination
+  // TODO: Remove all use of this method.
+  public getAllIncidentsFiltered(filter: IncidentsFilterOptions): Promise<Incident[]> {
+    return this.getPaginatedIncidentsFiltered(filter, null).then(paginationResponseResolver);
   }
 
   public getAllIncidents(): Promise<Incident[]> {

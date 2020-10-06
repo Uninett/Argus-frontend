@@ -126,9 +126,9 @@ export function formatTimestamp(timestamp: Date | string): string {
 }
 
 export function truncateMultilineString(multilineString: string, length: number): string {
-  const truncatedString = multilineString.split('\n', 1)[0].slice(0, length) + "…";
+  const truncatedString = multilineString.split("\n", 1)[0].slice(0, length) + "…";
   if (truncatedString.length < multilineString.length) {
-      return truncatedString;
+    return truncatedString;
   }
   return multilineString;
 }
