@@ -5,6 +5,7 @@ import { incidentWithFormattedTimestamp, IncidentWithFormattedTimestamp } from "
 import {
   Acknowledgement,
   ApiErrorType,
+  CursorPaginationResponse,
   Event,
   Filter,
   FilterPK,
@@ -66,6 +67,16 @@ function asMap<K extends string | number, V extends { pk: K }>(elems: V[]): Map<
 
 export const useApiIncidents = createUsePromise<Incident[], IncidentWithFormattedTimestamp[]>(
   (incidents: Incident[]): IncidentWithFormattedTimestamp[] => incidents.map(incidentWithFormattedTimestamp),
+  () => undefined,
+);
+
+export const useApiPaginatedIncidents = createUsePromise<
+  CursorPaginationResponse<Incident>,
+  { incidents: Incident[]; cursors: { next: string | null; previous: string | null } }
+>(
+  (response: CursorPaginationResponse<Incident>) => {
+    return { incidents: response.results, cursors: { next: response.next, previous: response.previous } };
+  },
   () => undefined,
 );
 

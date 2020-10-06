@@ -23,7 +23,6 @@ import TableCell, { TableCellProps } from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
-import TablePagination from "@material-ui/core/TablePagination";
 
 import { useStateWithDynamicDefault, toMap, pkGetter, truncateMultilineString, formatTimestamp } from "../../utils";
 
@@ -134,19 +133,19 @@ type MUIIncidentTablePropsType = {
   incidents: Incident[];
   onShowDetail: (incide: Incident) => void;
   isLoading?: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  paginationComponent?: any;
 };
 
 const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
   incidents,
   onShowDetail,
   isLoading,
+  paginationComponent,
 }: MUIIncidentTablePropsType) => {
   const classes = useStyles();
   type SelectionState = "SelectedAll" | Set<Incident["pk"]>;
   const [selectedIncidents, setSelectedIncidents] = useState<SelectionState>(new Set<Incident["pk"]>([]));
-
-  const [rowsPerPage, setRowsPerPage] = useState<number>(25);
-  const [page, setPage] = useState<number>(0);
 
   type IncidentOrderableFields = Pick<Incident, "start_time">;
 
@@ -157,21 +156,6 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
   // TODO: fix typing problems here without use of any
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [orderBy, setOrderBy] = React.useState<keyof IncidentOrderableFields>("start_time");
-
-  const resetSelectedIncidents = () => {
-    setSelectedIncidents(new Set<Incident["pk"]>());
-  };
-
-  const handleChangePage = (event: unknown, page: number) => {
-    setPage(page);
-    resetSelectedIncidents();
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value));
-    setPage(0);
-    resetSelectedIncidents();
-  };
 
   const handleRowClick = (event: React.MouseEvent<unknown>, incident: Incident) => {
     onShowDetail(incident);
@@ -206,19 +190,17 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
   return (
     <Paper>
       {/* TODO: Not implemented yet */}
-      { false &&
-      <TableToolbar isLoading={isLoading} selectedIncidents={selectedIncidents} />
-      }
+      {false && <TableToolbar isLoading={isLoading} selectedIncidents={selectedIncidents} />}
       <TableContainer component={Paper}>
         <MuiTable size="small" aria-label="incident table">
           <TableHead>
             <TableRow>
               {/* TODO: Not implemented yet */}
-              { false &&
-              <TableCell padding="checkbox" onClick={() => handleToggleSelectAll()}>
-                <Checkbox disabled={isLoading} checked={selectedIncidents === "SelectedAll"} />
-              </TableCell>
-              }
+              {false && (
+                <TableCell padding="checkbox" onClick={() => handleToggleSelectAll()}>
+                  <Checkbox disabled={isLoading} checked={selectedIncidents === "SelectedAll"} />
+                </TableCell>
+              )}
               <TableCell>Timestamp</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Source</TableCell>
@@ -228,7 +210,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
           </TableHead>
           <TableBody>
             {stableSort<Incident>(incidents, getComparator<IncidentOrderableFields>(order, orderBy))
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              //.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((incident: Incident) => {
                 const ClickableCell = (props: TableCellProps) => (
                   <TableCell onClick={(event) => handleRowClick(event, incident)} {...props} />
@@ -246,11 +228,11 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                     }}
                   >
                     {/* TODO: Not implemented yet */}
-                    { false &&
-                    <TableCell padding="checkbox" onClick={() => handleSelectIncident(incident)}>
-                      <Checkbox disabled={isLoading} checked={isSelected} />
-                    </TableCell>
-                    }
+                    {false && (
+                      <TableCell padding="checkbox" onClick={() => handleSelectIncident(incident)}>
+                        <Checkbox disabled={isLoading} checked={isSelected} />
+                      </TableCell>
+                    )}
                     <ClickableCell>{formatTimestamp(incident.start_time)}</ClickableCell>
                     <ClickableCell component="th" scope="row">
                       <OpenItem small open={incident.open} />
@@ -280,15 +262,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
           </TableBody>
         </MuiTable>
       </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[10, 25, 50, 100]}
-        component="div"
-        count={incidents.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onChangePage={handleChangePage}
-        onChangeRowsPerPage={handleChangeRowsPerPage}
-      />
+      {paginationComponent}
     </Paper>
   );
 };
@@ -301,9 +275,17 @@ type IncidentsProps = {
   realtime?: boolean;
   open?: boolean;
   isLoading?: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  paginationComponent?: any;
 };
 
-const IncidentTable: React.FC<IncidentsProps> = ({ incidents, realtime, open, isLoading }: IncidentsProps) => {
+const IncidentTable: React.FC<IncidentsProps> = ({
+  incidents,
+  realtime,
+  open,
+  isLoading,
+  paginationComponent,
+}: IncidentsProps) => {
   const [incidentForDetail, setIncidentForDetail] = useState<Incident | undefined>(undefined);
 
   const incidentsDictFromProps = useMemo<Revisioned<Map<Incident["pk"], Incident>>>(
@@ -478,7 +460,12 @@ const IncidentTable: React.FC<IncidentsProps> = ({ incidents, realtime, open, is
           )) || <h1>Empty</h1>}
         </Dialog>
         {realtime && <Typography>Realtime</Typography>}
-        <MUIIncidentTable isLoading={isLoading} incidents={incidentsUpdated} onShowDetail={handleShowDetail} />
+        <MUIIncidentTable
+          isLoading={isLoading}
+          incidents={incidentsUpdated}
+          onShowDetail={handleShowDetail}
+          paginationComponent={paginationComponent}
+        />
         {incidentSnackbar}
       </div>
     </ClickAwayListener>
