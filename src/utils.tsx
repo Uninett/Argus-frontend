@@ -125,6 +125,21 @@ export function formatTimestamp(timestamp: Date | string): string {
   return dateTimestamp.toLocaleString();
 }
 
+// eslint-disable-next-line @typescript-eslint/camelcase
+export function formatDuration(start_time: Date | string, end_time?: Date | string): string {
+  const start = moment(start_time);
+
+  let end;
+  // eslint-disable-next-line @typescript-eslint/camelcase
+  if (end_time !== "infinity" && end_time) {
+    end = moment(end_time);
+  } else {
+    end = moment.now();
+  }
+
+  return moment.duration(start.diff(end)).humanize();
+}
+
 export function truncateMultilineString(multilineString: string, length: number): string {
   const truncatedString = multilineString.split("\n", 1)[0].slice(0, length) + "…";
   if (truncatedString.length < multilineString.length) {
