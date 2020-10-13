@@ -4,22 +4,11 @@ import { Theme, createStyles, makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 
-import TimeslotComponent from "../timeslot/index";
-import { TimeslotRecurrenceDay } from "../timeslotdayselector";
+import TimeslotComponent from "../timeslot";
+import { toMap } from "../../utils";
 
-import { toMap, removeUndefined } from "../../utils";
-
-import api, {
-  defaultErrorHandler,
-  TimeslotPK,
-  Timeslot,
-  TimeRecurrence,
-  TimeRecurrenceDay,
-  TIME_RECURRENCE_DAY_IN_ORDER,
-  TimeRecurrenceDayNameMap,
-} from "../../api";
+import api, { defaultErrorHandler, TimeslotPK, Timeslot, TimeRecurrence } from "../../api";
 import { useApiTimeslots } from "../../api/hooks";
-import { dateFromTimeOfDayString } from "../../utils";
 
 import { useAlertSnackbar, UseAlertSnackbarResultType } from "../../components/alertsnackbar";
 
@@ -36,11 +25,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 // Used internally in this file
-type InternalTimeslot = {
-  days: Partial<Record<TimeRecurrenceDay, TimeslotRecurrenceDay>>;
-  pk: Timeslot["pk"];
-  name: Timeslot["name"];
-
+type InternalTimeslot = Timeslot & {
   revision?: number;
 };
 
@@ -68,54 +53,9 @@ const TimeslotList: React.FC<TimeslotListPropsType> = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { incidentSnackbar, displayAlertSnackbar }: UseAlertSnackbarResultType = useAlertSnackbar();
 
+  // TODO: remove
   const responseToInternalTimeslot = (timeslot: Timeslot): InternalTimeslot => {
-    const days: Partial<Record<TimeRecurrenceDay, TimeslotRecurrenceDay>> = {};
-    for (const interval of timeslot.time_recurrences) {
-      const startTime = dateFromTimeOfDayString(interval.start);
-      const endTime = dateFromTimeOfDayString(interval.end);
-      const allDay = false;
-
-      // FIXME: only cares about the first day.
-      days[interval.days[0]] = {
-        pk: interval.days[0],
-        name: TimeRecurrenceDayNameMap[interval.days[0]],
-        startTime,
-        endTime,
-        allDay,
-      };
-    }
-
-    return {
-      days,
-      pk: timeslot.pk,
-      name: timeslot.name,
-    };
-  };
-
-  const dateTimeToTimeOfDay = (date: Date): string => {
-    return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
-  };
-
-  const timeslotIntervalDayToTimeInterval = (interval: TimeslotRecurrenceDay): TimeRecurrence => {
-    const start = (!interval.allDay && interval.startTime && dateTimeToTimeOfDay(interval.startTime)) || "0:0:0";
-    const end = (!interval.allDay && interval.endTime && dateTimeToTimeOfDay(interval.endTime)) || "23:59:59:999999";
-
-    return {
-      days: [interval.pk],
-      start,
-      end,
-      // eslint-disable-next-line
-      all_day: interval.allDay,
-    };
-  };
-
-  const daysToTimeInterval = (days: Partial<Record<TimeRecurrenceDay, TimeslotRecurrenceDay>>): TimeRecurrence[] => {
-    return removeUndefined(
-      TIME_RECURRENCE_DAY_IN_ORDER.map((day: TimeRecurrenceDay): TimeRecurrence | undefined => {
-        const intervalDay = days[day];
-        return intervalDay && timeslotIntervalDayToTimeInterval(intervalDay);
-      }),
-    );
+    return timeslot;
   };
 
   // TODO: use memo?
@@ -138,13 +78,9 @@ const TimeslotList: React.FC<TimeslotListPropsType> = () => {
     });
   };
 
-  const updateSavedTimeslot = (
-    pk: TimeslotPK,
-    name: string,
-    days: Partial<Record<TimeRecurrenceDay, TimeslotRecurrenceDay>>,
-  ) => {
+  const updateSavedTimeslot = (pk: TimeslotPK, name: string, recurrences: TimeRecurrence[]) => {
     api
-      .putTimeslot(pk, name, daysToTimeInterval(days))
+      .putTimeslot(pk, name, recurrences)
       .then((newTimeslot: Timeslot) => {
         // Special case: handle when the save function failes.
         if (unsavedTimeslots.has(pk)) {
@@ -180,9 +116,9 @@ const TimeslotList: React.FC<TimeslotListPropsType> = () => {
       );
   };
 
-  const createNewTimeslot = (name: string, days: Partial<Record<TimeRecurrenceDay, TimeslotRecurrenceDay>>) => {
+  const createNewTimeslot = (name: string, recurrences: TimeRecurrence[]) => {
     api
-      .postTimeslot(name, daysToTimeInterval(days))
+      .postTimeslot(name, recurrences)
       .then((newTimeslot: Timeslot) => {
         resetNewTimeslot();
         setTimeslots((timeslots: Map<TimeslotPK, InternalTimeslot>) => {
@@ -194,6 +130,7 @@ const TimeslotList: React.FC<TimeslotListPropsType> = () => {
       })
       .catch(
         defaultErrorHandler((msg: string) => {
+          resetNewTimeslot(); // FIXME: This is required to re-enable the save buttons
           displayAlertSnackbar(msg, "error");
         }),
       );
@@ -217,22 +154,20 @@ const TimeslotList: React.FC<TimeslotListPropsType> = () => {
       );
   };
 
-  const onSave = (
-    pk: TimeslotPK | undefined,
-    name: string,
-    days: Partial<Record<TimeRecurrenceDay, TimeslotRecurrenceDay>>,
-  ) => {
+  const handleSave = (pk: TimeslotPK | undefined, name: string, recurrences: TimeRecurrence[]) => {
     if (pk) {
-      updateSavedTimeslot(pk, name, days);
-    } else createNewTimeslot(name, days);
+      updateSavedTimeslot(pk, name, recurrences);
+      return;
+    }
+    createNewTimeslot(name, recurrences);
   };
 
-  const onDelete = (pk: TimeslotPK | undefined, name: string) => {
+  const handleDelete = (pk: TimeslotPK | undefined, name: string) => {
     if (pk) {
       deleteSavedTimeslot(pk, name);
-    } else {
-      resetNewTimeslot();
+      return;
     }
+    resetNewTimeslot();
   };
 
   const newTimeslotComponent = newTimeslot && (
@@ -240,10 +175,10 @@ const TimeslotList: React.FC<TimeslotListPropsType> = () => {
       key={`newtimeslot-${newTimeslot.revision}`}
       pk={newTimeslot.pk}
       name={newTimeslot.name}
-      days={{ ...(newTimeslot.days || {}) }}
-      onSave={onSave}
-      onDelete={onDelete}
-      unsavedChanges={false}
+      recurrences={[]}
+      unsavedChanges={true}
+      onSave={handleSave}
+      onDelete={handleDelete}
     />
   );
 
@@ -256,17 +191,17 @@ const TimeslotList: React.FC<TimeslotListPropsType> = () => {
       </Grid>
       {[...timeslots.values()].map((timeslot: InternalTimeslot) => {
         return (
-          <Grid key={`${timeslot.pk}-grid-item`} item xs={12} className={classes.timeslot}>
+          <Grid key={`${timeslot.pk}-${timeslot.revision}-grid-item`} item xs={12} className={classes.timeslot}>
             <TimeslotComponent
               exists
-              key={`key-${timeslot.pk}-${timeslot.revision}`}
+              revision={timeslot.revision}
               pk={timeslot.pk}
               name={timeslot.name}
-              days={timeslot.days}
-              onSave={onSave}
-              onDelete={onDelete}
+              recurrences={timeslot.time_recurrences}
+              onSave={handleSave}
+              onDelete={handleDelete}
               unsavedChanges={false}
-            />{" "}
+            />
           </Grid>
         );
       })}
