@@ -229,7 +229,7 @@ const TimeslotComponent: React.FC<TimeslotPropsType> = ({
               onClick={() => onAddDayClick()}
               startIcon={<AddIcon />}
             >
-              Add day
+              Add recurrence
             </Button>
           </ButtonGroup>
           {TIME_RECURRENCE_DAY_IN_ORDER.map((key: TimeRecurrenceDay) => days[key] as TimeslotRecurrenceDay).map(
@@ -237,7 +237,7 @@ const TimeslotComponent: React.FC<TimeslotPropsType> = ({
               if (!day) return undefined;
               return (
                 <div key={day.pk}>
-                  <Typography>{day.name}</Typography>
+                  <Typography>{`${day.startTime?.getHours()}` + " - " + `${day.endTime?.getHours()}`}</Typography>
                   <TimeslotDaySelector key={day.pk} day={day} onChange={onDayChange} onRemove={onDayRemove} />
                 </div>
               );

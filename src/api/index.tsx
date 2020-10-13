@@ -41,7 +41,9 @@ export interface AuthTokenSuccessResponse {
 export type TimeRecurrenceDay = 1 | 2 | 3 | 4 | 5 | 6 | 7;
 export const TIME_RECURRENCE_DAY_IN_ORDER: TimeRecurrenceDay[] = [1, 2, 3, 4, 5, 6, 7];
 
-export const TimeRecurrenceDayNameMap: Record<TimeRecurrenceDay, string> = {
+export type TimeRecurrenceDayName = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday";
+
+export const TimeRecurrenceDayNameMap: Record<TimeRecurrenceDay, TimeRecurrenceDayName> = {
   1: "Monday",
   2: "Tuesday",
   3: "Wednesday",
@@ -51,10 +53,22 @@ export const TimeRecurrenceDayNameMap: Record<TimeRecurrenceDay, string> = {
   7: "Sunday",
 };
 
+export const TimeRecurrenceNameDayMap: Record<TimeRecurrenceDayName, TimeRecurrenceDay> = {
+  Monday: 1,
+  Tuesday: 2,
+  Wednesday: 3,
+  Thursday: 4,
+  Friday: 5,
+  Saturday: 6,
+  Sunday: 7,
+};
+
 export interface TimeRecurrence {
   days: TimeRecurrenceDay[];
   start: string;
   end: string;
+  // eslint-disable-next-line @typescript-eslint/camelcase
+  all_day: boolean;
 }
 
 export type TimeslotPK = string | number; // WIP: fix this
@@ -405,7 +419,7 @@ export class ApiClient {
     filters: FilterPK[],
     media: MediaAlternative[],
     active: boolean,
-    // eslint-disable-next-line
+    // eslint-disable-next-line @typescript-eslint/camelcase
     phone_number?: PhoneNumberPK | null,
   ): Promise<NotificationProfile> {
     return resolveOrReject(
@@ -416,7 +430,7 @@ export class ApiClient {
           filters,
           media,
           active,
-          // eslint-disable-next-line
+          // eslint-disable-next-line @typescript-eslint/camelcase
           phone_number: phone_number || null,
         },
       ),
@@ -683,7 +697,7 @@ export class ApiClient {
     return resolveOrReject(
       this.authPut<Timeslot, Omit<Timeslot, "pk">>(`/api/v1/notificationprofiles/timeslots/${timeslotPK}/`, {
         name,
-        // eslint-disable-next-line
+        // eslint-disable-next-line @typescript-eslint/camelcase
         time_recurrences: timeRecurrences,
       }),
       defaultResolver,
@@ -695,7 +709,7 @@ export class ApiClient {
     return resolveOrReject(
       this.authPost<Timeslot, Omit<Timeslot, "pk">>(`/api/v1/notificationprofiles/timeslots/`, {
         name,
-        // eslint-disable-next-line
+        // eslint-disable-next-line @typescript-eslint/camelcase
         time_recurrences: timeRecurrences,
       }),
       defaultResolver,
