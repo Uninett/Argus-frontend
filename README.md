@@ -1,15 +1,55 @@
 # Argus - Frontend
-> built using React with TypeScript
+
+The Argus-frontend provides a graphical web interface to use with Argus. It has been built using React with TypeScript.
+The backend can be found at https://github.com/Uninett/Argus.
+
+Here's how to get started with development.
+
 
 ## Requirements
 
-For development, you will only need Node.js installed on your environment.
+- Argus backend
+- Node.js with npm
 
-### Node
+Set up the Argus backend according to the instructions in its repository (https://github.com/Uninett/Argus).
 
-[Node](http://nodejs.org/) is really easy to install & now include [npm](https://npmjs.org/).
-You should be able to run the following command after the installation procedure
-below.
+Furthermore, [Node.js](http://nodejs.org/) is required. We also use the [Node Package Manager (npm)](https://www.npmjs.com/), which comes bundled with Node.js.
+
+Installation procedures are as follows:
+
+### Install Node.js
+
+#### OS X
+
+Use the Terminal app (located at `/Applications/Utilities/Terminal.app`).
+
+Install [Homebrew](http://brew.sh/) with the following command.
+
+    ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
+
+Then run
+
+    brew install node
+
+to start the installation.
+
+#### Ubuntu Linux
+
+Open a terminal and run the following commands:
+
+    sudo apt-get install python-software-properties
+    sudo add-apt-repository ppa:chris-lea/node.js
+    sudo apt-get update
+    sudo apt-get install nodejs
+
+#### Windows
+
+Download the Node.js installer from http://nodejs.org/ and follow the installation instructions provided on the website.
+Make sure that the `git` command is available in your PATH.
+
+---
+
+After installation, test your Node.js with the following commands:
 
     $ node --version
     v10.11.0
@@ -17,67 +57,48 @@ below.
     $ npm --version
     6.4.1
 
-#### Node installation on OS X
+You successfully installed Node.js! Now let's continue to Argus frontend.
 
-You will need to use a Terminal. On OS X, you can find the default terminal in
-`/Applications/Utilities/Terminal.app`.
+## Install and startup Argus frontend
 
-Please install [Homebrew](http://brew.sh/) if it's not already done with the following command.
+To download Argus frontend and install all required dependencies, run
 
-    $ ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
+    git clone https://github.com/Uninett/Argus-frontend
+    cd Argus-frontend
+    npm install
 
-If everything when fine, you should run
+Afterwards, use
 
-    brew install node
+    npm start
 
-#### Node installation on Linux
+to start the app in development mode.
+This will open your browser at http://localhost:3000 or similar.
 
-    sudo apt-get install python-software-properties
-    sudo add-apt-repository ppa:chris-lea/node.js
-    sudo apt-get update
-    sudo apt-get install nodejs
+Congrats, you now have the Argus frontend up and running!
 
-#### Node installation on Windows
+Note that the website will automatically reload as you edit the code.
 
-Just go on [official Node.js website](http://nodejs.org/) & grab the installer.
-Also, be sure to have `git` available in your PATH, `npm` might need it.
+## Coding guidelines
 
----
+### Code structure
 
-## Install
+The folder structure of this project consists of components and views.
+Each view component consists of other components.
+`App.js` handles the routing to each view component that is displayed on the web app.
 
-    $ git clone https://github.com/Uninett/Argus-frontend
-    $ cd Argus-frontend
-    $ npm install
+### Coding style
 
-Installs all the dependencies for the project.
+We use [prettier](https://github.com/prettier/prettier) for JavaScript auto-formatting.
 
-## Start & watch
-    $ npm start
-
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
-
-## Code structure
-The folder structure of this project is split into components and views.Each view component is built up using other components. App.js handles the routing to each view component that is displayed on the page.
-
-## Prettier
-
-We use [prettier](https://github.com/prettier/prettier) for JS auto-formatting.
-We highly recommend using format on save via an editor plugin,
-for example [prettier-atom](https://atom.io/packages/prettier-atom) and
+We recommend using an editor plugin to automatically format code on save,
+like [prettier-atom](https://atom.io/packages/prettier-atom) or
 [vim-prettier](https://github.com/prettier/vim-prettier).
 
-You can also format the code via `yarn prettier`.
+Another option to format the code is the `yarn prettier` command.
 
-## CSS
-ColorScheme.css defines every color used in the project and each component has their own css file.
+Lint errors will be displayed on the console while the app is running.
 
-## Backend
-Can be found here: https://github.com/Uninett/Argus
+### CSS
 
-
-
+The file `ColorScheme.css` defines the colors used in the project.
+Additionally, there is one CSS file for each component.
