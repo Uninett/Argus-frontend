@@ -13,7 +13,7 @@ Here's how to get started with development.
 
 Set up the Argus backend according to the instructions in its repository (https://github.com/Uninett/Argus).
 
-Furthermore, Node.js is required. The Node Package Manager (npm) will be provided with Node.js.
+Furthermore, [Node.js](http://nodejs.org/) is required. We also use the [Node Package Manager (npm)](https://www.npmjs.com/), which comes bundled with Node.js.
 
 Installation procedures are as follows:
 
