@@ -9,26 +9,34 @@ export type Tag = {
   original: string;
 };
 
+// NOTE: proper handling of key-value pairs
+// is probably needed.
+export const originalToTag = (str: string): Tag => {
+  const [key, value] = str.split("=", 2);
+  return { key, value, original: str };
+};
+
 export type TagSelectorPropsType = {
   tags: Tag[];
   onSelectionChange: (tags: Tag[]) => void;
+  defaultSelected?: string[];
+  allSelected?: boolean;
   disabled?: boolean;
 };
 
 export const TagSelector: React.FC<TagSelectorPropsType> = ({
   tags,
   onSelectionChange,
+  defaultSelected,
   disabled,
 }: TagSelectorPropsType) => {
   const [value, setValue] = useState<string>("");
   const [selectValue, setSelectValue] = useState<string[]>([]);
 
-  // NOTE: proper handling of key-value pairs
-  // is probably needed.
-  const toTag = (str: string): Tag => {
-    const [key, value] = str.split("=", 2);
-    return { key, value, original: str };
-  };
+  useEffect(() => {
+    if (!defaultSelected) return;
+    setSelectValue(defaultSelected);
+  }, [defaultSelected]);
 
   const handleSelectNew = (newValue: string[]) => {
     setSelectValue((oldValue: string[]) => {
@@ -49,7 +57,7 @@ export const TagSelector: React.FC<TagSelectorPropsType> = ({
   };
 
   useEffect(() => {
-    onSelectionChange(selectValue.map(toTag));
+    onSelectionChange(selectValue.map(originalToTag));
   }, [selectValue, onSelectionChange]);
 
   return (
@@ -62,7 +70,6 @@ export const TagSelector: React.FC<TagSelectorPropsType> = ({
       options={tags.map((tag: Tag) => tag.key)}
       disabled={disabled}
       onChange={(e: unknown, changeValue, reason: string) => {
-        console.log("onChange", reason, changeValue);
         switch (reason) {
           case "select-option":
             handleSelectNew(changeValue);
@@ -74,8 +81,7 @@ export const TagSelector: React.FC<TagSelectorPropsType> = ({
         }
       }}
       inputValue={value}
-      onInputChange={(e: unknown, inputValue: string, reason: string) => {
-        console.log("set value", reason, ":", inputValue);
+      onInputChange={(e: unknown, inputValue: string /* , reason: string */) => {
         setValue(inputValue);
       }}
       renderInput={(params) => (

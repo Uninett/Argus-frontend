@@ -78,6 +78,22 @@ export function toMap<K extends number | string, T>(elements: T[], getter: (elem
   return new Map<K, T>(elements.map((elem: T, index: number): [K, T] => [getter(elem, index), elem]));
 }
 
+export function toMapNum<T>(elements: T[], getter: (elem: T, index: number) => number): { [key: number]: T } {
+  const out: { [key: number]: T } = {};
+  elements.forEach((elem: T, index: number): void => {
+    out[getter(elem, index)] = elem;
+  });
+  return out;
+}
+
+export function toMapStr<T>(elements: T[], getter: (elem: T, index: number) => string): { [key: string]: T } {
+  const out: { [key: string]: T } = {};
+  elements.forEach((elem: T, index: number): void => {
+    out[getter(elem, index)] = elem;
+  });
+  return out;
+}
+
 export function groupBy<K extends number | string, T>(
   elements: T[],
   groupByGetter: (elem: T, index: number) => K,
