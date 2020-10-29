@@ -243,7 +243,7 @@ const FiltersView: React.FC<FiltersViewPropsType> = ({}: FiltersViewPropsType) =
         setFiltersContext((prev: FiltersContextType) => {
           return { ...prev, deletingFilter: undefined };
         });
-        displayAlertSnackbar(`Failed to deleted filter ${name}: ${error}`, "error");
+        displayAlertSnackbar(`Failed to delete filter ${filter.name}: ${error}`, "error");
       });
   };
 
