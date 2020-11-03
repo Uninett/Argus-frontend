@@ -82,13 +82,18 @@ export type FilterPK = number; // WIP: fix this
 export interface Filter {
   pk: FilterPK;
   name: string;
-  sourceSystemIds: string[] | number[];
+  sourceSystemIds: number[];
   tags: string[];
 }
 
 export interface FilterDefinition {
-  sourceSystemIds: string[] | number[];
+  sourceSystemIds: number[];
   tags: string[];
+
+  // not supported by backend yet, not sure if it
+  // should either. Does it even make sense?
+  show_acked?: boolean;
+  show?: "open" | "closed" | "both";
 }
 
 export const EmptyFilterDefinition = {
@@ -665,6 +670,19 @@ export class ApiClient {
       }),
       defaultResolver,
       (error) => new Error(`Failed to create notification filter ${name}: ${error}`),
+    );
+  }
+
+  public putFilter(pk: number, name: string, definition: FilterDefinition): Promise<FilterSuccessResponse> {
+    return resolveOrReject(
+      this.authPut<FilterSuccessResponse, FilterRequest>(`/api/v1/notificationprofiles/filters/${pk}/`, {
+        name,
+        // This is really ugly
+        // eslint-disable-next-line
+        filter_string: JSON.stringify(definition) as string,
+      }),
+      defaultResolver,
+      (error) => new Error(`Failed to update notification filter ${pk}: ${error}`),
     );
   }
 
