@@ -209,7 +209,6 @@ const FiltersView: React.FC<FiltersViewPropsType> = ({}: FiltersViewPropsType) =
   const handleFilterUpdate = (name: string, definition: FilterDefinition) => {
     const filter = filters.find((f) => f.name === name);
     if (!filter) {
-      filters;
       displayAlertSnackbar(`Unknown filter: ${name}, can't update`, "error");
       return;
     }
