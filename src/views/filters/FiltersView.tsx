@@ -9,10 +9,15 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import DeleteIcon from "@material-ui/icons/Delete";
-import Spinning from "../../components/spinning";
 import VisibilityIcon from "@material-ui/icons/Visibility";
+import Card from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
+import Typography from "@material-ui/core/Typography";
+import EditIcon from "@material-ui/icons/EditOutlined";
 
-import Header from "../../components/header/Header";
+import Spinning from "../../components/spinning";
+
+import { ENABLE_WEBSOCKETS_SUPPORT } from "../../config";
 
 import "../../components/incidenttable/incidenttable.css";
 import FilterBuilder from "../../components/filterbuilder/FilterBuilder";
@@ -20,14 +25,14 @@ import { withRouter } from "react-router-dom";
 import api, { IncidentMetadata, Filter, FilterDefinition, FilterSuccessResponse, SourceSystem } from "../../api";
 import { toMapNum, toMapStr, pkGetter } from "../../utils";
 import TagSelector, { Tag, originalToTag } from "../../components/tagselector";
-import FilteredIncidentTable from "../../components/incidenttable/FilteredIncidentTable";
 
 import "../../components/incidenttable/incidenttable.css";
 
 import { FiltersContext, FiltersContextType, DEFAULT_FILTERS_CONTEXT_VALUE } from "../../components/filters/contexts";
 import { useAlertSnackbar, UseAlertSnackbarResultType } from "../../components/alertsnackbar";
 
-import { ENABLE_WEBSOCKETS_SUPPORT } from "../../config";
+import FilteredIncidentTable, { IncidentsFilter } from "../../components/incidenttable/FilteredIncidentTable";
+import { IncidentFilterToolbar } from "../../components/incident/IncidentFilterToolbar";
 
 type FiltersTablePropsType = {
   filters: Filter[];
@@ -97,7 +102,9 @@ const FiltersTable: React.FC<FiltersTablePropsType> = ({
                     >
                       Delete
                     </Button>
-                    <Button onClick={() => onFilterEdit(filter)}>Edit</Button>
+                    <Button startIcon={<EditIcon />} onClick={() => onFilterEdit(filter)}>
+                      Edit
+                    </Button>
                   </TableCell>
                 </TableRow>
               );
@@ -307,24 +314,36 @@ const FiltersView: React.FC<FiltersViewPropsType> = ({}: FiltersViewPropsType) =
     <>
       {filtersSnackbar}
       <div>
-        <header>
-          <Header />
-        </header>
-        <h1 className={"filterHeader"}>Your filters</h1>
         <FiltersContext.Provider value={filtersContext}>
-          <FiltersTable
-            filters={filters}
-            onFilterPreview={handleFilterPreview}
-            onFilterEdit={(filter: Filter) => {
-              setEditingFilter(filter);
-            }}
-            onFilterDelete={handleFilterDelete}
-          />
-          <h1 className={"filterHeader"}>Create filter</h1>
-          {filterBuilder}
+          <Card>
+            <CardContent>
+              <Typography variant="h5" gutterBottom>
+                Your incident filters
+              </Typography>
+
+              <FiltersTable
+                filters={filters}
+                onFilterPreview={handleFilterPreview}
+                onFilterEdit={(filter: Filter) => {
+                  setEditingFilter(filter);
+                }}
+                onFilterDelete={handleFilterDelete}
+              />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent>
+              <Typography variant="h5" gutterBottom>
+                Create and preview filters
+              </Typography>
+              {filterBuilder}
+              <Typography color="textSecondary" gutterBottom>
+                Incidents matching filter
+              </Typography>
+              <FilteredIncidentTable filter={previewFilter} onLoad={useCallback(() => handleIncidentsLoaded(), [])} />
+            </CardContent>
+          </Card>
         </FiltersContext.Provider>
-        <h1 className={"filterHeader"}>Incidents</h1>
-        <FilteredIncidentTable filter={previewFilter} onLoad={useCallback(() => handleIncidentsLoaded(), [])} />
       </div>
     </>
   );
