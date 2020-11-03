@@ -40,7 +40,8 @@ const DEFAULT_VIRT_CURSOR = {
 
 export type IncidentsFilter = {
   tags: Tag[];
-  sources: "AllSources" | string[];
+  sources: "AllSources" | string[] | undefined;
+  sourcesById: number[] | undefined;
   show: "open" | "closed" | "both";
   showAcked: boolean;
   realtime: boolean;
@@ -55,7 +56,7 @@ const FilteredIncidentTable: React.FC<FilteredIncidentsTablePropsType> = ({
   filter,
   onLoad,
 }: FilteredIncidentsTablePropsType) => {
-  const { tags: tagsFilter, sources, show, showAcked, realtime } = filter;
+  const { tags: tagsFilter, sources, sourcesById, show, showAcked, realtime } = filter;
 
   const [paginationCursor, setPaginationCursor] = useState<PaginationCursor>(DEFAULT_PAGINATION_CURSOR);
   const [virtCursor, setVirtCursor] = useState<VirtCursor>(DEFAULT_VIRT_CURSOR);
@@ -87,6 +88,7 @@ const FilteredIncidentTable: React.FC<FilteredIncidentsTablePropsType> = ({
       acked: showAcked === true ? undefined : false,
       tags: tagsFilter.map((tag: Tag) => tag.original),
       sourceSystemNames: sources === "AllSources" ? undefined : sources,
+      sourceSystemIds: sourcesById,
     };
 
     setPromise(
@@ -97,7 +99,7 @@ const FilteredIncidentTable: React.FC<FilteredIncidentsTablePropsType> = ({
           return response;
         }),
     );
-  }, [setPromise, show, showAcked, tagsFilter, sources, paginationCursor, onLoad]);
+  }, [setPromise, show, showAcked, tagsFilter, sources, sourcesById, paginationCursor, onLoad]);
 
   const noDataText = isLoading ? LOADING_TEXT : isError ? ERROR_TEXT : NO_DATA_TEXT;
 

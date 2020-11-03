@@ -20,7 +20,7 @@ type FilterBuilderPropsType = {
   defaults?: Filter;
   onFilterCreate: (name: string, filter: FilterDefinition) => void;
   onFilterPreview: (filter: FilterDefinition) => void;
-  onFilterUpdate: (pk: number, name: string, definition: FilterDefinition) => void;
+  onFilterUpdate: (name: string, definition: FilterDefinition) => void;
 };
 
 const FilterBuilder: React.FC<FilterBuilderPropsType> = ({
@@ -72,7 +72,7 @@ const FilterBuilder: React.FC<FilterBuilderPropsType> = ({
   };
 
   const handleSave = () => {
-    if (defaults) onFilterUpdate(defaults.pk, name, filter());
+    if (defaults) onFilterUpdate(name, filter());
   };
 
   return (
@@ -103,9 +103,12 @@ const FilterBuilder: React.FC<FilterBuilderPropsType> = ({
                   removeUndefined(selection.map((sourceName: string) => filtersContext.sourceFromName(sourceName)?.pk)),
                 );
               }}
-              defaultSelected={removeUndefined(
-                sourceSystemIds.map((id: number) => filtersContext.sourceFromId(id)?.name),
-              )}
+              defaultSelected={(() => {
+                const sourceNames = removeUndefined(
+                  sourceSystemIds.map((id: number) => filtersContext.sourceFromId(id)?.name),
+                );
+                return sourceNames;
+              })()}
             />
           </div>
           <div className="filterSelect">

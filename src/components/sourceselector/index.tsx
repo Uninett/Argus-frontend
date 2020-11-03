@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
@@ -6,7 +6,7 @@ import TextField from "@material-ui/core/TextField";
 export type SourceSelectorPropsType = {
   sources: string[];
   onSelectionChange: (source: string[]) => void;
-  defaultSelected?: string[];
+  defaultSelected: string[];
   disabled?: boolean;
 };
 
@@ -16,7 +16,11 @@ export const SourceSelector: React.FC<SourceSelectorPropsType> = ({
   defaultSelected,
   disabled,
 }: SourceSelectorPropsType) => {
-  const [selectValue, setSelectValue] = useState<string[]>(defaultSelected || []);
+  const [selectValue, setSelectValue] = useState<string[]>([]);
+
+  useEffect(() => {
+    setSelectValue(defaultSelected);
+  }, [defaultSelected]);
 
   return (
     <Autocomplete

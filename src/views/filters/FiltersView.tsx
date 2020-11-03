@@ -114,25 +114,36 @@ type FiltersViewPropsType = {};
 const FiltersView: React.FC<FiltersViewPropsType> = ({}: FiltersViewPropsType) => {
   const { incidentSnackbar: filtersSnackbar, displayAlertSnackbar }: UseAlertSnackbarResultType = useAlertSnackbar();
 
-  /* To be converted to states */
-  const realtime = false;
-  const sources = "AllSources";
-  const show = "open";
-  const showAcked = false;
+  // const [sourcesIdsFilter, setSourceIdsFilter] = useState<number[]>([]);
+  // const [tagsFilter, setTagsFilter] = useState<Tag[]>([]);
 
-  const [tagsFilter, setTagsFilter] = useState<Tag[]>([]);
+  const [previewFilter, setPreviewFilter] = useState<{
+    tags: Tag[];
+    sources: string[] | "AllSources";
+    sourcesById: number[];
+    show: "open" | "closed" | "both";
+    showAcked: boolean;
+    realtime: boolean;
+  }>({
+    tags: [],
+    sources: "AllSources",
+    sourcesById: [],
+    show: "open",
+    showAcked: true,
+    realtime: ENABLE_WEBSOCKETS_SUPPORT,
+  });
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [tags, setTags] = useState<Tag[]>([
-    { key: "url", value: "https://test.test", original: "url=https://test.test" },
-    { key: "host", value: "localhost", original: "host=localhost" },
-  ]);
-
+  // The editing filter is the one modified/updated by the Filter Builder
+  // and is the one that we can save/create.
   const [editingFilter, setEditingFilter] = useState<Filter | undefined>(undefined);
+
+  // Filters is the list of existing filters.
+  // It is loaded once from the backend on refresh, but then
+  // only modified locally by using results from the backend etc.
   const [filters, setFilters] = useState<Filter[]>([]);
 
   const filterExists = (name: string) => {
-    return (filters.find((filter: Filter) => filter.name === name) && true) || false;
+    return (filters.find((f) => f.name === name) && true) || false;
   };
 
   const [filtersContext, setFiltersContext] = useState<FiltersContextType>({
@@ -183,7 +194,7 @@ const FiltersView: React.FC<FiltersViewPropsType> = ({}: FiltersViewPropsType) =
         });
 
         setFilters((prev: Filter[]) => {
-          return [...prev, { name: response.name, pk: response.pk, ...filter }];
+          return [...prev, { ...filter, name: response.name, pk: response.pk }];
         });
         displayAlertSnackbar(`Created filter ${name}`, "success");
       })
@@ -195,12 +206,15 @@ const FiltersView: React.FC<FiltersViewPropsType> = ({}: FiltersViewPropsType) =
       });
   };
 
-  const handleFilterUpdate = (pk: number, name: string, definition: FilterDefinition) => {
-    setFiltersContext((prev: FiltersContextType) => {
-      return { ...prev, savingFilter: pk };
-    });
+  const handleFilterUpdate = (name: string, definition: FilterDefinition) => {
+    const filter = filters.find((f) => f.name === name);
+    if (!filter) {
+      filters;
+      displayAlertSnackbar(`Unknown filter: ${name}, can't update`, "error");
+      return;
+    }
     api
-      .putFilter(pk, name, definition)
+      .putFilter(filter.pk, name, definition)
       .then(() => {
         displayAlertSnackbar(`Saved filter: ${name}`, "success");
         setFiltersContext((prev: FiltersContextType) => {
@@ -208,7 +222,7 @@ const FiltersView: React.FC<FiltersViewPropsType> = ({}: FiltersViewPropsType) =
         });
 
         setFilters((prev: Filter[]) => {
-          const index = prev.findIndex((f: Filter) => f.pk === pk);
+          const index = prev.findIndex((f: Filter) => f.pk === filter.pk);
           const updated = [...prev];
           updated[index] = { ...updated[index], ...definition };
           return updated;
@@ -259,7 +273,11 @@ const FiltersView: React.FC<FiltersViewPropsType> = ({}: FiltersViewPropsType) =
       displayAlertSnackbar("Previewing filter from builder", "success");
       return { ...prev, loadingPreview: true };
     });
-    setTagsFilter(filter.tags.map(originalToTag));
+    setPreviewFilter((prev) => ({
+      ...prev,
+      tags: filter.tags.map(originalToTag),
+      sourcesById: filter.sourceSystemIds,
+    }));
   };
 
   const filterBuilder = (editingFilter && (
@@ -307,10 +325,7 @@ const FiltersView: React.FC<FiltersViewPropsType> = ({}: FiltersViewPropsType) =
           {filterBuilder}
         </FiltersContext.Provider>
         <h1 className={"filterHeader"}>Incidents</h1>
-        <FilteredIncidentTable
-          filter={{ tags: tagsFilter, sources, show, showAcked, realtime }}
-          onLoad={useCallback(() => handleIncidentsLoaded(), [])}
-        />
+        <FilteredIncidentTable filter={previewFilter} onLoad={useCallback(() => handleIncidentsLoaded(), [])} />
       </div>
     </>
   );

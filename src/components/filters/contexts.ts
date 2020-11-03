@@ -24,6 +24,7 @@ export const DEFAULT_FILTERS_CONTEXT_VALUE = {
   sources: [],
   sourceFromId: () => undefined,
   sourceFromName: () => undefined,
+
   filterExists: () => false,
 };
 

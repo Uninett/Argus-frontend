@@ -89,6 +89,7 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
                 onSelectionChange={(selection: string[]) => {
                   setSources((selection.length !== 0 && selection) || "AllSources");
                 }}
+                defaultSelected={[]}
               />
             </Grid>
 
@@ -105,7 +106,9 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
           </Grid>
         </CardContent>
       </Card>
-      <FilteredIncidentTable filter={{ tags: tagsFilter, sources, show, showAcked, realtime }} />
+      <FilteredIncidentTable
+        filter={{ tags: tagsFilter, sources, sourcesById: undefined, show, showAcked, realtime }}
+      />
     </div>
   );
 };

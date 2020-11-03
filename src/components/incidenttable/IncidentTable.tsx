@@ -301,7 +301,7 @@ const IncidentTable: React.FC<IncidentsProps> = ({
   const { incidentSnackbar, displayAlertSnackbar }: UseAlertSnackbarResultType = useAlertSnackbar();
 
   useEffect(() => {
-    console.log("updating incidents");
+    // console.log("updating incidents");
     setIncidentsUpdated([...incidentsDict.values()]);
   }, [incidentsDict]);
 
