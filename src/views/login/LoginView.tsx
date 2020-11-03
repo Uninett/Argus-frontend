@@ -33,7 +33,6 @@ const LoginView: React.FC<LoginViewPropsType> = (props: LoginViewPropsType) => {
         loginAndSetUser(token).then(() => {
           setLoginAttemptFailed(false);
           dispatch({ type: "setUser", payload: localStorage.getItem("user") });
-          props.history.push("/");
         });
       })
       .catch((error) => {

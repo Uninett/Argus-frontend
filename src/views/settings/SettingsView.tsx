@@ -10,9 +10,6 @@ import PhoneNumberList from "../../components/phonenumberlist";
 const SettingsView: React.FC = () => {
   return (
     <div>
-      <header>
-        <Header />
-      </header>
       <h1>Settings</h1>
       <Grid container direction="column" justify="space-evenly" alignItems="center">
         <Typography variant="h5">Phone numbers</Typography>

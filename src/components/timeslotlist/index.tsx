@@ -4,7 +4,7 @@ import { Theme, createStyles, makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 
-import TimeslotComponent from "../timeslot";
+import TimeslotComponent, { DEFAULT_TIMESLOT_RECURRENCE } from "../timeslot";
 import { toMap } from "../../utils";
 
 import api, { defaultErrorHandler, TimeslotPK, Timeslot, TimeRecurrence } from "../../api";

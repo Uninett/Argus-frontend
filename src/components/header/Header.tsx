@@ -51,11 +51,18 @@ const Header: React.FC<HeaderPropsType> = ({ history }: HeaderPropsType) => {
 
   const currentPath = history.location.pathname;
 
-  const getStyleProps = (expectedPath: string) => {
-    if (currentPath === expectedPath) {
-      return { to: expectedPath, className: "headerbutton selected" };
+  const getStyleProps = (expectedPath: string | string[]) => {
+    if (typeof expectedPath === "string") {
+      if (currentPath === expectedPath) {
+        return { to: expectedPath, className: "headerbutton selected" };
+      }
+      return { to: expectedPath, className: "headerbutton" };
+    } else {
+      if (expectedPath.find((path: string) => path === currentPath)) {
+        return { to: expectedPath[0], className: "headerbutton selected" };
+      }
+      return { to: expectedPath[0], className: "headerbutton" };
     }
-    return { to: expectedPath, className: "headerbutton" };
   };
 
   return (
@@ -64,7 +71,7 @@ const Header: React.FC<HeaderPropsType> = ({ history }: HeaderPropsType) => {
         <Logo />
       </Link>
       <div id="headerbuttons">
-        <Link id="header-incidents" {...getStyleProps("/")}>
+        <Link id="header-incidents" {...getStyleProps(["/incidents", "/"])}>
           <IncidentsIcon />
           <p>Incidents</p>
         </Link>

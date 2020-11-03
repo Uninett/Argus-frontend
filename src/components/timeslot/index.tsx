@@ -17,7 +17,10 @@ import InputLabel from "@material-ui/core/InputLabel";
 import Grid from "@material-ui/core/Grid";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
-import RemoveIcon from "@material-ui/icons/Remove";
+import RemoveIcon from "@material-ui/icons/DeleteOutlineOutlined";
+
+import Card from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
 
 import Spinning from "../spinning";
 import DateFnsUtils from "@date-io/date-fns";
@@ -71,7 +74,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const DEFAULT_TIMESLOT_RECURRENCE: TimeRecurrence = {
+export const DEFAULT_TIMESLOT_RECURRENCE: TimeRecurrence = {
   // eslint-disable-next-line
   all_day: false,
   start: "04:00:00",
@@ -117,9 +120,9 @@ export const TimeslotRecurrenceComponent: React.FC<TimeslotRecurrenceComponentPr
 
   return (
     <>
-      <Grid item container lg direction="row" justify="space-between" alignItems="center">
+      <Grid item container direction="row" justify="space-between" alignItems="center" spacing={3}>
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
-          <Grid item>
+          <Grid item sm>
             <FormControlLabel
               control={
                 <Checkbox
@@ -179,18 +182,6 @@ export const TimeslotRecurrenceComponent: React.FC<TimeslotRecurrenceComponentPr
               }}
             />
           </Grid>
-          <Grid item>
-            <RemoveRecurrenceButton
-              variant="text"
-              size="small"
-              className={classes.dangerousButton}
-              startIcon={<RemoveIcon />}
-              onClick={() => handleRemoveRecurrence()}
-              disabled={disabled}
-            >
-              Remove
-            </RemoveRecurrenceButton>
-          </Grid>
         </MuiPickersUtilsProvider>
       </Grid>
       <Grid item>
@@ -199,6 +190,18 @@ export const TimeslotRecurrenceComponent: React.FC<TimeslotRecurrenceComponentPr
           selectedDays={recurrence.days}
           onSelectionChange={handleRecurrenceDaysChange}
         />
+      </Grid>
+      <Grid item>
+        <RemoveRecurrenceButton
+          variant="text"
+          size="small"
+          className={classes.dangerousButton}
+          startIcon={<RemoveIcon />}
+          onClick={() => handleRemoveRecurrence()}
+          disabled={disabled}
+        >
+          Remove recurrence
+        </RemoveRecurrenceButton>
       </Grid>
     </>
   );
@@ -310,95 +313,98 @@ const TimeslotComponent: React.FC<TimeslotPropsType> = ({
   });
 
   return (
-    <div key={pk} className={classes.root}>
-      <Paper className={classes.paper}>
-        <form className={classes.root} noValidate autoComplete="off">
-          <Grid container direction="column" alignItems="stretch" spacing={4}>
-            <Grid item container lg direction="row" justify="space-between">
-              <Grid item>
-                <TextField
-                  error={invalidTimeslotName}
-                  required
-                  label="Timeslot name"
-                  variant="standard"
-                  value={timeslotName}
-                  onChange={onTimeslotNameChange}
-                  disabled={updateLoading || deleteLoading}
-                />
-              </Grid>
-              <Grid item>
-                <ButtonGroup variant="contained" aria-label="outlined primary button group">
-                  <Button
-                    variant="contained"
-                    size="small"
-                    className={classes.safeButton}
-                    onClick={() => {
-                      setUpdateLoading(true);
-                      onSave(pk, timeslotName, recurrences);
-                    }}
-                    disabled={!hasChanged || invalidTimeslotName || updateLoading || deleteLoading}
-                    startIcon={updateLoading ? <Spinning shouldSpin /> : <SaveIcon />}
-                  >
-                    {exists ? "Save" : "Create"}
-                  </Button>
-                  <RemoveTimeslotButton
-                    variant="contained"
-                    size="small"
-                    className={classes.dangerousButton}
-                    startIcon={deleteLoading ? <Spinning shouldSpin /> : <DeleteIcon />}
-                    disabled={!exists || updateLoading || deleteLoading}
-                    onClick={() => {
-                      setDeleteLoading(true);
-                      onDelete(pk, timeslotName);
-                    }}
-                  >
-                    Delete
-                  </RemoveTimeslotButton>
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    className={classes.safeButton}
-                    onClick={() => handleAddRecurrence()}
-                    startIcon={<AddIcon />}
-                    disabled={updateLoading || deleteLoading}
-                  >
-                    Add recurrence
-                  </Button>
-                </ButtonGroup>
-              </Grid>
+    <Paper className={classes.paper}>
+      <form className={classes.root} noValidate autoComplete="off">
+        <Grid container direction="column" alignItems="stretch" spacing={4}>
+          <Grid item container lg direction="row" spacing={2} justify="space-between">
+            <Grid item>
+              <TextField
+                error={invalidTimeslotName}
+                required
+                label="Timeslot name"
+                variant="standard"
+                value={timeslotName}
+                onChange={onTimeslotNameChange}
+                disabled={updateLoading || deleteLoading}
+              />
             </Grid>
-            {recurrences.map((recurrence: TimeRecurrence, index: number) => {
+            <Grid item>
+              <ButtonGroup variant="contained" aria-label="outlined primary button group">
+                <Button
+                  variant="contained"
+                  size="small"
+                  className={classes.safeButton}
+                  onClick={() => {
+                    setUpdateLoading(true);
+                    onSave(pk, timeslotName, recurrences);
+                  }}
+                  disabled={!hasChanged || invalidTimeslotName || updateLoading || deleteLoading}
+                  startIcon={updateLoading ? <Spinning shouldSpin /> : <SaveIcon />}
+                >
+                  {exists ? "Save" : "Create"}
+                </Button>
+                <RemoveTimeslotButton
+                  variant="contained"
+                  size="small"
+                  className={classes.dangerousButton}
+                  startIcon={deleteLoading ? <Spinning shouldSpin /> : <DeleteIcon />}
+                  disabled={!exists || updateLoading || deleteLoading}
+                  onClick={() => {
+                    setDeleteLoading(true);
+                    onDelete(pk, timeslotName);
+                  }}
+                >
+                  Delete
+                </RemoveTimeslotButton>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  className={classes.safeButton}
+                  onClick={() => handleAddRecurrence()}
+                  startIcon={<AddIcon />}
+                  disabled={updateLoading || deleteLoading}
+                >
+                  Add recurrence
+                </Button>
+              </ButtonGroup>
+            </Grid>
+          </Grid>
+          {(recurrences.length > 0 &&
+            recurrences.map((recurrence: TimeRecurrence, index: number) => {
               return (
                 <Grid key={index} item lg>
-                  <TimeslotRecurrenceComponent
-                    id={index}
-                    recurrence={recurrence}
-                    onChange={(id: number, recurrence: TimeRecurrence) => {
-                      setRecurrences((prev: TimeRecurrence[]) => {
-                        const recurrences = [...prev];
-                        recurrences[id] = recurrence;
-                        return recurrences;
-                      });
-                      setHasChanged(true);
-                    }}
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                    onRemove={(id: number, recurrence: TimeRecurrence) => {
-                      setRecurrences((prev: TimeRecurrence[]) => {
-                        const recurrences = [...prev];
-                        recurrences.splice(id, 1);
-                        return recurrences;
-                      });
-                      setHasChanged(true);
-                    }}
-                    disabled={updateLoading || deleteLoading}
-                  />
+                  <Card variant="outlined">
+                    <CardContent>
+                      <TimeslotRecurrenceComponent
+                        id={index}
+                        recurrence={recurrence}
+                        onChange={(id: number, recurrence: TimeRecurrence) => {
+                          setRecurrences((prev: TimeRecurrence[]) => {
+                            const recurrences = [...prev];
+                            recurrences[id] = recurrence;
+                            return recurrences;
+                          });
+                          setHasChanged(true);
+                        }}
+                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                        onRemove={(id: number, recurrence: TimeRecurrence) => {
+                          setRecurrences((prev: TimeRecurrence[]) => {
+                            const recurrences = [...prev];
+                            recurrences.splice(id, 1);
+                            return recurrences;
+                          });
+                          setHasChanged(true);
+                        }}
+                        disabled={updateLoading || deleteLoading}
+                      />
+                    </CardContent>
+                  </Card>
                 </Grid>
               );
-            })}
-          </Grid>
-        </form>
-      </Paper>
-    </div>
+            })) || <Typography>No recurrences</Typography>}
+        </Grid>
+      </form>
+    </Paper>
   );
 };
 

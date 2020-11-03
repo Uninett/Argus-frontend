@@ -76,90 +76,86 @@ const FilterBuilder: React.FC<FilterBuilderPropsType> = ({
   };
 
   return (
-    <div className="WrappingDiv">
-      <div className="filterBuilding-div">
-        <div className="InputWrapperDiv">
-          <div className="filterSelect">
-            <p>Name</p>
-            <div className="NameFieldDiv">
-              <TextField
-                required
-                id="standard-required"
-                label="Required"
-                value={name}
-                placeholder="name"
-                onChange={handleNameChanged}
-                margin="dense"
-              />
-            </div>
-          </div>
-          <div className="filterSelect">
-            <p>Incident sources</p>
-            <SourceSelector
-              sources={filtersContext.sources.map((source: SourceSystem) => source.name)}
-              onSelectionChange={(selection: string[]) => {
-                // setSources((selection.length !== 0 && selection));
-                setSourceSystemIds(
-                  removeUndefined(selection.map((sourceName: string) => filtersContext.sourceFromName(sourceName)?.pk)),
-                );
-              }}
-              defaultSelected={(() => {
-                const sourceNames = removeUndefined(
-                  sourceSystemIds.map((id: number) => filtersContext.sourceFromId(id)?.name),
-                );
-                return sourceNames;
-              })()}
-            />
-          </div>
-          <div className="filterSelect">
-            <p>Tags</p>
-            <TagSelector
-              allSelected
-              tags={tags}
-              onSelectionChange={useCallback((selection: Tag[]) => {
-                setTags(selection);
-              }, [])}
-              defaultSelected={defaults?.tags}
-            ></TagSelector>
-          </div>
-          <div className="ButtonDiv">
-            <div className="create">
-              {(exists(name) && (
-                <Button
-                  startIcon={filtersContext.savingFilter ? <Spinning shouldSpin /> : <SaveIcon />}
-                  onClick={handleSave}
-                  variant="contained"
-                  color="primary"
-                  size="large"
-                  disabled={name === ""}
-                >
-                  Save
-                </Button>
-              )) || (
-                <Button
-                  onClick={handleCreate}
-                  startIcon={filtersContext.savingFilter ? <Spinning shouldSpin /> : <SaveIcon />}
-                  variant="contained"
-                  color="primary"
-                  size="large"
-                  disabled={name === ""}
-                >
-                  Create
-                </Button>
-              )}
-            </div>
-            <div className="preview">
-              <Button
-                startIcon={filtersContext.loadingPreview === true ? <Spinning shouldSpin /> : <VisibilityIcon />}
-                onClick={() => onFilterPreview(filter())}
-                variant="contained"
-                color="primary"
-                size="large"
-              >
-                Preview Incidents
-              </Button>
-            </div>
-          </div>
+    <div className="InputWrapperDiv">
+      <div className="filterSelect">
+        <p>Name</p>
+        <div className="NameFieldDiv">
+          <TextField
+            required
+            id="standard-required"
+            label="Required"
+            value={name}
+            placeholder="name"
+            onChange={handleNameChanged}
+            margin="dense"
+          />
+        </div>
+      </div>
+      <div className="filterSelect">
+        <p>Incident sources</p>
+        <SourceSelector
+          sources={filtersContext.sources.map((source: SourceSystem) => source.name)}
+          onSelectionChange={(selection: string[]) => {
+            // setSources((selection.length !== 0 && selection));
+            setSourceSystemIds(
+              removeUndefined(selection.map((sourceName: string) => filtersContext.sourceFromName(sourceName)?.pk)),
+            );
+          }}
+          defaultSelected={(() => {
+            const sourceNames = removeUndefined(
+              sourceSystemIds.map((id: number) => filtersContext.sourceFromId(id)?.name),
+            );
+            return sourceNames;
+          })()}
+        />
+      </div>
+      <div className="filterSelect">
+        <p>Tags</p>
+        <TagSelector
+          allSelected
+          tags={tags}
+          onSelectionChange={useCallback((selection: Tag[]) => {
+            setTags(selection);
+          }, [])}
+          defaultSelected={defaults?.tags}
+        ></TagSelector>
+      </div>
+      <div className="ButtonDiv">
+        <div className="create">
+          {(exists(name) && (
+            <Button
+              startIcon={filtersContext.savingFilter ? <Spinning shouldSpin /> : <SaveIcon />}
+              onClick={handleSave}
+              variant="contained"
+              color="primary"
+              size="large"
+              disabled={name === ""}
+            >
+              Save
+            </Button>
+          )) || (
+            <Button
+              onClick={handleCreate}
+              startIcon={filtersContext.savingFilter ? <Spinning shouldSpin /> : <SaveIcon />}
+              variant="contained"
+              color="primary"
+              size="large"
+              disabled={name === ""}
+            >
+              Create
+            </Button>
+          )}
+        </div>
+        <div className="preview">
+          <Button
+            startIcon={filtersContext.loadingPreview === true ? <Spinning shouldSpin /> : <VisibilityIcon />}
+            onClick={() => onFilterPreview(filter())}
+            variant="contained"
+            color="primary"
+            size="large"
+          >
+            Preview filter
+          </Button>
         </div>
       </div>
     </div>
