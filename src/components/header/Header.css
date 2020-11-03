@@ -35,7 +35,7 @@
   grid-area: buttons;
   align-items: baseline;
   justify-items: baseline;
-  margin-top: 30px;
+  margin-top: "50%";
 }
 .headerbutton {
   text-decoration: none;
@@ -45,35 +45,45 @@
   font-weight: 400;
   font-size: 1.2rem;
 }
-#header-timeslots {
+j #header-incidents {
   margin: auto;
   order: 1;
+}
+
+#header-timeslots {
+  margin: auto;
+  order: 2;
+}
+
+#header-filters {
+  margin: auto;
+  order: 3;
+}
+
+#header-notificationProfiles {
+  margin: auto;
+  order: 4;
 }
 
 #header-user {
   width: 110px;
   margin: auto;
-  order: 4;
+  order: 5;
   position: relative;
   margin-right: 20px;
 }
 
-#header-filters {
-  margin: auto;
-  order: 2;
-}
-
-#header-notificationProfiles {
-  margin: auto;
-  order: 3;
-}
-
+#header-incidents:hover,
 #header-user:hover,
 #header-timeslots:hover,
 #header-notificationProfiles:hover,
 #header-logout:hover,
 #header-filters:hover,
 #header-profiles:hover {
+  color: var(--secondary);
+}
+
+.selected {
   color: var(--secondary);
 }
 
