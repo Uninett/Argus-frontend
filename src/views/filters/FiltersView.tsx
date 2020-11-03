@@ -27,6 +27,8 @@ import "../../components/incidenttable/incidenttable.css";
 import { FiltersContext, FiltersContextType, DEFAULT_FILTERS_CONTEXT_VALUE } from "../../components/filters/contexts";
 import { useAlertSnackbar, UseAlertSnackbarResultType } from "../../components/alertsnackbar";
 
+import { ENABLE_WEBSOCKETS_SUPPORT } from "../../config";
+
 type FiltersTablePropsType = {
   filters: Filter[];
   onFilterPreview: (filter: Filter) => void;

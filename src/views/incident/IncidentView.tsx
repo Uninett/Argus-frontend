@@ -20,10 +20,12 @@ import api, { IncidentMetadata, SourceSystem } from "../../api";
 import TagSelector, { Tag } from "../../components/tagselector";
 import SourceSelector from "../../components/sourceselector";
 
+import { ENABLE_WEBSOCKETS_SUPPORT } from "../../config";
+
 type IncidentViewPropsType = {};
 
 const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType) => {
-  const [realtime, setRealtime] = useState<boolean>(true);
+  const [realtime, setRealtime] = useState<boolean>(ENABLE_WEBSOCKETS_SUPPORT);
   const [showAcked, setShowAcked] = useState<boolean>(false);
   const [tagsFilter, setTagsFilter] = useState<Tag[]>([]);
   const [sources, setSources] = useState<string[] | "AllSources">("AllSources");
@@ -72,10 +74,12 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
               <Checkbox disabled={disabled} checked={showAcked} onClick={() => setShowAcked((old) => !old)} />
             </Grid>
 
-            <Grid item md>
-              <Typography>Realtime</Typography>
-              <Checkbox disabled={disabled} checked={realtime} onClick={() => setRealtime((old) => !old)} />
-            </Grid>
+            {ENABLE_WEBSOCKETS_SUPPORT && (
+              <Grid item md>
+                <Typography>Realtime</Typography>
+                <Checkbox disabled={disabled} checked={realtime} onClick={() => setRealtime((old) => !old)} />
+              </Grid>
+            )}
 
             <Grid item md>
               <Typography>Sources to display</Typography>
