@@ -90,6 +90,8 @@ export const TagSelector: React.FC<TagSelectorPropsType> = ({
           variant="outlined"
           label={selectValue ? undefined : "Filter tags"}
           InputProps={{ ...params.InputProps, type: "search" }}
+          helperText={(!disabled && "Press enter to add new tag") || undefined}
+          placeholder={(!disabled && "key=value") || undefined}
         />
       )}
       value={selectValue}

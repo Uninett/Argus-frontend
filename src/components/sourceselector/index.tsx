@@ -28,7 +28,13 @@ export const SourceSelector: React.FC<SourceSelectorPropsType> = ({
       options={sources}
       disabled={disabled}
       renderInput={(params) => (
-        <TextField {...params} variant="outlined" InputProps={{ ...params.InputProps, type: "search" }} />
+        <TextField
+          {...params}
+          variant="outlined"
+          InputProps={{ ...params.InputProps, type: "search" }}
+          helperText={(!disabled && "Press enter to add new source") || undefined}
+          placeholder={(!disabled && "Source name") || undefined}
+        />
       )}
       onChange={(e: unknown, changeValue, reason: string) => {
         switch (reason) {
