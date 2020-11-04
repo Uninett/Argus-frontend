@@ -8,7 +8,12 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import Paper from "@material-ui/core/Paper";
 import SaveIcon from "@material-ui/icons/Save";
 import TextField from "@material-ui/core/TextField";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+import Input from "@material-ui/core/Input";
+import Chip from "@material-ui/core/Chip";
+import MenuItem from "@material-ui/core/MenuItem";
+import Select from "@material-ui/core/Select";
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
 import Grid from "@material-ui/core/Grid";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
@@ -21,15 +26,11 @@ import { MuiPickersUtilsProvider, KeyboardTimePicker } from "@material-ui/picker
 import { useStateWithDynamicDefault, dateFromTimeOfDayString, timeOfDayFromDate } from "../../utils";
 import { makeConfirmationButton } from "../buttons/ConfirmationButton";
 
-// import TimeslotDaySelector, { TimeslotRecurrenceDay } from "../timeslotdayselector";
-
 import {
   TimeslotPK,
   TimeRecurrence,
   TimeRecurrenceDay,
-  TimeRecurrenceDayName,
   TimeRecurrenceDayNameMap,
-  TimeRecurrenceNameDayMap,
   TIME_RECURRENCE_DAY_IN_ORDER,
 } from "../../api";
 
@@ -214,39 +215,39 @@ export const DaySelector: React.FC<DaySelectorPropsType> = ({
   onSelectionChange,
   disabled,
 }: DaySelectorPropsType) => {
-  const options = TIME_RECURRENCE_DAY_IN_ORDER.map((day: TimeRecurrenceDay) => TimeRecurrenceDayNameMap[day]);
-
   return (
-    <Autocomplete
-      freeSolo
-      multiple
-      size="small"
-      id="filter-select-tags"
-      disableClearable
-      options={options}
-      value={selectedDays.map((day: TimeRecurrenceDay) => TimeRecurrenceDayNameMap[day])}
-      disabled={disabled}
-      renderInput={(params) => (
-        <TextField {...params} variant="outlined" InputProps={{ ...params.InputProps, type: "search" }} />
-      )}
-      onChange={(e: unknown, changeValue, reason: string) => {
-        console.log("onChange", reason, changeValue);
-        switch (reason) {
-          default:
-            onSelectionChange(
-              // convert from the string values (Monday, Tuesday, ...) to (1, 2, 3, ...)
-              // remove those values that are not valid (not in TimeRecurrenceNameDayMap)
-              ([
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                ...(changeValue as any[]).filter((val: any) => val in TimeRecurrenceNameDayMap),
-              ] as TimeRecurrenceDayName[]).map(
-                (name: TimeRecurrenceDayName) => TimeRecurrenceNameDayMap[name] as TimeRecurrenceDay,
-              ),
-            );
-            break;
-        }
-      }}
-    />
+    <FormControl style={{ minWidth: "100%" }}>
+      <InputLabel id="demo-mutiple-chip-label">Days</InputLabel>
+      <Select
+        labelId="demo-mutiple-chip-label"
+        id="demo-mutiple-chip"
+        multiple
+        value={selectedDays}
+        // eslint-disable-next-line
+        onChange={(e: any) => {
+          const changeValue = e.target.value;
+          onSelectionChange(changeValue);
+        }}
+        input={<Input id="select-multiple-chip" />}
+        renderValue={(selected) => {
+          const selectedDays = new Set<TimeRecurrenceDay>(selected as TimeRecurrenceDay[]);
+          return (
+            <div>
+              {TIME_RECURRENCE_DAY_IN_ORDER.filter((day) => selectedDays.has(day)).map((day: TimeRecurrenceDay) => (
+                <Chip key={day} label={TimeRecurrenceDayNameMap[day]} />
+              ))}
+            </div>
+          );
+        }}
+        disabled={disabled}
+      >
+        {TIME_RECURRENCE_DAY_IN_ORDER.map((day: TimeRecurrenceDay) => (
+          <MenuItem key={day} value={day} selected>
+            {TimeRecurrenceDayNameMap[day]}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
   );
 };
 
