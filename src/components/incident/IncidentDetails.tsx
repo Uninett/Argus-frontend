@@ -451,7 +451,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
             <Card>
               <CardContent>
                 <Typography color="textSecondary" gutterBottom>
-                  Primary details
+                  Primary details (#{incident.pk})
                 </Typography>
                 <List>
                   <IncidentDetailsListItem title="Description" detail={incident.description} />
