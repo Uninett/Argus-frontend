@@ -1,5 +1,13 @@
 import React, { useState, useContext } from "react";
 
+import Card from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
+import Typography from "@material-ui/core/Typography";
+import TextField from "@material-ui/core/TextField";
+import Grid from "@material-ui/core/Grid";
+import Divider from "@material-ui/core/Divider";
+import Button from "@material-ui/core/Button";
+
 import "./LoginView.css";
 import Auth from "../../auth";
 import { BACKEND_URL } from "../../config";
@@ -15,6 +23,100 @@ type LoginViewPropsType = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   history: any;
 };
+
+const NewLoginView: React.FC<LoginViewPropsType> = (props: LoginViewPropsType) => {
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+
+  const [loginFailed, setLoginFailed] = useState<boolean>(false);
+
+  const { dispatch } = useContext(Store);
+
+  const onSubmit = async (e: any) => {
+    e.preventDefault();
+
+    await api
+      .userpassAuth(username, password)
+      .then((token: Token) => {
+        loginAndSetUser(token).then(() => {
+          setLoginFailed(true);
+          dispatch({ type: "setUser", payload: localStorage.getItem("user") });
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+        setLoginFailed(true);
+        Auth.logout();
+      });
+  };
+
+  return (
+    <div
+      style={{
+        margin: "20em auto",
+        width: "25em",
+      }}
+    >
+      <form onSubmit={onSubmit} id="login-form">
+        <Card>
+          <CardContent>
+            <Grid container xl direction="column" spacing={4} alignItems="center" justify="center">
+              <Grid item>
+                <Typography variant="h1">ARGUS</Typography>
+              </Grid>
+              <Grid item>
+                <TextField
+                  variant="outlined"
+                  label="Username"
+                  value={username}
+                  onChange={(event: any) => {
+                    const value = event.target.value as string;
+                    setUsername(value);
+                  }}
+                />
+              </Grid>
+              <Grid item>
+                <TextField
+                  variant="outlined"
+                  label="Password"
+                  type="password"
+                  value={password}
+                  onChange={(event: any) => {
+                    const value = event.target.value as string;
+                    setPassword(value);
+                  }}
+                />
+              </Grid>
+              <Grid item>
+                <Button type="submit" variant="outlined">
+                  Login
+                </Button>
+              </Grid>
+              <Grid item container direction="row" alignItems="center" spacing={1}>
+                <Grid item xs>
+                  <Divider />
+                </Grid>
+                <Grid item xs={2}>
+                  <Typography color="textSecondary">OR</Typography>
+                </Grid>
+                <Grid item xs>
+                  <Divider />
+                </Grid>
+              </Grid>
+              <Grid item>
+                <Button variant="outlined" href={`${BACKEND_URL}/oidc/login/dataporten_feide/`}>
+                  Login with Feide
+                </Button>
+              </Grid>
+            </Grid>
+          </CardContent>
+        </Card>
+      </form>
+    </div>
+  );
+};
+
+export default NewLoginView;
 
 const LoginView: React.FC<LoginViewPropsType> = (props: LoginViewPropsType) => {
   const [username, setUsername] = useState("");
@@ -83,4 +185,4 @@ const LoginView: React.FC<LoginViewPropsType> = (props: LoginViewPropsType) => {
   );
 };
 
-export default LoginView;
+// export default LoginView;

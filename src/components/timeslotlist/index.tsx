@@ -3,6 +3,10 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Theme, createStyles, makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
+import Paper from "@material-ui/core/Paper";
+import Card from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
+import Divider from "@material-ui/core/Divider";
 
 import TimeslotComponent, { DEFAULT_TIMESLOT_RECURRENCE } from "../timeslot";
 import { toMap } from "../../utils";
@@ -190,26 +194,37 @@ const TimeslotList: React.FC<TimeslotListPropsType> = () => {
   return (
     <div className={classes.root}>
       {incidentSnackbar}
-      <Grid key="new-timeslot-grid-item" item xs={12} className={classes.timeslot}>
-        <Typography>Create new timeslot</Typography>
-        {newTimeslotComponent}
-      </Grid>
-      {[...timeslots.values()].map((timeslot: InternalTimeslot) => {
-        return (
-          <Grid key={`${timeslot.pk}-${timeslot.revision}-grid-item`} item xs={12} className={classes.timeslot}>
-            <TimeslotComponent
-              exists
-              revision={timeslot.revision}
-              pk={timeslot.pk}
-              name={timeslot.name}
-              recurrences={timeslot.time_recurrences}
-              onSave={handleSave}
-              onDelete={handleDelete}
-              unsavedChanges={false}
-            />
-          </Grid>
-        );
-      })}
+      <Card>
+        <CardContent>
+          <Typography>Create new timeslot</Typography>
+          {newTimeslotComponent}
+          <Divider />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent>
+          <Typography variant="h5" gutterBottom>
+            Your timeslots
+          </Typography>
+          {[...timeslots.values()].map((timeslot: InternalTimeslot) => {
+            return (
+              <Grid key={`${timeslot.pk}-${timeslot.revision}-grid-item`} item className={classes.timeslot}>
+                <TimeslotComponent
+                  exists
+                  revision={timeslot.revision}
+                  pk={timeslot.pk}
+                  name={timeslot.name}
+                  recurrences={timeslot.time_recurrences}
+                  onSave={handleSave}
+                  onDelete={handleDelete}
+                  unsavedChanges={false}
+                />
+              </Grid>
+            );
+          })}
+        </CardContent>
+      </Card>
     </div>
   );
 };

@@ -64,7 +64,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
         </Typography>
         <Grid container xl direction="row" justify="space-evenly" spacing={4}>
           <Grid item container sm={5} direction="row">
-            <Grid item sm>
+            <Grid item md>
               <Typography>State</Typography>
 
               <ButtonGroup variant="contained" color="default" aria-label="text primary button group">
@@ -84,7 +84,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
               <Typography>Acked</Typography>
               <ButtonGroup variant="contained" color="default" aria-label="text primary button group">
                 <Button color={!filter.showAcked ? "primary" : undefined} onClick={() => onShowAchedChange(false)}>
-                  Only unacked
+                  Unacked
                 </Button>
                 <Button color={filter.showAcked ? "primary" : undefined} onClick={() => onShowAchedChange(true)}>
                   All

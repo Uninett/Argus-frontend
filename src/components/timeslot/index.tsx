@@ -7,6 +7,7 @@ import ButtonGroup from "@material-ui/core/ButtonGroup";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Paper from "@material-ui/core/Paper";
 import SaveIcon from "@material-ui/icons/Save";
+import EditIcon from "@material-ui/icons/Edit";
 import TextField from "@material-ui/core/TextField";
 import Input from "@material-ui/core/Input";
 import Chip from "@material-ui/core/Chip";
@@ -19,8 +20,17 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import RemoveIcon from "@material-ui/icons/DeleteOutlineOutlined";
 
+import ExpandLessIcon from "@material-ui/icons/ExpandLess";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
+
+import Accordion from "@material-ui/core/Accordion";
+import AccordionDetails from "@material-ui/core/AccordionDetails";
+import AccordionSummary from "@material-ui/core/AccordionSummary";
+import AccordionActions from "@material-ui/core/AccordionActions";
+import Divider from "@material-ui/core/Divider";
 
 import Spinning from "../spinning";
 import DateFnsUtils from "@date-io/date-fns";
@@ -286,6 +296,8 @@ const TimeslotComponent: React.FC<TimeslotPropsType> = ({
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [hasChanged, setHasChanged] = useStateWithDynamicDefault<boolean>(unsavedChanges);
 
+  const [expanded, setExpanded] = useState(false);
+
   const handleAddRecurrence = () => {
     setRecurrences((prev: TimeRecurrence[]) => {
       // eslint-disable-next-line @typescript-eslint/camelcase
@@ -312,99 +324,116 @@ const TimeslotComponent: React.FC<TimeslotPropsType> = ({
     },
   });
 
-  return (
-    <Paper className={classes.paper}>
-      <form className={classes.root} noValidate autoComplete="off">
-        <Grid container direction="column" alignItems="stretch" spacing={4}>
-          <Grid item container lg direction="row" spacing={2} justify="space-between">
-            <Grid item>
-              <TextField
-                error={invalidTimeslotName}
-                required
-                label="Timeslot name"
-                variant="standard"
-                value={timeslotName}
-                onChange={onTimeslotNameChange}
-                disabled={updateLoading || deleteLoading}
-              />
-            </Grid>
-            <Grid item>
-              <ButtonGroup variant="contained" aria-label="outlined primary button group">
-                <Button
-                  variant="contained"
-                  size="small"
-                  className={classes.safeButton}
-                  onClick={() => {
-                    setUpdateLoading(true);
-                    onSave(pk, timeslotName, recurrences);
-                  }}
-                  disabled={!hasChanged || invalidTimeslotName || updateLoading || deleteLoading}
-                  startIcon={updateLoading ? <Spinning shouldSpin /> : <SaveIcon />}
-                >
-                  {exists ? "Save" : "Create"}
-                </Button>
-                <RemoveTimeslotButton
-                  variant="contained"
-                  size="small"
-                  className={classes.dangerousButton}
-                  startIcon={deleteLoading ? <Spinning shouldSpin /> : <DeleteIcon />}
-                  disabled={!exists || updateLoading || deleteLoading}
-                  onClick={() => {
-                    setDeleteLoading(true);
-                    onDelete(pk, timeslotName);
-                  }}
-                >
-                  Delete
-                </RemoveTimeslotButton>
-                <Button
-                  variant="outlined"
+  /*
+  <Button
+                variant="outlined"
                   size="small"
                   className={classes.safeButton}
                   onClick={() => handleAddRecurrence()}
-                  startIcon={<AddIcon />}
+                  startIcon={expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                   disabled={updateLoading || deleteLoading}
                 >
-                  Add recurrence
+                  Details
                 </Button>
-              </ButtonGroup>
+   */
+
+  return (
+    <form className={classes.root} noValidate autoComplete="off">
+      <Grid container direction="column" alignItems="stretch" spacing={4}>
+        <Accordion expanded={expanded} onChange={(event: unknown, expanded: boolean) => setExpanded(expanded)}>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography>{timeslotName}</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Grid container lg direction="column" spacing={4}>
+              <Grid item>
+                <TextField
+                  error={invalidTimeslotName}
+                  required
+                  label="Timeslot name"
+                  variant="standard"
+                  value={timeslotName}
+                  onChange={onTimeslotNameChange}
+                  disabled={updateLoading || deleteLoading}
+                />
+              </Grid>
+              {(recurrences.length > 0 &&
+                recurrences.map((recurrence: TimeRecurrence, index: number) => {
+                  return (
+                    <Grid key={index} item lg>
+                      <Card variant="outlined">
+                        <CardContent>
+                          <TimeslotRecurrenceComponent
+                            id={index}
+                            recurrence={recurrence}
+                            onChange={(id: number, recurrence: TimeRecurrence) => {
+                              setRecurrences((prev: TimeRecurrence[]) => {
+                                const recurrences = [...prev];
+                                recurrences[id] = recurrence;
+                                return recurrences;
+                              });
+                              setHasChanged(true);
+                            }}
+                            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                            onRemove={(id: number, recurrence: TimeRecurrence) => {
+                              setRecurrences((prev: TimeRecurrence[]) => {
+                                const recurrences = [...prev];
+                                recurrences.splice(id, 1);
+                                return recurrences;
+                              });
+                              setHasChanged(true);
+                            }}
+                            disabled={updateLoading || deleteLoading}
+                          />
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  );
+                })) || <Typography>No recurrences</Typography>}
             </Grid>
-          </Grid>
-          {(recurrences.length > 0 &&
-            recurrences.map((recurrence: TimeRecurrence, index: number) => {
-              return (
-                <Grid key={index} item lg>
-                  <Card variant="outlined">
-                    <CardContent>
-                      <TimeslotRecurrenceComponent
-                        id={index}
-                        recurrence={recurrence}
-                        onChange={(id: number, recurrence: TimeRecurrence) => {
-                          setRecurrences((prev: TimeRecurrence[]) => {
-                            const recurrences = [...prev];
-                            recurrences[id] = recurrence;
-                            return recurrences;
-                          });
-                          setHasChanged(true);
-                        }}
-                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                        onRemove={(id: number, recurrence: TimeRecurrence) => {
-                          setRecurrences((prev: TimeRecurrence[]) => {
-                            const recurrences = [...prev];
-                            recurrences.splice(id, 1);
-                            return recurrences;
-                          });
-                          setHasChanged(true);
-                        }}
-                        disabled={updateLoading || deleteLoading}
-                      />
-                    </CardContent>
-                  </Card>
-                </Grid>
-              );
-            })) || <Typography>No recurrences</Typography>}
-        </Grid>
-      </form>
-    </Paper>
+          </AccordionDetails>
+          <Divider />
+          <AccordionActions>
+            <Button
+              variant="contained"
+              size="small"
+              className={classes.safeButton}
+              onClick={() => {
+                setUpdateLoading(true);
+                onSave(pk, timeslotName, recurrences);
+              }}
+              disabled={!expanded || !hasChanged || invalidTimeslotName || updateLoading || deleteLoading}
+              startIcon={updateLoading ? <Spinning shouldSpin /> : <SaveIcon />}
+            >
+              {exists ? "Save" : "Create"}
+            </Button>
+            <RemoveTimeslotButton
+              variant="contained"
+              size="small"
+              className={classes.dangerousButton}
+              startIcon={deleteLoading ? <Spinning shouldSpin /> : <DeleteIcon />}
+              disabled={!expanded || !exists || updateLoading || deleteLoading}
+              onClick={() => {
+                setDeleteLoading(true);
+                onDelete(pk, timeslotName);
+              }}
+            >
+              Delete
+            </RemoveTimeslotButton>
+            <Button
+              variant="outlined"
+              size="small"
+              className={classes.safeButton}
+              onClick={() => handleAddRecurrence()}
+              startIcon={<AddIcon />}
+              disabled={!expanded || updateLoading || deleteLoading}
+            >
+              Add recurrence
+            </Button>
+          </AccordionActions>
+        </Accordion>
+      </Grid>
+    </form>
   );
 };
 

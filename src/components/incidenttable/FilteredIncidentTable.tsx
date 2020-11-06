@@ -1,9 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import IncidentTable from "./IncidentTable";
 
-import "./FilteredIncidentTable.css";
-import "../../components/incidenttable/incidenttable.css";
-
 import { Tag } from "../../components/tagselector";
 import TablePagination from "@material-ui/core/TablePagination";
 
@@ -193,16 +190,14 @@ const FilteredIncidentTable: React.FC<FilteredIncidentsTablePropsType> = ({
   }, [showAcked, show, realtime, sources, tagsFilter]);
 
   return (
-    <div className="table">
-      <IncidentTable
-        isLoading={isLoading}
-        realtime={realtime}
-        open={show === "open"}
-        incidents={incidents}
-        noDataText={noDataText}
-        paginationComponent={paginationComponent}
-      />
-    </div>
+    <IncidentTable
+      isLoading={isLoading}
+      realtime={realtime}
+      open={show === "open"}
+      incidents={incidents}
+      noDataText={noDataText}
+      paginationComponent={paginationComponent}
+    />
   );
 };
 
