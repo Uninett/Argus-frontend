@@ -2,8 +2,10 @@ import React, { useState, useEffect, useMemo } from "react";
 
 import { Theme, createStyles, makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
+import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
+import Button from "@material-ui/core/Button";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Divider from "@material-ui/core/Divider";
@@ -20,10 +22,20 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       flexGrow: 1,
+      alignItems: "center",
     },
     timeslot: {
       alignItems: "center",
       padding: theme.spacing(3),
+      margin: "auto",
+      maxWidth: "1000px",
+    },
+    createNewButton: {
+      justifyItems: "center",
+      transform: "translate(-50%, -50%)",
+      margin: 0,
+      left: "50%",
+      right: "50%",
     },
   }),
 );
@@ -50,12 +62,8 @@ const TimeslotList: React.FC<TimeslotListPropsType> = () => {
     new Map<TimeslotPK, InternalTimeslot>(),
   );
 
-  const newTimeslotDefault: Partial<InternalTimeslot> = {
-    pk: undefined,
-    // eslint-disable-next-line @typescript-eslint/camelcase
-    time_recurrences: [{ days: [1, 2, 3, 4, 5], start: "08:00:00", end: "16:00:00", all_day: false }],
-  };
-  const [newTimeslot, setNewTimeslot] = useState<Partial<InternalTimeslot>>({ ...newTimeslotDefault });
+  const newTimeslotDefault = { exists: false, pk: undefined };
+  const [newTimeslot, setNewTimeslot] = useState<Partial<InternalTimeslot> | undefined>(undefined);
 
   const [unsavedTimeslots, setUnsavedTimeslots] = useState<Set<TimeslotPK>>(new Set());
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -81,8 +89,8 @@ const TimeslotList: React.FC<TimeslotListPropsType> = () => {
   }, [timeslotsIsError, displayAlertSnackbar]);
 
   const resetNewTimeslot = () => {
-    setNewTimeslot((timeslot: Partial<InternalTimeslot>) => {
-      return { ...timeslot, revision: (timeslot.revision || 0) + 1 };
+    setNewTimeslot((timeslot: Partial<InternalTimeslot> | undefined) => {
+      return { ...timeslot, revision: (timeslot?.revision || 0) + 1 };
     });
   };
 
@@ -128,13 +136,14 @@ const TimeslotList: React.FC<TimeslotListPropsType> = () => {
     api
       .postTimeslot(name, recurrences)
       .then((newTimeslot: Timeslot) => {
-        resetNewTimeslot();
+        // resetNewTimeslot();
         setTimeslots((timeslots: Map<TimeslotPK, InternalTimeslot>) => {
           const newTimeslots = new Map<TimeslotPK, InternalTimeslot>(timeslots);
           newTimeslots.set(newTimeslot.pk, { ...responseToInternalTimeslot(newTimeslot), revision: 1 });
           return newTimeslots;
         });
         displayAlertSnackbar(`Created new timeslot: ${newTimeslot.name}`, "success");
+        setNewTimeslot(undefined);
       })
       .catch(
         defaultErrorHandler((msg: string) => {
@@ -179,16 +188,17 @@ const TimeslotList: React.FC<TimeslotListPropsType> = () => {
   };
 
   const newTimeslotComponent = newTimeslot && (
-    <TimeslotComponent
-      key={`newtimeslot-${newTimeslot.revision}`}
-      pk={newTimeslot.pk}
-      name={newTimeslot.name}
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      recurrences={newTimeslot?.time_recurrences || []}
-      unsavedChanges={true}
-      onSave={handleSave}
-      onDelete={handleDelete}
-    />
+    <Box borderRadius={8} bgcolor="primary.main" color="primary.contrastText" p={1}>
+      <TimeslotComponent
+        key={`newtimeslot-${newTimeslot.revision}`}
+        pk={newTimeslot.pk}
+        name={newTimeslot.name}
+        recurrences={[DEFAULT_TIMESLOT_RECURRENCE]}
+        unsavedChanges={true}
+        onSave={handleSave}
+        onDelete={handleDelete}
+      />
+    </Box>
   );
 
   return (
@@ -196,17 +206,24 @@ const TimeslotList: React.FC<TimeslotListPropsType> = () => {
       {incidentSnackbar}
       <Card>
         <CardContent>
-          <Typography>Create new timeslot</Typography>
-          {newTimeslotComponent}
-          <Divider />
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardContent>
           <Typography variant="h5" gutterBottom>
             Your timeslots
           </Typography>
+          <Grid key="new-timeslot-grid-item" item className={classes.timeslot}>
+            {(newTimeslotComponent && newTimeslotComponent) || (
+              <Grid item>
+                <Button
+                  className={classes.createNewButton}
+                  variant="contained"
+                  color="primary"
+                  onClick={() => resetNewTimeslot()}
+                >
+                  Add new timeslot
+                </Button>
+              </Grid>
+            )}
+          </Grid>
+
           {[...timeslots.values()].map((timeslot: InternalTimeslot) => {
             return (
               <Grid key={`${timeslot.pk}-${timeslot.revision}-grid-item`} item className={classes.timeslot}>
