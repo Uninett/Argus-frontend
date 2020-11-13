@@ -1,6 +1,9 @@
 import React from "react";
+
 import "./variables.css";
 import "./colorscheme.css";
+
+import IncidentDetailsView from "./views/incident/IncidentDetailView";
 import IncidentView from "./views/incident/IncidentView";
 import LoginView from "./views/login/LoginView";
 import { Route, Switch, useHistory } from "react-router-dom";
@@ -44,6 +47,7 @@ const App: React.SFC = () => {
       <ThemeProvider theme={MUI_THEME}>
         <Switch>
           <ProtectedRoute exact path="/" component={withHeader(IncidentView)} />
+          <ProtectedRoute path="/incidents/:pk" component={withHeader(IncidentDetailsView)} />
           <ProtectedRoute exact path="/incidents" component={withHeader(IncidentView)} />
           <ProtectedRoute path="/notificationprofiles" component={withHeader(NotificationProfileView)} />
           <ProtectedRoute path="/timeslots" component={withHeader(TimeslotView)} />
