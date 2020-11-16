@@ -31,8 +31,7 @@ import "../../components/incidenttable/incidenttable.css";
 import { FiltersContext, FiltersContextType, DEFAULT_FILTERS_CONTEXT_VALUE } from "../../components/filters/contexts";
 import { useAlertSnackbar, UseAlertSnackbarResultType } from "../../components/alertsnackbar";
 
-import FilteredIncidentTable, { IncidentsFilter } from "../../components/incidenttable/FilteredIncidentTable";
-import { IncidentFilterToolbar } from "../../components/incident/IncidentFilterToolbar";
+import FilteredIncidentTable from "../../components/incidenttable/FilteredIncidentTable";
 
 type FiltersTablePropsType = {
   filters: Filter[];
