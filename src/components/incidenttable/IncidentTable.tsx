@@ -347,7 +347,7 @@ const IncidentTable: React.FC<IncidentsProps> = ({
   useEffect(() => {
     if (!realtime) return;
 
-    const ws = new WebSocket(`${BACKEND_WS_URL}/active/`);
+    const ws = new WebSocket(`${BACKEND_WS_URL}/open/`);
     // cookies.set("token", token, { path: "/", secure: USE_SECURE_COOKIE });
     console.log("websocket", ws);
 
