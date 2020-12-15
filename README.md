@@ -80,6 +80,30 @@ Congrats, you now have the Argus frontend up and running!
 
 Note that the website will automatically reload as you edit the code.
 
+### Configuration
+
+Configuration options for the Argus frontend are located in `src/config.tsx`. All of these options can be set using environment variables when running the frontend under the Node server (or in Docker Compose). However, for production deployment, you would normally build the application and serve all the resulting static files using a regular web server, like Apache or Nginx; in this case, `config.tsx` cannot read server environment varibles, and should be hard coded instead.
+
+These environment variables are available:
+
+<dl>
+  <dt>REACT_APP_BACKEND_URL</dt>
+  <dd>The base URL to the Argus API server</dd>
+
+  <dt>REACT_APP_ENABLE_WEBSOCKETS_SUPPORT</dt>
+  <dd>Set to <code>true</code> to enable subscriptions to realtime incident updates</dd>
+
+  <dt>REACT_APP_BACKEND_WS_URL</dt>
+  <dd>If you enable websocket support, this must be set to the backend's websocket URL. This value may depend on whether your deployment splits the HTTP server and the Web Socket servers into two components. Typically, if the backend HTTP server is <code>https://argus-api.example.org/</code>, this value could be <code>wss://argus-api.example.org/ws</code>.</dd>
+
+  <dt>REACT_APP_USE_SECURE_COOKIE</dt>
+  <dd>Set explicitly to <code>false</code> to disable the use of secure cookies. Typically only useful when deploying the development environment using non-TLS servers/regular HTTP.</dd>
+
+  <dt>REACT_APP_DEBUG</dt>
+  <dd>Set to <code>true</code> if you want debug output from the application.</dd>
+</dl>
+
+
 ### Using Docker Compose
 
 This repository contains a `docker-compose.yml` definition to run all the backend components as services, while the Argus frontend runs directly off the checked out source code using npm. If you have Docker Compose on your system, run these commands to get everything up and running:
