@@ -15,6 +15,8 @@ Set up the Argus backend according to the instructions in its repository (https:
 
 Furthermore, [Node.js](http://nodejs.org/) is required. We also use the [Node Package Manager (npm)](https://www.npmjs.com/), which comes bundled with Node.js.
 
+**Optionally**, you can forego a full installation of Node.js and npm on your local system, and instead opt to run a complete Argus setup using [Docker Compose](https://docs.docker.com/compose/). If so, skip directly to the *Install and startup* section.
+
 Installation procedures are as follows:
 
 ### Install Node.js
@@ -77,6 +79,19 @@ This will open your browser at http://localhost:3000 or similar.
 Congrats, you now have the Argus frontend up and running!
 
 Note that the website will automatically reload as you edit the code.
+
+### Using Docker Compose
+
+This repository contains a `docker-compose.yml` definition to run all the backend components as services, while the Argus frontend runs directly off the checked out source code using npm. To accomplish this, all you need should be:
+
+    export UID
+	docker-compose up
+
+(the `export UID` step is to ensure the Argus frontend container runs using your system UID, so it doesn't produce root-owned files in the mounted source code directory).
+
+Your Argus frontend should now be served on `http://localhost:8080`, while your Argus API server should be served on `http://localhost:8000`. As with running `npm` locally, the website should automatically reload as you edit the code.
+
+The default setup will install the latest version of the Argus API server from the master branch. If you need to customize which tag or branch to install, you can change the `BRANCH` argument in `docker-compose.yml` (or preferably implement your own `docker-compose.override.yml`).
 
 ## Coding guidelines
 
