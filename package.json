@@ -32,6 +32,7 @@
   },
   "scripts": {
     "start": "cross-env HTTPS=true PORT=4443 react-scripts start",
+    "dockerstart": "cross-env HTTPS=false PORT=8080 react-scripts start",
     "debug": "react-scripts start",
     "build": "react-scripts build",
     "lint": "eslint src --ext .ts,.tsx,.js",
