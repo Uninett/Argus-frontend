@@ -82,10 +82,10 @@ Note that the website will automatically reload as you edit the code.
 
 ### Using Docker Compose
 
-This repository contains a `docker-compose.yml` definition to run all the backend components as services, while the Argus frontend runs directly off the checked out source code using npm. To accomplish this, all you need should be:
+This repository contains a `docker-compose.yml` definition to run all the backend components as services, while the Argus frontend runs directly off the checked out source code using npm. If you have Docker Compose on your system, run these commands to get everything up and running:
 
     export UID
-	docker-compose up
+    docker-compose up
 
 (the `export UID` step is to ensure the Argus frontend container runs using your system UID, so it doesn't produce root-owned files in the mounted source code directory).
 
