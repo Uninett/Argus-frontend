@@ -161,4 +161,7 @@ $RECYCLE.BIN/
 # build directory
 build/
 
+# Common editor backup files
+*~
+
 # End of https://www.gitignore.io/api/react,macos,windows,pycharm+all
