@@ -19,6 +19,7 @@ import Spinning from "../../components/spinning";
 
 import { ENABLE_WEBSOCKETS_SUPPORT } from "../../config";
 
+import Header from "../../components/header/Header";
 import "../../components/incidenttable/incidenttable.css";
 import FilterBuilder from "../../components/filterbuilder/FilterBuilder";
 import { withRouter } from "react-router-dom";
@@ -313,6 +314,9 @@ const FiltersView: React.FC<FiltersViewPropsType> = ({}: FiltersViewPropsType) =
     <>
       {filtersSnackbar}
       <div>
+        <header>
+          <Header />
+        </header>
         <FiltersContext.Provider value={filtersContext}>
           <Card>
             <CardContent>
