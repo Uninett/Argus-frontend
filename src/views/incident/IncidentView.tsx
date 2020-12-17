@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
 import "./IncidentView.css";
-import Header from "../../components/header/Header";
 import FilteredIncidentTable from "../../components/incidenttable/FilteredIncidentTable";
 import "../../components/incidenttable/incidenttable.css";
 import { withRouter } from "react-router-dom";
@@ -50,10 +49,6 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
 
   return (
     <div>
-      <header>
-        <Header />
-      </header>
-      <h1 className={"filterHeader"}>Incidents</h1>
       <Card>
         <CardContent>
           <Typography color="textSecondary" gutterBottom>
