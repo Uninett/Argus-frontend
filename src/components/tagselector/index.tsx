@@ -22,6 +22,7 @@ export type TagSelectorPropsType = {
   defaultSelected?: string[];
   allSelected?: boolean;
   disabled?: boolean;
+  className?: string;
 };
 
 export const TagSelector: React.FC<TagSelectorPropsType> = ({
@@ -29,6 +30,7 @@ export const TagSelector: React.FC<TagSelectorPropsType> = ({
   onSelectionChange,
   defaultSelected,
   disabled,
+  className,
 }: TagSelectorPropsType) => {
   const [value, setValue] = useState<string>("");
   const [selectValue, setSelectValue] = useState<string[]>([]);
@@ -88,6 +90,7 @@ export const TagSelector: React.FC<TagSelectorPropsType> = ({
         <TextField
           {...params}
           variant="outlined"
+          className={className}
           label={selectValue ? undefined : "Filter tags"}
           InputProps={{ ...params.InputProps, type: "search" }}
           helperText={(!disabled && "Press enter to add new tag") || undefined}
