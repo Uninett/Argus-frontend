@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useCallback, useEffect, useState, useMemo } from "react";
 import IncidentTable from "./IncidentTable";
 
 import "./FilteredIncidentTable.css";
@@ -10,6 +10,7 @@ import TablePagination from "@material-ui/core/TablePagination";
 import api, { IncidentsFilterOptions } from "../../api";
 import { useApiPaginatedIncidents } from "../../api/hooks";
 
+import { DEFAULT_AUTO_REFRESH_INTERVAL } from "../../config";
 import { LOADING_TEXT, ERROR_TEXT, NO_DATA_TEXT } from "../../constants";
 
 type PaginationCursor = {
@@ -56,6 +57,8 @@ const FilteredIncidentTable: React.FC<FilteredIncidentsTablePropsType> = ({
   filter,
   onLoad,
 }: FilteredIncidentsTablePropsType) => {
+  const [lastRefresh, setLastRefresh] = useState<Date | undefined>(undefined);
+
   const { tags: tagsFilter, sources, sourcesById, show, showAcked, realtime } = filter;
 
   const [paginationCursor, setPaginationCursor] = useState<PaginationCursor>(DEFAULT_PAGINATION_CURSOR);
@@ -72,7 +75,7 @@ const FilteredIncidentTable: React.FC<FilteredIncidentsTablePropsType> = ({
 
   const [incidents, cursors] = [paginatedResult?.incidents || [], paginatedResult?.cursors];
 
-  useEffect(() => {
+  const refresh = useCallback(() => {
     const showToOpenMap: Record<IncidentsFilter["show"], boolean | undefined> = {
       open: true,
       closed: false,
@@ -80,7 +83,7 @@ const FilteredIncidentTable: React.FC<FilteredIncidentsTablePropsType> = ({
     };
 
     const filterOptions: IncidentsFilterOptions = {
-      open: showToOpenMap[show],
+      open: showToOpenMap[show as "open" | "closed" | "both"],
 
       // The frontend is only conserned if acked incidents should be
       // displayed, not that ONLY acked incidents should be displayed.
@@ -95,11 +98,18 @@ const FilteredIncidentTable: React.FC<FilteredIncidentsTablePropsType> = ({
       api
         .getPaginatedIncidentsFiltered(filterOptions, paginationCursor.current, paginationCursor.pageSize)
         .then((response) => {
-          if (onLoad) onLoad();
+          if (onLoad) {
+            onLoad();
+          }
+          setLastRefresh(new Date());
           return response;
         }),
     );
   }, [setPromise, show, showAcked, tagsFilter, sources, sourcesById, paginationCursor, onLoad]);
+
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
 
   const noDataText = isLoading ? LOADING_TEXT : isError ? ERROR_TEXT : NO_DATA_TEXT;
 
@@ -192,6 +202,16 @@ const FilteredIncidentTable: React.FC<FilteredIncidentsTablePropsType> = ({
     setPaginationCursor(DEFAULT_PAGINATION_CURSOR);
   }, [showAcked, show, realtime, sources, tagsFilter]);
 
+  // Get an updated list of data from the backend at a given interval
+  // This is always disabled per now, but should not be enabled when
+  // proper realtime support is in implemented and enabled.
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refresh();
+    }, 1000 * DEFAULT_AUTO_REFRESH_INTERVAL);
+    return () => clearInterval(interval);
+  }, [refresh]);
+
   return (
     <div className="table">
       <IncidentTable
@@ -202,6 +222,10 @@ const FilteredIncidentTable: React.FC<FilteredIncidentsTablePropsType> = ({
         noDataText={noDataText}
         paginationComponent={paginationComponent}
       />
+      <p>
+        Last refreshed {lastRefresh === undefined ? "never" : lastRefresh.toLocaleTimeString()}, refreshing every{" "}
+        {DEFAULT_AUTO_REFRESH_INTERVAL} seconds
+      </p>
     </div>
   );
 };

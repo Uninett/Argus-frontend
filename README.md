@@ -101,6 +101,9 @@ These environment variables are available:
 
   <dt>REACT_APP_DEBUG</dt>
   <dd>Set to <code>true</code> if you want debug output from the application.</dd>
+
+  <dt>REACT_APP_DEFAULT_AUTO_REFRESH_INTERVAL</dt>
+  <dd>Set to the default number of seconds between each auto refresh</dd>
 </dl>
 
 
