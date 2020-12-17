@@ -54,6 +54,34 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
+type ButtonGroupSwitchPropsType<T> = {
+  selected: T;
+  options: T[];
+  getLabel: (option: T) => string;
+  getColor: (selected: boolean) => "inherit" | "default" | "primary";
+  onSelect: (option: T) => void;
+};
+
+export function ButtonGroupSwitch<T>({
+  selected,
+  options,
+  getLabel,
+  getColor,
+  onSelect,
+}: ButtonGroupSwitchPropsType<T>) {
+  return (
+    <ButtonGroup variant="contained" color="default" aria-label="text primary button group">
+      {options.map((option: T, index: number) => {
+        return (
+          <Button key={index} color={getColor(selected === option)} onClick={() => onSelect(option)}>
+            {getLabel(option)}
+          </Button>
+        );
+      })}
+    </ButtonGroup>
+  );
+}
+
 type ToolbarItemPropsType = {
   name: string;
   children: React.ReactNode;
@@ -82,6 +110,9 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
   disabled,
 }: IncidentFilterToolbarPropsType) => {
   const style = useStyles();
+  const [autoUpdate, setAutoUpdate] = useState<false | "realtime" | "interval">(
+    ENABLE_WEBSOCKETS_SUPPORT ? "realtime" : "interval",
+  );
   const [knownSources, setKnownSources] = useState<string[]>([]);
 
   useEffect(() => {
@@ -106,40 +137,41 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
     onFilterChange({ ...filter, sources });
   };
 
-  const filterStyle = (show: "open" | "closed" | "both") => {
-    return filter.show === show ? "primary" : undefined;
-  };
-
-  const ackedStyle = (acked: boolean) => {
-    return filter.showAcked === acked ? "primary" : undefined;
-  };
-
   return (
     <div className={style.root}>
       <Toolbar className={style.toolbarContainer}>
-        <ToolbarItem name="State">
-          <ButtonGroup variant="contained" color="default" aria-label="text primary button group">
-            <Button color={filterStyle("open")} onClick={() => onShowChange("open")}>
-              Open
-            </Button>
-            <Button color={filterStyle("closed")} onClick={() => onShowChange("closed")}>
-              Closed
-            </Button>
-            <Button color={filterStyle("both")} onClick={() => onShowChange("both")}>
-              Both
-            </Button>
-          </ButtonGroup>
+        <ToolbarItem name="Open State">
+          <ButtonGroupSwitch
+            selected={filter.show}
+            options={["open", "closed", "both"]}
+            getLabel={(show: "open" | "closed" | "both") => ({ open: "Open", closed: "Closed", both: "Both" }[show])}
+            getColor={(selected: boolean) => (selected ? "primary" : "default")}
+            onSelect={(show: "open" | "closed" | "both") => onShowChange(show)}
+          />
         </ToolbarItem>
 
         <ToolbarItem name="Acked">
-          <ButtonGroup variant="contained" color="default" aria-label="text primary button group">
-            <Button color={ackedStyle(false)} onClick={() => onShowAchedChange(false)}>
-              Only unacked
-            </Button>
-            <Button color={ackedStyle(true)} onClick={() => onShowAchedChange(true)}>
-              All
-            </Button>
-          </ButtonGroup>
+          <ButtonGroupSwitch
+            selected={filter.showAcked}
+            options={[false, true]}
+            getLabel={(showAcked: boolean) => (showAcked ? "Both" : "Unacked")}
+            getColor={(selected: boolean) => (selected ? "primary" : "default")}
+            onSelect={(showAcked: boolean) => onShowAchedChange(showAcked)}
+          />
+        </ToolbarItem>
+
+        <ToolbarItem name="Auto Update">
+          <ButtonGroupSwitch
+            selected={autoUpdate}
+            options={ENABLE_WEBSOCKETS_SUPPORT ? [false, "realtime", "interval"] : [false, "interval"]}
+            getLabel={(autoUpdate: false | "realtime" | "interval") =>
+              ({ false: "Never", realtime: "Realtime", interval: "Interval" }[autoUpdate || "false"])
+            }
+            getColor={(selected: boolean) => (selected ? "primary" : "default")}
+            onSelect={(autoUpdate: false | "realtime" | "interval") =>
+              (autoUpdate === "realtime" ? ENABLE_WEBSOCKETS_SUPPORT : true) && setAutoUpdate(autoUpdate)
+            }
+          />
         </ToolbarItem>
 
         {ENABLE_WEBSOCKETS_SUPPORT && (
