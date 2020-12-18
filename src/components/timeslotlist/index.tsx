@@ -16,6 +16,7 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       flexGrow: 1,
+      maxWidth: "900px",
     },
     timeslot: {
       alignItems: "center",
