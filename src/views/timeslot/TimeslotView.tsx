@@ -1,15 +1,25 @@
 import React from "react";
 import { withRouter } from "react-router-dom";
-import Grid from "@material-ui/core/Grid";
 
 import TimeslotList from "../../components/timeslotlist";
 
+import { createStyles, makeStyles } from "@material-ui/core/styles";
+
+const useStyles = makeStyles(() =>
+  createStyles({
+    root: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+    },
+  }),
+);
+
 const TimeslotView: React.FC = () => {
+  const style = useStyles();
   return (
-    <div className="timeslot-view-container">
-      <Grid container direction="column" justify="space-evenly" alignItems="center">
-        <TimeslotList />
-      </Grid>
+    <div className={style.root}>
+      <TimeslotList />
     </div>
   );
 };

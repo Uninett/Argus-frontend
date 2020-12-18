@@ -17,7 +17,6 @@ import InputLabel from "@material-ui/core/InputLabel";
 import Grid from "@material-ui/core/Grid";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
-import RemoveIcon from "@material-ui/icons/Remove";
 
 import Spinning from "../spinning";
 import DateFnsUtils from "@date-io/date-fns";
@@ -41,11 +40,40 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       flexGrow: 1,
     },
+    grow: {
+      flexGrow: 1,
+    },
     paper: {
       padding: theme.spacing(3),
       textAlign: "center",
       color: theme.palette.text.secondary,
       minWidth: 30,
+    },
+    recurrenceContainer: {
+      display: "flex",
+      flexDirection: "row",
+      flexWrap: "wrap",
+      padding: theme.spacing(3),
+      borderColor: theme.palette.divider,
+      borderWidth: "2px",
+      borderRadius: "5px",
+      borderStyle: "solid",
+      position: "relative",
+    },
+    dayPickersContainer: {
+      display: "flex",
+      flexDirection: "row",
+      flexWrap: "nowrap",
+      padding: theme.spacing(3),
+    },
+    timePicker: {
+      padding: theme.spacing(2),
+    },
+    removeWrapper: {
+      right: 0,
+      paddingRight: theme.spacing(3),
+      left: "auto",
+      position: "absolute",
     },
     recurrencePaper: {
       padding: theme.spacing(2),
@@ -94,7 +122,7 @@ export const TimeslotRecurrenceComponent: React.FC<TimeslotRecurrenceComponentPr
   onRemove,
   disabled,
 }: TimeslotRecurrenceComponentPropsType) => {
-  const classes = useStyles();
+  const style = useStyles();
 
   const RemoveRecurrenceButton = makeConfirmationButton({
     title: `Remove recurrence ${recurrence.start}-${recurrence.end}`,
@@ -116,91 +144,82 @@ export const TimeslotRecurrenceComponent: React.FC<TimeslotRecurrenceComponentPr
   const end = !allDay && dateFromTimeOfDayString(recurrence.end);
 
   return (
-    <>
-      <Grid item container lg direction="row" justify="space-between" alignItems="center">
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-          <Grid item>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={allDay}
-                  value="checkBox"
-                  color="primary"
-                  inputProps={{
-                    "aria-label": "secondary checkbox",
-                  }}
-                  onClick={() => {
-                    if (allDay) {
-                      onChange(id, { ...DEFAULT_TIMESLOT_RECURRENCE, days: recurrence.days });
-                    } else {
-                      // eslint-disable-next-line
-                      onChange(id, { ...recurrence, all_day: true, start: "", end: "" });
-                    }
-                  }}
-                  disabled={disabled}
-                />
-              }
-              label="All day"
-            />
-          </Grid>
-          <Grid item>
-            <KeyboardTimePicker
-              disabled={allDay || disabled}
-              margin="normal"
-              label="Start time picker"
-              value={start || null}
-              onChange={(date: Date | null) => {
-                if (date) {
-                  onChange(id, { ...recurrence, start: timeOfDayFromDate(date) });
-                } else {
-                  onChange(id, { ...recurrence, start: "" });
-                }
-              }}
-              KeyboardButtonProps={{
-                "aria-label": "change start time",
-              }}
-            />
-          </Grid>
-          <Grid item>
-            <KeyboardTimePicker
-              disabled={allDay || disabled}
-              margin="normal"
-              label="End time picker"
-              value={end || null}
-              KeyboardButtonProps={{
-                "aria-label": "change end time",
-              }}
-              onChange={(date: Date | null) => {
-                if (date) {
-                  onChange(id, { ...recurrence, end: timeOfDayFromDate(date) });
-                } else {
-                  onChange(id, { ...recurrence, end: "" });
-                }
-              }}
-            />
-          </Grid>
-          <Grid item>
-            <RemoveRecurrenceButton
-              variant="text"
-              size="small"
-              className={classes.dangerousButton}
-              startIcon={<RemoveIcon />}
-              onClick={() => handleRemoveRecurrence()}
-              disabled={disabled}
-            >
-              Remove
-            </RemoveRecurrenceButton>
-          </Grid>
-        </MuiPickersUtilsProvider>
-      </Grid>
-      <Grid item>
-        <DaySelector
+    <div className={style.recurrenceContainer}>
+      <div className={style.removeWrapper}>
+        <RemoveRecurrenceButton
+          variant="text"
+          size="small"
+          className={style.dangerousButton}
+          startIcon={<DeleteIcon />}
+          onClick={() => handleRemoveRecurrence()}
           disabled={disabled}
-          selectedDays={recurrence.days}
-          onSelectionChange={handleRecurrenceDaysChange}
-        />
-      </Grid>
-    </>
+        >
+          Remove
+        </RemoveRecurrenceButton>
+      </div>
+      <div className={style.dayPickersContainer}>
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={allDay}
+                value="checkBox"
+                color="primary"
+                inputProps={{
+                  "aria-label": "secondary checkbox",
+                }}
+                onClick={() => {
+                  if (allDay) {
+                    onChange(id, { ...DEFAULT_TIMESLOT_RECURRENCE, days: recurrence.days });
+                  } else {
+                    // eslint-disable-next-line
+                    onChange(id, { ...recurrence, all_day: true, start: "", end: "" });
+                  }
+                }}
+                disabled={disabled}
+              />
+            }
+            label="All day"
+          />
+          <KeyboardTimePicker
+            className={style.timePicker}
+            disabled={allDay || disabled}
+            margin="normal"
+            label="Start time picker"
+            value={start || null}
+            onChange={(date: Date | null) => {
+              if (date) {
+                onChange(id, { ...recurrence, start: timeOfDayFromDate(date) });
+              } else {
+                onChange(id, { ...recurrence, start: "" });
+              }
+            }}
+            KeyboardButtonProps={{
+              "aria-label": "change start time",
+            }}
+          />
+          <KeyboardTimePicker
+            className={style.timePicker}
+            disabled={allDay || disabled}
+            margin="normal"
+            label="End time picker"
+            value={end || null}
+            KeyboardButtonProps={{
+              "aria-label": "change end time",
+            }}
+            onChange={(date: Date | null) => {
+              if (date) {
+                onChange(id, { ...recurrence, end: timeOfDayFromDate(date) });
+              } else {
+                onChange(id, { ...recurrence, end: "" });
+              }
+            }}
+          />
+          <div className={style.grow} />
+        </MuiPickersUtilsProvider>
+      </div>
+      <DaySelector disabled={disabled} selectedDays={recurrence.days} onSelectionChange={handleRecurrenceDaysChange} />
+    </div>
   );
 };
 
