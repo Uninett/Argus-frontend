@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 
+import { Link } from "react-router-dom";
+
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import AppBar from "@material-ui/core/AppBar";
@@ -246,7 +248,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                     <ClickableCell>{incident.source.name}</ClickableCell>
                     <ClickableCell>{incident.description}</ClickableCell>
                     <TableCell>
-                      <IconButton disabled={isLoading} href={`/incidents/${incident.pk}/`}>
+                      <IconButton disabled={isLoading} component={Link} to={`/incidents/${incident.pk}/`}>
                         <OpenInNewIcon />
                       </IconButton>
                       {incident.ticket_url && (
