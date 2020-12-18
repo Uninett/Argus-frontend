@@ -3,7 +3,6 @@ import React, { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-import Button from "@material-ui/core/Button";
 import AppBar from "@material-ui/core/AppBar";
 import Dialog from "@material-ui/core/Dialog";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -13,7 +12,6 @@ import CloseIcon from "@material-ui/icons/Close";
 import FilterListIcon from "@material-ui/icons/FilterList";
 import CheckSharpIcon from "@material-ui/icons/CheckSharp";
 import LinkSharpIcon from "@material-ui/icons/LinkSharp";
-import LinkIcon from "@material-ui/icons/Link";
 import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 import Paper from "@material-ui/core/Paper";
 import Checkbox from "@material-ui/core/Checkbox";
@@ -37,7 +35,7 @@ import { useAlertSnackbar, UseAlertSnackbarResultType } from "../../components/a
 import { Incident } from "../../api";
 import { BACKEND_WS_URL } from "../../config";
 import { useStyles } from "../incident/styles";
-import { AckedItem, OpenItem, TicketItem } from "../incident/Chips";
+import { AckedItem, OpenItem } from "../incident/Chips";
 import IncidentDetails from "../incident/IncidentDetails";
 
 const useToolbarStyles = makeStyles((theme: Theme) =>
@@ -149,7 +147,6 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
   isLoading,
   paginationComponent,
 }: MUIIncidentTablePropsType) => {
-  const classes = useStyles();
   type SelectionState = "SelectedAll" | Set<Incident["pk"]>;
   const [selectedIncidents, setSelectedIncidents] = useState<SelectionState>(new Set<Incident["pk"]>([]));
 
