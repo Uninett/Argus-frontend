@@ -3,8 +3,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-import AppBar from "@material-ui/core/AppBar";
-import Dialog from "@material-ui/core/Dialog";
+import Button from "@material-ui/core/Button";
 import Toolbar from "@material-ui/core/Toolbar";
 import Tooltip from "@material-ui/core/Tooltip";
 import IconButton from "@material-ui/core/IconButton";
@@ -37,6 +36,8 @@ import { BACKEND_WS_URL } from "../../config";
 import { useStyles } from "../incident/styles";
 import { AckedItem, OpenItem } from "../incident/Chips";
 import IncidentDetails from "../incident/IncidentDetails";
+
+import Modal from "../../components/modal/Modal";
 
 const useToolbarStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -285,6 +286,8 @@ const IncidentTable: React.FC<IncidentsProps> = ({
   isLoading,
   paginationComponent,
 }: IncidentsProps) => {
+  const style = useStyles();
+
   const [incidentForDetail, setIncidentForDetail] = useState<Incident | undefined>(undefined);
 
   const incidentsDictFromProps = useMemo<Revisioned<Map<Incident["pk"], Incident>>>(
@@ -307,8 +310,6 @@ const IncidentTable: React.FC<IncidentsProps> = ({
   const handleShowDetail = (incident: Incident) => {
     setIncidentForDetail(incident);
   };
-
-  const classes = useStyles();
 
   const onModalClose = () => {
     setIncidentForDetail(undefined);
@@ -423,41 +424,31 @@ const IncidentTable: React.FC<IncidentsProps> = ({
 
   return (
     <ClickAwayListener onClickAway={onModalClose}>
-      <div>
-        <Dialog
+      <div className={style.incidentModal}>
+        <Modal
           open={!!incidentForDetail}
-          onClose={() => setIncidentForDetail(undefined)}
-          aria-labelledby="simple-modal-title"
-          aria-describedby="simple-modal-description"
-          maxWidth={"lg"}
-        >
-          {(incidentForDetail && (
-            <div>
-              <AppBar position="static">
-                <Toolbar variant="dense">
-                  <IconButton
-                    edge="start"
-                    onClick={onModalClose}
-                    className={classes.closeIcon}
-                    color="inherit"
-                    aria-label="close"
-                  >
-                    <CloseIcon />
-                  </IconButton>
-                  <Typography variant="h6" className={classes.title}>
-                    {truncateMultilineString(incidentForDetail.description, 50)}
-                  </Typography>
-                </Toolbar>
-              </AppBar>
+          title={
+            (incidentForDetail &&
+              `${incidentForDetail.pk}: ${truncateMultilineString(incidentForDetail.description, 50)}`) ||
+            ""
+          }
+          onClose={onModalClose}
+          content={
+            incidentForDetail && (
               <IncidentDetails
                 key={incidentForDetail.pk}
                 onIncidentChange={handleIncidentChange}
                 incident={incidentForDetail}
                 displayAlertSnackbar={displayAlertSnackbar}
               />
-            </div>
-          )) || <h1>Empty</h1>}
-        </Dialog>
+            )
+          }
+          actions={
+            <Button autoFocus onClick={onModalClose} color="primary">
+              Save changes
+            </Button>
+          }
+        />
         {realtime && <Typography>Realtime</Typography>}
         <MUIIncidentTable
           isLoading={isLoading}
