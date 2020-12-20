@@ -1,84 +1,40 @@
-import React, { useState, useContext } from "react";
+import React from "react";
 
 import "./LoginView.css";
-import Auth from "../../auth";
-import { BACKEND_URL } from "../../config";
-import api, { Token } from "../../api";
-import { loginAndSetUser } from "../../utils";
+import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 
-import { Store } from "../../store";
+import LoginForm from "../../components/login/Login";
 
-import Logo from "../../components/logo/Logo";
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      position: "fixed",
+      width: "100%",
+      height: "100%",
+      margin: 0,
+      left: 0,
+      top: 0,
+      zIndex: 10,
+      background: `linear-gradient(45deg, ${theme.palette.primary.light} 30%, ${theme.palette.primary.dark} 90%)`,
+    },
+    formContainer: {
+      display: "flex",
+      flexDirection: "column",
+      flexWrap: "nowrap",
+      alignItems: "center",
+    },
+  }),
+);
 
-type LoginViewPropsType = {
-  // TODO: Find type
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  history: any;
-};
+type LoginViewPropsType = {};
 
-const LoginView: React.FC<LoginViewPropsType> = (props: LoginViewPropsType) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [loginAttemptFailed, setLoginAttemptFailed] = useState(false);
-  const { dispatch } = useContext(Store);
-
-  // TODO: Find type
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const onSubmit = async (e: any) => {
-    e.preventDefault();
-
-    await api
-      .userpassAuth(username, password)
-      .then((token: Token) => {
-        loginAndSetUser(token).then(() => {
-          setLoginAttemptFailed(false);
-          dispatch({ type: "setUser", payload: localStorage.getItem("user") });
-          props.history.push("/");
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-        setLoginAttemptFailed(true);
-        Auth.logout();
-      });
-  };
+export const LoginView: React.FC<LoginViewPropsType> = () => {
+  const style = useStyles();
 
   return (
-    <div>
-      <div className="container">
-        <div className="login-container">
-          <div id="login-logo">
-            <Logo />
-          </div>
-          <form onSubmit={onSubmit} id="login-form">
-            <div>
-              <input
-                name={"username"}
-                value={username}
-                placeholder={"Username"}
-                onChange={(e) => setUsername(e.target.value)}
-              />
-            </div>
-            <div>
-              <input
-                name="password"
-                type="password"
-                value={password}
-                placeholder="Password"
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-
-            <button type="submit" id="login-button">
-              {" "}
-              Log in
-            </button>
-          </form>
-          <p id="login-warning">{loginAttemptFailed ? "Username and/or password is incorrect" : ""}</p>
-          <a id="login-feide" href={`${BACKEND_URL}/oidc/login/dataporten_feide/`}>
-            Log in with Feide
-          </a>
-        </div>
+    <div className={style.root}>
+      <div className={style.formContainer}>
+        <LoginForm />
       </div>
     </div>
   );
