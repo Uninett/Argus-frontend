@@ -37,8 +37,5 @@ export const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: theme.palette.success.main,
       color: WHITE,
     },
-    incidentModal: {
-      minWidth: "80%",
-    },
   }),
 );

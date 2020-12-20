@@ -3,7 +3,7 @@ import React from "react";
 /* MUI */
 import { createStyles, Theme, withStyles, WithStyles } from "@material-ui/core/styles";
 
-import Dialog from "@material-ui/core/Dialog";
+import Dialog, { DialogProps as MUIDialogProps } from "@material-ui/core/Dialog";
 import MuiDialogActions from "@material-ui/core/DialogActions";
 import MuiDialogContent from "@material-ui/core/DialogContent";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
@@ -65,19 +65,23 @@ export default function Modal({
   actions,
   open,
   onClose,
+  dialogProps = {},
+  className,
 }: {
   title: string;
   content?: React.ReactNode;
   actions?: React.ReactNode;
   open: boolean;
   onClose: () => void;
+  className?: string;
+  dialogProps?: Partial<MUIDialogProps>;
 }) {
   const handleClose = () => {
     onClose();
   };
 
   return (
-    <Dialog onClose={handleClose} aria-labelledby="modal-title" open={open}>
+    <Dialog className={className} onClose={handleClose} aria-labelledby="modal-title" open={open} {...dialogProps}>
       <DialogTitle id="modal-title" onClose={handleClose}>
         {title}
       </DialogTitle>
