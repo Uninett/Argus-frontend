@@ -12,7 +12,8 @@ import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import Avatar from "@material-ui/core/Avatar";
 import MenuItem from "@material-ui/core/MenuItem";
-import Menu from "@material-ui/core/Menu";
+
+import Menu from "../../components/menu";
 
 import classNames from "classnames";
 
@@ -139,16 +140,7 @@ const Header: React.FC<HeaderPropsType> = () => {
 
   const menuId = "primary-search-account-menu";
   const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{ vertical: "top", horizontal: "center" }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-      getContentAnchorEl={null}
-    >
+    <Menu anchorEl={anchorEl} id={menuId} open={isMenuOpen} onClose={handleMenuClose}>
       <MenuItem onClick={handleMenuClose} component={Link} to="/settings">
         Settings
       </MenuItem>
