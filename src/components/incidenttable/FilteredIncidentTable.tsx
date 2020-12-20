@@ -39,13 +39,15 @@ const DEFAULT_VIRT_CURSOR = {
   totalElements: 0,
 };
 
+export type AutoUpdate = "never" | "realtime" | "interval";
+
 export type IncidentsFilter = {
   tags: Tag[];
   sources: "AllSources" | string[] | undefined;
   sourcesById: number[] | undefined;
   show: "open" | "closed" | "both";
   showAcked: boolean;
-  realtime: boolean;
+  autoUpdate: AutoUpdate;
 };
 
 type FilteredIncidentsTablePropsType = {
@@ -59,7 +61,7 @@ const FilteredIncidentTable: React.FC<FilteredIncidentsTablePropsType> = ({
 }: FilteredIncidentsTablePropsType) => {
   const [lastRefresh, setLastRefresh] = useState<Date | undefined>(undefined);
 
-  const { tags: tagsFilter, sources, sourcesById, show, showAcked, realtime } = filter;
+  const { tags: tagsFilter, sources, sourcesById, show, showAcked, autoUpdate } = filter;
 
   const [paginationCursor, setPaginationCursor] = useState<PaginationCursor>(DEFAULT_PAGINATION_CURSOR);
   const [virtCursor, setVirtCursor] = useState<VirtCursor>(DEFAULT_VIRT_CURSOR);
@@ -200,31 +202,39 @@ const FilteredIncidentTable: React.FC<FilteredIncidentsTablePropsType> = ({
   useEffect(() => {
     setVirtCursor(DEFAULT_VIRT_CURSOR);
     setPaginationCursor(DEFAULT_PAGINATION_CURSOR);
-  }, [showAcked, show, realtime, sources, tagsFilter]);
+  }, [showAcked, show, autoUpdate, sources, tagsFilter]);
 
-  // Get an updated list of data from the backend at a given interval
-  // This is always disabled per now, but should not be enabled when
-  // proper realtime support is in implemented and enabled.
   useEffect(() => {
-    const interval = setInterval(() => {
-      refresh();
-    }, 1000 * DEFAULT_AUTO_REFRESH_INTERVAL);
-    return () => clearInterval(interval);
-  }, [refresh]);
+    // refresh incidents from backend at a set interval if we
+    // are utilizing the interval auto-update strategy
+    if (autoUpdate === "interval") {
+      const interval = setInterval(() => {
+        refresh();
+      }, 1000 * DEFAULT_AUTO_REFRESH_INTERVAL);
+      return () => clearInterval(interval);
+    }
+  }, [refresh, autoUpdate]);
+
+  const autoUpdateTextOpts: Record<AutoUpdate, string> = {
+    never: "not updating automatically",
+    realtime: "updating in real time",
+    interval: `updating every ${DEFAULT_AUTO_REFRESH_INTERVAL}`,
+  };
+
+  const autoUpdateText = autoUpdateTextOpts[autoUpdate];
 
   return (
     <div className="table">
       <IncidentTable
         isLoading={isLoading}
-        realtime={realtime}
+        realtime={autoUpdate === "realtime"}
         open={show === "open"}
         incidents={incidents}
         noDataText={noDataText}
         paginationComponent={paginationComponent}
       />
       <p>
-        Last refreshed {lastRefresh === undefined ? "never" : lastRefresh.toLocaleTimeString()}, refreshing every{" "}
-        {DEFAULT_AUTO_REFRESH_INTERVAL} seconds
+        Last refreshed {lastRefresh === undefined ? "never" : lastRefresh.toLocaleTimeString()}, {autoUpdateText}
       </p>
     </div>
   );

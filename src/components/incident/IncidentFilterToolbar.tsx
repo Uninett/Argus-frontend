@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 
 import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
-import Checkbox from "@material-ui/core/Checkbox";
 import Typography from "@material-ui/core/Typography";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
@@ -10,7 +9,7 @@ import SettingsIcon from "@material-ui/icons/Settings";
 
 import { ENABLE_WEBSOCKETS_SUPPORT } from "../../config";
 
-import { IncidentsFilter } from "../../components/incidenttable/FilteredIncidentTable";
+import { IncidentsFilter, AutoUpdate } from "../../components/incidenttable/FilteredIncidentTable";
 
 import TagSelector, { Tag } from "../../components/tagselector";
 import SourceSelector from "../../components/sourceselector";
@@ -177,9 +176,6 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
   const style = useStyles();
   const [dropdownToolbarOpen, setDropdownToolbarOpen] = useState<boolean>(false);
 
-  const [autoUpdate, setAutoUpdate] = useState<false | "realtime" | "interval">(
-    ENABLE_WEBSOCKETS_SUPPORT ? "realtime" : "interval",
-  );
   const [knownSources, setKnownSources] = useState<string[]>([]);
 
   useEffect(() => {
@@ -196,13 +192,33 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
     onFilterChange({ ...filter, showAcked });
   };
 
-  const onRealtimeChange = (realtime: boolean) => {
-    onFilterChange({ ...filter, realtime });
+  const onAutoUpdateChange = (autoUpdate: AutoUpdate) => {
+    onFilterChange({ ...filter, autoUpdate });
   };
 
   const onSourcesChange = (sources: string[] | "AllSources" | undefined) => {
     onFilterChange({ ...filter, sources });
   };
+
+  const autoUpdateOptions: AutoUpdate[] = ENABLE_WEBSOCKETS_SUPPORT
+    ? ["never", "realtime", "interval"]
+    : ["never", "interval"];
+
+  const autoUpdateToolbarItem = (
+    <ToolbarItem name="Auto Update">
+      <ButtonGroupSwitch
+        selected={filter.autoUpdate}
+        options={autoUpdateOptions}
+        getLabel={(autoUpdate: AutoUpdate) =>
+          ({ never: "Never", realtime: "Realtime", interval: "Interval" }[autoUpdate])
+        }
+        getColor={(selected: boolean) => (selected ? "primary" : "default")}
+        onSelect={(autoUpdate: AutoUpdate) =>
+          (autoUpdate === "realtime" ? ENABLE_WEBSOCKETS_SUPPORT : true) && onAutoUpdateChange(autoUpdate)
+        }
+      />
+    </ToolbarItem>
+  );
 
   return (
     <div className={style.root}>
@@ -226,16 +242,6 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
             onSelect={(showAcked: boolean) => onShowAchedChange(showAcked)}
           />
         </ToolbarItem>
-
-        {ENABLE_WEBSOCKETS_SUPPORT && (
-          <ToolbarItem name="Realtime">
-            <Checkbox
-              disabled={disabled}
-              checked={filter.realtime}
-              onClick={() => onRealtimeChange(!filter.realtime)}
-            />
-          </ToolbarItem>
-        )}
 
         <ToolbarItem name="Sources" className={classNames(style.medium)}>
           <SourceSelector
@@ -264,19 +270,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
         />
       </Toolbar>
       <DropdownToolbar open={dropdownToolbarOpen} onClose={() => setDropdownToolbarOpen(false)}>
-        <ToolbarItem name="Auto Update">
-          <ButtonGroupSwitch
-            selected={autoUpdate}
-            options={ENABLE_WEBSOCKETS_SUPPORT ? [false, "realtime", "interval"] : [false, "interval"]}
-            getLabel={(autoUpdate: false | "realtime" | "interval") =>
-              ({ false: "Never", realtime: "Realtime", interval: "Interval" }[autoUpdate || "false"])
-            }
-            getColor={(selected: boolean) => (selected ? "primary" : "default")}
-            onSelect={(autoUpdate: false | "realtime" | "interval") =>
-              (autoUpdate === "realtime" ? ENABLE_WEBSOCKETS_SUPPORT : true) && setAutoUpdate(autoUpdate)
-            }
-          />
-        </ToolbarItem>
+        {autoUpdateToolbarItem}
       </DropdownToolbar>
     </div>
   );
