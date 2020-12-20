@@ -27,7 +27,14 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 
-import { useStateWithDynamicDefault, toMap, pkGetter, truncateMultilineString, formatTimestamp } from "../../utils";
+import {
+  useStateWithDynamicDefault,
+  toMap,
+  pkGetter,
+  truncateMultilineString,
+  formatTimestamp,
+  copyTextToClipboard,
+} from "../../utils";
 
 import { useAlertSnackbar, UseAlertSnackbarResultType } from "../../components/alertsnackbar";
 
@@ -452,8 +459,8 @@ const IncidentTable: React.FC<IncidentsProps> = ({
             )
           }
           actions={
-            <Button autoFocus onClick={onModalClose} color="primary">
-              Save changes
+            <Button autoFocus onClick={copyCanonicalUrlToClipboard} color="primary">
+              Copy URL
             </Button>
           }
           dialogProps={{ maxWidth: "lg", fullWidth: true }}
