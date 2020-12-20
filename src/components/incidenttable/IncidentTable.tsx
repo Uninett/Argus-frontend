@@ -422,9 +422,17 @@ const IncidentTable: React.FC<IncidentsProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const copyCanonicalUrlToClipboard = () => {
+    if (incidentForDetail) {
+      const relativeUrl = `/incidents/${incidentForDetail.pk}/`;
+      const canonicalUrl = `${window.location.protocol}//${window.location.host}${relativeUrl}`;
+      copyTextToClipboard(canonicalUrl);
+    }
+  };
+
   return (
     <ClickAwayListener onClickAway={onModalClose}>
-      <div className={style.incidentModal}>
+      <div>
         <Modal
           open={!!incidentForDetail}
           title={
@@ -448,6 +456,7 @@ const IncidentTable: React.FC<IncidentsProps> = ({
               Save changes
             </Button>
           }
+          dialogProps={{ maxWidth: "lg", fullWidth: true }}
         />
         {realtime && <Typography>Realtime</Typography>}
         <MUIIncidentTable
