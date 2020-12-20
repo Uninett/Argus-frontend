@@ -5,6 +5,8 @@ import ButtonGroup from "@material-ui/core/ButtonGroup";
 import Checkbox from "@material-ui/core/Checkbox";
 import Typography from "@material-ui/core/Typography";
 import Toolbar from "@material-ui/core/Toolbar";
+import IconButton from "@material-ui/core/IconButton";
+import SettingsIcon from "@material-ui/icons/Settings";
 
 import { ENABLE_WEBSOCKETS_SUPPORT } from "../../config";
 
@@ -50,6 +52,19 @@ const useStyles = makeStyles((theme: Theme) =>
       display: "flex",
       flexFlow: "column wrap",
       margin: theme.spacing(1),
+    },
+    dropdownContainer: {
+      display: "block",
+      flexFlow: "column wrap",
+      color: theme.palette.getContrastText(theme.palette.primary.dark),
+      background: theme.palette.primary.dark,
+      boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2) inset, 0 6px 20px 0 rgba(0, 0, 0, 0.19) inset",
+      width: "auto",
+      padding: theme.spacing(2),
+      margin: 0,
+    },
+    moreSettingsItemContainer: {
+      alignSelf: "center",
     },
   }),
 );
@@ -98,6 +113,56 @@ export const ToolbarItem: React.FC<ToolbarItemPropsType> = ({ name, children, cl
   );
 };
 
+type DropdownToolbarPropsType = {
+  open: boolean;
+  onClose: () => void;
+
+  children: React.ReactNode;
+  className?: string;
+};
+
+export const DropdownToolbar: React.FC<DropdownToolbarPropsType> = ({
+  open,
+  children,
+  className,
+}: DropdownToolbarPropsType) => {
+  const style = useStyles();
+
+  if (!open) return null;
+
+  return (
+    <div className={classNames(style.dropdownContainer, className)}>
+      <Toolbar className={style.toolbarContainer}>{children}</Toolbar>
+    </div>
+  );
+};
+
+type MoreSettingsToolbarItemPropsType = {
+  open: boolean;
+  onChange: (open: boolean) => void;
+  className?: string;
+};
+
+export const MoreSettingsToolbarItem: React.FC<MoreSettingsToolbarItemPropsType> = ({
+  open,
+  onChange,
+  className,
+}: MoreSettingsToolbarItemPropsType) => {
+  const style = useStyles();
+
+  return (
+    <div className={classNames(style.moreSettingsItemContainer, className)}>
+      <IconButton
+        color={(!open && "primary") || undefined}
+        aria-label="more-filter-settings-toggle"
+        onClick={() => onChange(!open)}
+      >
+        <SettingsIcon />
+      </IconButton>
+    </div>
+  );
+};
+
 type IncidentFilterToolbarPropsType = {
   filter: IncidentsFilter;
   onFilterChange: (filter: IncidentsFilter) => void;
@@ -110,6 +175,8 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
   disabled,
 }: IncidentFilterToolbarPropsType) => {
   const style = useStyles();
+  const [dropdownToolbarOpen, setDropdownToolbarOpen] = useState<boolean>(false);
+
   const [autoUpdate, setAutoUpdate] = useState<false | "realtime" | "interval">(
     ENABLE_WEBSOCKETS_SUPPORT ? "realtime" : "interval",
   );
@@ -160,20 +227,6 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
           />
         </ToolbarItem>
 
-        <ToolbarItem name="Auto Update">
-          <ButtonGroupSwitch
-            selected={autoUpdate}
-            options={ENABLE_WEBSOCKETS_SUPPORT ? [false, "realtime", "interval"] : [false, "interval"]}
-            getLabel={(autoUpdate: false | "realtime" | "interval") =>
-              ({ false: "Never", realtime: "Realtime", interval: "Interval" }[autoUpdate || "false"])
-            }
-            getColor={(selected: boolean) => (selected ? "primary" : "default")}
-            onSelect={(autoUpdate: false | "realtime" | "interval") =>
-              (autoUpdate === "realtime" ? ENABLE_WEBSOCKETS_SUPPORT : true) && setAutoUpdate(autoUpdate)
-            }
-          />
-        </ToolbarItem>
-
         {ENABLE_WEBSOCKETS_SUPPORT && (
           <ToolbarItem name="Realtime">
             <Checkbox
@@ -204,7 +257,27 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
             }
           />
         </ToolbarItem>
+
+        <MoreSettingsToolbarItem
+          open={dropdownToolbarOpen}
+          onChange={(open: boolean) => setDropdownToolbarOpen(open)}
+        />
       </Toolbar>
+      <DropdownToolbar open={dropdownToolbarOpen} onClose={() => setDropdownToolbarOpen(false)}>
+        <ToolbarItem name="Auto Update">
+          <ButtonGroupSwitch
+            selected={autoUpdate}
+            options={ENABLE_WEBSOCKETS_SUPPORT ? [false, "realtime", "interval"] : [false, "interval"]}
+            getLabel={(autoUpdate: false | "realtime" | "interval") =>
+              ({ false: "Never", realtime: "Realtime", interval: "Interval" }[autoUpdate || "false"])
+            }
+            getColor={(selected: boolean) => (selected ? "primary" : "default")}
+            onSelect={(autoUpdate: false | "realtime" | "interval") =>
+              (autoUpdate === "realtime" ? ENABLE_WEBSOCKETS_SUPPORT : true) && setAutoUpdate(autoUpdate)
+            }
+          />
+        </ToolbarItem>
+      </DropdownToolbar>
     </div>
   );
 };
