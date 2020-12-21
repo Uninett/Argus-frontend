@@ -336,7 +336,8 @@ const IncidentTable: React.FC<IncidentsProps> = ({
     setIncidentForDetail(undefined);
   };
 
-  const handleIncidentChange = (incident: Incident) => {
+  const handleIncidentChange = (incident: Incident, noDelete = false) => {
+    console.log("handling change to incident", incident, "noDelete", noDelete);
     // TODO: handle acked/unacked changes as well because there is now
     // the showAcked variable in the "supercomponent" IncidentView that
     // passes the incidents to the incidentstable.
@@ -346,11 +347,11 @@ const IncidentTable: React.FC<IncidentsProps> = ({
       const newDict: typeof oldDict = new Map<Incident["pk"], Incident>(oldDict);
       const oldIncident = oldDict.get(incident.pk);
       if (!oldIncident || incident.open != oldIncident.open) {
-        if (!incident.open) {
+        if (!incident.open && !noDelete) {
           // closed
           newDict.delete(incident.pk);
         } else {
-          // opened (somehow)
+          // opened (somehow), or nodelete
           newDict.set(incident.pk, incident);
         }
       } else {
@@ -362,6 +363,33 @@ const IncidentTable: React.FC<IncidentsProps> = ({
       return newDict;
     });
     if (incidentForDetail && incidentForDetail.pk === incident.pk) setIncidentForDetail(incident);
+  };
+
+  // Wrapper for handleIncidentChange but that doesn't remove incidents from
+  // the table until after a couple seconds, so that the user can see what changes
+  // has been made more easily.
+  const handleTimedIncidentChange = (incident: Incident) => {
+    console.log("handling timed change to incident", incident);
+    const oldIncident = incidentsDict.get(incident.pk);
+
+    handleIncidentChange(incident, true);
+
+    if (!oldIncident) return;
+
+    setTimeout(() => {
+      setIncidentsDict((oldDict: Revisioned<Map<Incident["pk"], Incident>>) => {
+        const newDict: typeof oldDict = new Map<Incident["pk"], Incident>(oldDict);
+        if (incident.open != open) {
+          newDict.delete(incident.pk);
+        } else {
+          // updated in some other way
+          newDict.set(incident.pk, incident);
+        }
+        newDict.revision = (newDict.revision || 1) + 1;
+        //onsole.log("revision", newDict.revision);
+        return newDict;
+      });
+    }, 5000);
   };
 
   // TODO: move this logic somewhere else
@@ -380,7 +408,7 @@ const IncidentTable: React.FC<IncidentsProps> = ({
     };
 
     const onIncidentModified = (incident: Incident) => {
-      handleIncidentChange(incident);
+      handleTimedIncidentChange(incident);
     };
 
     const onIncidentRemoved = (incident: Incident) => {
@@ -439,7 +467,7 @@ const IncidentTable: React.FC<IncidentsProps> = ({
             incidentForDetail && (
               <IncidentDetails
                 key={incidentForDetail.pk}
-                onIncidentChange={handleIncidentChange}
+                onIncidentChange={handleTimedIncidentChange}
                 incident={incidentForDetail}
                 displayAlertSnackbar={displayAlertSnackbar}
               />
