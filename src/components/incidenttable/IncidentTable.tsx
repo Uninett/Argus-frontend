@@ -211,7 +211,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
       <TableContainer component={Paper}>
         <MuiTable size="small" aria-label="incident table">
           <TableHead>
-            <TableRow>
+            <TableRow className={style.tableRow}>
               {/* TODO: Not implemented yet */}
               {false && (
                 <TableCell padding="checkbox" onClick={() => handleToggleSelectAll()}>
