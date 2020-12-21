@@ -594,6 +594,14 @@ export class ApiClient {
     }
   }
 
+  public getIncident(pk: Incident["pk"]): Promise<Incident> {
+    return resolveOrReject(
+      this.authGet<Incident, never>(`/api/v1/incidents/${pk}/`),
+      defaultResolver,
+      (error) => new Error(`Failed to get incident with pk=${pk}: ${error}`),
+    );
+  }
+
   // NOTE: This won't actually get all incidents anymore because of the pagination
   // TODO: Remove all use of this method.
   public getAllIncidentsFiltered(filter: IncidentsFilterOptions): Promise<Incident[]> {

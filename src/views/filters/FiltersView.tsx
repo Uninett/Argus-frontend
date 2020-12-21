@@ -19,7 +19,6 @@ import Spinning from "../../components/spinning";
 
 import { ENABLE_WEBSOCKETS_SUPPORT } from "../../config";
 
-import Header from "../../components/header/Header";
 import "../../components/incidenttable/incidenttable.css";
 import FilterBuilder from "../../components/filterbuilder/FilterBuilder";
 import { withRouter } from "react-router-dom";
@@ -313,41 +312,36 @@ const FiltersView: React.FC<FiltersViewPropsType> = ({}: FiltersViewPropsType) =
   return (
     <>
       {filtersSnackbar}
-      <div>
-        <header>
-          <Header />
-        </header>
-        <FiltersContext.Provider value={filtersContext}>
-          <Card>
-            <CardContent>
-              <Typography variant="h5" gutterBottom>
-                Your incident filters
-              </Typography>
+      <FiltersContext.Provider value={filtersContext}>
+        <Card>
+          <CardContent>
+            <Typography variant="h5" gutterBottom>
+              Your incident filters
+            </Typography>
 
-              <FiltersTable
-                filters={filters}
-                onFilterPreview={handleFilterPreview}
-                onFilterEdit={(filter: Filter) => {
-                  setEditingFilter(filter);
-                }}
-                onFilterDelete={handleFilterDelete}
-              />
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent>
-              <Typography variant="h5" gutterBottom>
-                Create and preview filters
-              </Typography>
-              {filterBuilder}
-              <Typography color="textSecondary" gutterBottom>
-                Incidents matching filter
-              </Typography>
-              <FilteredIncidentTable filter={previewFilter} onLoad={useCallback(() => handleIncidentsLoaded(), [])} />
-            </CardContent>
-          </Card>
-        </FiltersContext.Provider>
-      </div>
+            <FiltersTable
+              filters={filters}
+              onFilterPreview={handleFilterPreview}
+              onFilterEdit={(filter: Filter) => {
+                setEditingFilter(filter);
+              }}
+              onFilterDelete={handleFilterDelete}
+            />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent>
+            <Typography variant="h5" gutterBottom>
+              Create and preview filters
+            </Typography>
+            {filterBuilder}
+            <Typography color="textSecondary" gutterBottom>
+              Incidents matching filter
+            </Typography>
+            <FilteredIncidentTable filter={previewFilter} onLoad={useCallback(() => handleIncidentsLoaded(), [])} />
+          </CardContent>
+        </Card>
+      </FiltersContext.Provider>
     </>
   );
 };

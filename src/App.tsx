@@ -1,6 +1,9 @@
 import React from "react";
+
 import "./variables.css";
 import "./colorscheme.css";
+
+import IncidentDetailsView from "./views/incident/IncidentDetailView";
 import IncidentView from "./views/incident/IncidentView";
 import LoginView from "./views/login/LoginView";
 import { Route, Switch, useHistory } from "react-router-dom";
@@ -16,6 +19,21 @@ import auth from "./auth";
 import { ThemeProvider } from "@material-ui/core/styles";
 import { MUI_THEME } from "./colorscheme";
 
+import Header from "./components/header/Header";
+
+// eslint-disable-next-line
+const withHeader = (Component: any) => {
+  // eslint-disable-next-line
+  return (props: any) => (
+    <>
+      <header>
+        <Header />
+      </header>
+      <Component {...props} />
+    </>
+  );
+};
+
 const App: React.SFC = () => {
   const history = useHistory();
   api.registerUnauthorizedCallback(() => {
@@ -28,12 +46,14 @@ const App: React.SFC = () => {
     <div>
       <ThemeProvider theme={MUI_THEME}>
         <Switch>
-          <ProtectedRoute exact path="/" component={IncidentView} />
-          <ProtectedRoute path="/notificationprofiles" component={NotificationProfileView} />
-          <ProtectedRoute path="/timeslots" component={TimeslotView} />
-          <ProtectedRoute path="/settings" component={SettingsView} />
+          <ProtectedRoute exact path="/" component={withHeader(IncidentView)} />
+          <ProtectedRoute path="/incidents/:pk" component={withHeader(IncidentDetailsView)} />
+          <ProtectedRoute exact path="/incidents" component={withHeader(IncidentView)} />
+          <ProtectedRoute path="/notificationprofiles" component={withHeader(NotificationProfileView)} />
+          <ProtectedRoute path="/timeslots" component={withHeader(TimeslotView)} />
+          <ProtectedRoute path="/settings" component={withHeader(SettingsView)} />
+          <ProtectedRoute path="/filters" component={withHeader(FiltersView)} />
           <Route path="/login" component={LoginView} />
-          <ProtectedRoute path="/filters" component={FiltersView} />
           <Route
             path="*"
             component={() => (

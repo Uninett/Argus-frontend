@@ -11,8 +11,12 @@ import CloseIcon from "@material-ui/icons/Close";
 import FilterListIcon from "@material-ui/icons/FilterList";
 import CheckSharpIcon from "@material-ui/icons/CheckSharp";
 import LinkSharpIcon from "@material-ui/icons/LinkSharp";
+import LinkIcon from "@material-ui/icons/Link";
+import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 import Paper from "@material-ui/core/Paper";
 import Checkbox from "@material-ui/core/Checkbox";
+
+import TicketIcon from "@material-ui/icons/LocalOffer";
 
 import Typography from "@material-ui/core/Typography";
 
@@ -236,25 +240,21 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                     <ClickableCell>{formatTimestamp(incident.start_time)}</ClickableCell>
                     <ClickableCell component="th" scope="row">
                       <OpenItem small open={incident.open} />
-                      <TicketItem small ticketUrl={incident.ticket_url} />
+                      {/* <TicketItem small ticketUrl={incident.ticket_url} /> */}
                       <AckedItem small acked={incident.acked} />
                     </ClickableCell>
                     <ClickableCell>{incident.source.name}</ClickableCell>
                     <ClickableCell>{incident.description}</ClickableCell>
                     <TableCell>
-                      <Button
-                        disabled={isLoading}
-                        className={classes.safeButton}
-                        onClick={() => onShowDetail(incident)}
-                      >
-                        Details
-                      </Button>
-                      {/* TODO: Not implementd yet */}
-                      {false && (
-                        <Button disabled={isLoading} className={classes.safeButton} href="https://localhost.com">
-                          Ticket
-                        </Button>
+                      <IconButton disabled={isLoading} href={`/incidents/${incident.pk}/`}>
+                        <OpenInNewIcon />
+                      </IconButton>
+                      {incident.ticket_url && (
+                        <IconButton disabled={isLoading} href={incident.ticket_url}>
+                          <TicketIcon />
+                        </IconButton>
                       )}
+                      {/* TODO: Not implementd yet */}
                     </TableCell>
                   </TableRow>
                 );
