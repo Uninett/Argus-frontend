@@ -81,7 +81,7 @@ const PhoneNumberComponent: React.FC<PhoneNumberPropsType> = ({
 
   const RemovePhoneNumberButton = makeConfirmationButton({
     title: `Remove ${phoneNumber}`,
-    question: "Are you sure you want to remove this timeslot?",
+    question: "Are you sure you want to remove this phone number?",
     onConfirm: () => {
       setDeleteLoading(true);
       onDelete(pk, phoneNumber);
