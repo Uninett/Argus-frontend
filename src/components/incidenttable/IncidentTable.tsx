@@ -27,6 +27,8 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 
+import classNames from "classnames";
+
 import {
   useStateWithDynamicDefault,
   toMap,
@@ -157,6 +159,8 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
   isLoading,
   paginationComponent,
 }: MUIIncidentTablePropsType) => {
+  const style = useStyles();
+
   type SelectionState = "SelectedAll" | Set<Incident["pk"]>;
   const [selectedIncidents, setSelectedIncidents] = useState<SelectionState>(new Set<Incident["pk"]>([]));
 
@@ -239,6 +243,14 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                     style={{
                       cursor: "pointer",
                     }}
+                    className={classNames(
+                      style.tableRow,
+                      incident.open
+                        ? incident.acked
+                          ? style.tableRowAcked
+                          : style.tableRowOpenUnacked
+                        : style.tableRowClosed,
+                    )}
                   >
                     {/* TODO: Not implemented yet */}
                     {false && (
