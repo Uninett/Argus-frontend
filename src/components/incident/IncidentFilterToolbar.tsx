@@ -185,19 +185,19 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
   }, []);
 
   const onShowChange = (show: "open" | "closed" | "both") => {
-    onFilterChange({ ...filter, show });
+    if (show !== filter.show) onFilterChange({ ...filter, show });
   };
 
   const onShowAchedChange = (showAcked: boolean) => {
-    onFilterChange({ ...filter, showAcked });
+    if (showAcked !== filter.showAcked) onFilterChange({ ...filter, showAcked });
   };
 
   const onAutoUpdateChange = (autoUpdate: AutoUpdate) => {
-    onFilterChange({ ...filter, autoUpdate });
+    if (autoUpdate !== filter.autoUpdate) onFilterChange({ ...filter, autoUpdate });
   };
 
   const onSourcesChange = (sources: string[] | "AllSources" | undefined) => {
-    onFilterChange({ ...filter, sources });
+    if (sources !== filter.sources) onFilterChange({ ...filter, sources });
   };
 
   const autoUpdateOptions: AutoUpdate[] = ENABLE_WEBSOCKETS_SUPPORT
@@ -219,6 +219,13 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
       />
     </ToolbarItem>
   );
+
+  const handleTagSelectionChange = (selection: Tag[]) => {
+    // compare the arrays deeply
+    if (JSON.stringify(selection) !== JSON.stringify(filter.tags)) {
+      onFilterChange({ ...filter, tags: selection });
+    }
+  };
 
   return (
     <div className={style.root}>
@@ -255,13 +262,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
         </ToolbarItem>
 
         <ToolbarItem name="Tags" className={classNames(style.large, style.rightAligned)}>
-          <TagSelector
-            disabled={disabled}
-            tags={filter.tags}
-            onSelectionChange={(selection: Tag[]) =>
-              selection.length !== 0 && selection && onFilterChange({ ...filter, tags: selection })
-            }
-          />
+          <TagSelector disabled={disabled} tags={filter.tags} onSelectionChange={handleTagSelectionChange} />
         </ToolbarItem>
 
         <MoreSettingsToolbarItem
