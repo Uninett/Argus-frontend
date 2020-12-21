@@ -480,7 +480,6 @@ const IncidentTable: React.FC<IncidentsProps> = ({
           }
           dialogProps={{ maxWidth: "lg", fullWidth: true }}
         />
-        {realtime && <Typography>Realtime</Typography>}
         <MUIIncidentTable
           isLoading={isLoading}
           incidents={incidentsUpdated}
