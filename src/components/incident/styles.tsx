@@ -43,8 +43,7 @@ export const useStyles = makeStyles((theme: Theme) =>
       color: WHITE,
     },
     tableRow: {
-      // background: theme.palette.success.light,
-      borderLeftWidth: "20px",
+      borderLeftWidth: "10px",
       borderLeftStyle: "solid",
       borderLeftColor: "transparent",
     },
