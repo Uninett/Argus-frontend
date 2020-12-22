@@ -27,6 +27,8 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 
+import classNames from "classnames";
+
 import {
   useStateWithDynamicDefault,
   toMap,
@@ -43,6 +45,8 @@ import { BACKEND_WS_URL } from "../../config";
 import { useStyles } from "../incident/styles";
 import { AckedItem, OpenItem } from "../incident/Chips";
 import IncidentDetails from "../incident/IncidentDetails";
+
+import { RealtimeService } from "../../services/RealtimeService";
 
 import Modal from "../../components/modal/Modal";
 
@@ -155,6 +159,8 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
   isLoading,
   paginationComponent,
 }: MUIIncidentTablePropsType) => {
+  const style = useStyles();
+
   type SelectionState = "SelectedAll" | Set<Incident["pk"]>;
   const [selectedIncidents, setSelectedIncidents] = useState<SelectionState>(new Set<Incident["pk"]>([]));
 
@@ -205,7 +211,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
       <TableContainer component={Paper}>
         <MuiTable size="small" aria-label="incident table">
           <TableHead>
-            <TableRow>
+            <TableRow className={style.tableRow}>
               {/* TODO: Not implemented yet */}
               {false && (
                 <TableCell padding="checkbox" onClick={() => handleToggleSelectAll()}>
@@ -237,6 +243,14 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                     style={{
                       cursor: "pointer",
                     }}
+                    className={classNames(
+                      style.tableRow,
+                      incident.open
+                        ? incident.acked
+                          ? style.tableRowAcked
+                          : style.tableRowOpenUnacked
+                        : style.tableRowClosed,
+                    )}
                   >
                     {/* TODO: Not implemented yet */}
                     {false && (
@@ -322,7 +336,8 @@ const IncidentTable: React.FC<IncidentsProps> = ({
     setIncidentForDetail(undefined);
   };
 
-  const handleIncidentChange = (incident: Incident) => {
+  const handleIncidentChange = (incident: Incident, noDelete = false) => {
+    console.log("handling change to incident", incident, "noDelete", noDelete);
     // TODO: handle acked/unacked changes as well because there is now
     // the showAcked variable in the "supercomponent" IncidentView that
     // passes the incidents to the incidentstable.
@@ -332,11 +347,11 @@ const IncidentTable: React.FC<IncidentsProps> = ({
       const newDict: typeof oldDict = new Map<Incident["pk"], Incident>(oldDict);
       const oldIncident = oldDict.get(incident.pk);
       if (!oldIncident || incident.open != oldIncident.open) {
-        if (!incident.open) {
+        if (!incident.open && !noDelete) {
           // closed
           newDict.delete(incident.pk);
         } else {
-          // opened (somehow)
+          // opened (somehow), or nodelete
           newDict.set(incident.pk, incident);
         }
       } else {
@@ -350,82 +365,82 @@ const IncidentTable: React.FC<IncidentsProps> = ({
     if (incidentForDetail && incidentForDetail.pk === incident.pk) setIncidentForDetail(incident);
   };
 
+  // Wrapper for handleIncidentChange but that doesn't remove incidents from
+  // the table until after a couple seconds, so that the user can see what changes
+  // has been made more easily.
+  const handleTimedIncidentChange = (incident: Incident) => {
+    console.log("handling timed change to incident", incident);
+    const oldIncident = incidentsDict.get(incident.pk);
+
+    handleIncidentChange(incident, true);
+
+    if (!oldIncident) return;
+
+    setTimeout(() => {
+      setIncidentsDict((oldDict: Revisioned<Map<Incident["pk"], Incident>>) => {
+        const newDict: typeof oldDict = new Map<Incident["pk"], Incident>(oldDict);
+        if (incident.open != open) {
+          newDict.delete(incident.pk);
+        } else {
+          // updated in some other way
+          newDict.set(incident.pk, incident);
+        }
+        newDict.revision = (newDict.revision || 1) + 1;
+        //onsole.log("revision", newDict.revision);
+        return newDict;
+      });
+    }, 5000);
+  };
+
   // TODO: move this logic somewhere else
   useEffect(() => {
-    if (!realtime) return;
-
-    const ws = new WebSocket(`${BACKEND_WS_URL}/open/`);
-    // cookies.set("token", token, { path: "/", secure: USE_SECURE_COOKIE });
-    console.log("websocket", ws);
-
-    const msg = {
-      action: "subscribe",
-    };
-    ws.onmessage = function (e) {
-      const data = JSON.parse(e.data);
-      console.log("onmessage", data);
-
-      switch (data.type) {
-        case "modified":
-          const modifiedIncident: Incident = data.payload;
-          handleIncidentChange(modifiedIncident);
-          break;
-        case "created":
-          console.log("Created", data);
-          const createdIncident: Incident = data.payload;
-
-          if (open && !createdIncident.open) {
-            // TODO: how to handle this?
-            break;
-          }
-
-          setIncidentsDict((oldDict: Revisioned<Map<Incident["pk"], Incident>>) => {
-            const newDict: typeof oldDict = new Map<Incident["pk"], Incident>(oldDict);
-            newDict.revision = (newDict.revision || 1) + 1;
-            newDict.set(createdIncident.pk, createdIncident);
-            return newDict;
-          });
-          break;
-
-        case "deleted":
-          console.log("Deleted", data);
-          const deletedIncident: Incident = data.payload;
-
-          setIncidentsDict((oldDict: Revisioned<Map<Incident["pk"], Incident>>) => {
-            const newDict: typeof oldDict = new Map<Incident["pk"], Incident>(oldDict);
-            newDict.revision = (newDict.revision || 1) + 1;
-            newDict.delete(deletedIncident.pk);
-            return newDict;
-          });
-          break;
-
-        case "subscribed":
-          const incidents: Incident[] = data.start_incidents;
-          setIncidentsDict((oldDict: Revisioned<Map<Incident["pk"], Incident>>) => {
-            const newDict: typeof oldDict = new Map<Incident["pk"], Incident>(oldDict);
-            newDict.revision = (newDict.revision || 1) + 1;
-            incidents.map((incident: Incident) => newDict.set(incident.pk, incident));
-            return newDict;
-          });
-          displayAlertSnackbar(`Subscribed for realtime updates`, "success");
-          break;
-
-        default:
-          displayAlertSnackbar(`Unhandled WebSockets message type: ${data.type}`, "warning");
-          break;
+    const onIncidentAdded = (incident: Incident) => {
+      if (open && !incident.open) {
+        // TODO: how to handle this?
+        return;
       }
+      setIncidentsDict((oldDict: Revisioned<Map<Incident["pk"], Incident>>) => {
+        const newDict: typeof oldDict = new Map<Incident["pk"], Incident>(oldDict);
+        newDict.revision = (newDict.revision || 1) + 1;
+        newDict.set(incident.pk, incident);
+        return newDict;
+      });
     };
 
-    ws.onopen = () => {
-      console.log("onopen");
-      ws.send(JSON.stringify(msg));
+    const onIncidentModified = (incident: Incident) => {
+      handleTimedIncidentChange(incident);
     };
 
-    ws.onclose = () => {
-      console.log("onclose");
-      ws.close();
-      displayAlertSnackbar(`Realtime updates disabled`, "success");
+    const onIncidentRemoved = (incident: Incident) => {
+      setIncidentsDict((oldDict: Revisioned<Map<Incident["pk"], Incident>>) => {
+        const newDict: typeof oldDict = new Map<Incident["pk"], Incident>(oldDict);
+        newDict.revision = (newDict.revision || 1) + 1;
+        newDict.delete(incident.pk);
+        return newDict;
+      });
     };
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const onIncidentsInitial = (incidents: Incident[]) => {
+      // NOTE: Ignore this for now, because we automatically load
+      // the top incidents we care about on table load. We only care
+      // about new incidents, or changes to incidents atmm.
+      // setIncidentsDict((oldDict: Revisioned<Map<Incident["pk"], Incident>>) => {
+      //   const newDict: typeof oldDict = new Map<Incident["pk"], Incident>(oldDict);
+      //   newDict.revision = (newDict.revision || 1) + 1;
+      //   incidents.map((incident: Incident) => newDict.set(incident.pk, incident));
+      //   return newDict;
+      // });
+    };
+
+    const rts = new RealtimeService({
+      onIncidentAdded,
+      onIncidentModified,
+      onIncidentRemoved,
+      onIncidentsInitial,
+    });
+    rts.connect();
+    console.log("created rts and connect()");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -452,7 +467,7 @@ const IncidentTable: React.FC<IncidentsProps> = ({
             incidentForDetail && (
               <IncidentDetails
                 key={incidentForDetail.pk}
-                onIncidentChange={handleIncidentChange}
+                onIncidentChange={handleTimedIncidentChange}
                 incident={incidentForDetail}
                 displayAlertSnackbar={displayAlertSnackbar}
               />

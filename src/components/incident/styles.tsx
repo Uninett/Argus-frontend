@@ -1,4 +1,9 @@
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
+
+import yellow from "@material-ui/core/colors/yellow";
+import green from "@material-ui/core/colors/green";
+import red from "@material-ui/core/colors/red";
+
 import { WHITE } from "../../colorscheme";
 
 export const useStyles = makeStyles((theme: Theme) =>
@@ -36,6 +41,20 @@ export const useStyles = makeStyles((theme: Theme) =>
     closedMessage: {
       backgroundColor: theme.palette.success.main,
       color: WHITE,
+    },
+    tableRow: {
+      borderLeftWidth: "10px",
+      borderLeftStyle: "solid",
+      borderLeftColor: "transparent",
+    },
+    tableRowAcked: {
+      borderLeftColor: yellow["300"],
+    },
+    tableRowClosed: {
+      borderLeftColor: green["300"],
+    },
+    tableRowOpenUnacked: {
+      borderLeftColor: red["300"],
     },
   }),
 );
