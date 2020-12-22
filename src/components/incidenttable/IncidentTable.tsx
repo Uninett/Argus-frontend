@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useMemo } from "react";
 
+import { Link } from "react-router-dom";
+
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
-import AppBar from "@material-ui/core/AppBar";
-import Dialog from "@material-ui/core/Dialog";
 import Toolbar from "@material-ui/core/Toolbar";
 import Tooltip from "@material-ui/core/Tooltip";
 import IconButton from "@material-ui/core/IconButton";
@@ -11,7 +11,6 @@ import CloseIcon from "@material-ui/icons/Close";
 import FilterListIcon from "@material-ui/icons/FilterList";
 import CheckSharpIcon from "@material-ui/icons/CheckSharp";
 import LinkSharpIcon from "@material-ui/icons/LinkSharp";
-import LinkIcon from "@material-ui/icons/Link";
 import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 import Paper from "@material-ui/core/Paper";
 import Checkbox from "@material-ui/core/Checkbox";
@@ -28,15 +27,24 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 
-import { useStateWithDynamicDefault, toMap, pkGetter, truncateMultilineString, formatTimestamp } from "../../utils";
+import {
+  useStateWithDynamicDefault,
+  toMap,
+  pkGetter,
+  truncateMultilineString,
+  formatTimestamp,
+  copyTextToClipboard,
+} from "../../utils";
 
 import { useAlertSnackbar, UseAlertSnackbarResultType } from "../../components/alertsnackbar";
 
 import { Incident } from "../../api";
 import { BACKEND_WS_URL } from "../../config";
 import { useStyles } from "../incident/styles";
-import { AckedItem, OpenItem, TicketItem } from "../incident/Chips";
+import { AckedItem, OpenItem } from "../incident/Chips";
 import IncidentDetails from "../incident/IncidentDetails";
+
+import Modal from "../../components/modal/Modal";
 
 const useToolbarStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -147,7 +155,6 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
   isLoading,
   paginationComponent,
 }: MUIIncidentTablePropsType) => {
-  const classes = useStyles();
   type SelectionState = "SelectedAll" | Set<Incident["pk"]>;
   const [selectedIncidents, setSelectedIncidents] = useState<SelectionState>(new Set<Incident["pk"]>([]));
 
@@ -246,7 +253,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                     <ClickableCell>{incident.source.name}</ClickableCell>
                     <ClickableCell>{incident.description}</ClickableCell>
                     <TableCell>
-                      <IconButton disabled={isLoading} href={`/incidents/${incident.pk}/`}>
+                      <IconButton disabled={isLoading} component={Link} to={`/incidents/${incident.pk}/`}>
                         <OpenInNewIcon />
                       </IconButton>
                       {incident.ticket_url && (
@@ -286,6 +293,8 @@ const IncidentTable: React.FC<IncidentsProps> = ({
   isLoading,
   paginationComponent,
 }: IncidentsProps) => {
+  const style = useStyles();
+
   const [incidentForDetail, setIncidentForDetail] = useState<Incident | undefined>(undefined);
 
   const incidentsDictFromProps = useMemo<Revisioned<Map<Incident["pk"], Incident>>>(
@@ -308,8 +317,6 @@ const IncidentTable: React.FC<IncidentsProps> = ({
   const handleShowDetail = (incident: Incident) => {
     setIncidentForDetail(incident);
   };
-
-  const classes = useStyles();
 
   const onModalClose = () => {
     setIncidentForDetail(undefined);
@@ -422,43 +429,42 @@ const IncidentTable: React.FC<IncidentsProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const copyCanonicalUrlToClipboard = () => {
+    if (incidentForDetail) {
+      const relativeUrl = `/incidents/${incidentForDetail.pk}/`;
+      const canonicalUrl = `${window.location.protocol}//${window.location.host}${relativeUrl}`;
+      copyTextToClipboard(canonicalUrl);
+    }
+  };
+
   return (
     <ClickAwayListener onClickAway={onModalClose}>
       <div>
-        <Dialog
+        <Modal
           open={!!incidentForDetail}
-          onClose={() => setIncidentForDetail(undefined)}
-          aria-labelledby="simple-modal-title"
-          aria-describedby="simple-modal-description"
-          maxWidth={"lg"}
-        >
-          {(incidentForDetail && (
-            <div>
-              <AppBar position="static">
-                <Toolbar variant="dense">
-                  <IconButton
-                    edge="start"
-                    onClick={onModalClose}
-                    className={classes.closeIcon}
-                    color="inherit"
-                    aria-label="close"
-                  >
-                    <CloseIcon />
-                  </IconButton>
-                  <Typography variant="h6" className={classes.title}>
-                    {truncateMultilineString(incidentForDetail.description, 50)}
-                  </Typography>
-                </Toolbar>
-              </AppBar>
+          title={
+            (incidentForDetail &&
+              `${incidentForDetail.pk}: ${truncateMultilineString(incidentForDetail.description, 50)}`) ||
+            ""
+          }
+          onClose={onModalClose}
+          content={
+            incidentForDetail && (
               <IncidentDetails
                 key={incidentForDetail.pk}
                 onIncidentChange={handleIncidentChange}
                 incident={incidentForDetail}
                 displayAlertSnackbar={displayAlertSnackbar}
               />
-            </div>
-          )) || <h1>Empty</h1>}
-        </Dialog>
+            )
+          }
+          actions={
+            <Button autoFocus onClick={copyCanonicalUrlToClipboard} color="primary">
+              Copy URL
+            </Button>
+          }
+          dialogProps={{ maxWidth: "lg", fullWidth: true }}
+        />
         {realtime && <Typography>Realtime</Typography>}
         <MUIIncidentTable
           isLoading={isLoading}

@@ -168,3 +168,7 @@ export function truncateMultilineString(multilineString: string, length: number)
   }
   return multilineString;
 }
+
+export const copyTextToClipboard = (text: string) => {
+  navigator.clipboard.writeText(text);
+};
