@@ -31,7 +31,7 @@ import "../../components/incidenttable/incidenttable.css";
 import { FiltersContext, FiltersContextType, DEFAULT_FILTERS_CONTEXT_VALUE } from "../../components/filters/contexts";
 import { useAlertSnackbar, UseAlertSnackbarResultType } from "../../components/alertsnackbar";
 
-import FilteredIncidentTable from "../../components/incidenttable/FilteredIncidentTable";
+import FilteredIncidentTable, { AutoUpdate } from "../../components/incidenttable/FilteredIncidentTable";
 
 type FiltersTablePropsType = {
   filters: Filter[];
@@ -129,14 +129,14 @@ const FiltersView: React.FC<FiltersViewPropsType> = ({}: FiltersViewPropsType) =
     sourcesById: number[];
     show: "open" | "closed" | "both";
     showAcked: boolean;
-    realtime: boolean;
+    autoUpdate: AutoUpdate;
   }>({
     tags: [],
     sources: "AllSources",
     sourcesById: [],
     show: "open",
     showAcked: true,
-    realtime: ENABLE_WEBSOCKETS_SUPPORT,
+    autoUpdate: ENABLE_WEBSOCKETS_SUPPORT ? "realtime" : "interval",
   });
 
   // The editing filter is the one modified/updated by the Filter Builder

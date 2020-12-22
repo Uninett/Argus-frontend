@@ -13,7 +13,7 @@ type IncidentViewPropsType = {};
 
 const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType) => {
   const [filter, setFilter] = useState<IncidentsFilter>({
-    realtime: ENABLE_WEBSOCKETS_SUPPORT,
+    autoUpdate: ENABLE_WEBSOCKETS_SUPPORT ? "realtime" : "interval",
     showAcked: false,
     tags: [],
     sources: "AllSources",
