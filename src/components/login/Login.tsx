@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 
 import Typography from "@material-ui/core/Typography";
+import { useHistory } from "react-router-dom";
 
 import Auth from "../../auth";
 import { BACKEND_URL } from "../../config";
@@ -57,6 +58,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const LoginForm: React.FC<{}> = () => {
   const style = useStyles();
+  const history = useHistory();
 
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -71,10 +73,14 @@ const LoginForm: React.FC<{}> = () => {
     await api
       .userpassAuth(username, password)
       .then((token: Token) => {
-        loginAndSetUser(token).then(() => {
-          setLoginFailed(true);
-          dispatch({ type: "setUser", payload: localStorage.getItem("user") });
-        });
+        loginAndSetUser(token)
+          .then(() => {
+            history.push("/");
+          })
+          .catch(() => {
+            console.log("failed to login");
+            setLoginFailed(true);
+          });
       })
       .catch((error) => {
         console.log(error);
