@@ -34,10 +34,12 @@ const useStyles = makeStyles((theme: Theme) =>
       display: "flex",
       minWidth: "100%",
       alignItems: "center",
+      overflow: "hidden",
     },
     navItem: {
-      // padding: "6px 8px 6px 8px",
-      margin: theme.spacing(2),
+      margin: theme.spacing(0.5),
+      marginRight: theme.spacing(2),
+      marginLeft: theme.spacing(2),
 
       color: "white",
     },
