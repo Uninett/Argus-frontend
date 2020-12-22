@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 
 import Typography from "@material-ui/core/Typography";
 import { useHistory } from "react-router-dom";
@@ -7,8 +7,6 @@ import Auth from "../../auth";
 import { BACKEND_URL } from "../../config";
 import api, { Token } from "../../api";
 import { loginAndSetUser } from "../../utils";
-
-import { Store } from "../../store";
 
 import Button from "../../components/buttons/OutlinedButton";
 import TextField from "../../components/textfields/OutlinedTextField";
@@ -65,9 +63,7 @@ const LoginForm: React.FC<{}> = () => {
 
   const [loginFailed, setLoginFailed] = useState<boolean>(false);
 
-  const { dispatch } = useContext(Store);
-
-  const onSubmit = async (e: any) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     await api
@@ -101,7 +97,7 @@ const LoginForm: React.FC<{}> = () => {
           variant="outlined"
           label="Username"
           value={username}
-          onChange={(event: any) => {
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
             const value = event.target.value as string;
             setUsername(value);
           }}
@@ -114,7 +110,7 @@ const LoginForm: React.FC<{}> = () => {
           label="Password"
           type="password"
           value={password}
-          onChange={(event: any) => {
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
             const value = event.target.value as string;
             setPassword(value);
           }}
