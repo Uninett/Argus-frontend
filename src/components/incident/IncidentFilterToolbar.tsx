@@ -82,6 +82,7 @@ type ButtonGroupSwitchPropsType<T> = {
   getLabel: (option: T) => string;
   getColor: (selected: boolean) => "inherit" | "default" | "primary";
   onSelect: (option: T) => void;
+  disabled?: boolean;
 };
 
 export function ButtonGroupSwitch<T>({
@@ -90,12 +91,18 @@ export function ButtonGroupSwitch<T>({
   getLabel,
   getColor,
   onSelect,
+  disabled,
 }: ButtonGroupSwitchPropsType<T>) {
   return (
     <ButtonGroup variant="contained" color="default" aria-label="text primary button group">
       {options.map((option: T, index: number) => {
         return (
-          <Button key={index} color={getColor(selected === option)} onClick={() => onSelect(option)}>
+          <Button
+            disabled={disabled}
+            key={index}
+            color={getColor(selected === option)}
+            onClick={() => onSelect(option)}
+          >
             {getLabel(option)}
           </Button>
         );
@@ -257,9 +264,13 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
     ? ["never", "realtime", "interval"]
     : ["never", "interval"];
 
+  const useExistingFilter =
+    existingFilter != -1 && existingFilter >= 0 && existingFilter < existingFilters.length ? true : false;
+
   const autoUpdateToolbarItem = (
     <ToolbarItem name="Auto Update">
       <ButtonGroupSwitch
+        disabled={useExistingFilter}
         selected={filter.autoUpdate}
         options={autoUpdateOptions}
         getLabel={(autoUpdate: AutoUpdate) =>
@@ -280,15 +291,13 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
     }
   };
 
-  const useExistingFilter = existingFilter && existingFilter >= 0 && existingFilter < existingFilters.length;
-  const sources = (useExistingFilter && existingFilters[existingFilter]?.sourceSystemIds) || filter.sourcesById;
-
   return (
     <div className={style.root}>
       <Toolbar className={style.toolbarContainer}>
         <ToolbarItem name="Open State">
           <ButtonGroupSwitch
-            selected={filter.show}
+            disabled={useExistingFilter}
+            selected={useExistingFilter ? "open" : filter.show}
             options={["open", "closed", "both"]}
             getLabel={(show: "open" | "closed" | "both") => ({ open: "Open", closed: "Closed", both: "Both" }[show])}
             getColor={(selected: boolean) => (selected ? "primary" : "default")}
@@ -298,7 +307,8 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
 
         <ToolbarItem name="Acked">
           <ButtonGroupSwitch
-            selected={filter.showAcked}
+            disabled={useExistingFilter}
+            selected={useExistingFilter ? true : filter.showAcked}
             options={[false, true]}
             getLabel={(showAcked: boolean) => (showAcked ? "Both" : "Unacked")}
             getColor={(selected: boolean) => (selected ? "primary" : "default")}
@@ -308,7 +318,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
 
         <ToolbarItem name="Sources" className={classNames(style.medium)}>
           <SourceSelector
-            disabled={disabled || existingFilter !== -1}
+            disabled={disabled || useExistingFilter}
             sources={knownSources}
             onSelectionChange={(selection: string[]) => {
               onSourcesChange((selection.length !== 0 && selection) || "AllSources");
@@ -319,7 +329,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
 
         <ToolbarItem name="Tags" className={classNames(style.medium)}>
           <TagSelector
-            disabled={disabled || existingFilter !== -1}
+            disabled={disabled || useExistingFilter}
             tags={filter.tags}
             onSelectionChange={handleTagSelectionChange}
           />
