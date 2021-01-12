@@ -33,6 +33,9 @@ import { useAlertSnackbar, UseAlertSnackbarResultType } from "../../components/a
 
 import FilteredIncidentTable, { AutoUpdate } from "../../components/incidenttable/FilteredIncidentTable";
 
+import { AppContext } from "../../contexts";
+import { loadAllFilters, modifyFilter, createFilter, deleteFilter } from "../../reducers/filter";
+
 type FiltersTablePropsType = {
   filters: Filter[];
   onFilterPreview: (filter: Filter) => void;
@@ -118,6 +121,12 @@ const FiltersTable: React.FC<FiltersTablePropsType> = ({
 type FiltersViewPropsType = {};
 
 const FiltersView: React.FC<FiltersViewPropsType> = ({}: FiltersViewPropsType) => {
+  // Filters are kept in the global app state
+  const {
+    state: { filters },
+    dispatch,
+  } = useContext(AppContext);
+
   const { incidentSnackbar: filtersSnackbar, displayAlertSnackbar }: UseAlertSnackbarResultType = useAlertSnackbar();
 
   // const [sourcesIdsFilter, setSourceIdsFilter] = useState<number[]>([]);
@@ -143,11 +152,6 @@ const FiltersView: React.FC<FiltersViewPropsType> = ({}: FiltersViewPropsType) =
   // and is the one that we can save/create.
   const [editingFilter, setEditingFilter] = useState<Filter | undefined>(undefined);
 
-  // Filters is the list of existing filters.
-  // It is loaded once from the backend on refresh, but then
-  // only modified locally by using results from the backend etc.
-  const [filters, setFilters] = useState<Filter[]>([]);
-
   const filterExists = (name: string) => {
     return (filters.find((f) => f.name === name) && true) || false;
   };
@@ -167,7 +171,7 @@ const FiltersView: React.FC<FiltersViewPropsType> = ({}: FiltersViewPropsType) =
         api
           .getAllFilters()
           .then((filters) => {
-            setFilters(filters);
+            dispatch(loadAllFilters(filters));
 
             setFiltersContext((prev: FiltersContextType) => {
               return {
@@ -199,9 +203,7 @@ const FiltersView: React.FC<FiltersViewPropsType> = ({}: FiltersViewPropsType) =
           return { ...prev, savingFilter: false };
         });
 
-        setFilters((prev: Filter[]) => {
-          return [...prev, { ...filter, name: response.name, pk: response.pk }];
-        });
+        dispatch(createFilter({ ...filter, name: response.name, pk: response.pk }));
         displayAlertSnackbar(`Created filter ${name}`, "success");
       })
       .catch((error) => {
@@ -226,12 +228,7 @@ const FiltersView: React.FC<FiltersViewPropsType> = ({}: FiltersViewPropsType) =
           return { ...prev, savingFilter: false };
         });
 
-        setFilters((prev: Filter[]) => {
-          const index = prev.findIndex((f: Filter) => f.pk === filter.pk);
-          const updated = [...prev];
-          updated[index] = { ...updated[index], ...definition };
-          return updated;
-        });
+        dispatch(modifyFilter({ ...filter, ...definition }));
         displayAlertSnackbar(`Saved filter ${name}`, "success");
       })
       .catch((error) => {
@@ -252,12 +249,7 @@ const FiltersView: React.FC<FiltersViewPropsType> = ({}: FiltersViewPropsType) =
         setFiltersContext((prev: FiltersContextType) => {
           return { ...prev, deletingFilter: undefined };
         });
-        setFilters((prev: Filter[]) => {
-          const n = [...prev];
-          const index = n.findIndex((f: Filter) => f.pk === filter.pk);
-          n.splice(index, 1);
-          return n;
-        });
+        dispatch(deleteFilter(filter.pk));
         displayAlertSnackbar(`Deleted filter ${filter.name}`, "warning");
       })
       .catch((error) => {

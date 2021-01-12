@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useContext } from "react";
 import "./IncidentView.css";
 import { withRouter } from "react-router-dom";
 
@@ -11,14 +11,21 @@ import { IncidentFilterToolbar } from "../../components/incident/IncidentFilterT
 import api, { Filter } from "../../api";
 import { originalToTag } from "../../components/tagselector";
 
+// Store
+import { AppContext } from "../../contexts";
+import { loadAllFilters } from "../../reducers/filter";
+
 type IncidentViewPropsType = {};
 
 const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType) => {
-  const [existingFilters, setExistingFilters] = useState<Filter[]>([]);
+  const {
+    state: { filters },
+    dispatch,
+  } = useContext(AppContext);
 
   useEffect(() => {
     api.getAllFilters().then((filters: Filter[]) => {
-      setExistingFilters(filters);
+      dispatch(loadAllFilters(filters));
     });
   }, []);
 
@@ -33,30 +40,35 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
     show: "open",
   });
 
-  const mergedFilter = useMemo(() => {
-    if (existingFilter || existingFilter >= existingFilters.length || existingFilter < 0) {
+  // If the user has chosen to use an existing filter
+  // it will take the sources and tags from that filter.
+  // AND it will use the following properties:
+  // show=open, showAcked=true, autoupdate=interval
+  // The reasoning being that this is what the preview does.
+  // TODO: When real-time is supported better it should be enabled
+  const selectedFilter = useMemo((): IncidentsFilter => {
+    if (existingFilter == -1 || existingFilter >= filters.length || existingFilter < 0) {
       return filter;
     }
 
-    const existing: Filter = existingFilters[existingFilter];
+    const existing: Filter = filters[existingFilter];
 
     const tags = [...existing.tags.map(originalToTag)];
     const sources = undefined;
     const sourcesById = existing.sourceSystemIds;
-
-    return { ...filter, tags, sources, sourcesById };
-  }, [filter, existingFilter, existingFilters]);
+    return { tags, sources, sourcesById, show: "open", showAcked: true, autoUpdate: "interval" };
+  }, [filter, existingFilter, filters]);
 
   return (
     <div>
       <IncidentFilterToolbar
         existingFilter={existingFilter}
-        existingFilters={existingFilters}
+        existingFilters={filters}
         filter={filter}
         onExistingFilterChange={setExistingFilter}
         onFilterChange={setFilter}
       />
-      <FilteredIncidentTable filter={mergedFilter} />
+      <FilteredIncidentTable filter={selectedFilter} />
     </div>
   );
 };
