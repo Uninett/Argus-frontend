@@ -6,6 +6,14 @@ import Typography from "@material-ui/core/Typography";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
 import SettingsIcon from "@material-ui/icons/Settings";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import TextField from "@material-ui/core/TextField";
+
+import InputLabel from "@material-ui/core/InputLabel";
+import MenuItem from "@material-ui/core/MenuItem";
+import FormHelperText from "@material-ui/core/FormHelperText";
+import FormControl from "@material-ui/core/FormControl";
+import Select from "@material-ui/core/Select";
 
 import { ENABLE_WEBSOCKETS_SUPPORT } from "../../config";
 
@@ -14,7 +22,7 @@ import { IncidentsFilter, AutoUpdate } from "../../components/incidenttable/Filt
 import TagSelector, { Tag } from "../../components/tagselector";
 import SourceSelector from "../../components/sourceselector";
 
-import api, { IncidentMetadata, SourceSystem } from "../../api";
+import api, { Filter, IncidentMetadata, SourceSystem } from "../../api";
 
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 
@@ -136,6 +144,45 @@ export const DropdownToolbar: React.FC<DropdownToolbarPropsType> = ({
   );
 };
 
+type UseExistingFilterToolbarItemPropsType = {
+  selectedFilter: number;
+  existingFilters: Filter[];
+  onSelect: (filterIndex: number) => void;
+  className?: string;
+};
+
+export const UseExistingFilterToolbarItem: React.FC<UseExistingFilterToolbarItemPropsType> = ({
+  selectedFilter,
+  existingFilters,
+  onSelect,
+  className,
+}: UseExistingFilterToolbarItemPropsType) => {
+  return (
+    <FormControl size="small" className={className}>
+      <Select
+        displayEmpty
+        variant="outlined"
+        labelId="filter-select"
+        id="filter-select"
+        value={selectedFilter}
+        onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
+          onSelect(event.target.value as number);
+        }}
+      >
+        <MenuItem key="none" value={-1}>
+          None
+        </MenuItem>
+        {existingFilters.map((filter: Filter, index: number) => (
+          <MenuItem key={filter.pk} value={index}>
+            {filter.name}
+          </MenuItem>
+        ))}
+      </Select>
+      <FormHelperText>Select from your filters</FormHelperText>
+    </FormControl>
+  );
+};
+
 type MoreSettingsToolbarItemPropsType = {
   open: boolean;
   onChange: (open: boolean) => void;
@@ -163,13 +210,19 @@ export const MoreSettingsToolbarItem: React.FC<MoreSettingsToolbarItemPropsType>
 };
 
 type IncidentFilterToolbarPropsType = {
+  existingFilter: number;
+  existingFilters: Filter[];
   filter: IncidentsFilter;
+  onExistingFilterChange: (filterIndex: number) => void;
   onFilterChange: (filter: IncidentsFilter) => void;
   disabled?: boolean;
 };
 
 export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = ({
+  existingFilter,
+  existingFilters,
   filter,
+  onExistingFilterChange,
   onFilterChange,
   disabled,
 }: IncidentFilterToolbarPropsType) => {
@@ -227,6 +280,9 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
     }
   };
 
+  const useExistingFilter = existingFilter && existingFilter >= 0 && existingFilter < existingFilters.length;
+  const sources = (useExistingFilter && existingFilters[existingFilter]?.sourceSystemIds) || filter.sourcesById;
+
   return (
     <div className={style.root}>
       <Toolbar className={style.toolbarContainer}>
@@ -252,7 +308,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
 
         <ToolbarItem name="Sources" className={classNames(style.medium)}>
           <SourceSelector
-            disabled={disabled}
+            disabled={disabled || existingFilter !== -1}
             sources={knownSources}
             onSelectionChange={(selection: string[]) => {
               onSourcesChange((selection.length !== 0 && selection) || "AllSources");
@@ -261,10 +317,20 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
           />
         </ToolbarItem>
 
-        <ToolbarItem name="Tags" className={classNames(style.large, style.rightAligned)}>
-          <TagSelector disabled={disabled} tags={filter.tags} onSelectionChange={handleTagSelectionChange} />
+        <ToolbarItem name="Tags" className={classNames(style.medium)}>
+          <TagSelector
+            disabled={disabled || existingFilter !== -1}
+            tags={filter.tags}
+            onSelectionChange={handleTagSelectionChange}
+          />
         </ToolbarItem>
-
+        <ToolbarItem name="Filter" className={classNames(style.medium)}>
+          <UseExistingFilterToolbarItem
+            selectedFilter={existingFilter}
+            existingFilters={existingFilters}
+            onSelect={(filterIndex: number) => onExistingFilterChange(filterIndex)}
+          />
+        </ToolbarItem>
         <MoreSettingsToolbarItem
           open={dropdownToolbarOpen}
           onChange={(open: boolean) => setDropdownToolbarOpen(open)}

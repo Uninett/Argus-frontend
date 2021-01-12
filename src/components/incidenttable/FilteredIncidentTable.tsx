@@ -7,7 +7,7 @@ import "../../components/incidenttable/incidenttable.css";
 import { Tag } from "../../components/tagselector";
 import TablePagination from "@material-ui/core/TablePagination";
 
-import api, { IncidentsFilterOptions } from "../../api";
+import api, { Filter, IncidentsFilterOptions } from "../../api";
 import { useApiPaginatedIncidents } from "../../api/hooks";
 
 import { DEFAULT_AUTO_REFRESH_INTERVAL } from "../../config";
@@ -51,6 +51,7 @@ export type IncidentsFilter = {
 };
 
 type FilteredIncidentsTablePropsType = {
+  existingFilter?: Filter["pk"];
   filter: IncidentsFilter;
   onLoad?: () => void;
 };

@@ -213,6 +213,8 @@ export type IncidentsFilterOptions = {
   sourceSystemIds?: number[] | string[];
   sourceSystemNames?: string[];
   tags?: string[];
+
+  filter?: Filter["pk"];
   // NOT COMPLETE
 };
 
