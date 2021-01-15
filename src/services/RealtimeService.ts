@@ -33,6 +33,11 @@ export class RealtimeService {
   public constructor({ restartOnFailure = true, fallbackToInterval = true, ...params }: RealtimeServiceConfig) {
     this.config = { restartOnFailure, fallbackToInterval, ...params };
     this.state = "closed";
+
+    // JavaScript doesn't automatically bind "this" properly when using ES6 classes
+    // so you have to bind it yourself.
+    this.checkConnection = this.checkConnection.bind(this);
+    this.connect = this.connect.bind(this);
   }
 
   public checkConnection() {
