@@ -41,7 +41,7 @@ export class RealtimeService {
   }
 
   public checkConnection() {
-    console.log("checking connection");
+    console.log("[RealtimeService] checking connection");
     if (!this.ws || this.ws.readyState == WebSocket.CLOSED) {
       this.state = "closed";
       this.connect();
@@ -51,7 +51,7 @@ export class RealtimeService {
   public connect() {
     let reconnectInterval: ReturnType<typeof setTimeout> | undefined = undefined;
     if (this.state !== "closed") {
-      console.log("calling connect() when there is existing ws connection. returning");
+      console.log("[RealtimeService] calling connect() when there is existing ws connection. returning");
       return;
     }
 
@@ -65,30 +65,30 @@ export class RealtimeService {
       switch (data.type) {
         case "modified":
           const modified: Incident = data.payload;
-          console.log("onmessage: modified", modified);
+          console.debug("[RealtimeService] onmessage: modified", modified);
           this.config.onIncidentModified(modified);
           break;
 
         case "created":
           const added: Incident = data.payload;
-          console.log("onmessage: created", added);
+          console.debug("[RealtimeService] onmessage: created", added);
           this.config.onIncidentAdded(added);
           break;
 
         case "deleted":
           const removed: Incident = data.payload;
-          console.log("onmessage: deleted", removed);
+          console.debug("[RealtimeService] onmessage: deleted", removed);
           this.config.onIncidentRemoved(removed);
           break;
 
         case "subscribed":
           const incidents: Incident[] = data.start_incidents;
-          console.log("onmessage: subscribed", incidents);
+          console.debug("[RealtimeService] onmessage: subscribed", incidents);
           this.config.onIncidentsInitial(incidents);
           break;
 
         default:
-          console.log(`Unhandled WebSockets message type: ${data.type}`);
+          console.error(`[RealtimeService] Unhandled WebSockets message type: ${data.type}`);
           break;
       }
     };
@@ -107,14 +107,14 @@ export class RealtimeService {
     };
     ws.onclose = (e: CloseEvent) => {
       this.state = "closed";
-      console.log(`Realtime socket was closed: ${e.reason}`);
+      console.log(`[RealtimeService] Realtime socket was closed: ${e.reason}`);
       reconnectInterval = setTimeout(this.checkConnection, 1000 * this.retryInterval);
       this.retryInterval *= this.retryIntervalBackoffFactor;
     };
 
     // eslint-disable-next-line
     ws.onerror = (e: any) => {
-      console.error(`Realtime socket got error: ${e.message}`);
+      console.error(`[RealtimeService] got error on websocket client, closing: ${e.message}`);
       ws.close();
     };
   }
