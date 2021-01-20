@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import "./Header.css";
 import auth from "../../auth";
 import { Link, useHistory, withRouter } from "react-router-dom";
@@ -13,9 +13,12 @@ import Button from "@material-ui/core/Button";
 import Avatar from "@material-ui/core/Avatar";
 import MenuItem from "@material-ui/core/MenuItem";
 
+import classNames from "classnames";
+
 import Menu from "../../components/menu";
 
-import classNames from "classnames";
+import { AppContext } from "../../contexts";
+import { loginUser, logoutUser } from "../../reducers/user";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -124,8 +127,10 @@ const Header: React.FC<HeaderPropsType> = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const isMenuOpen = Boolean(anchorEl);
 
-  // TODO: Use react context
-  const user = localStorage.getItem("user") || "unknown";
+  const {
+    state: { user },
+    dispatch,
+  } = useContext(AppContext);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -137,7 +142,10 @@ const Header: React.FC<HeaderPropsType> = () => {
 
   const handleLogout = () => {
     handleMenuClose();
-    auth.logout(() => history.push("/login"));
+    auth.logout(() => {
+      dispatch(logoutUser());
+      history.push("/login");
+    });
   };
 
   const menuId = "primary-search-account-menu";
@@ -166,8 +174,8 @@ const Header: React.FC<HeaderPropsType> = () => {
           <div>
             <div className={classNames(style.navItem, style.navItemSelected)} onClick={handleMenuOpen}>
               <div className={style.avatarContainer}>
-                <Avatar>{user[0]}</Avatar>
-                <Typography>{user}</Typography>
+                <Avatar>{user.displayName[0]}</Avatar>
+                <Typography>{user.displayName}</Typography>
               </div>
             </div>
           </div>
