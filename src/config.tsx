@@ -11,3 +11,6 @@ if (process.env.REACT_APP_DEFAULT_AUTO_REFRESH_INTERVAL) {
 }
 
 export const DEFAULT_AUTO_REFRESH_INTERVAL = refreshInterval; // seconds
+
+// Will be replaced by user-settable config later
+export const USE_24H_TIME = true;

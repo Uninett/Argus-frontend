@@ -20,7 +20,9 @@ import Checkbox from "@material-ui/core/Checkbox";
 
 import Spinning from "../spinning";
 import DateFnsUtils from "@date-io/date-fns";
-import { MuiPickersUtilsProvider, KeyboardTimePicker } from "@material-ui/pickers";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+
+import TimePicker from "../TimePicker";
 
 import { useStateWithDynamicDefault, dateFromTimeOfDayString, timeOfDayFromDate } from "../../utils";
 import { makeConfirmationButton } from "../buttons/ConfirmationButton";
@@ -181,7 +183,7 @@ export const TimeslotRecurrenceComponent: React.FC<TimeslotRecurrenceComponentPr
             }
             label="All day"
           />
-          <KeyboardTimePicker
+          <TimePicker
             className={style.timePicker}
             disabled={allDay || disabled}
             margin="normal"
@@ -198,7 +200,7 @@ export const TimeslotRecurrenceComponent: React.FC<TimeslotRecurrenceComponentPr
               "aria-label": "change start time",
             }}
           />
-          <KeyboardTimePicker
+          <TimePicker
             className={style.timePicker}
             disabled={allDay || disabled}
             margin="normal"
