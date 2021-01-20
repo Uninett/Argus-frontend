@@ -6,6 +6,14 @@ import Typography from "@material-ui/core/Typography";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
 import SettingsIcon from "@material-ui/icons/Settings";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import TextField from "@material-ui/core/TextField";
+
+import InputLabel from "@material-ui/core/InputLabel";
+import MenuItem from "@material-ui/core/MenuItem";
+import FormHelperText from "@material-ui/core/FormHelperText";
+import FormControl from "@material-ui/core/FormControl";
+import Select from "@material-ui/core/Select";
 
 import { ENABLE_WEBSOCKETS_SUPPORT } from "../../config";
 
@@ -14,7 +22,7 @@ import { IncidentsFilter, AutoUpdate } from "../../components/incidenttable/Filt
 import TagSelector, { Tag } from "../../components/tagselector";
 import SourceSelector from "../../components/sourceselector";
 
-import api, { IncidentMetadata, SourceSystem } from "../../api";
+import api, { Filter, IncidentMetadata, SourceSystem } from "../../api";
 
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 
@@ -74,6 +82,7 @@ type ButtonGroupSwitchPropsType<T> = {
   getLabel: (option: T) => string;
   getColor: (selected: boolean) => "inherit" | "default" | "primary";
   onSelect: (option: T) => void;
+  disabled?: boolean;
 };
 
 export function ButtonGroupSwitch<T>({
@@ -82,12 +91,18 @@ export function ButtonGroupSwitch<T>({
   getLabel,
   getColor,
   onSelect,
+  disabled,
 }: ButtonGroupSwitchPropsType<T>) {
   return (
     <ButtonGroup variant="contained" color="default" aria-label="text primary button group">
       {options.map((option: T, index: number) => {
         return (
-          <Button key={index} color={getColor(selected === option)} onClick={() => onSelect(option)}>
+          <Button
+            disabled={disabled}
+            key={index}
+            color={getColor(selected === option)}
+            onClick={() => onSelect(option)}
+          >
             {getLabel(option)}
           </Button>
         );
@@ -136,6 +151,45 @@ export const DropdownToolbar: React.FC<DropdownToolbarPropsType> = ({
   );
 };
 
+type UseExistingFilterToolbarItemPropsType = {
+  selectedFilter: number;
+  existingFilters: Filter[];
+  onSelect: (filterIndex: number) => void;
+  className?: string;
+};
+
+export const UseExistingFilterToolbarItem: React.FC<UseExistingFilterToolbarItemPropsType> = ({
+  selectedFilter,
+  existingFilters,
+  onSelect,
+  className,
+}: UseExistingFilterToolbarItemPropsType) => {
+  return (
+    <FormControl size="small" className={className}>
+      <Select
+        displayEmpty
+        variant="outlined"
+        labelId="filter-select"
+        id="filter-select"
+        value={selectedFilter}
+        onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
+          onSelect(event.target.value as number);
+        }}
+      >
+        <MenuItem key="none" value={-1}>
+          None
+        </MenuItem>
+        {existingFilters.map((filter: Filter, index: number) => (
+          <MenuItem key={filter.pk} value={index}>
+            {filter.name}
+          </MenuItem>
+        ))}
+      </Select>
+      <FormHelperText>Select from your filters</FormHelperText>
+    </FormControl>
+  );
+};
+
 type MoreSettingsToolbarItemPropsType = {
   open: boolean;
   onChange: (open: boolean) => void;
@@ -163,13 +217,19 @@ export const MoreSettingsToolbarItem: React.FC<MoreSettingsToolbarItemPropsType>
 };
 
 type IncidentFilterToolbarPropsType = {
+  existingFilter: number;
+  existingFilters: Filter[];
   filter: IncidentsFilter;
+  onExistingFilterChange: (filterIndex: number) => void;
   onFilterChange: (filter: IncidentsFilter) => void;
   disabled?: boolean;
 };
 
 export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = ({
+  existingFilter,
+  existingFilters,
   filter,
+  onExistingFilterChange,
   onFilterChange,
   disabled,
 }: IncidentFilterToolbarPropsType) => {
@@ -204,9 +264,13 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
     ? ["never", "realtime", "interval"]
     : ["never", "interval"];
 
+  const useExistingFilter =
+    existingFilter != -1 && existingFilter >= 0 && existingFilter < existingFilters.length ? true : false;
+
   const autoUpdateToolbarItem = (
     <ToolbarItem name="Auto Update">
       <ButtonGroupSwitch
+        disabled={useExistingFilter}
         selected={filter.autoUpdate}
         options={autoUpdateOptions}
         getLabel={(autoUpdate: AutoUpdate) =>
@@ -232,7 +296,8 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
       <Toolbar className={style.toolbarContainer}>
         <ToolbarItem name="Open State">
           <ButtonGroupSwitch
-            selected={filter.show}
+            disabled={useExistingFilter}
+            selected={useExistingFilter ? "open" : filter.show}
             options={["open", "closed", "both"]}
             getLabel={(show: "open" | "closed" | "both") => ({ open: "Open", closed: "Closed", both: "Both" }[show])}
             getColor={(selected: boolean) => (selected ? "primary" : "default")}
@@ -242,7 +307,8 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
 
         <ToolbarItem name="Acked">
           <ButtonGroupSwitch
-            selected={filter.showAcked}
+            disabled={useExistingFilter}
+            selected={useExistingFilter ? true : filter.showAcked}
             options={[false, true]}
             getLabel={(showAcked: boolean) => (showAcked ? "Both" : "Unacked")}
             getColor={(selected: boolean) => (selected ? "primary" : "default")}
@@ -252,7 +318,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
 
         <ToolbarItem name="Sources" className={classNames(style.medium)}>
           <SourceSelector
-            disabled={disabled}
+            disabled={disabled || useExistingFilter}
             sources={knownSources}
             onSelectionChange={(selection: string[]) => {
               onSourcesChange((selection.length !== 0 && selection) || "AllSources");
@@ -261,10 +327,20 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
           />
         </ToolbarItem>
 
-        <ToolbarItem name="Tags" className={classNames(style.large, style.rightAligned)}>
-          <TagSelector disabled={disabled} tags={filter.tags} onSelectionChange={handleTagSelectionChange} />
+        <ToolbarItem name="Tags" className={classNames(style.medium)}>
+          <TagSelector
+            disabled={disabled || useExistingFilter}
+            tags={filter.tags}
+            onSelectionChange={handleTagSelectionChange}
+          />
         </ToolbarItem>
-
+        <ToolbarItem name="Filter" className={classNames(style.medium)}>
+          <UseExistingFilterToolbarItem
+            selectedFilter={existingFilter}
+            existingFilters={existingFilters}
+            onSelect={(filterIndex: number) => onExistingFilterChange(filterIndex)}
+          />
+        </ToolbarItem>
         <MoreSettingsToolbarItem
           open={dropdownToolbarOpen}
           onChange={(open: boolean) => setDropdownToolbarOpen(open)}

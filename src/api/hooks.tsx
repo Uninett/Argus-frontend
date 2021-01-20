@@ -14,7 +14,7 @@ import {
   Timeslot,
   TimeslotPK,
 } from "../api";
-import { toMap, pkGetter } from "../utils";
+import { toMap, pkGetter, identity } from "../utils";
 
 type UsePromiseReturnType<R> = {
   result: R | undefined;
@@ -83,6 +83,8 @@ export const useApiPaginatedIncidents = createUsePromise<
 export const useApiNotificationProfiles = (
   onResult?: (result: Map<NotificationProfilePK, NotificationProfile>) => void,
 ) => createUsePromise<NotificationProfile[], Map<NotificationProfilePK, NotificationProfile>>(asMap, onResult);
+
+export const useApiFiltersList = () => createUsePromise<Filter[], Filter[]>((filters: Filter[]) => filters);
 
 export const useApiFilters = (onResult?: (result: Map<FilterPK, Filter>) => void) =>
   createUsePromise<Filter[], Map<FilterPK, Filter>>(asMap, onResult);

@@ -3,13 +3,17 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
+import { AppProvider } from "./contexts";
+// TODO: Remove use of store provider
 import { StoreProvider } from "./store";
 import { BrowserRouter } from "react-router-dom";
 
 ReactDOM.render(
   <BrowserRouter>
     <StoreProvider>
-      <App />
+      <AppProvider>
+        <App />
+      </AppProvider>
     </StoreProvider>
   </BrowserRouter>,
   document.getElementById("root"),
