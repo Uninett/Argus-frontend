@@ -140,10 +140,31 @@ export function timeOfDayFromDate(date: Date): string {
   return `${hours}:${minutes}:${seconds}`;
 }
 
+function pad(n: number) {
+    return n<10 ? '0'+n : n;
+}
+
+function formatTimezoneOffset(timezoneOffset: number): string {
+    const sign = timezoneOffset > 0 ? "-" : "+";
+    const hours = pad(Math.floor(Math.abs(timezoneOffset)/60));
+    const minutes = pad(Math.abs(timezoneOffset)%60);
+    return sign + hours + ":" + minutes;
+}
+
 export function formatTimestamp(timestamp: Date | string): string {
-  /* TODO: Have (global?) setting on user to allow forcing of ISO 8601 */
+  // TODO: Have (global?) setting on user to allow choosing style
   const dateTimestamp = new Date(timestamp);
-  return dateTimestamp.toLocaleString();
+  // ISO w/out T and ith local timezone: 2021-01-21 12:34:56+02:00
+  const timezoneOffset = formatTimezoneOffset(dateTimestamp.getTimezoneOffset());
+  const year = dateTimestamp.getFullYear();
+  const month = pad(dateTimestamp.getMonth() + 1);
+  const day = pad(dateTimestamp.getDate());
+  const date = year + '-' + month + '-' + day;
+  const hours = pad(dateTimestamp.getHours());
+  const minutes = pad(dateTimestamp.getMinutes());
+  const seconds = pad(dateTimestamp.getSeconds());
+  const time = hours + ':' + minutes + ':' + seconds + timezoneOffset;
+  return date + ' ' + time;
 }
 
 // eslint-disable-next-line @typescript-eslint/camelcase

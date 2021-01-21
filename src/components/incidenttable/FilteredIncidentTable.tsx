@@ -13,6 +13,8 @@ import { useApiPaginatedIncidents } from "../../api/hooks";
 import { DEFAULT_AUTO_REFRESH_INTERVAL } from "../../config";
 import { LOADING_TEXT, ERROR_TEXT, NO_DATA_TEXT } from "../../constants";
 
+import { formatTimestamp } from "../../utils";
+
 type PaginationCursor = {
   next: string | null;
   previous: string | null;
@@ -235,7 +237,7 @@ const FilteredIncidentTable: React.FC<FilteredIncidentsTablePropsType> = ({
         paginationComponent={paginationComponent}
       />
       <p>
-        Last refreshed {lastRefresh === undefined ? "never" : lastRefresh.toLocaleTimeString()}, {autoUpdateText}
+        Last refreshed {lastRefresh === undefined ? "never" : formatTimestamp(lastRefresh).slice(11)}, {autoUpdateText}
       </p>
     </div>
   );
