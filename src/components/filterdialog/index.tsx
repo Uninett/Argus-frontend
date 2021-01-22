@@ -18,6 +18,7 @@ import { Filter } from "../../api";
 
 // Contexts
 import { useFilters } from "../../api/actions";
+import { useAlerts } from "../../components/alertsnackbar";
 
 type FilterDialogPropsType = {
   open: boolean;
@@ -41,9 +42,12 @@ const ConfirmDeleteButton = makeConfirmationButton({
 
 export const FilterDialog = ({ open, onClose }: FilterDialogPropsType) => {
   const [filters, { deleteFilter }] = useFilters();
+  const displayAlert = useAlerts();
 
   const onDelete = (filter: Filter) => {
-    deleteFilter(filter.pk);
+    deleteFilter(filter.pk).then(() => {
+      displayAlert(`Deleted filter ${filter.name}`, "warning");
+    });
   };
 
   return (
@@ -59,11 +63,7 @@ export const FilterDialog = ({ open, onClose }: FilterDialogPropsType) => {
                 <ListItemText>{filter.name}</ListItemText>
                 <ConfirmDeleteButton
                   onConfirm={() => {
-                    alert(`confirmed removing filter: ${filter.name}`);
                     onDelete(filter);
-                  }}
-                  onReject={() => {
-                    alert(`rejected removing filter: ${filter.name}`);
                   }}
                 />
               </ListItem>
