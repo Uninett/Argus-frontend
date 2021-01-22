@@ -5,6 +5,7 @@ import {
   createFilter as createFilterAction,
   deleteFilter as deleteFilterAction,
   modifyFilter as modifyFilterAction,
+  loadAllFilters as loadAllFiltersAction,
 } from "../reducers/filter";
 
 import { AppContext } from "../contexts";
@@ -41,10 +42,18 @@ export const modifyFilter = (dispatch: Dispatch, filter: Filter): Promise<Filter
   });
 };
 
+export const loadAllFilters = (dispatch: Dispatch): Promise<Filter[]> => {
+  return api.getAllFilters().then((filters: Filter[]) => {
+    dispatch(loadAllFiltersAction(filters));
+    return filters;
+  });
+};
+
 export type UseFiltersActionType = {
   createFilter: (filter: Omit<Filter, "pk">) => ReturnType<typeof createFilter>;
   deleteFilter: (pk: Filter["pk"]) => ReturnType<typeof deleteFilter>;
   modifyFilter: (filter: Filter) => ReturnType<typeof modifyFilter>;
+  loadAllFilters: () => ReturnType<typeof loadAllFilters>;
 };
 
 export function useFilters(): [InitialStateType["filters"], UseFiltersActionType] {
@@ -59,6 +68,7 @@ export function useFilters(): [InitialStateType["filters"], UseFiltersActionType
       createFilter: (filter: Omit<Filter, "pk">) => createFilter(dispatch, filter),
       deleteFilter: (pk: Filter["pk"]) => deleteFilter(dispatch, pk),
       modifyFilter: (filter: Filter) => modifyFilter(dispatch, filter),
+      loadAllFilters: () => loadAllFilters(dispatch),
     },
   ];
 }
