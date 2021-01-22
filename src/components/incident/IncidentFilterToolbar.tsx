@@ -261,7 +261,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
     : ["never", "interval"];
 
   const useExistingFilter =
-    existingFilter != -1 && existingFilter >= 0 && existingFilter < existingFilters.length ? true : false;
+    existingFilter !== -1 && existingFilter >= 0 && existingFilter < existingFilters.length ? true : false;
 
   const autoUpdateToolbarItem = (
     <ToolbarItem name="Auto Update">

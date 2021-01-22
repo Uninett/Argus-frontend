@@ -47,7 +47,7 @@ export const TagSelector: React.FC<TagSelectorPropsType> = ({
       let updatedInputValue = false;
       newValue
         .filter((s: string) => !oldSet.has(s))
-        .map((s: string) => {
+        .forEach((s: string) => {
           if (!updatedInputValue) {
             updatedInputValue = true;
             setValue(s);
