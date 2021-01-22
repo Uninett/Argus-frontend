@@ -13,7 +13,7 @@ const initialState: InitialStateType = {
   filters: [],
 };
 
-type ActionsType = FilterActions /* | OtherAction | AnotherActoin ... */;
+export type ActionsType = FilterActions /* | OtherAction | AnotherActoin ... */;
 
 const AppContext = createContext<{
   state: InitialStateType;
