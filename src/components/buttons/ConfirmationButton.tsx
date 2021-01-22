@@ -6,6 +6,13 @@ import Button, { ButtonProps } from "@material-ui/core/Button";
 export type ConfirmationButtonParamsType = Partial<Exclude<ConfirmDialogPropsType, "isOpen" | "title" | "question">> & {
   title: ConfirmDialogPropsType["title"];
   question: ConfirmDialogPropsType["question"];
+  ButtonComponent?: React.ElementType<{ onClick: ButtonProps["onClick"] }>;
+  buttonProps?: Partial<ButtonProps>;
+};
+
+type ConfirmationButtonPropsType = Partial<ButtonProps> & {
+  onConfirm?: ConfirmDialogPropsType["onConfirm"];
+  onReject?: ConfirmDialogPropsType["onReject"];
 };
 
 export function makeConfirmationButton({
@@ -14,15 +21,20 @@ export function makeConfirmationButton({
   confirmName,
   rejectName,
 
-  onConfirm,
-  onReject,
-}: ConfirmationButtonParamsType): React.FC<ButtonProps> {
-  const ConfirmationButton: React.FC<ButtonProps> = (props: ButtonProps) => {
+  onConfirm: onConfirmProp,
+  onReject: onRejectProp,
+  ButtonComponent = Button,
+}: ConfirmationButtonParamsType): React.FC<ConfirmationButtonPropsType> {
+  const ConfirmationButton: React.FC<ConfirmationButtonPropsType> = ({
+    onConfirm,
+    onReject,
+    ...props
+  }: ConfirmationButtonPropsType) => {
     const [showConfirmDialog, setShowConfirmDeleteDialog] = useState<boolean>(false);
 
     return (
       <>
-        <Button onClick={() => setShowConfirmDeleteDialog(true)} {...props} />
+        <ButtonComponent onClick={() => setShowConfirmDeleteDialog(true)} {...props} />
         {showConfirmDialog && (
           <ConfirmDialog
             title={title}
@@ -32,11 +44,13 @@ export function makeConfirmationButton({
             isOpen={showConfirmDialog}
             onConfirm={() => {
               setShowConfirmDeleteDialog(false);
-              onConfirm && onConfirm();
+              if (onConfirmProp) onConfirmProp();
+              else if (onConfirm) onConfirm();
             }}
             onReject={() => {
               setShowConfirmDeleteDialog(false);
-              onReject && onReject();
+              if (onRejectProp) onRejectProp();
+              else if (onReject) onReject();
             }}
           />
         )}
