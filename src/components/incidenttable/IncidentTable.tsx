@@ -14,11 +14,8 @@ import LinkSharpIcon from "@material-ui/icons/LinkSharp";
 import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 import Paper from "@material-ui/core/Paper";
 import Checkbox from "@material-ui/core/Checkbox";
-
 import TicketIcon from "@material-ui/icons/LocalOffer";
-
 import Typography from "@material-ui/core/Typography";
-
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import MuiTable from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -41,7 +38,6 @@ import {
 import { useAlertSnackbar, UseAlertSnackbarResultType } from "../../components/alertsnackbar";
 
 import { Incident } from "../../api";
-import { BACKEND_WS_URL } from "../../config";
 import { useStyles } from "../incident/styles";
 import { AckedItem, OpenItem } from "../incident/Chips";
 import IncidentDetails from "../incident/IncidentDetails";
@@ -293,7 +289,7 @@ type Revisioned<T> = T & { revision?: number };
 type IncidentsProps = {
   incidents: Incident[];
   noDataText: string;
-  realtime?: boolean;
+  realtime?: boolean; // XXX: remove later
   open?: boolean;
   isLoading?: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -302,13 +298,10 @@ type IncidentsProps = {
 
 const IncidentTable: React.FC<IncidentsProps> = ({
   incidents,
-  realtime,
   open,
   isLoading,
   paginationComponent,
 }: IncidentsProps) => {
-  const style = useStyles();
-
   const [incidentForDetail, setIncidentForDetail] = useState<Incident | undefined>(undefined);
 
   const incidentsDictFromProps = useMemo<Revisioned<Map<Incident["pk"], Incident>>>(

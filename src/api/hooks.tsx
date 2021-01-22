@@ -14,7 +14,7 @@ import {
   Timeslot,
   TimeslotPK,
 } from "../api";
-import { toMap, pkGetter, identity } from "../utils";
+import { toMap, pkGetter } from "../utils";
 
 type UsePromiseReturnType<R> = {
   result: R | undefined;
