@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 
-import Button, { ButtonProps } from "@material-ui/core/Button";
+import classNames from "classnames";
+
+// MUI
+import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+
+import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import FormControl from "@material-ui/core/FormControl";
 import FormHelperText from "@material-ui/core/FormHelperText";
@@ -27,16 +32,14 @@ import Modal from "../modal/Modal";
 
 import { ENABLE_WEBSOCKETS_SUPPORT } from "../../config";
 
+// Components
 import { IncidentsFilter, AutoUpdate } from "../../components/incidenttable/FilteredIncidentTable";
-
 import TagSelector, { Tag } from "../../components/tagselector";
 import SourceSelector from "../../components/sourceselector";
+import FilterDialog from "../../components/filterdialog";
 
+// Api
 import api, { Filter, IncidentMetadata, SourceSystem } from "../../api";
-
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-
-import classNames from "classnames";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -181,23 +184,6 @@ export const UseExistingFilterToolbarItem: React.FC<UseExistingFilterToolbarItem
   className,
 }: UseExistingFilterToolbarItemPropsType) => {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-
-  const style = useStyles();
-
-  const DeleteButton = (props: ButtonProps) => {
-    return (
-      <IconButton onClick={props.onClick}>
-        <DeleteIcon />
-      </IconButton>
-    );
-  };
-
-  const ConfirmDeleteButton = makeConfirmationButton({
-    title: "Delete filter",
-    question: "Are you sure you want to delete this filter?",
-    ButtonComponent: DeleteButton,
-  });
-
   return (
     <>
       <FormControl size="small" className={className}>
@@ -238,31 +224,7 @@ export const UseExistingFilterToolbarItem: React.FC<UseExistingFilterToolbarItem
         </Select>
         <FormHelperText>Select from your filters</FormHelperText>
       </FormControl>
-      <Modal
-        className={style.filtersDialog}
-        title="Filters"
-        open={dialogOpen}
-        onClose={() => setDialogOpen(false)}
-        content={
-          <List>
-            {existingFilters.map((filter: Filter) => {
-              return (
-                <ListItem key={filter.name}>
-                  <ListItemText>{filter.name}</ListItemText>
-                  <ConfirmDeleteButton
-                    onConfirm={() => {
-                      alert(`confirmed removing filter: ${filter.name}`);
-                    }}
-                    onReject={() => {
-                      alert(`rejected removing filter: ${filter.name}`);
-                    }}
-                  />
-                </ListItem>
-              );
-            })}
-          </List>
-        }
-      />
+      <FilterDialog open={dialogOpen} onClose={() => setDialogOpen(false)} />
     </>
   );
 };
