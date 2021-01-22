@@ -47,8 +47,9 @@ import api, { Filter, IncidentMetadata, SourceSystem } from "../../api";
 import { ENABLE_WEBSOCKETS_SUPPORT } from "../../config";
 
 // Contexts/hooks
-import { useFilters } from "../../api/actions";
 import { useAlerts } from "../../components/alertsnackbar";
+import { useFilters } from "../../api/actions";
+import { useSelectedFilter } from "../../components/filterprovider";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -316,26 +317,19 @@ export const MoreSettingsToolbarItem: React.FC<MoreSettingsToolbarItemPropsType>
 };
 
 type IncidentFilterToolbarPropsType = {
-  existingFilter: number;
-  existingFilters: Filter[];
-  filter: IncidentsFilter;
-  onExistingFilterChange: (filterIndex: number) => void;
-  onFilterChange: (filter: IncidentsFilter) => void;
   disabled?: boolean;
 };
 
 export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = ({
-  existingFilter,
-  existingFilters,
-  filter,
-  onExistingFilterChange,
-  onFilterChange,
   disabled,
 }: IncidentFilterToolbarPropsType) => {
   const style = useStyles();
+  const [selectedFilter, { setExistingFilter, unsetExistingFilter, setSelectedFilter }] = useSelectedFilter();
+  const [filters, filterActions] = useFilters();
+
   const [dropdownToolbarOpen, setDropdownToolbarOpen] = useState<boolean>(false);
 
-  const [knownSources, setKnownSources] = useState<string[]>([]);
+  const [knownSources, setKnownSources] = useState<[string[]>([]);
 
   useEffect(() => {
     api.getAllIncidentsMetadata().then((incidentMetadata: IncidentMetadata) => {
@@ -344,19 +338,27 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
   }, []);
 
   const onShowChange = (show: "open" | "closed" | "both") => {
-    if (show !== filter.show) onFilterChange({ ...filter, show });
+    // TODO: NEEDS TO BE IMPLEMENTED
+    // setSelectedFilter({ ...selectedFilter, show });
   };
 
   const onShowAchedChange = (showAcked: boolean) => {
-    if (showAcked !== filter.showAcked) onFilterChange({ ...filter, showAcked });
+      // if (showAcked !== filter.showAcked) onFilterChange({ ...filter, showAcked });
   };
 
   const onAutoUpdateChange = (autoUpdate: AutoUpdate) => {
-    if (autoUpdate !== filter.autoUpdate) onFilterChange({ ...filter, autoUpdate });
+      // if (autoUpdate !== filter.autoUpdate) onFilterChange({ ...filter, autoUpdate });
   };
 
   const onSourcesChange = (sources: string[] | "AllSources" | undefined) => {
-    if (sources !== filter.sources) onFilterChange({ ...filter, sources });
+      // if (sources !== filter.sources) onFilterChange({ ...filter, sources });
+    const findSourceId = (name: string) => {
+        
+    };
+    if (sources === "AllSources" || sources === undefined)
+        setSelectedFilter({ ...selectedFilter, sourceSystemIds: [] });
+    else
+        setSelectedFilter({ ...selectedFilter, sourceSystemIds: sources.map(findSourceId) });
   };
 
   const autoUpdateOptions: AutoUpdate[] = ENABLE_WEBSOCKETS_SUPPORT
