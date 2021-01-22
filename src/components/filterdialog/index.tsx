@@ -16,7 +16,7 @@ import { makeConfirmationButton } from "../../components/buttons/ConfirmationBut
 // Api
 import { Filter } from "../../api";
 
-// Contexts
+// Contexts/hooks
 import { useFilters } from "../../api/actions";
 import { useAlerts } from "../../components/alertsnackbar";
 

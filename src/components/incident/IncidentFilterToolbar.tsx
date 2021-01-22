@@ -41,6 +41,12 @@ import FilterDialog from "../../components/filterdialog";
 // Api
 import api, { Filter, IncidentMetadata, SourceSystem } from "../../api";
 
+// Config
+import { ENABLE_WEBSOCKETS_SUPPORT } from "../../config";
+
+// Contexts/hooks
+import { useFilters } from "../../api/actions";
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
@@ -86,7 +92,6 @@ const useStyles = makeStyles((theme: Theme) =>
     moreSettingsItemContainer: {
       alignSelf: "center",
     },
-    filtersDialog: {},
   }),
 );
 
@@ -170,19 +175,19 @@ export const DropdownToolbar: React.FC<DropdownToolbarPropsType> = ({
   );
 };
 
-type UseExistingFilterToolbarItemPropsType = {
+type FiltersDropdownToolbarItemPropsType = {
   selectedFilter: number;
-  existingFilters: Filter[];
   onSelect: (filterIndex: number) => void;
   className?: string;
 };
 
-export const UseExistingFilterToolbarItem: React.FC<UseExistingFilterToolbarItemPropsType> = ({
+export const FiltersDropdownToolbarItem = ({
   selectedFilter,
-  existingFilters,
   onSelect,
   className,
-}: UseExistingFilterToolbarItemPropsType) => {
+}: FiltersDropdownToolbarItemPropsType) => {
+  const [filters, { modifyFilter }] = useFilters();
+
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   return (
     <>
@@ -203,7 +208,7 @@ export const UseExistingFilterToolbarItem: React.FC<UseExistingFilterToolbarItem
                   <AddIcon />
                 </IconButton>
               ) : (
-                <IconButton onClick={() => alert("update as")}>
+                <IconButton onClick={() => modifyFilter(filters[selectedFilter])}>
                   <SaveAltIcon />
                 </IconButton>
               )}
@@ -216,7 +221,7 @@ export const UseExistingFilterToolbarItem: React.FC<UseExistingFilterToolbarItem
           <MenuItem key="none" value={-1}>
             None
           </MenuItem>
-          {existingFilters.map((filter: Filter, index: number) => (
+          {filters.map((filter: Filter, index: number) => (
             <MenuItem key={filter.pk} value={index}>
               {filter.name}
             </MenuItem>
@@ -389,9 +394,8 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
           />
         </ToolbarItem>
         <ToolbarItem name="Filter" className={classNames(style.medium)}>
-          <UseExistingFilterToolbarItem
+          <FiltersDropdownToolbarItem
             selectedFilter={existingFilter}
-            existingFilters={existingFilters}
             onSelect={(filterIndex: number) => onExistingFilterChange(filterIndex)}
           />
         </ToolbarItem>
