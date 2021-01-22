@@ -53,9 +53,9 @@ const IncidentView: React.FC<IncidentViewPropsType> = () => {
 
     const existing: Filter = filters[existingFilter];
 
-    const tags = [...existing.tags.map(originalToTag)];
+    const tags = [...existing.tags.map(originalToTag), ...filter.tags];
     const sources = undefined;
-    const sourcesById = existing.sourceSystemIds;
+    const sourcesById = [...existing.sourceSystemIds, ...(filter.sourcesById || [])];
     return { tags, sources, sourcesById, show: "open", showAcked: true, autoUpdate: "interval" };
   }, [filter, existingFilter, filters]);
 
