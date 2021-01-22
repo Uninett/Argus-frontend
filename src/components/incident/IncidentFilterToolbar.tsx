@@ -82,6 +82,9 @@ const useStyles = makeStyles((theme: Theme) =>
     moreSettingsItemContainer: {
       alignSelf: "center",
     },
+    filterSelectIcon: {
+      fontSize: "1rem",
+    },
   }),
 );
 
@@ -173,6 +176,8 @@ export const FiltersDropdownToolbarItem = ({
   onSelect,
   className,
 }: FiltersDropdownToolbarItemPropsType) => {
+  const style = useStyles();
+
   const [filters, { createFilter, modifyFilter }] = useFilters();
   const displayAlert = useAlerts();
 
@@ -217,15 +222,15 @@ export const FiltersDropdownToolbarItem = ({
             <>
               {selectedFilter === -1 ? (
                 <IconButton onClick={onCreateFilterClick}>
-                  <AddIcon />
+                  <AddIcon className={style.filterSelectIcon} fontSize="small" />
                 </IconButton>
               ) : (
                 <IconButton onClick={onUpdateFilter}>
-                  <SaveAltIcon />
+                  <SaveAltIcon className={style.filterSelectIcon} fontSize="small" />
                 </IconButton>
               )}
               <IconButton onClick={() => setEditDialogOpen(true)}>
-                <SettingsIcon />
+                <SettingsIcon className={style.filterSelectIcon} fontSize="small" />
               </IconButton>
             </>
           )}
