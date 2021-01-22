@@ -19,6 +19,7 @@ import auth from "./auth";
 import { ThemeProvider } from "@material-ui/core/styles";
 import { MUI_THEME } from "./colorscheme";
 
+import { useAlertSnackbar, AlertsContext } from "./components/alertsnackbar";
 import Header from "./components/header/Header";
 
 // eslint-disable-next-line
@@ -35,6 +36,8 @@ const withHeader = (Component: any) => {
 };
 
 const App: React.SFC = () => {
+  const { incidentSnackbar, displayAlertSnackbar } = useAlertSnackbar();
+
   const history = useHistory();
   api.registerUnauthorizedCallback(() => {
     console.log("Unauthorized response recieved, logging out!");
@@ -45,24 +48,27 @@ const App: React.SFC = () => {
   return (
     <div>
       <ThemeProvider theme={MUI_THEME}>
-        <Switch>
-          <ProtectedRoute exact path="/" component={withHeader(IncidentView)} />
-          <ProtectedRoute path="/incidents/:pk" component={withHeader(IncidentDetailsView)} />
-          <ProtectedRoute exact path="/incidents" component={withHeader(IncidentView)} />
-          <ProtectedRoute path="/notificationprofiles" component={withHeader(NotificationProfileView)} />
-          <ProtectedRoute path="/timeslots" component={withHeader(TimeslotView)} />
-          <ProtectedRoute path="/settings" component={withHeader(SettingsView)} />
-          <ProtectedRoute path="/filters" component={withHeader(FiltersView)} />
-          <Route path="/login" component={LoginView} />
-          <Route
-            path="*"
-            component={() => (
-              <div id="not-found">
-                <h1>404 not found</h1>
-              </div>
-            )}
-          />
-        </Switch>
+        <AlertsContext.Provider value={displayAlertSnackbar}>
+          <Switch>
+            <ProtectedRoute exact path="/" component={withHeader(IncidentView)} />
+            <ProtectedRoute path="/incidents/:pk" component={withHeader(IncidentDetailsView)} />
+            <ProtectedRoute exact path="/incidents" component={withHeader(IncidentView)} />
+            <ProtectedRoute path="/notificationprofiles" component={withHeader(NotificationProfileView)} />
+            <ProtectedRoute path="/timeslots" component={withHeader(TimeslotView)} />
+            <ProtectedRoute path="/settings" component={withHeader(SettingsView)} />
+            <ProtectedRoute path="/filters" component={withHeader(FiltersView)} />
+            <Route path="/login" component={LoginView} />
+            <Route
+              path="*"
+              component={() => (
+                <div id="not-found">
+                  <h1>404 not found</h1>
+                </div>
+              )}
+            />
+          </Switch>
+        </AlertsContext.Provider>
+        {incidentSnackbar}
       </ThemeProvider>
     </div>
   );
