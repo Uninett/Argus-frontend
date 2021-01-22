@@ -42,7 +42,7 @@ export class RealtimeService {
 
   public checkConnection() {
     console.log("[RealtimeService] checking connection");
-    if (!this.ws || this.ws.readyState == WebSocket.CLOSED) {
+    if (!this.ws || this.ws.readyState === WebSocket.CLOSED) {
       this.state = "closed";
       this.connect();
     }

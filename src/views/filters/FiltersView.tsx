@@ -120,7 +120,7 @@ const FiltersTable: React.FC<FiltersTablePropsType> = ({
 
 type FiltersViewPropsType = {};
 
-const FiltersView: React.FC<FiltersViewPropsType> = ({}: FiltersViewPropsType) => {
+const FiltersView: React.FC<FiltersViewPropsType> = () => {
   // Filters are kept in the global app state
   const {
     state: { filters },

@@ -339,7 +339,7 @@ const IncidentTable: React.FC<IncidentsProps> = ({
     setIncidentsDict((oldDict: Revisioned<Map<Incident["pk"], Incident>>) => {
       const newDict: typeof oldDict = new Map<Incident["pk"], Incident>(oldDict);
       const oldIncident = oldDict.get(incident.pk);
-      if (!oldIncident || incident.open != oldIncident.open) {
+      if (!oldIncident || incident.open !== oldIncident.open) {
         if (!incident.open && !noDelete) {
           // closed
           newDict.delete(incident.pk);
@@ -372,7 +372,7 @@ const IncidentTable: React.FC<IncidentsProps> = ({
     setTimeout(() => {
       setIncidentsDict((oldDict: Revisioned<Map<Incident["pk"], Incident>>) => {
         const newDict: typeof oldDict = new Map<Incident["pk"], Incident>(oldDict);
-        if (incident.open != open) {
+        if (incident.open !== open) {
           newDict.delete(incident.pk);
         } else {
           // updated in some other way

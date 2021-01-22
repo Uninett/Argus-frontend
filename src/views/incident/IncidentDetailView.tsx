@@ -11,7 +11,7 @@ import IncidentDetails from "../../components/incident/IncidentDetails";
 
 type IncidentDetailsViewPropsType = {};
 
-export const IncidentDetailsView: React.FC<IncidentDetailsViewPropsType> = ({}: IncidentDetailsViewPropsType) => {
+export const IncidentDetailsView: React.FC<IncidentDetailsViewPropsType> = () => {
   const { pk } = useParams<{ pk: string | undefined }>();
 
   const { incidentSnackbar, displayAlertSnackbar }: UseAlertSnackbarResultType = useAlertSnackbar();
