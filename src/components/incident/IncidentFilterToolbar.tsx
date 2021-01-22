@@ -1,41 +1,34 @@
 import React, { useEffect, useState } from "react";
 
-import Button, { ButtonProps } from "@material-ui/core/Button";
+import classNames from "classnames";
+
+// MUI
+import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+
+import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
-import Typography from "@material-ui/core/Typography";
-import Toolbar from "@material-ui/core/Toolbar";
-import MenuItem from "@material-ui/core/MenuItem";
-import FormHelperText from "@material-ui/core/FormHelperText";
 import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-
-// For filter dialog list
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-
+import FormHelperText from "@material-ui/core/FormHelperText";
 import IconButton from "@material-ui/core/IconButton";
-import SettingsIcon from "@material-ui/icons/Settings";
-import SaveAltIcon from "@material-ui/icons/SaveAlt";
+import MenuItem from "@material-ui/core/MenuItem";
+import Select from "@material-ui/core/Select";
+import Toolbar from "@material-ui/core/Toolbar";
+import Typography from "@material-ui/core/Typography";
+
 import AddIcon from "@material-ui/icons/Add";
-import DeleteIcon from "@material-ui/icons/Delete";
-
-import { makeConfirmationButton } from "../../components/buttons/ConfirmationButton";
-
-import Modal from "../modal/Modal";
+import SaveAltIcon from "@material-ui/icons/SaveAlt";
+import SettingsIcon from "@material-ui/icons/Settings";
 
 import { ENABLE_WEBSOCKETS_SUPPORT } from "../../config";
 
+// Components
 import { IncidentsFilter, AutoUpdate } from "../../components/incidenttable/FilteredIncidentTable";
-
 import TagSelector, { Tag } from "../../components/tagselector";
 import SourceSelector from "../../components/sourceselector";
+import FilterDialog from "../../components/filterdialog";
 
+// Api
 import api, { Filter, IncidentMetadata, SourceSystem } from "../../api";
-
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-
-import classNames from "classnames";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -175,23 +168,6 @@ export const UseExistingFilterToolbarItem: React.FC<UseExistingFilterToolbarItem
   className,
 }: UseExistingFilterToolbarItemPropsType) => {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-
-  const style = useStyles();
-
-  const DeleteButton = (props: ButtonProps) => {
-    return (
-      <IconButton onClick={props.onClick}>
-        <DeleteIcon />
-      </IconButton>
-    );
-  };
-
-  const ConfirmDeleteButton = makeConfirmationButton({
-    title: "Delete filter",
-    question: "Are you sure you want to delete this filter?",
-    ButtonComponent: DeleteButton,
-  });
-
   return (
     <>
       <FormControl size="small" className={className}>
@@ -232,31 +208,7 @@ export const UseExistingFilterToolbarItem: React.FC<UseExistingFilterToolbarItem
         </Select>
         <FormHelperText>Select from your filters</FormHelperText>
       </FormControl>
-      <Modal
-        className={style.filtersDialog}
-        title="Filters"
-        open={dialogOpen}
-        onClose={() => setDialogOpen(false)}
-        content={
-          <List>
-            {existingFilters.map((filter: Filter) => {
-              return (
-                <ListItem key={filter.name}>
-                  <ListItemText>{filter.name}</ListItemText>
-                  <ConfirmDeleteButton
-                    onConfirm={() => {
-                      alert(`confirmed removing filter: ${filter.name}`);
-                    }}
-                    onReject={() => {
-                      alert(`rejected removing filter: ${filter.name}`);
-                    }}
-                  />
-                </ListItem>
-              );
-            })}
-          </List>
-        }
-      />
+      <FilterDialog open={dialogOpen} onClose={() => setDialogOpen(false)} />
     </>
   );
 };
