@@ -27,7 +27,7 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
     api.getAllFilters().then((filters: Filter[]) => {
       dispatch(loadAllFilters(filters));
     });
-  }, []);
+  }, [dispatch]);
 
   const [existingFilter, setExistingFilter] = useState<number>(-1);
 
