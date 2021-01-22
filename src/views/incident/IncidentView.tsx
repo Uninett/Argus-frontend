@@ -1,9 +1,7 @@
 import React, { useEffect, useState, useMemo, useContext } from "react";
-import "./IncidentView.css";
 import { withRouter } from "react-router-dom";
 
 import FilteredIncidentTable, { IncidentsFilter } from "../../components/incidenttable/FilteredIncidentTable";
-import "../../components/incidenttable/incidenttable.css";
 
 import { ENABLE_WEBSOCKETS_SUPPORT } from "../../config";
 
