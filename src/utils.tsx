@@ -141,14 +141,14 @@ export function timeOfDayFromDate(date: Date): string {
 }
 
 function pad(n: number) {
-    return n<10 ? '0'+n : n;
+  return n < 10 ? "0" + n : n;
 }
 
 function formatTimezoneOffset(timezoneOffset: number): string {
-    const sign = timezoneOffset > 0 ? "-" : "+";
-    const hours = pad(Math.floor(Math.abs(timezoneOffset)/60));
-    const minutes = pad(Math.abs(timezoneOffset)%60);
-    return sign + hours + ":" + minutes;
+  const sign = timezoneOffset > 0 ? "-" : "+";
+  const hours = pad(Math.floor(Math.abs(timezoneOffset) / 60));
+  const minutes = pad(Math.abs(timezoneOffset) % 60);
+  return sign + hours + ":" + minutes;
 }
 
 export function formatTimestamp(timestamp: Date | string): string {
@@ -159,12 +159,12 @@ export function formatTimestamp(timestamp: Date | string): string {
   const year = dateTimestamp.getFullYear();
   const month = pad(dateTimestamp.getMonth() + 1);
   const day = pad(dateTimestamp.getDate());
-  const date = year + '-' + month + '-' + day;
+  const date = year + "-" + month + "-" + day;
   const hours = pad(dateTimestamp.getHours());
   const minutes = pad(dateTimestamp.getMinutes());
   const seconds = pad(dateTimestamp.getSeconds());
-  const time = hours + ':' + minutes + ':' + seconds + timezoneOffset;
-  return date + ' ' + time;
+  const time = hours + ":" + minutes + ":" + seconds + timezoneOffset;
+  return date + " " + time;
 }
 
 // eslint-disable-next-line @typescript-eslint/camelcase
