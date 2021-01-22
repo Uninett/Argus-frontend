@@ -1,4 +1,4 @@
-import React, { useState, Dispatch, SetStateAction } from "react";
+import React, { useState, useContext, createContext, Dispatch, SetStateAction } from "react";
 
 import Alert from "@material-ui/lab/Alert";
 import MaterialUISnackbar from "@material-ui/core/Snackbar";
@@ -96,6 +96,13 @@ export const useAlertSnackbar = (): UseAlertSnackbarResultType => {
   };
 
   return { incidentSnackbar: component, state, setState, displayAlertSnackbar };
+};
+
+export const AlertsContext = createContext<UseAlertSnackbarResultType["displayAlertSnackbar"]>(() => undefined);
+
+export const useAlerts = (): typeof displayAlertSnackbar => {
+  const displayAlertSnackbar = useContext(AlertsContext);
+  return displayAlertSnackbar;
 };
 
 export default AlertSnackbar;
