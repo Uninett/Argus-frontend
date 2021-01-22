@@ -1,15 +1,28 @@
 import React, { useEffect, useState } from "react";
 
-import Button from "@material-ui/core/Button";
+import Button, { ButtonProps } from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import Typography from "@material-ui/core/Typography";
 import Toolbar from "@material-ui/core/Toolbar";
-import IconButton from "@material-ui/core/IconButton";
-import SettingsIcon from "@material-ui/icons/Settings";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
+
+// For filter dialog list
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
+
+import IconButton from "@material-ui/core/IconButton";
+import SettingsIcon from "@material-ui/icons/Settings";
+import SaveAltIcon from "@material-ui/icons/SaveAlt";
+import AddIcon from "@material-ui/icons/Add";
+import DeleteIcon from "@material-ui/icons/Delete";
+
+import { makeConfirmationButton } from "../../components/buttons/ConfirmationButton";
+
+import Modal from "../modal/Modal";
 
 import { ENABLE_WEBSOCKETS_SUPPORT } from "../../config";
 
@@ -69,6 +82,7 @@ const useStyles = makeStyles((theme: Theme) =>
     moreSettingsItemContainer: {
       alignSelf: "center",
     },
+    filtersDialog: {},
   }),
 );
 
@@ -160,29 +174,90 @@ export const UseExistingFilterToolbarItem: React.FC<UseExistingFilterToolbarItem
   onSelect,
   className,
 }: UseExistingFilterToolbarItemPropsType) => {
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+
+  const style = useStyles();
+
+  const DeleteButton = (props: ButtonProps) => {
+    return (
+      <IconButton onClick={props.onClick}>
+        <DeleteIcon />
+      </IconButton>
+    );
+  };
+
+  const ConfirmDeleteButton = makeConfirmationButton({
+    title: "Delete filter",
+    question: "Are you sure you want to delete this filter?",
+    ButtonComponent: DeleteButton,
+  });
+
   return (
-    <FormControl size="small" className={className}>
-      <Select
-        displayEmpty
-        variant="outlined"
-        labelId="filter-select"
-        id="filter-select"
-        value={selectedFilter}
-        onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
-          onSelect(event.target.value as number);
-        }}
-      >
-        <MenuItem key="none" value={-1}>
-          None
-        </MenuItem>
-        {existingFilters.map((filter: Filter, index: number) => (
-          <MenuItem key={filter.pk} value={index}>
-            {filter.name}
+    <>
+      <FormControl size="small" className={className}>
+        <Select
+          displayEmpty
+          variant="outlined"
+          labelId="filter-select"
+          id="filter-select"
+          value={selectedFilter}
+          onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
+            onSelect(event.target.value as number);
+          }}
+          IconComponent={() => (
+            <>
+              {selectedFilter === -1 ? (
+                <IconButton onClick={() => alert("save as")}>
+                  <AddIcon />
+                </IconButton>
+              ) : (
+                <IconButton onClick={() => alert("update as")}>
+                  <SaveAltIcon />
+                </IconButton>
+              )}
+              <IconButton onClick={() => setDialogOpen(true)}>
+                <SettingsIcon />
+              </IconButton>
+            </>
+          )}
+        >
+          <MenuItem key="none" value={-1}>
+            None
           </MenuItem>
-        ))}
-      </Select>
-      <FormHelperText>Select from your filters</FormHelperText>
-    </FormControl>
+          {existingFilters.map((filter: Filter, index: number) => (
+            <MenuItem key={filter.pk} value={index}>
+              {filter.name}
+            </MenuItem>
+          ))}
+        </Select>
+        <FormHelperText>Select from your filters</FormHelperText>
+      </FormControl>
+      <Modal
+        className={style.filtersDialog}
+        title="Filters"
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        content={
+          <List>
+            {existingFilters.map((filter: Filter) => {
+              return (
+                <ListItem key={filter.name}>
+                  <ListItemText>{filter.name}</ListItemText>
+                  <ConfirmDeleteButton
+                    onConfirm={() => {
+                      alert(`confirmed removing filter: ${filter.name}`);
+                    }}
+                    onReject={() => {
+                      alert(`rejected removing filter: ${filter.name}`);
+                    }}
+                  />
+                </ListItem>
+              );
+            })}
+          </List>
+        }
+      />
+    </>
   );
 };
 
