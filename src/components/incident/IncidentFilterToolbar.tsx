@@ -7,9 +7,13 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 
 import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
+import Divider from "@material-ui/core/Divider";
 import FormControl from "@material-ui/core/FormControl";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import IconButton from "@material-ui/core/IconButton";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 import TextField from "@material-ui/core/TextField";
@@ -85,6 +89,10 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     filterSelectIcon: {
       fontSize: "1rem",
+    },
+    filterListItem: {
+      width: "100%",
+      backgroundColor: theme.palette.background.paper,
     },
   }),
 );
@@ -170,17 +178,23 @@ type FiltersDropdownToolbarItemPropsType = {
 
 export const FiltersDropdownToolbarItem = ({ className }: FiltersDropdownToolbarItemPropsType) => {
   const style = useStyles();
-  const [selectedFilter, { setExistingFilter, unsetExistingFilter, setSelectedFilter }] = useSelectedFilter();
+  const [selectedFilter, { setExistingFilter, unsetExistingFilter }] = useSelectedFilter();
 
   const [filters, { createFilter, modifyFilter }] = useFilters();
   const displayAlert = useAlerts();
 
   const [editDialogOpen, setEditDialogOpen] = useState<boolean>(false);
   const [createDialogOpen, setCreateDialogOpen] = useState<boolean>(false);
+  const [saveToDialogOpen, setSaveToDialogOpen] = useState<boolean>(false);
   const [newFilterName, setNewFilterName] = useState<string>("");
+  const [saveToFilter, setSaveToFilter] = useState<Filter | undefined>(undefined);
 
   const onCreateFilterClick = () => {
     setCreateDialogOpen(true);
+  };
+
+  const onSaveToFilterClick = () => {
+    setSaveToDialogOpen(true);
   };
 
   const onCreateFilter = () => {
@@ -195,13 +209,8 @@ export const FiltersDropdownToolbarItem = ({ className }: FiltersDropdownToolbar
   };
 
   const onUpdateFilter = () => {
-    if (!selectedFilter.existingFilter) {
-      displayAlert("No existing filter selected! Can't modify", "error");
-      return;
-    }
-
-    //
-    const { pk, name } = selectedFilter.existingFilter;
+    if (!saveToFilter) return;
+    const { pk, name } = saveToFilter;
     const { tags, sourcesById } = selectedFilter.filter;
     const modified: Filter = {
       pk,
@@ -238,15 +247,14 @@ export const FiltersDropdownToolbarItem = ({ className }: FiltersDropdownToolbar
           }}
           IconComponent={() => (
             <>
-              {!selectedFilter.existingFilter ? (
+              {!selectedFilter.existingFilter && (
                 <IconButton onClick={onCreateFilterClick}>
                   <AddIcon className={style.filterSelectIcon} fontSize="small" />
                 </IconButton>
-              ) : (
-                <IconButton onClick={onUpdateFilter}>
-                  <SaveAltIcon className={style.filterSelectIcon} fontSize="small" />
-                </IconButton>
               )}
+              <IconButton onClick={onSaveToFilterClick}>
+                <SaveAltIcon className={style.filterSelectIcon} fontSize="small" />
+              </IconButton>
               <IconButton onClick={() => setEditDialogOpen(true)}>
                 <SettingsIcon className={style.filterSelectIcon} fontSize="small" />
               </IconButton>
@@ -256,7 +264,7 @@ export const FiltersDropdownToolbarItem = ({ className }: FiltersDropdownToolbar
           <MenuItem key="none" value={-1}>
             None
           </MenuItem>
-          {filters.map((filter: Filter, index: number) => (
+          {filters.map((filter: Filter) => (
             <MenuItem key={filter.pk} value={filter.pk}>
               {filter.name}
             </MenuItem>
@@ -280,6 +288,30 @@ export const FiltersDropdownToolbarItem = ({ className }: FiltersDropdownToolbar
         actions={
           <Button autoFocus onClick={onCreateFilter} color="primary">
             Create
+          </Button>
+        }
+      />
+      <Modal
+        title="Save to"
+        open={saveToDialogOpen}
+        onClose={() => setSaveToDialogOpen(false)}
+        content={
+          <List component="nav" className={style.filterListItem}>
+            {filters.map((filter: Filter) => (
+              <ListItem
+                button
+                selected={saveToFilter?.pk === filter.pk}
+                onClick={() => setSaveToFilter(filter)}
+                key={filter.pk}
+              >
+                <ListItemText>{filter.name}</ListItemText>
+              </ListItem>
+            ))}
+          </List>
+        }
+        actions={
+          <Button autoFocus disabled={!saveToFilter} onClick={() => onUpdateFilter()} color="primary">
+            Save to
           </Button>
         }
       />
