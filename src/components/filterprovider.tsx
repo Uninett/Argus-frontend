@@ -7,7 +7,6 @@ import { Tag, originalToTag } from "../components/tagselector";
 // Store
 import { ActionMap } from "../reducers/common";
 
-// XXX - move somewhere else
 export type SelectedFilterStateType = {
   // Optionally selected using drop-down
   existingFilter: Filter | undefined;
@@ -64,62 +63,47 @@ export const selectedFilterReducer = (
   state: SelectedFilterStateType,
   action: SelectedFilterActions,
 ): SelectedFilterStateType => {
-  const combineTags = (existingTags: string[] | undefined, newTags: Tag[]): Tag[] => {
-    const combinedTags: Tag[] = [];
-    const seenTag: { [key: string]: boolean } = {};
-    newTags.forEach((tag: Tag) => {
-      if (tag.original in seenTag) return;
-      seenTag[tag.original] = true;
-      combinedTags.push(tag);
-    });
-    if (existingTags) {
-      existingTags.forEach((tagString: string) => {
-        if (tagString in seenTag) return;
-        seenTag[tagString] = true;
-        combinedTags.push(originalToTag(tagString));
-      });
+  function arrayEquals<T>(p: T[], q: T[]): boolean {
+    if (p.length !== q.length) return false;
+    let i = 0;
+    while (i < p.length) {
+      if (p[i] !== q[i]) return false;
+      i++;
     }
-    return combinedTags;
-  };
-
-  const combineSources = (existingSourceIds: number[] | undefined, newSources: number[]): number[] => {
-    const combinedSourcesByIds: number[] = [];
-    const seenSource: { [key: number]: boolean } = {};
-    newSources.forEach((source: number) => {
-      if (source in seenSource) return;
-      seenSource[source] = true;
-      combinedSourcesByIds.push(source);
-    });
-    if (existingSourceIds) {
-      existingSourceIds.forEach((source: number) => {
-        if (source in seenSource) return;
-        seenSource[source] = true;
-        combinedSourcesByIds.push(source);
-      });
-    }
-    return combinedSourcesByIds;
-  };
+    return true;
+  }
 
   switch (action.type) {
     case SelectedFilterType.SetSelectedFilter: {
       const selected = action.payload;
-      const { tags, sourcesById } = { ...state, ...selected };
-
       const { showAcked, autoUpdate, show } = { ...state, ...selected };
 
-      // // Combine the tags using the following rules:
-      // // 1. Add selected (not from existing filter) tags first
-      // // 2. Ignore duplicates.
-      const combinedTags: Tag[] = combineTags(state?.existingFilter?.tags, tags);
-      const combinedSourcesByIds: number[] = combineSources(state?.existingFilter?.sourceSystemIds, sourcesById);
+      let unset = false;
+      if (selected.tags && !arrayEquals(selected.tags, state.filter.tags)) {
+        unset = true;
+      }
+      if (
+        selected.sourcesById &&
+        ((state.filter.sourcesById && !arrayEquals(selected.sourcesById, state.filter.sourcesById)) ||
+          !state.filter.sourcesById)
+      ) {
+        unset = true;
+      }
 
-      const updated = { tags: combinedTags, sourcesById: combinedSourcesByIds, showAcked, autoUpdate, show };
+      const tags: Tag[] = selected.tags ? selected.tags : state.filter.tags;
+      const sourcesById: number[] | undefined = selected.sourcesById ? selected.sourcesById : state.filter.sourcesById;
+      const updated = { tags, sourcesById, showAcked, autoUpdate, show };
 
       const filter: IncidentsFilter = {
         sources: undefined,
         ...updated,
       };
-      return { ...state, ...selected, filter };
+
+      const nextState = { ...state, ...selected, filter };
+      if (unset) {
+        return { ...nextState, existingFilter: undefined };
+      }
+      return nextState;
     }
 
     case SelectedFilterType.UnsetExistingFilter: {
@@ -131,25 +115,19 @@ export const selectedFilterReducer = (
 
     case SelectedFilterType.SetExistingFilter: {
       const existingFilter = action.payload;
-      console.log("setting existingFilter", existingFilter);
-
-      const { tags, sourcesById, showAcked, autoUpdate, show } = state;
-
-      const combinedTags: Tag[] = combineTags(existingFilter.tags, tags);
-      const combinedSourcesByIds: number[] = combineSources(existingFilter.sourceSystemIds, sourcesById);
-      console.log("combinedTags", combinedTags);
-      console.log("combinedSourcesByIds", combinedSourcesByIds);
-
-      const updated = { tags: combinedTags, sourcesById: combinedSourcesByIds, showAcked, autoUpdate, show };
+      const { showAcked, autoUpdate, show } = state;
+      const updated = { tags: [], sourcesById: [], showAcked, autoUpdate, show };
 
       const filter: IncidentsFilter = {
         sources: undefined,
         ...updated,
+        tags: existingFilter.tags.map(originalToTag),
+        sourcesById: existingFilter.sourceSystemIds,
       };
 
       return {
         ...state,
-        ...updated, // TODO: document this
+        ...updated,
         existingFilter,
         filter,
       };
