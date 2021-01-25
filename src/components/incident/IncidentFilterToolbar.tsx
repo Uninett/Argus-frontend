@@ -237,7 +237,6 @@ export const FiltersDropdownToolbarItem = ({ className }: FiltersDropdownToolbar
           value={selectedFilter?.existingFilter?.pk || -1}
           onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
             const pk: number | -1 = event.target.value as number;
-            console.log("on change pk", pk);
             if (pk === -1) {
               unsetExistingFilter();
             } else {
@@ -463,7 +462,6 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
             disabled={disabled}
             tags={[]}
             onSelectionChange={(tags: Tag[]) => {
-              console.log("on selection change");
               setSelectedFilter({ tags });
             }}
             selected={selectedFilter.filter.tags.map((tag: Tag) => tag.original)}
