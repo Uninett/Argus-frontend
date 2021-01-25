@@ -1,6 +1,8 @@
 import React from "react";
 
 // MUI
+import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+
 import IconButton from "@material-ui/core/IconButton";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -40,7 +42,17 @@ const ConfirmDeleteButton = makeConfirmationButton({
   ButtonComponent: DeleteButton,
 });
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      width: "100%",
+      backgroundColor: theme.palette.background.paper,
+    },
+  }),
+);
+
 export const FilterDialog = ({ open, onClose }: FilterDialogPropsType) => {
+  const style = useStyles();
   const [filters, { deleteFilter }] = useFilters();
   const displayAlert = useAlerts();
 
@@ -56,7 +68,7 @@ export const FilterDialog = ({ open, onClose }: FilterDialogPropsType) => {
       open={open}
       onClose={onClose}
       content={
-        <List>
+        <List component="nav" className={style.root}>
           {filters.map((filter: Filter) => {
             return (
               <ListItem key={filter.name}>
