@@ -158,7 +158,6 @@ const Header: React.FC<HeaderPropsType> = () => {
             <Logo className={style.logo} />
           </Link>
           <NavbarItem to="/incidents" name="Incidents" isRoot />
-          <NavbarItem to="/filters" name="Filters" />
           <NavbarItem to="/timeslots" name="Timeslots" />
           <NavbarItem to="/notificationprofiles" name="Profiles" />
 
