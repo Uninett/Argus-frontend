@@ -183,19 +183,12 @@ export const DropdownToolbar: React.FC<DropdownToolbarPropsType> = ({
 };
 
 type FiltersDropdownToolbarItemPropsType = {
-  currentFilter: IncidentsFilter;
-  selectedFilter: number;
-  onSelect: (filterIndex: number) => void;
   className?: string;
 };
 
-export const FiltersDropdownToolbarItem = ({
-  currentFilter,
-  selectedFilter,
-  onSelect,
-  className,
-}: FiltersDropdownToolbarItemPropsType) => {
+export const FiltersDropdownToolbarItem = ({ className }: FiltersDropdownToolbarItemPropsType) => {
   const style = useStyles();
+  const [selectedFilter, { setExistingFilter, unsetExistingFilter, setSelectedFilter }] = useSelectedFilter();
 
   const [filters, { createFilter, modifyFilter }] = useFilters();
   const displayAlert = useAlerts();
@@ -211,8 +204,8 @@ export const FiltersDropdownToolbarItem = ({
   const onCreateFilter = () => {
     const newFilter: Omit<Filter, "pk"> = {
       name: newFilterName,
-      tags: currentFilter.tags.map((tag: Tag) => tag.original),
-      sourceSystemIds: currentFilter.sourcesById || [],
+      tags: selectedFilter.filter.tags.map((tag: Tag) => tag.original),
+      sourceSystemIds: selectedFilter.filter.sourcesById || [],
     };
     createFilter(newFilter)
       .then((filter: Filter) => displayAlert(`Created filter: ${filter.pk}`, "success"))
@@ -220,8 +213,25 @@ export const FiltersDropdownToolbarItem = ({
   };
 
   const onUpdateFilter = () => {
-    modifyFilter(filters[selectedFilter])
-      .then(() => displayAlert("Updated filter", "success"))
+    if (!selectedFilter.existingFilter) {
+      displayAlert("No existing filter selected! Can't modify", "error");
+      return;
+    }
+
+    //
+    const { pk, name } = selectedFilter.existingFilter;
+    const { tags, sourcesById } = selectedFilter.filter;
+    const modified: Filter = {
+      pk,
+      name,
+      tags: tags.map((tag: Tag) => tag.original),
+      sourceSystemIds: sourcesById || [],
+    };
+    modifyFilter(modified)
+      .then(() => {
+        setExistingFilter(modified);
+        displayAlert("Updated filter", "success");
+      })
       .catch((error) => displayAlert(`Failed to update filter: ${error}`, "error"));
   };
 
@@ -233,13 +243,20 @@ export const FiltersDropdownToolbarItem = ({
           variant="outlined"
           labelId="filter-select"
           id="filter-select"
-          value={selectedFilter}
+          value={selectedFilter?.existingFilter?.pk || -1}
           onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
-            onSelect(event.target.value as number);
+            const pk: number | -1 = event.target.value as number;
+            console.log("on change pk", pk);
+            if (pk === -1) {
+              unsetExistingFilter();
+            } else {
+              const filter: Filter | undefined = filters.find((filter: Filter) => filter.pk === pk);
+              if (filter) setExistingFilter(filter);
+            }
           }}
           IconComponent={() => (
             <>
-              {selectedFilter === -1 ? (
+              {!!selectedFilter.existingFilter ? (
                 <IconButton onClick={onCreateFilterClick}>
                   <AddIcon className={style.filterSelectIcon} fontSize="small" />
                 </IconButton>
@@ -258,7 +275,7 @@ export const FiltersDropdownToolbarItem = ({
             None
           </MenuItem>
           {filters.map((filter: Filter, index: number) => (
-            <MenuItem key={filter.pk} value={index}>
+            <MenuItem key={filter.pk} value={filter.pk}>
               {filter.name}
             </MenuItem>
           ))}
@@ -324,55 +341,59 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
   disabled,
 }: IncidentFilterToolbarPropsType) => {
   const style = useStyles();
-  const [selectedFilter, { setExistingFilter, unsetExistingFilter, setSelectedFilter }] = useSelectedFilter();
-  const [filters, filterActions] = useFilters();
+  const [selectedFilter, { setSelectedFilter }] = useSelectedFilter();
 
   const [dropdownToolbarOpen, setDropdownToolbarOpen] = useState<boolean>(false);
 
-  const [knownSources, setKnownSources] = useState<[string[]>([]);
+  const [knownSources, setKnownSources] = useState<string[]>([]);
+  const [sourceIdByName, setSourceIdByName] = useState<{ [name: string]: number }>({});
+  const [sourceNameById, setSourceNameById] = useState<{ [id: number]: string }>({});
 
   useEffect(() => {
     api.getAllIncidentsMetadata().then((incidentMetadata: IncidentMetadata) => {
       setKnownSources(incidentMetadata.sourceSystems.map((source: SourceSystem) => source.name));
+      const sourceIdByName: { [name: string]: number } = {};
+      incidentMetadata.sourceSystems.forEach((source: SourceSystem) => (sourceIdByName[source.name] = source.pk));
+      setSourceIdByName(sourceIdByName);
+
+      const sourceNameById: { [id: number]: string } = {};
+      incidentMetadata.sourceSystems.forEach((source: SourceSystem) => (sourceNameById[source.pk] = source.name));
+      setSourceNameById(sourceNameById);
     });
   }, []);
 
   const onShowChange = (show: "open" | "closed" | "both") => {
-    // TODO: NEEDS TO BE IMPLEMENTED
-    // setSelectedFilter({ ...selectedFilter, show });
+    setSelectedFilter({ show });
   };
 
   const onShowAchedChange = (showAcked: boolean) => {
-      // if (showAcked !== filter.showAcked) onFilterChange({ ...filter, showAcked });
+    setSelectedFilter({ showAcked });
   };
 
   const onAutoUpdateChange = (autoUpdate: AutoUpdate) => {
-      // if (autoUpdate !== filter.autoUpdate) onFilterChange({ ...filter, autoUpdate });
+    setSelectedFilter({ autoUpdate });
   };
 
   const onSourcesChange = (sources: string[] | "AllSources" | undefined) => {
-      // if (sources !== filter.sources) onFilterChange({ ...filter, sources });
+    // if (sources !== filter.sources) onFilterChange({ ...filter, sources });
     const findSourceId = (name: string) => {
-        
+      return sourceIdByName[name];
     };
-    if (sources === "AllSources" || sources === undefined)
-        setSelectedFilter({ ...selectedFilter, sourceSystemIds: [] });
-    else
-        setSelectedFilter({ ...selectedFilter, sourceSystemIds: sources.map(findSourceId) });
+    if (sources === "AllSources" || sources === undefined) setSelectedFilter({ sourcesById: [] });
+    else setSelectedFilter({ sourcesById: sources.map(findSourceId) });
   };
 
   const autoUpdateOptions: AutoUpdate[] = ENABLE_WEBSOCKETS_SUPPORT
     ? ["never", "realtime", "interval"]
     : ["never", "interval"];
 
-  const useExistingFilter =
-    existingFilter !== -1 && existingFilter >= 0 && existingFilter < existingFilters.length ? true : false;
+  const useExistingFilter = false;
 
   const autoUpdateToolbarItem = (
     <ToolbarItem name="Auto Update">
       <ButtonGroupSwitch
         disabled={useExistingFilter}
-        selected={filter.autoUpdate}
+        selected={selectedFilter.filter.autoUpdate}
         options={autoUpdateOptions}
         getLabel={(autoUpdate: AutoUpdate) =>
           ({ never: "Never", realtime: "Realtime", interval: "Interval" }[autoUpdate])
@@ -392,8 +413,9 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
 
   const handleTagSelectionChange = (selection: Tag[]) => {
     // compare the arrays deeply
-    if (JSON.stringify(selection) !== JSON.stringify(filter.tags)) {
-      onFilterChange({ ...filter, tags: selection });
+    if (JSON.stringify(selection) !== JSON.stringify(selectedFilter.filter.tags)) {
+      // onFilterChange({ ...filter, tags: selection });
+      setSelectedFilter({ tags: selection });
     }
   };
 
@@ -402,7 +424,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
       <Toolbar className={style.toolbarContainer}>
         <ToolbarItem name="Open State">
           <ButtonGroupSwitch
-            selected={useExistingFilter ? "open" : filter.show}
+            selected={useExistingFilter ? "open" : selectedFilter.filter.show}
             options={["open", "closed", "both"]}
             getLabel={(show: "open" | "closed" | "both") => ({ open: "Open", closed: "Closed", both: "Both" }[show])}
             getColor={(selected: boolean) => (selected ? "primary" : "default")}
@@ -419,7 +441,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
 
         <ToolbarItem name="Acked">
           <ButtonGroupSwitch
-            selected={useExistingFilter ? true : filter.showAcked}
+            selected={useExistingFilter ? true : selectedFilter.filter.showAcked}
             options={[false, true]}
             getLabel={(showAcked: boolean) => (showAcked ? "Both" : "Unacked")}
             getColor={(selected: boolean) => (selected ? "primary" : "default")}
@@ -435,19 +457,23 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
             onSelectionChange={(selection: string[]) => {
               onSourcesChange((selection.length !== 0 && selection) || "AllSources");
             }}
-            defaultSelected={filter.sources === "AllSources" ? [] : filter.sources || []}
+            defaultSelected={(selectedFilter.filter?.sourcesById || []).map((source: number) => sourceNameById[source])}
           />
         </ToolbarItem>
 
         <ToolbarItem name="Tags" className={classNames(style.medium)}>
-          <TagSelector disabled={disabled} tags={filter.tags} onSelectionChange={handleTagSelectionChange} />
-        </ToolbarItem>
-        <ToolbarItem name="Filter" className={classNames(style.medium)}>
-          <FiltersDropdownToolbarItem
-            currentFilter={filter}
-            selectedFilter={existingFilter}
-            onSelect={(filterIndex: number) => onExistingFilterChange(filterIndex)}
+          <TagSelector
+            disabled={disabled}
+            tags={[]}
+            onSelectionChange={(tags: Tag[]) => {
+              // onTag((selection.length !== 0 && selection) || "AllSources");
+            }}
+            defaultSelected={selectedFilter.filter.tags.map((tag: Tag) => tag.original)}
           />
+        </ToolbarItem>
+
+        <ToolbarItem name="Filter" className={classNames(style.medium)}>
+          <FiltersDropdownToolbarItem />
         </ToolbarItem>
         <MoreSettingsToolbarItem
           open={dropdownToolbarOpen}

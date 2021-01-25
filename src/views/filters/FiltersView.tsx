@@ -330,7 +330,8 @@ const FiltersView: React.FC<FiltersViewPropsType> = () => {
             <Typography color="textSecondary" gutterBottom>
               Incidents matching filter
             </Typography>
-            <FilteredIncidentTable filter={previewFilter} onLoad={useCallback(() => handleIncidentsLoaded(), [])} />
+            {/* THIS IS NOW OUTDATED */}
+            <FilteredIncidentTable onLoad={useCallback(() => handleIncidentsLoaded(), [])} />
           </CardContent>
         </Card>
       </FiltersContext.Provider>
