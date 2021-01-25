@@ -256,7 +256,7 @@ export const FiltersDropdownToolbarItem = ({ className }: FiltersDropdownToolbar
           }}
           IconComponent={() => (
             <>
-              {!!selectedFilter.existingFilter ? (
+              {!selectedFilter.existingFilter ? (
                 <IconButton onClick={onCreateFilterClick}>
                   <AddIcon className={style.filterSelectIcon} fontSize="small" />
                 </IconButton>
@@ -376,11 +376,6 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
 
   const onSourcesChange = (sources: string[] | "AllSources" | undefined) => {
     // if (sources !== filter.sources) onFilterChange({ ...filter, sources });
-    const findSourceId = (name: string) => {
-      return sourceIdByName[name];
-    };
-    if (sources === "AllSources" || sources === undefined) setSelectedFilter({ sourcesById: [] });
-    else setSelectedFilter({ sourcesById: sources.map(findSourceId) });
   };
 
   const autoUpdateOptions: AutoUpdate[] = ENABLE_WEBSOCKETS_SUPPORT
@@ -454,8 +449,11 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
           <SourceSelector
             disabled={disabled}
             sources={knownSources}
-            onSelectionChange={(selection: string[]) => {
-              onSourcesChange((selection.length !== 0 && selection) || "AllSources");
+            onSelectionChange={(sources: string[]) => {
+              const findSourceId = (name: string) => {
+                return sourceIdByName[name];
+              };
+              setSelectedFilter({ sourcesById: sources.map(findSourceId) });
             }}
             defaultSelected={(selectedFilter.filter?.sourcesById || []).map((source: number) => sourceNameById[source])}
           />
@@ -466,9 +464,10 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
             disabled={disabled}
             tags={[]}
             onSelectionChange={(tags: Tag[]) => {
-              // onTag((selection.length !== 0 && selection) || "AllSources");
+              console.log("on selection change");
+              setSelectedFilter({ tags });
             }}
-            defaultSelected={selectedFilter.filter.tags.map((tag: Tag) => tag.original)}
+            selected={selectedFilter.filter.tags.map((tag: Tag) => tag.original)}
           />
         </ToolbarItem>
 

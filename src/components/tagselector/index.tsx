@@ -19,7 +19,7 @@ export const originalToTag = (str: string): Tag => {
 export type TagSelectorPropsType = {
   tags: Tag[];
   onSelectionChange: (tags: Tag[]) => void;
-  defaultSelected?: string[];
+  selected: string[];
   allSelected?: boolean;
   disabled?: boolean;
   className?: string;
@@ -28,39 +28,38 @@ export type TagSelectorPropsType = {
 export const TagSelector: React.FC<TagSelectorPropsType> = ({
   tags,
   onSelectionChange,
-  defaultSelected,
+  selected,
   disabled,
   className,
 }: TagSelectorPropsType) => {
   const [value, setValue] = useState<string>("");
-  const [selectValue, setSelectValue] = useState<string[]>([]);
+  // const [selectValue, setSelectValue] = useState<string[]>([]);
 
-  useEffect(() => {
-    if (!defaultSelected) return;
-    setSelectValue(defaultSelected);
-  }, [defaultSelected]);
+  // useEffect(() => {
+  //   if (!defaultSelected) return;
+  //   if (JSON.stringify(defaultSelected) !== JSON.stringify(selectValue)) setSelectValue(defaultSelected);
+  // }, [defaultSelected]);
 
   const handleSelectNew = (newValue: string[]) => {
-    setSelectValue((oldValue: string[]) => {
-      const oldSet = new Set<string>(oldValue);
+    //setSelectValue((oldValue: string[]) => {
+    const oldSet = new Set<string>(selected);
 
-      let updatedInputValue = false;
-      newValue
-        .filter((s: string) => !oldSet.has(s))
-        .forEach((s: string) => {
-          if (!updatedInputValue) {
-            updatedInputValue = true;
-            setValue(s);
-          }
-        });
+    let updatedInputValue = false;
+    newValue
+      .filter((s: string) => !oldSet.has(s))
+      .forEach((s: string) => {
+        if (!updatedInputValue) {
+          updatedInputValue = true;
+          setValue(s);
+        }
+      });
 
-      return updatedInputValue ? oldValue : newValue;
-    });
+    if (updatedInputValue) onSelectionChange(newValue.map(originalToTag));
   };
 
-  useEffect(() => {
-    onSelectionChange(selectValue.map(originalToTag));
-  }, [selectValue, onSelectionChange]);
+  // useEffect(() => {
+  //   onSelectionChange(selectValue.map(originalToTag));
+  // }, [selectValue, onSelectionChange]);
 
   return (
     <Autocomplete
@@ -78,7 +77,7 @@ export const TagSelector: React.FC<TagSelectorPropsType> = ({
             break;
 
           default:
-            setSelectValue(changeValue);
+            onSelectionChange(changeValue.map(originalToTag));
             break;
         }
       }}
@@ -91,13 +90,13 @@ export const TagSelector: React.FC<TagSelectorPropsType> = ({
           {...params}
           variant="outlined"
           className={className}
-          label={selectValue ? undefined : "Filter tags"}
+          label={selected ? undefined : "Filter tags"}
           InputProps={{ ...params.InputProps, type: "search" }}
           helperText={(!disabled && "Press enter to add new tag") || undefined}
           placeholder={(!disabled && "key=value") || undefined}
         />
       )}
-      value={selectValue}
+      value={selected}
     />
   );
 };
