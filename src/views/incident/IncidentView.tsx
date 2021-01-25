@@ -14,11 +14,14 @@ type IncidentViewPropsType = {};
 
 const IncidentView: React.FC<IncidentViewPropsType> = () => {
   const [, { loadAllFilters }] = useFilters();
+  // TODO: Fix useAlerts() so that it doesn't result in refresh all the time.
   const displayAlert = useAlerts();
 
   useEffect(() => {
-    loadAllFilters().catch((error) => displayAlert(`Failed to fetch filters: ${error}`, "error"));
-  }, [loadAllFilters, displayAlert]);
+    loadAllFilters()
+      // .then(() => displayAlert("Loaded filters", "success"))
+      .catch((error) => displayAlert(`Failed to fetch filters: ${error}`, "error"));
+  }, []);
 
   return (
     <div>

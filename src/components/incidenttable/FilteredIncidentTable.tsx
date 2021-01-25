@@ -9,6 +9,7 @@ import TablePagination from "@material-ui/core/TablePagination";
 
 import api, { Filter, IncidentsFilterOptions } from "../../api";
 import { useApiPaginatedIncidents } from "../../api/hooks";
+import { useSelectedFilter } from "../../components/filterprovider";
 
 import { DEFAULT_AUTO_REFRESH_INTERVAL } from "../../config";
 import { LOADING_TEXT, ERROR_TEXT, NO_DATA_TEXT } from "../../constants";
@@ -51,18 +52,15 @@ export type IncidentsFilter = {
 };
 
 type FilteredIncidentsTablePropsType = {
-  existingFilter?: Filter["pk"];
-  filter: IncidentsFilter;
   onLoad?: () => void;
 };
 
 const FilteredIncidentTable: React.FC<FilteredIncidentsTablePropsType> = ({
-  filter,
   onLoad,
 }: FilteredIncidentsTablePropsType) => {
-  const [lastRefresh, setLastRefresh] = useState<Date | undefined>(undefined);
+  const [lastRefresh, setLastRefresh] = useState<{ time: Date; filter: IncidentsFilter } | undefined>(undefined);
 
-  const { tags: tagsFilter, sources, sourcesById, show, showAcked, autoUpdate } = filter;
+  const [{ filter }, {}] = useSelectedFilter();
 
   const [paginationCursor, setPaginationCursor] = useState<PaginationCursor>(DEFAULT_PAGINATION_CURSOR);
   const [virtCursor, setVirtCursor] = useState<VirtCursor>(DEFAULT_VIRT_CURSOR);
@@ -86,15 +84,15 @@ const FilteredIncidentTable: React.FC<FilteredIncidentsTablePropsType> = ({
     };
 
     const filterOptions: IncidentsFilterOptions = {
-      open: showToOpenMap[show as "open" | "closed" | "both"],
+      open: showToOpenMap[filter.show as "open" | "closed" | "both"],
 
       // The frontend is only conserned if acked incidents should be
       // displayed, not that ONLY acked incidents should be displayed.
       // Only filter on the acked property when
-      acked: showAcked === true ? undefined : false,
-      tags: tagsFilter.map((tag: Tag) => tag.original),
-      sourceSystemNames: sources === "AllSources" ? undefined : sources,
-      sourceSystemIds: sourcesById,
+      acked: filter.showAcked === true ? undefined : false,
+      tags: filter.tags.map((tag: Tag) => tag.original),
+      // sourceSystemNames: sources === "AllSources" ? undefined : sources,
+      sourceSystemIds: filter.sourcesById,
     };
 
     setPromise(
@@ -104,11 +102,11 @@ const FilteredIncidentTable: React.FC<FilteredIncidentsTablePropsType> = ({
           if (onLoad) {
             onLoad();
           }
-          setLastRefresh(new Date());
+          setLastRefresh({ time: new Date(), filter });
           return response;
         }),
     );
-  }, [setPromise, show, showAcked, tagsFilter, sources, sourcesById, paginationCursor, onLoad]);
+  }, [setPromise, filter, paginationCursor, onLoad]);
 
   useEffect(() => {
     refresh();
@@ -203,18 +201,18 @@ const FilteredIncidentTable: React.FC<FilteredIncidentsTablePropsType> = ({
   useEffect(() => {
     setVirtCursor(DEFAULT_VIRT_CURSOR);
     setPaginationCursor(DEFAULT_PAGINATION_CURSOR);
-  }, [showAcked, show, autoUpdate, sources, tagsFilter]);
+  }, [filter]);
 
   useEffect(() => {
     // refresh incidents from backend at a set interval if we
     // are utilizing the interval auto-update strategy
-    if (autoUpdate === "interval") {
+    if (filter.autoUpdate === "interval") {
       const interval = setInterval(() => {
         refresh();
       }, 1000 * DEFAULT_AUTO_REFRESH_INTERVAL);
       return () => clearInterval(interval);
     }
-  }, [refresh, autoUpdate]);
+  }, [refresh, filter]);
 
   const autoUpdateTextOpts: Record<AutoUpdate, string> = {
     never: "not updating automatically",
@@ -222,20 +220,20 @@ const FilteredIncidentTable: React.FC<FilteredIncidentsTablePropsType> = ({
     interval: `updating every ${DEFAULT_AUTO_REFRESH_INTERVAL}`,
   };
 
-  const autoUpdateText = autoUpdateTextOpts[autoUpdate];
+  const autoUpdateText = autoUpdateTextOpts[filter.autoUpdate];
 
   return (
     <div className="table">
       <IncidentTable
         isLoading={isLoading}
-        realtime={autoUpdate === "realtime"}
-        open={show === "open"}
+        realtime={filter.autoUpdate === "realtime"}
+        open={filter.show === "open"}
         incidents={incidents}
         noDataText={noDataText}
         paginationComponent={paginationComponent}
       />
       <p>
-        Last refreshed {lastRefresh === undefined ? "never" : lastRefresh.toLocaleTimeString()}, {autoUpdateText}
+        Last refreshed {lastRefresh === undefined ? "never" : lastRefresh.time.toLocaleTimeString()}, {autoUpdateText}
       </p>
     </div>
   );

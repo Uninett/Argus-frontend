@@ -24,6 +24,8 @@ export type SelectedFilterStateType = {
   filter: IncidentsFilter;
 };
 
+export type SelectedFilterProperties = Partial<Omit<SelectedFilterStateType, "existingFilter" | "filter">>;
+
 const initialSelectedFilter: SelectedFilterStateType = {
   existingFilter: undefined,
 
@@ -54,7 +56,7 @@ enum SelectedFilterType {
 export type SelectedFilterPayload = {
   [SelectedFilterType.SetExistingFilter]: Filter;
   [SelectedFilterType.UnsetExistingFilter]: undefined;
-  [SelectedFilterType.SetSelectedFilter]: Filter;
+  [SelectedFilterType.SetSelectedFilter]: SelectedFilterProperties;
 };
 
 export type SelectedFilterActions = ActionMap<SelectedFilterPayload>[keyof ActionMap<SelectedFilterPayload>];
@@ -62,46 +64,98 @@ export const selectedFilterReducer = (
   state: SelectedFilterStateType,
   action: SelectedFilterActions,
 ): SelectedFilterStateType => {
+  const combineTags = (existingTags: string[] | undefined, newTags: Tag[]): Tag[] => {
+    const combinedTags: Tag[] = [];
+    const seenTag: { [key: string]: boolean } = {};
+    newTags.forEach((tag: Tag) => {
+      if (tag.original in seenTag) return;
+      seenTag[tag.original] = true;
+      combinedTags.push(tag);
+    });
+    if (existingTags) {
+      existingTags.forEach((tagString: string) => {
+        if (tagString in seenTag) return;
+        seenTag[tagString] = true;
+        combinedTags.push(originalToTag(tagString));
+      });
+    }
+    return combinedTags;
+  };
+
+  const combineSources = (existingSourceIds: number[] | undefined, newSources: number[]): number[] => {
+    const combinedSourcesByIds: number[] = [];
+    const seenSource: { [key: number]: boolean } = {};
+    newSources.forEach((source: number) => {
+      if (source in seenSource) return;
+      seenSource[source] = true;
+      combinedSourcesByIds.push(source);
+    });
+    if (existingSourceIds) {
+      existingSourceIds.forEach((source: number) => {
+        if (source in seenSource) return;
+        seenSource[source] = true;
+        combinedSourcesByIds.push(source);
+      });
+    }
+    return combinedSourcesByIds;
+  };
+
   switch (action.type) {
     case SelectedFilterType.SetSelectedFilter: {
       const selected = action.payload;
-      const { tags, sourceSystemIds } = selected;
+      const { tags, sourcesById } = { ...state, ...selected };
+
       const { showAcked, autoUpdate, show } = { ...state, ...selected };
-      const combinedTags = tags.map(originalToTag);
+
+      // // Combine the tags using the following rules:
+      // // 1. Add selected (not from existing filter) tags first
+      // // 2. Ignore duplicates.
+      const combinedTags: Tag[] = combineTags(state?.existingFilter?.tags, tags);
+      const combinedSourcesByIds: number[] = combineSources(state?.existingFilter?.sourceSystemIds, sourcesById);
+
+      const updated = { tags: combinedTags, sourcesById: combinedSourcesByIds, showAcked, autoUpdate, show };
 
       const filter: IncidentsFilter = {
-        tags: combinedTags,
         sources: undefined,
-        sourcesById: sourceSystemIds,
-        showAcked,
-        autoUpdate,
-        show,
+        ...updated,
       };
-      return { ...state, filter };
+      return { ...state, ...selected, filter };
     }
+
     case SelectedFilterType.UnsetExistingFilter: {
-      const { tags, sourcesById, showAcked, autoUpdate, show } = state;
-      const filter: IncidentsFilter = { tags, sources: undefined, sourcesById, showAcked, autoUpdate, show };
-      return { ...state, existingFilter: undefined, filter };
+      const { showAcked, autoUpdate, show } = state;
+      const updated = { tags: [], sourcesById: [], showAcked, autoUpdate, show };
+      const filter: IncidentsFilter = { ...updated, sources: undefined };
+      return { ...state, ...updated, existingFilter: undefined, filter };
     }
+
     case SelectedFilterType.SetExistingFilter: {
       const existingFilter = action.payload;
+      console.log("setting existingFilter", existingFilter);
+
       const { tags, sourcesById, showAcked, autoUpdate, show } = state;
 
-      // TODO: deal with duplicate tags
+      const combinedTags: Tag[] = combineTags(existingFilter.tags, tags);
+      const combinedSourcesByIds: number[] = combineSources(existingFilter.sourceSystemIds, sourcesById);
+      console.log("combinedTags", combinedTags);
+      console.log("combinedSourcesByIds", combinedSourcesByIds);
+
+      const updated = { tags: combinedTags, sourcesById: combinedSourcesByIds, showAcked, autoUpdate, show };
+
       const filter: IncidentsFilter = {
-        tags: [...tags, ...existingFilter.tags.map(originalToTag)],
-        sources: undefined, // ???
-        sourcesById: [...sourcesById, ...existingFilter.sourceSystemIds],
-        showAcked,
-        autoUpdate,
-        show,
+        sources: undefined,
+        ...updated,
       };
 
-      return { ...state, existingFilter, filter };
+      return {
+        ...state,
+        ...updated, // TODO: document this
+        existingFilter,
+        filter,
+      };
     }
     default:
-      throw new Error(`Unexpected action type ${action.type}`);
+      throw new Error(`Unexpected action type ${action}`);
   }
 };
 
@@ -124,7 +178,7 @@ export const useSelectedFilter = (): [
   {
     setExistingFilter: (filter: Filter) => void;
     unsetExistingFilter: () => void;
-    setSelectedFilter: (filter: Filter) => void;
+    setSelectedFilter: (filter: SelectedFilterProperties) => void;
   },
 ] => {
   const { state, dispatch } = useContext(SelectedFilterContext);
@@ -133,7 +187,8 @@ export const useSelectedFilter = (): [
     {
       setExistingFilter: (filter: Filter) => dispatch({ type: SelectedFilterType.SetExistingFilter, payload: filter }),
       unsetExistingFilter: () => dispatch({ type: SelectedFilterType.UnsetExistingFilter }),
-      setSelectedFilter: (filter: Filter) => dispatch({ type: SelectedFilterType.SetSelectedFilter, payload: filter }),
+      setSelectedFilter: (filter: SelectedFilterProperties) =>
+        dispatch({ type: SelectedFilterType.SetSelectedFilter, payload: filter }),
     },
   ];
 };
