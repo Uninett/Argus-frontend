@@ -485,4 +485,137 @@ const IncidentTable: React.FC<IncidentsProps> = ({
   );
 };
 
+export type MinimalIncidentTablePropsType = {
+  incidents: Incident[];
+  isLoading: boolean;
+};
+
+export const MinimalIncidentTable = ({ incidents, isLoading }: MinimalIncidentTablePropsType) => {
+  const [incidentForDetail, setIncidentForDetail] = useState<Incident | undefined>(undefined);
+
+  const incidentsDictFromProps = useMemo<Revisioned<Map<Incident["pk"], Incident>>>(
+    () => toMap<Incident["pk"], Incident>(incidents, pkGetter),
+    [incidents],
+  );
+
+  const [incidentsDict, setIncidentsDict] = useStateWithDynamicDefault<Revisioned<Map<Incident["pk"], Incident>>>(
+    incidentsDictFromProps,
+  );
+
+  const [incidentsUpdated, setIncidentsUpdated] = useState<Revisioned<Incident[]>>(incidents);
+  const { incidentSnackbar, displayAlertSnackbar }: UseAlertSnackbarResultType = useAlertSnackbar();
+
+  useEffect(() => {
+    // console.log("updating incidents");
+    setIncidentsUpdated([...incidentsDict.values()]);
+  }, [incidentsDict]);
+
+  const handleShowDetail = (incident: Incident) => {
+    setIncidentForDetail(incident);
+  };
+
+  const onModalClose = () => {
+    setIncidentForDetail(undefined);
+  };
+
+  const handleIncidentChange = (incident: Incident, noDelete = false) => {
+    console.log("handling change to incident", incident, "noDelete", noDelete);
+    // TODO: handle acked/unacked changes as well because there is now
+    // the showAcked variable in the "supercomponent" IncidentView that
+    // passes the incidents to the incidentstable.
+    // An alternative is to have a "filter" function that is passed to
+    // this component from the composing component.
+    setIncidentsDict((oldDict: Revisioned<Map<Incident["pk"], Incident>>) => {
+      const newDict: typeof oldDict = new Map<Incident["pk"], Incident>(oldDict);
+      const oldIncident = oldDict.get(incident.pk);
+      if (!oldIncident || incident.open !== oldIncident.open) {
+        if (!incident.open && !noDelete) {
+          // closed
+          newDict.delete(incident.pk);
+        } else {
+          // opened (somehow), or nodelete
+          newDict.set(incident.pk, incident);
+        }
+      } else {
+        // updated in some other way
+        newDict.set(incident.pk, incident);
+      }
+      newDict.revision = (newDict.revision || 1) + 1;
+      //onsole.log("revision", newDict.revision);
+      return newDict;
+    });
+    if (incidentForDetail && incidentForDetail.pk === incident.pk) setIncidentForDetail(incident);
+  };
+
+  // Wrapper for handleIncidentChange but that doesn't remove incidents from
+  // the table until after a couple seconds, so that the user can see what changes
+  // has been made more easily.
+  const handleTimedIncidentChange = (incident: Incident) => {
+    console.log("handling timed change to incident", incident);
+    const oldIncident = incidentsDict.get(incident.pk);
+
+    handleIncidentChange(incident, true);
+
+    if (!oldIncident) return;
+
+    setTimeout(() => {
+      setIncidentsDict((oldDict: Revisioned<Map<Incident["pk"], Incident>>) => {
+        const newDict: typeof oldDict = new Map<Incident["pk"], Incident>(oldDict);
+        const open = true; // TODO: fixme
+        if (incident.open !== open) {
+          newDict.delete(incident.pk);
+        } else {
+          // updated in some other way
+          newDict.set(incident.pk, incident);
+        }
+        newDict.revision = (newDict.revision || 1) + 1;
+        //onsole.log("revision", newDict.revision);
+        return newDict;
+      });
+    }, 5000);
+  };
+
+  const copyCanonicalUrlToClipboard = () => {
+    if (incidentForDetail) {
+      const relativeUrl = `/incidents/${incidentForDetail.pk}/`;
+      const canonicalUrl = `${window.location.protocol}//${window.location.host}${relativeUrl}`;
+      copyTextToClipboard(canonicalUrl);
+    }
+  };
+
+  return (
+    <ClickAwayListener onClickAway={onModalClose}>
+      <div>
+        <Modal
+          open={!!incidentForDetail}
+          title={
+            (incidentForDetail &&
+              `${incidentForDetail.pk}: ${truncateMultilineString(incidentForDetail.description, 50)}`) ||
+            ""
+          }
+          onClose={onModalClose}
+          content={
+            incidentForDetail && (
+              <IncidentDetails
+                key={incidentForDetail.pk}
+                onIncidentChange={handleTimedIncidentChange}
+                incident={incidentForDetail}
+                displayAlertSnackbar={displayAlertSnackbar}
+              />
+            )
+          }
+          actions={
+            <Button autoFocus onClick={copyCanonicalUrlToClipboard} color="primary">
+              Copy URL
+            </Button>
+          }
+          dialogProps={{ maxWidth: "lg", fullWidth: true }}
+        />
+        <MUIIncidentTable isLoading={isLoading} incidents={incidentsUpdated} onShowDetail={handleShowDetail} />
+        {incidentSnackbar}
+      </div>
+    </ClickAwayListener>
+  );
+};
+
 export default IncidentTable;
