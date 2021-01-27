@@ -378,6 +378,9 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
   const [sourceNameById, setSourceNameById] = useState<{ [id: number]: string }>({});
 
   useEffect(() => {
+    // TODO: This could be stored in the global state as well,
+    // because it is useful other places, but it's unnecessary to update
+    // all the time.
     api.getAllIncidentsMetadata().then((incidentMetadata: IncidentMetadata) => {
       setKnownSources(incidentMetadata.sourceSystems.map((source: SourceSystem) => source.name));
       const sourceIdByName: { [name: string]: number } = {};
@@ -400,10 +403,6 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
 
   const onAutoUpdateChange = (autoUpdate: AutoUpdate) => {
     setSelectedFilter({ autoUpdate });
-  };
-
-  const onSourcesChange = (sources: string[] | "AllSources" | undefined) => {
-    // if (sources !== filter.sources) onFilterChange({ ...filter, sources });
   };
 
   const autoUpdateOptions: AutoUpdate[] = ENABLE_WEBSOCKETS_SUPPORT
@@ -433,14 +432,6 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
       />
     </ToolbarItem>
   );
-
-  const handleTagSelectionChange = (selection: Tag[]) => {
-    // compare the arrays deeply
-    if (JSON.stringify(selection) !== JSON.stringify(selectedFilter.filter.tags)) {
-      // onFilterChange({ ...filter, tags: selection });
-      setSelectedFilter({ tags: selection });
-    }
-  };
 
   return (
     <div className={style.root}>
