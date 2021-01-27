@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { withRouter } from "react-router-dom";
 
 import FilteredIncidentTable from "../../components/incidenttable/FilteredIncidentTable";
+import RealtimeIncidentTable from "../../components/incidenttable/RealtimeIncidentTable";
 
 import { IncidentFilterToolbar } from "../../components/incident/IncidentFilterToolbar";
 
@@ -9,6 +10,7 @@ import { IncidentFilterToolbar } from "../../components/incident/IncidentFilterT
 import { useFilters } from "../../api/actions";
 import { useAlerts } from "../../components/alertsnackbar";
 import SelectedFilterProvider from "../../components/filterprovider"; // TODO: move
+import IncidentsProvider from "../../components/incidentsprovider"; // TODO: move
 
 type IncidentViewPropsType = {};
 
