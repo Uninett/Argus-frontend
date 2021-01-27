@@ -7,7 +7,6 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 
 import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
-import Divider from "@material-ui/core/Divider";
 import FormControl from "@material-ui/core/FormControl";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import IconButton from "@material-ui/core/IconButton";
@@ -18,14 +17,16 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 import TextField from "@material-ui/core/TextField";
 import Toolbar from "@material-ui/core/Toolbar";
+import Tooltip from "@material-ui/core/Tooltip";
 import Typography from "@material-ui/core/Typography";
 
 import AddIcon from "@material-ui/icons/Add";
+import ClearIcon from "@material-ui/icons/Clear";
 import SaveAltIcon from "@material-ui/icons/SaveAlt";
 import SettingsIcon from "@material-ui/icons/Settings";
 
 // Components
-import { IncidentsFilter, AutoUpdate } from "../../components/incidenttable/FilteredIncidentTable";
+import { AutoUpdate } from "../../components/incidenttable/FilteredIncidentTable";
 import TagSelector, { Tag } from "../../components/tagselector";
 import SourceSelector from "../../components/sourceselector";
 import FilterDialog from "../../components/filterdialog";
@@ -247,16 +248,22 @@ export const FiltersDropdownToolbarItem = ({ className }: FiltersDropdownToolbar
           IconComponent={() => (
             <>
               {!selectedFilter.existingFilter && (
-                <IconButton onClick={onCreateFilterClick}>
-                  <AddIcon className={style.filterSelectIcon} fontSize="small" />
-                </IconButton>
+                <Tooltip title="Create filter">
+                  <IconButton onClick={onCreateFilterClick}>
+                    <AddIcon className={style.filterSelectIcon} fontSize="small" />
+                  </IconButton>
+                </Tooltip>
               )}
-              <IconButton onClick={onSaveToFilterClick}>
-                <SaveAltIcon className={style.filterSelectIcon} fontSize="small" />
-              </IconButton>
-              <IconButton onClick={() => setEditDialogOpen(true)}>
-                <SettingsIcon className={style.filterSelectIcon} fontSize="small" />
-              </IconButton>
+              <Tooltip title="Save to filter">
+                <IconButton onClick={onSaveToFilterClick}>
+                  <SaveAltIcon className={style.filterSelectIcon} fontSize="small" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Manage filters">
+                <IconButton onClick={() => setEditDialogOpen(true)}>
+                  <SettingsIcon className={style.filterSelectIcon} fontSize="small" />
+                </IconButton>
+              </Tooltip>
             </>
           )}
         >
