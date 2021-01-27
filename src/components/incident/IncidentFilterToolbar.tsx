@@ -23,6 +23,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 
 import AddIcon from "@material-ui/icons/Add";
 import DeleteIcon from "@material-ui/icons/Delete";
+import ClearIcon from "@material-ui/icons/Clear";
 import IconButton from "@material-ui/core/IconButton";
 import SaveAltIcon from "@material-ui/icons/SaveAlt";
 import SettingsIcon from "@material-ui/icons/Settings";
@@ -256,10 +257,16 @@ export const FiltersDropdownToolbarItem = ({ className }: FiltersDropdownToolbar
           }}
           IconComponent={() => (
             <>
-              {!selectedFilter.existingFilter && (
+              {(!selectedFilter.existingFilter && (
                 <Tooltip title="Create filter">
                   <IconButton onClick={onCreateFilterClick}>
                     <AddIcon className={style.filterSelectIcon} fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              )) || (
+                <Tooltip title="Unselect filter">
+                  <IconButton onClick={() => unsetExistingFilter()}>
+                    <ClearIcon className={style.filterSelectIcon} fontSize="small" />
                   </IconButton>
                 </Tooltip>
               )}
@@ -276,9 +283,6 @@ export const FiltersDropdownToolbarItem = ({ className }: FiltersDropdownToolbar
             </>
           )}
         >
-          <MenuItem key="none" value={-1}>
-            None
-          </MenuItem>
           {filters.map((filter: Filter) => (
             <MenuItem key={filter.pk} value={filter.pk}>
               {filter.name}
