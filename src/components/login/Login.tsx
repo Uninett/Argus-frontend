@@ -1,18 +1,23 @@
 import React, { useState } from "react";
 
-import Typography from "@material-ui/core/Typography";
 import { useHistory } from "react-router-dom";
 
-import Auth from "../../auth";
-import { BACKEND_URL } from "../../config";
+// MUI
+import Typography from "@material-ui/core/Typography";
+import { TextFieldProps } from "@material-ui/core/TextField";
+import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+
+// Api
 import api, { Token } from "../../api";
+import Auth from "../../auth";
+
+import { BACKEND_URL } from "../../config";
 import { loginAndSetUser } from "../../utils";
 
+// Components
+import OutlinedTextField from "../../components/textfields/OutlinedTextField";
 import Button from "../../components/buttons/OutlinedButton";
-import TextField from "../../components/textfields/OutlinedTextField";
 import Logo from "../../components/logo/Logo";
-
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -51,8 +56,30 @@ const useStyles = makeStyles((theme: Theme) =>
     logo: {
       minHeight: "150px",
     },
+    whiteTextInput: {
+      color: "white",
+    },
   }),
 );
+
+const WhiteOutlinedTextField = (props: TextFieldProps) => {
+  const style = useStyles();
+  return (
+    <OutlinedTextField
+      InputProps={{
+        classes: {
+          input: style.whiteTextInput,
+        },
+      }}
+      InputLabelProps={{
+        classes: {
+          root: style.whiteTextInput,
+        },
+      }}
+      {...props}
+    />
+  );
+};
 
 const LoginForm: React.FC<{}> = () => {
   const style = useStyles();
@@ -91,7 +118,7 @@ const LoginForm: React.FC<{}> = () => {
         <div className={style.loginItem}>
           <Logo className={style.logo} />
         </div>
-        <TextField
+        <WhiteOutlinedTextField
           error={loginFailed}
           className={style.loginItem}
           variant="outlined"
@@ -102,7 +129,7 @@ const LoginForm: React.FC<{}> = () => {
             setUsername(value);
           }}
         />
-        <TextField
+        <WhiteOutlinedTextField
           error={loginFailed}
           helperText={loginFailed && "Wrong username or password"}
           className={style.loginItem}
