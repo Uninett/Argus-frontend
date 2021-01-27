@@ -247,10 +247,16 @@ export const FiltersDropdownToolbarItem = ({ className }: FiltersDropdownToolbar
           }}
           IconComponent={() => (
             <>
-              {!selectedFilter.existingFilter && (
+              {(!selectedFilter.existingFilter && (
                 <Tooltip title="Create filter">
                   <IconButton onClick={onCreateFilterClick}>
                     <AddIcon className={style.filterSelectIcon} fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              )) || (
+                <Tooltip title="Unselect filter">
+                  <IconButton onClick={() => unsetExistingFilter()}>
+                    <ClearIcon className={style.filterSelectIcon} fontSize="small" />
                   </IconButton>
                 </Tooltip>
               )}
@@ -267,9 +273,6 @@ export const FiltersDropdownToolbarItem = ({ className }: FiltersDropdownToolbar
             </>
           )}
         >
-          <MenuItem key="none" value={-1}>
-            None
-          </MenuItem>
           {filters.map((filter: Filter) => (
             <MenuItem key={filter.pk} value={filter.pk}>
               {filter.name}
