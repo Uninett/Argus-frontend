@@ -19,7 +19,7 @@ import auth from "./auth";
 import { ThemeProvider } from "@material-ui/core/styles";
 import { MUI_THEME } from "./colorscheme";
 
-import { useAlertSnackbar, AlertsContext } from "./components/alertsnackbar";
+import { AlertSnackbarProvider } from "./components/alertsnackbar";
 import Header from "./components/header/Header";
 
 // eslint-disable-next-line
@@ -36,7 +36,7 @@ const withHeader = (Component: any) => {
 };
 
 const App: React.SFC = () => {
-  const { incidentSnackbar, displayAlertSnackbar } = useAlertSnackbar();
+  // const { incidentSnackbar, displayAlertSnackbar } = useAlertSnackbar();
 
   const history = useHistory();
   api.registerUnauthorizedCallback(() => {
@@ -48,7 +48,7 @@ const App: React.SFC = () => {
   return (
     <div>
       <ThemeProvider theme={MUI_THEME}>
-        <AlertsContext.Provider value={displayAlertSnackbar}>
+        <AlertSnackbarProvider>
           <Switch>
             <ProtectedRoute exact path="/" component={withHeader(IncidentView)} />
             <ProtectedRoute path="/incidents/:pk" component={withHeader(IncidentDetailsView)} />
@@ -66,8 +66,7 @@ const App: React.SFC = () => {
               )}
             />
           </Switch>
-        </AlertsContext.Provider>
-        {incidentSnackbar}
+        </AlertSnackbarProvider>
       </ThemeProvider>
     </div>
   );

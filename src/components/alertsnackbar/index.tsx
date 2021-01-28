@@ -100,6 +100,42 @@ export const useAlertSnackbar = (): UseAlertSnackbarResultType => {
 
 export const AlertsContext = createContext<UseAlertSnackbarResultType["displayAlertSnackbar"]>(() => undefined);
 
+export const AlertSnackbarProvider = ({ children }: { children?: React.ReactNode }) => {
+  const [state, setState] = useState<AlertSnackbarState>({
+    message: "",
+    severity: "info",
+    open: false,
+  });
+
+  const onOpen = () => {
+    setState((state: AlertSnackbarState) => ({ ...state, open: true }));
+  };
+
+  const onClose = () => {
+    setState((state: AlertSnackbarState) => ({ ...state, open: false, keepOpen: false }));
+  };
+
+  const component = <AlertSnackbar onOpen={onOpen} onClose={onClose} {...state} />;
+
+  const displayAlertSnackbar = (message: string, severity?: AlertSnackbarSeverity) => {
+    if (message === state.message && severity === state.severity && state.open) return;
+
+    debuglog(`Displaying message with severity ${severity}: ${message}`);
+    setState((state: AlertSnackbarState) => {
+      return { ...state, open: true, message, severity: severity || "success", keepOpen: severity === "error" };
+    });
+  };
+
+  return (
+    <AlertsContext.Provider value={displayAlertSnackbar}>
+      <>
+        {children}
+        {component}
+      </>
+    </AlertsContext.Provider>
+  );
+};
+
 export const useAlerts = (): typeof displayAlertSnackbar => {
   const displayAlertSnackbar = useContext(AlertsContext);
   return displayAlertSnackbar;
