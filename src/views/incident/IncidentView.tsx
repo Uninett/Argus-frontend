@@ -9,8 +9,13 @@ import { IncidentFilterToolbar } from "../../components/incident/IncidentFilterT
 // Context/Hooks
 import { useFilters } from "../../api/actions";
 import { useAlerts } from "../../components/alertsnackbar";
-import SelectedFilterProvider from "../../components/filterprovider"; // TODO: move
+import SelectedFilterProvider, { useSelectedFilter } from "../../components/filterprovider"; // TODO: move
 import IncidentsProvider from "../../components/incidentsprovider"; // TODO: move
+
+const IncidentComponent = () => {
+  const [{ filter }, {}] = useSelectedFilter();
+  return filter.autoUpdate === "realtime" ? <RealtimeIncidentTable /> : <FilteredIncidentTable />;
+};
 
 type IncidentViewPropsType = {};
 
@@ -28,8 +33,10 @@ const IncidentView: React.FC<IncidentViewPropsType> = () => {
   return (
     <div>
       <SelectedFilterProvider>
-        <IncidentFilterToolbar />
-        <FilteredIncidentTable />
+        <IncidentsProvider>
+          <IncidentFilterToolbar />
+          <IncidentComponent />
+        </IncidentsProvider>
       </SelectedFilterProvider>
     </div>
   );
