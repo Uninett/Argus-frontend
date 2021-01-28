@@ -1,8 +1,10 @@
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 
-import yellow from "@material-ui/core/colors/yellow";
+import grey from "@material-ui/core/colors/grey";
 import green from "@material-ui/core/colors/green";
+import blue from "@material-ui/core/colors/blue";
 import red from "@material-ui/core/colors/red";
+import yellow from "@material-ui/core/colors/yellow";
 
 import { WHITE } from "../../colorscheme";
 
@@ -46,6 +48,15 @@ export const useStyles = makeStyles((theme: Theme) =>
       borderLeftWidth: "10px",
       borderLeftStyle: "solid",
       borderLeftColor: "transparent",
+    },
+    tableRowHeadRealtime: {
+      borderBottomWidth: "5px",
+      borderBottomStyle: "solid",
+      borderBottomColor: blue["300"],
+    },
+    tableRowHeadNormal: {},
+    tableRowLoading: {
+      borderLeftColor: grey["300"],
     },
     tableRowAcked: {
       borderLeftColor: yellow["300"],
