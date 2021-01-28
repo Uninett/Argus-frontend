@@ -23,7 +23,7 @@ const initialIncidentsState: IncidentsStateType = {
   _indexByPk: {},
 };
 
-enum IncidentsType {
+export enum IncidentsType {
   LoadAll = "LOAD_ALL_INCIDENTS",
   ModifyIncident = "MODIFY_INCIDENT",
   RemoveIncident = "REMOVE_INCIDENT",
@@ -144,13 +144,16 @@ export const IncidentsProvider = ({ children }: { children?: React.ReactNode }) 
   return <IncidentsContext.Provider value={{ state, dispatch }}>{children}</IncidentsContext.Provider>;
 };
 
-export const useIncidents = (): [
+type IncidentsDispatch = React.Dispatch<IncidentsActions>;
+
+export const useIncidentsContext = (): [
   IncidentsStateType,
   {
     loadAllIncidents: (incidents: Incident[]) => void;
     modifyIncident: (incident: Incident) => void;
     removeIncident: (pk: Incident["pk"]) => void;
     addIncident: (incident: Incident) => void;
+    dispatch: IncidentsDispatch;
   },
 ] => {
   const { state, dispatch } = useContext(IncidentsContext);
@@ -161,6 +164,7 @@ export const useIncidents = (): [
       modifyIncident: (incident: Incident) => dispatch({ type: IncidentsType.ModifyIncident, payload: incident }),
       removeIncident: (pk: Incident["pk"]) => dispatch({ type: IncidentsType.RemoveIncident, payload: pk }),
       addIncident: (incident: Incident) => dispatch({ type: IncidentsType.AddIncident, payload: incident }),
+      dispatch,
     },
   ];
 };
