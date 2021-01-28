@@ -69,10 +69,13 @@ const RealtimeIncidentTable = () => {
   const [filterMatcher, setFilterMatcher] = useState<(incident: Incident) => boolean>(() => false);
 
   useEffect(() => {
+    setIsLoading(true);
     // We still load incidents initially using REST, because
     // the websockets implementation in the backend is lacking
     // some features....
-    loadIncidentsFiltered({ showAcked, show, tags, sourcesById, autoUpdate });
+    loadIncidentsFiltered({ showAcked, show, tags, sourcesById, autoUpdate }).then(() => {
+      setIsLoading(false);
+    });
 
     // In order for the websockets callbacks to call the updated filter matching
     // function we need to create a new such function every time the filter changes.
@@ -110,7 +113,7 @@ const RealtimeIncidentTable = () => {
       removeIncident(incident.pk);
     };
 
-    const onIncidentsInitial = (incidents: Incident[]) => {
+    const onIncidentsInitial = (/* incidents: Incident[] */) => {
       // const matchesFilter = incidents.filter((incident: Incident) =>
       //   incidentMatchesFilter(incident, { showAcked, show, tags, sourcesById, autoUpdate }),
       // );
@@ -126,13 +129,14 @@ const RealtimeIncidentTable = () => {
       onIncidentsInitial,
     });
     rts.connect();
-    console.log("created rts and connect()");
+    console.debug("created rts and connect()");
     displayAlert("Realtime enabled", "success");
 
     return () => {
-      console.log("disconnecting rts");
+      console.debug("disconnecting rts");
       displayAlert("Realtime disconnected", "warning");
       rts.disconnect();
+      setIsLoadingRealtime(true);
     };
     // When the websockets backend implementation support taking filters
     // this might be useful:
