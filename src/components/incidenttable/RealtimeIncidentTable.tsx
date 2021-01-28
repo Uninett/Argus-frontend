@@ -5,15 +5,16 @@ import { Incident, IncidentTag } from "../../api";
 import { RealtimeService } from "../../services/RealtimeService";
 
 // Contexts/Hooks
+import { useAlerts } from "../../components/alertsnackbar";
+import { useIncidents } from "../../api/actions";
+import { useIncidentsContext } from "../../components/incidentsprovider";
 import { useSelectedFilter } from "../../components/filterprovider";
-import { useIncidents } from "../../components/incidentsprovider";
 
 // Utils
 import { groupBy } from "../../utils";
 
 // Components
 import { MinimalIncidentTable } from "./IncidentTable";
-import { IncidentsFilter } from "../../components/incidenttable/FilteredIncidentTable";
 import { Tag } from "../../components/tagselector";
 
 // for all different tags "keys", THERE HAS TO BE ONE tag with
@@ -29,6 +30,7 @@ const matchesOnTags = (incident: Incident, tags: Tag[]): boolean => {
     const tagsOnKey = tagsGroupedByKey.get(tagKey) || new Set<Tag>();
     return [...tagsOnKey.values()].some((tag: Tag) => incidentTagsSet.has(tag.original));
   });
+  console.log("incidentTagsSet", incidentTagsSet, "tagsGroupedByKey", tagsGroupedByKey);
   return returnVal;
 };
 
@@ -52,19 +54,30 @@ const matchesAcked = (incident: Incident, showAcked: boolean): boolean => {
 type RealtimeIncidentTablePropsType = {};
 
 const RealtimeIncidentTable = () => {
+  const displayAlert = useAlerts();
+
   const [
     {
       filter: { showAcked, show, tags, sourcesById, autoUpdate },
     },
     {},
   ] = useSelectedFilter();
-  const [{ incidents }, { loadAllIncidents, addIncident, modifyIncident, removeIncident }] = useIncidents();
+  const [{ incidents }, { loadAllIncidents, addIncident, modifyIncident, removeIncident }] = useIncidentsContext();
+  const [{}, { loadIncidentsFiltered }] = useIncidents();
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoadingRealtime, setIsLoadingRealtime] = useState<boolean>(true);
+  const [filterMatcher, setFilterMatcher] = useState<(incident: Incident) => boolean>(() => false);
 
   useEffect(() => {
-    setIsLoading(true);
+    // We still load incidents initially using REST, because
+    // the websockets implementation in the backend is lacking
+    // some features....
+    loadIncidentsFiltered({ showAcked, show, tags, sourcesById, autoUpdate });
 
-    const incidentMatchesFilter = (incident: Incident, filter: Omit<IncidentsFilter, "sources">): boolean => {
+    // In order for the websockets callbacks to call the updated filter matching
+    // function we need to create a new such function every time the filter changes.
+    const incidentMatchesFilter = (incident: Incident): boolean => {
+      const filter = { showAcked, show, tags, sourcesById, autoUpdate };
       const matches =
         matchesShow(incident, filter.show) &&
         matchesAcked(incident, filter.showAcked) &&
@@ -72,15 +85,21 @@ const RealtimeIncidentTable = () => {
         matchesOnSources(incident, filter.sourcesById);
       return matches;
     };
+    setFilterMatcher(() => incidentMatchesFilter);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showAcked, show, tags, sourcesById, autoUpdate]);
+
+  useEffect(() => {
+    setIsLoadingRealtime(true);
 
     const onIncidentAdded = (incident: Incident) => {
-      if (incidentMatchesFilter(incident, { showAcked, show, tags, sourcesById, autoUpdate })) {
+      if (filterMatcher(incident)) {
         addIncident(incident);
       }
     };
 
     const onIncidentModified = (incident: Incident) => {
-      if (incidentMatchesFilter(incident, { showAcked, show, tags, sourcesById, autoUpdate })) {
+      if (filterMatcher(incident)) {
         modifyIncident(incident);
       } else {
         removeIncident(incident.pk);
@@ -92,11 +111,12 @@ const RealtimeIncidentTable = () => {
     };
 
     const onIncidentsInitial = (incidents: Incident[]) => {
-      const matchesFilter = incidents.filter((incident: Incident) =>
-        incidentMatchesFilter(incident, { showAcked, show, tags, sourcesById, autoUpdate }),
-      );
-      loadAllIncidents(matchesFilter);
-      setIsLoading(false);
+      // const matchesFilter = incidents.filter((incident: Incident) =>
+      //   incidentMatchesFilter(incident, { showAcked, show, tags, sourcesById, autoUpdate }),
+      // );
+      // loadAllIncidents(matchesFilter);
+      // setIsLoading(false);
+      setIsLoadingRealtime(false);
     };
 
     const rts = new RealtimeService({
@@ -107,13 +127,18 @@ const RealtimeIncidentTable = () => {
     });
     rts.connect();
     console.log("created rts and connect()");
+    displayAlert("Realtime enabled", "success");
 
     return () => {
       console.log("disconnecting rts");
+      displayAlert("Realtime disconnected", "warning");
       rts.disconnect();
     };
+    // When the websockets backend implementation support taking filters
+    // this might be useful:
+    //}, [showAcked, show, tags, sourcesById, autoUpdate]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showAcked, show, tags, sourcesById, autoUpdate]);
+  }, []);
 
   return <MinimalIncidentTable isLoading={isLoading} incidents={incidents} />;
 };
