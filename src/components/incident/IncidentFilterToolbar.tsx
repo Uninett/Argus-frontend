@@ -250,10 +250,10 @@ export const FiltersDropdownToolbarItem = ({ className }: FiltersDropdownToolbar
           variant="outlined"
           labelId="filter-select"
           id="filter-select"
-          value={selectedFilter?.existingFilter?.pk || -1}
+          value={selectedFilter?.existingFilter?.pk || ""}
           onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
-            const pk: number | -1 = event.target.value as number;
-            if (pk === -1) {
+            const pk: number | "" = event.target.value as number | "";
+            if (pk === "") {
               unsetExistingFilter();
             } else {
               const filter: Filter | undefined = filters.find((filter: Filter) => filter.pk === pk);
