@@ -18,15 +18,11 @@ import CardContent from "@material-ui/core/CardContent";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 
-import DateFnsUtils from "@date-io/date-fns";
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
-
 import Skeleton from "@material-ui/lab/Skeleton";
 
 import { useStateWithDynamicDefault } from "../../utils";
 import { formatDuration, formatTimestamp } from "../../utils";
 
-import { makeConfirmationButton } from "../../components/buttons/ConfirmationButton";
 import CenterContainer from "../../components/centercontainer";
 
 import api, {
@@ -40,8 +36,9 @@ import api, {
 } from "../../api";
 
 import SignedMessage from "./SignedMessage";
-import SignOffAction from "./SignOffAction";
 import { useStyles } from "./styles";
+import ManualClose from "./ManualCloseSignOffAction";
+import CreateAck from "./CreateAckSignOffAction";
 
 import { AckedItem, OpenItem, TicketItem } from "../incident/Chips";
 
@@ -228,94 +225,6 @@ const AckListItem: React.FC<AckListItemPropsType> = ({ ack }: AckListItemPropsTy
       />
     </div>
   );
-};
-
-type CreateAckPropsType = {
-  onSubmitAck: (ack: AcknowledgementBody) => void;
-};
-
-const CreateAck: React.FC<CreateAckPropsType> = ({ onSubmitAck }: CreateAckPropsType) => {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-
-  const handleSubmit = (msg: string) => {
-    // TODO: switch to use API when implemented in backend
-    onSubmitAck({
-      event: {
-        description: msg,
-        timestamp: new Date().toISOString(),
-      },
-      expiration: selectedDate && selectedDate.toISOString(),
-    });
-  };
-
-  const handleDateChange = (date: Date | null) => {
-    setSelectedDate(date);
-  };
-
-  return (
-    <SignOffAction
-      dialogTitle="Submit acknowledment"
-      dialogContentText="Write a message describing why this incident was acknowledged "
-      dialogSubmitText="Submit"
-      dialogCancelText="Cancel"
-      dialogButtonText="Create acknowledegment"
-      title="Submit acknowledment"
-      question="Are you sure you want to acknowledge this incident?"
-      onSubmit={handleSubmit}
-    >
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <KeyboardDatePicker
-          disableToolbar
-          format="MM/dd/yyyy"
-          margin="normal"
-          id="expiry-date"
-          label="Expiry date"
-          value={selectedDate}
-          onChange={handleDateChange}
-          KeyboardButtonProps={{
-            "aria-label": "change date",
-          }}
-        />
-      </MuiPickersUtilsProvider>
-    </SignOffAction>
-  );
-};
-
-type ManualClosePropsType = {
-  open: boolean;
-  onManualClose: (msg: string) => void;
-  onManualOpen: () => void;
-};
-
-const ManualClose: React.FC<ManualClosePropsType> = ({ open, onManualClose, onManualOpen }: ManualClosePropsType) => {
-  const classes = useStyles();
-
-  if (open) {
-    return (
-      <SignOffAction
-        dialogTitle="Manually close incident"
-        dialogContentText="Write a message describing why the incident was manually closed"
-        dialogSubmitText="Close now"
-        dialogCancelText="Cancel"
-        dialogButtonText="Close incident"
-        title="Manually close incident"
-        question="Are you sure you want to close this incident?"
-        onSubmit={onManualClose}
-      />
-    );
-  } else {
-    const ReopenButton = makeConfirmationButton({
-      title: "Reopen incident",
-      question: "Are you sure you want to reopen this incident?",
-      onConfirm: onManualOpen,
-    });
-
-    return (
-      <ReopenButton variant="contained" className={classes.dangerousButton}>
-        Reopen incident
-      </ReopenButton>
-    );
-  }
 };
 
 type IncidentDetailsPropsType = {
