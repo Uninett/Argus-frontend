@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 export type OutlinedButtonPropsType = ButtonProps & {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   className?: string;
 };
 
