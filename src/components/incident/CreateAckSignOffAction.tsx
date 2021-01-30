@@ -10,17 +10,17 @@ import DateFnsUtils from "@date-io/date-fns";
 import { AcknowledgementBody } from "../../api";
 
 // Components
-import SignOffAction from "./SignOffAction";
+import SignOffAction, { SignOffActionPropsType } from "./SignOffAction";
 
 type CreateAckPropsType = {
   onSubmitAck: (ack: AcknowledgementBody) => void;
+  signOffActionProps?: Partial<SignOffActionPropsType>;
 };
 
-const CreateAck: React.FC<CreateAckPropsType> = ({ onSubmitAck }: CreateAckPropsType) => {
+const CreateAck: React.FC<CreateAckPropsType> = ({ onSubmitAck, signOffActionProps = {} }: CreateAckPropsType) => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   const handleSubmit = (msg: string) => {
-    // TODO: switch to use API when implemented in backend
     onSubmitAck({
       event: {
         description: msg,
@@ -28,6 +28,7 @@ const CreateAck: React.FC<CreateAckPropsType> = ({ onSubmitAck }: CreateAckProps
       },
       expiration: selectedDate && selectedDate.toISOString(),
     });
+    setSelectedDate(null);
   };
 
   const handleDateChange = (date: Date | null) => {
@@ -44,6 +45,7 @@ const CreateAck: React.FC<CreateAckPropsType> = ({ onSubmitAck }: CreateAckProps
       title="Submit acknowledment"
       question="Are you sure you want to acknowledge this incident?"
       onSubmit={handleSubmit}
+      {...signOffActionProps}
     >
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <KeyboardDatePicker
