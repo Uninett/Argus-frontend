@@ -153,6 +153,7 @@ export const useIncidentsContext = (): [
     modifyIncident: (incident: Incident) => void;
     removeIncident: (pk: Incident["pk"]) => void;
     addIncident: (incident: Incident) => void;
+    incidentByPk: (pk: Incident["pk"]) => Incident | undefined;
     dispatch: IncidentsDispatch;
   },
 ] => {
@@ -164,6 +165,13 @@ export const useIncidentsContext = (): [
       modifyIncident: (incident: Incident) => dispatch({ type: IncidentsType.ModifyIncident, payload: incident }),
       removeIncident: (pk: Incident["pk"]) => dispatch({ type: IncidentsType.RemoveIncident, payload: pk }),
       addIncident: (incident: Incident) => dispatch({ type: IncidentsType.AddIncident, payload: incident }),
+      incidentByPk: (pk: Incident["pk"]): Incident | undefined => {
+        if (pk in state._indexByPk) {
+          const index = state._indexByPk[pk];
+          return state.incidents[index];
+        }
+        return undefined;
+      },
       dispatch,
     },
   ];

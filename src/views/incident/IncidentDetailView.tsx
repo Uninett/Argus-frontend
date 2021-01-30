@@ -5,16 +5,16 @@ import { useParams } from "react-router-dom";
 import Typography from "@material-ui/core/Typography";
 
 import api, { Incident } from "../../api";
-import { useAlertSnackbar, UseAlertSnackbarResultType } from "../../components/alertsnackbar";
+import { useAlerts } from "../../components/alertsnackbar";
 
 import IncidentDetails from "../../components/incident/IncidentDetails";
 
 type IncidentDetailsViewPropsType = {};
 
 export const IncidentDetailsView: React.FC<IncidentDetailsViewPropsType> = () => {
+  const displayAlert = useAlerts();
   const { pk } = useParams<{ pk: string | undefined }>();
 
-  const { incidentSnackbar, displayAlertSnackbar }: UseAlertSnackbarResultType = useAlertSnackbar();
   const [incident, setIncident] = useState<Incident | undefined | null>(undefined);
 
   useEffect(() => {
@@ -24,7 +24,7 @@ export const IncidentDetailsView: React.FC<IncidentDetailsViewPropsType> = () =>
         setIncident(incident);
       })
       .catch(() => {
-        displayAlertSnackbar(`Failed to get incident with pk=${pk}`, "error");
+        displayAlert(`Failed to get incident with pk=${pk}`, "error");
         setIncident(null);
       });
     // FIXME:
@@ -39,12 +39,7 @@ export const IncidentDetailsView: React.FC<IncidentDetailsViewPropsType> = () =>
 
   return (
     <>
-      {incidentSnackbar}
-      <IncidentDetails
-        incident={incident}
-        onIncidentChange={(incident: Incident) => setIncident(incident)}
-        displayAlertSnackbar={displayAlertSnackbar}
-      />
+      <IncidentDetails incident={incident} onIncidentChange={(incident: Incident) => setIncident(incident)} />
     </>
   );
 };

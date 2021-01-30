@@ -27,7 +27,6 @@ import { useStateWithDynamicDefault } from "../../utils";
 import { formatDuration, formatTimestamp } from "../../utils";
 
 import { makeConfirmationButton } from "../../components/buttons/ConfirmationButton";
-import { UseAlertSnackbarResultType } from "../../components/alertsnackbar";
 import CenterContainer from "../../components/centercontainer";
 
 import api, {
@@ -39,13 +38,16 @@ import api, {
   Acknowledgement,
   AcknowledgementBody,
 } from "../../api";
-import { useApiIncidentAcks, useApiIncidentEvents } from "../../api/hooks";
 
 import SignedMessage from "./SignedMessage";
 import SignOffAction from "./SignOffAction";
 import { useStyles } from "./styles";
 
 import { AckedItem, OpenItem, TicketItem } from "../incident/Chips";
+
+// Contexts/Hooks
+import { useAlerts } from "../../components/alertsnackbar";
+import { useApiIncidentAcks, useApiIncidentEvents } from "../../api/hooks";
 
 type IncidentDetailsListItemPropsType = {
   title: string;
@@ -319,15 +321,14 @@ const ManualClose: React.FC<ManualClosePropsType> = ({ open, onManualClose, onMa
 type IncidentDetailsPropsType = {
   incident: Incident;
   onIncidentChange: (incident: Incident) => void;
-  displayAlertSnackbar: UseAlertSnackbarResultType["displayAlertSnackbar"];
 };
 
 const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
   incident,
   onIncidentChange,
-  displayAlertSnackbar,
 }: IncidentDetailsPropsType) => {
   const classes = useStyles();
+  const displayAlert = useAlerts();
 
   const [{ result: acks, isLoading: isAcksLoading }, setAcksPromise] = useApiIncidentAcks();
   const [{ result: events, isLoading: isEventsLoading }, setEventsPromise] = useApiIncidentEvents();
@@ -362,11 +363,11 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .then((event: Event) => {
         // TODO: add close event to list of events
-        displayAlertSnackbar(`Closed incident ${incident && incident.pk}`, "success");
+        displayAlert(`Closed incident ${incident && incident.pk}`, "success");
         onIncidentChange({ ...incident, open: false });
       })
       .catch((error) => {
-        displayAlertSnackbar(`Failed to close incident ${incident && incident.pk} - ${error}`, "error");
+        displayAlert(`Failed to close incident ${incident && incident.pk} - ${error}`, "error");
       });
   };
 
@@ -376,11 +377,11 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .then((event: Event) => {
         // TODO: add open event to list of events
-        displayAlertSnackbar(`Reopened incident ${incident && incident.pk}`, "success");
+        displayAlert(`Reopened incident ${incident && incident.pk}`, "success");
         onIncidentChange({ ...incident, open: true });
       })
       .catch((error) => {
-        displayAlertSnackbar(`Failed to reopen incident ${incident && incident.pk} - ${error}`, "error");
+        displayAlert(`Failed to reopen incident ${incident && incident.pk} - ${error}`, "error");
       });
   };
 
@@ -477,13 +478,13 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                         .patchIncidentTicketUrl(incident.pk, url || "")
                         // eslint-disable-next-line @typescript-eslint/camelcase
                         .then(({ ticket_url }: IncidentTicketUrlBody) => {
-                          displayAlertSnackbar(`Updated ticket URL for ${incident.pk}`, "success");
+                          displayAlert(`Updated ticket URL for ${incident.pk}`, "success");
 
                           // eslint-disable-next-line @typescript-eslint/camelcase
                           onIncidentChange({ ...incident, ticket_url });
                         })
                         .catch((error) => {
-                          displayAlertSnackbar(`Failed to updated ticket URL ${error}`, "error");
+                          displayAlert(`Failed to updated ticket URL ${error}`, "error");
                         });
                     }}
                   />
@@ -524,17 +525,14 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                   api
                     .postAck(incident.pk, ack)
                     .then((ack: Acknowledgement) => {
-                      displayAlertSnackbar(
-                        `Submitted ${ack.event.type.display} for ${incident && incident.pk}`,
-                        "success",
-                      );
+                      displayAlert(`Submitted ${ack.event.type.display} for ${incident && incident.pk}`, "success");
                       // NOTE: this assumes that nothing about the incident
                       // changes in the backend response other than the acked
                       // field, which may not be true in the future.
                       onIncidentChange({ ...incident, acked: true });
                     })
                     .catch((error) => {
-                      displayAlertSnackbar(`Failed to post ack ${error}`, "error");
+                      displayAlert(`Failed to post ack ${error}`, "error");
                     });
                 }}
               />
