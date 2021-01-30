@@ -93,7 +93,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
 }: MUIIncidentTablePropsType) => {
   const style = useStyles();
 
-  type SelectionState = "SelectedAll" | Set<Incident["pk"]>;
+  type SelectionState = Set<Incident["pk"]>;
   const [selectedIncidents, setSelectedIncidents] = useState<SelectionState>(new Set<Incident["pk"]>([]));
 
   type IncidentOrderableFields = Pick<Incident, "start_time">;
@@ -110,22 +110,8 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
     onShowDetail(incident);
   };
 
-  const handleToggleSelectAll = () => {
-    setSelectedIncidents((oldSelectedIncidents: SelectionState) => {
-      if (oldSelectedIncidents === "SelectedAll") {
-        return new Set<Incident["pk"]>([]);
-      }
-      return "SelectedAll";
-    });
-  };
-
   const handleSelectIncident = (incident: Incident) => {
     setSelectedIncidents((oldSelectedIncidents: SelectionState) => {
-      if (oldSelectedIncidents === "SelectedAll") {
-        const newSelected = new Set<Incident["pk"]>([...incidents.map((incident: Incident) => incident.pk)]);
-        newSelected.delete(incident.pk);
-        return newSelected;
-      }
       const newSelectedIncidents = new Set<Incident["pk"]>(oldSelectedIncidents);
       if (oldSelectedIncidents.has(incident.pk)) {
         newSelectedIncidents.delete(incident.pk);
@@ -136,21 +122,24 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
     });
   };
 
+  const multiSelect = true;
+
   return (
     <Paper>
-      {false && <IncidentTableToolbar isLoading={isLoading} selectedIncidents={selectedIncidents} />}
+      {multiSelect && (
+        <IncidentTableToolbar
+          isLoading={isLoading}
+          selectedIncidents={selectedIncidents}
+          onClearSelection={() => setSelectedIncidents(new Set<Incident["pk"]>([]))}
+        />
+      )}
       <TableContainer component={Paper}>
         <MuiTable size="small" aria-label="incident table">
           <TableHead>
             <TableRow
               className={classNames(style.tableRow, isRealtime ? style.tableRowHeadRealtime : style.tableRowHeadNormal)}
             >
-              {/* TODO: Not implemented yet */}
-              {false && (
-                <TableCell padding="checkbox" onClick={() => handleToggleSelectAll()}>
-                  <Checkbox disabled={isLoading} checked={selectedIncidents === "SelectedAll"} />
-                </TableCell>
-              )}
+              {multiSelect && <TableCell></TableCell>}
               <TableCell>Timestamp</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Source</TableCell>
@@ -201,7 +190,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                     <TableCell onClick={(event) => handleRowClick(event, incident)} {...props} />
                   );
 
-                  const isSelected = selectedIncidents === "SelectedAll" || selectedIncidents.has(incident.pk);
+                  const isSelected = selectedIncidents.has(incident.pk);
 
                   return (
                     <TableRow
@@ -220,8 +209,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                           : style.tableRowClosed,
                       )}
                     >
-                      {/* TODO: Not implemented yet */}
-                      {false && (
+                      {multiSelect && (
                         <TableCell padding="checkbox" onClick={() => handleSelectIncident(incident)}>
                           <Checkbox disabled={isLoading} checked={isSelected} />
                         </TableCell>
