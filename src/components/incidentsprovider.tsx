@@ -130,6 +130,47 @@ export const incidentsReducer = (state: IncidentsStateType, action: IncidentsAct
   }
 };
 
+// Actions
+
+type Dispatch = React.Dispatch<IncidentsActions>;
+
+export const loadAllIncidents = (dispatch: Dispatch, incidents: Incident[]) =>
+  dispatch({ type: IncidentsType.LoadAll, payload: incidents });
+
+export const modifyIncident = (dispatch: Dispatch, incident: Incident) =>
+  dispatch({ type: IncidentsType.ModifyIncident, payload: incident });
+
+export const removeIncident = (dispatch: Dispatch, pk: Incident["pk"]) =>
+  dispatch({ type: IncidentsType.RemoveIncident, payload: pk });
+
+export const addIncident = (dispatch: Dispatch, incident: Incident) =>
+  dispatch({ type: IncidentsType.AddIncident, payload: incident });
+
+const findIncidentByPk = (state: IncidentsStateType, pk: Incident["pk"]): Incident | undefined => {
+  if (pk in state._indexByPk) {
+    const index = state._indexByPk[pk];
+    return state.incidents[index];
+  }
+  return undefined;
+};
+
+export const closeIncident = (state: IncidentsStateType, dispatch: Dispatch, pk: Incident["pk"]) => {
+  const incident: Incident | undefined = findIncidentByPk(state, pk);
+  if (!incident) {
+    throw new Error(`Unable to close incident with pk: ${pk}, couldn't find incident`);
+  }
+  modifyIncident(dispatch, { ...incident, open: false });
+};
+
+export const reopenIncident = (state: IncidentsStateType, dispatch: Dispatch, pk: Incident["pk"]) => {
+  const incident: Incident | undefined = findIncidentByPk(state, pk);
+  if (!incident) {
+    throw new Error(`Unable to reopen incident with pk: ${pk}, couldn't find incident`);
+  }
+  modifyIncident(dispatch, { ...incident, open: true });
+};
+
+// Context
 export const IncidentsContext = createContext<{
   state: IncidentsStateType;
   dispatch: React.Dispatch<IncidentsActions>;
@@ -144,8 +185,6 @@ export const IncidentsProvider = ({ children }: { children?: React.ReactNode }) 
   return <IncidentsContext.Provider value={{ state, dispatch }}>{children}</IncidentsContext.Provider>;
 };
 
-type IncidentsDispatch = React.Dispatch<IncidentsActions>;
-
 export const useIncidentsContext = (): [
   IncidentsStateType,
   {
@@ -153,25 +192,38 @@ export const useIncidentsContext = (): [
     modifyIncident: (incident: Incident) => void;
     removeIncident: (pk: Incident["pk"]) => void;
     addIncident: (incident: Incident) => void;
+
+    // Helpers
     incidentByPk: (pk: Incident["pk"]) => Incident | undefined;
-    dispatch: IncidentsDispatch;
+    closeIncident: (pk: Incident["pk"]) => void;
+    reopenIncident: (pk: Incident["pk"]) => void;
+    acknowledgeIncident: (pk: Incident["pk"]) => void;
+
+    dispatch: Dispatch;
   },
 ] => {
   const { state, dispatch } = useContext(IncidentsContext);
   return [
     state,
     {
-      loadAllIncidents: (incidents: Incident[]) => dispatch({ type: IncidentsType.LoadAll, payload: incidents }),
-      modifyIncident: (incident: Incident) => dispatch({ type: IncidentsType.ModifyIncident, payload: incident }),
-      removeIncident: (pk: Incident["pk"]) => dispatch({ type: IncidentsType.RemoveIncident, payload: pk }),
-      addIncident: (incident: Incident) => dispatch({ type: IncidentsType.AddIncident, payload: incident }),
-      incidentByPk: (pk: Incident["pk"]): Incident | undefined => {
-        if (pk in state._indexByPk) {
-          const index = state._indexByPk[pk];
-          return state.incidents[index];
+      loadAllIncidents: (incidents: Incident[]) => loadAllIncidents(dispatch, incidents),
+      modifyIncident: (incident: Incident) => modifyIncident(dispatch, incident),
+      removeIncident: (pk: Incident["pk"]) => removeIncident(dispatch, pk),
+      addIncident: (incident: Incident) => addIncident(dispatch, incident),
+
+      // Helpers
+      incidentByPk: (pk: Incident["pk"]): Incident | undefined => findIncidentByPk(state, pk),
+      closeIncident: (pk: Incident["pk"]) => closeIncident(state, dispatch, pk),
+      reopenIncident: (pk: Incident["pk"]) => reopenIncident(state, dispatch, pk),
+      acknowledgeIncident: (pk: Incident["pk"]) => {
+        const incident = findIncidentByPk(state, pk);
+        if (incident === undefined) {
+          throw new Error(`Unable to acknowledge incident with pk: ${pk}, couldn't find it`);
+          return;
         }
-        return undefined;
+        modifyIncident(dispatch, { ...incident, acked: true });
       },
+
       dispatch,
     },
   ];
