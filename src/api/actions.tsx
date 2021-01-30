@@ -1,5 +1,13 @@
 import React, { useContext } from "react";
-import api, { Filter, FilterSuccessResponse, Incident, IncidentsFilterOptions } from "../api";
+import api, {
+  Filter,
+  FilterSuccessResponse,
+  Incident,
+  IncidentsFilterOptions,
+  Event,
+  AcknowledgementBody,
+  Acknowledgement,
+} from "../api";
 import { InitialStateType, ActionsType } from "../contexts";
 import {
   createFilter as createFilterAction,
@@ -10,7 +18,7 @@ import {
 
 import { IncidentsFilter } from "../components/incidenttable/FilteredIncidentTable";
 import { Tag } from "../components/tagselector";
-import { IncidentsType, IncidentsStateType, useIncidentsContext } from "../components/incidentsprovider";
+import { IncidentsStateType, useIncidentsContext } from "../components/incidentsprovider";
 
 import { AppContext } from "../contexts";
 
@@ -87,13 +95,15 @@ const filterToQueryFilter = (filter: Omit<IncidentsFilter, "sources">): Incident
   };
 };
 
-export const useIncidents = (): [
-  IncidentsStateType,
-  {
-    loadIncidentsFiltered: (filter: Omit<IncidentsFilter, "sources">) => Promise<Incident[]>;
-  },
-] => {
-  const [state, { loadAllIncidents }] = useIncidentsContext();
+export type UseIncidentsActionType = {
+  loadIncidentsFiltered: (filter: Omit<IncidentsFilter, "sources">) => Promise<Incident[]>;
+  closeIncident: (pk: Incident["pk"], description?: string) => Promise<Event>;
+  reopenIncident: (pk: Incident["pk"], description?: string) => Promise<Event>;
+  acknowledgeIncident: (pk: Incident["pk"], ackBody: AcknowledgementBody) => Promise<Acknowledgement>;
+};
+
+export const useIncidents = (): [IncidentsStateType, UseIncidentsActionType] => {
+  const [state, { loadAllIncidents, closeIncident, reopenIncident, acknowledgeIncident }] = useIncidentsContext();
   return [
     state,
     {
@@ -103,6 +113,21 @@ export const useIncidents = (): [
           return incidents;
         });
       },
+      closeIncident: (pk: Incident["pk"], description?: string) =>
+        api.postIncidentCloseEvent(pk, description).then((closeEvent: Event) => {
+          closeIncident(pk);
+          return closeEvent;
+        }),
+      reopenIncident: (pk: Incident["pk"]) =>
+        api.postIncidentReopenEvent(pk).then((closeEvent: Event) => {
+          reopenIncident(pk);
+          return closeEvent;
+        }),
+      acknowledgeIncident: (pk: Incident["pk"], ackBody: AcknowledgementBody) =>
+        api.postAck(pk, ackBody).then((ack: Acknowledgement) => {
+          acknowledgeIncident(pk);
+          return ack;
+        }),
     },
   ];
 };
