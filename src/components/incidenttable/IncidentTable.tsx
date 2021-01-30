@@ -2,20 +2,12 @@ import React, { useEffect, useState, useMemo } from "react";
 
 import { Link } from "react-router-dom";
 
-import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
-import Toolbar from "@material-ui/core/Toolbar";
-import Tooltip from "@material-ui/core/Tooltip";
 import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
-import FilterListIcon from "@material-ui/icons/FilterList";
-import CheckSharpIcon from "@material-ui/icons/CheckSharp";
-import LinkSharpIcon from "@material-ui/icons/LinkSharp";
 import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 import Paper from "@material-ui/core/Paper";
 import Checkbox from "@material-ui/core/Checkbox";
 import TicketIcon from "@material-ui/icons/LocalOffer";
-import Typography from "@material-ui/core/Typography";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import MuiTable from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -45,72 +37,11 @@ import { RealtimeService } from "../../services/RealtimeService";
 
 import Modal from "../../components/modal/Modal";
 
+import IncidentTableToolbar from "../../components/incidenttable/IncidentTableToolbar";
+
 // Contexts/Hooks
 import { useIncidentsContext } from "../../components/incidentsprovider";
 import { useAlerts } from "../../components/alertsnackbar";
-
-const useToolbarStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      paddingLeft: theme.spacing(2),
-      paddingRight: theme.spacing(1),
-    },
-    title: {
-      flex: "1 1 100%",
-    },
-  }),
-);
-
-interface TableToolbarPropsType {
-  selectedIncidents: Set<Incident["pk"]> | "SelectedAll";
-  isLoading?: boolean;
-}
-
-/* TODO: Not implemented completely */
-const TableToolbar: React.FC<TableToolbarPropsType> = ({ selectedIncidents, isLoading }: TableToolbarPropsType) => {
-  const classes = useToolbarStyles();
-  const rootClasses = useStyles();
-
-  return (
-    <Toolbar className={classes.root}>
-      {selectedIncidents === "SelectedAll" || selectedIncidents.size > 0 ? (
-        <Typography className={classes.title} color="inherit" variant="subtitle1" component="div">
-          {selectedIncidents === "SelectedAll" ? "All" : selectedIncidents.size} selected
-        </Typography>
-      ) : (
-        <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
-          {(isLoading && "Loading incidents...") || "Incidents"}
-        </Typography>
-      )}
-
-      {selectedIncidents === "SelectedAll" || selectedIncidents.size > 0 ? (
-        <>
-          <Tooltip title="Link">
-            <IconButton aria-label="link" className={rootClasses.safeButton}>
-              <LinkSharpIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Acknowledge" className={rootClasses.dangerousButton}>
-            <IconButton aria-label="acknowledge">
-              <CheckSharpIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Close" className={rootClasses.dangerousButton}>
-            <IconButton aria-label="close">
-              <CloseIcon />
-            </IconButton>
-          </Tooltip>
-        </>
-      ) : (
-        <Tooltip title="Filter list">
-          <IconButton aria-label="filter list">
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
-      )}
-    </Toolbar>
-  );
-};
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -207,8 +138,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
 
   return (
     <Paper>
-      {/* TODO: Not implemented yet */}
-      {false && <TableToolbar isLoading={isLoading} selectedIncidents={selectedIncidents} />}
+      {false && <IncidentTableToolbar isLoading={isLoading} selectedIncidents={selectedIncidents} />}
       <TableContainer component={Paper}>
         <MuiTable size="small" aria-label="incident table">
           <TableHead>
