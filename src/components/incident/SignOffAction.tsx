@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import Button from "@material-ui/core/Button";
+import Button, { ButtonProps } from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -12,7 +12,7 @@ import { makeConfirmationButton } from "../../components/buttons/ConfirmationBut
 
 import { useStyles } from "./styles";
 
-type SignOffActionPropsType = {
+export type SignOffActionPropsType = {
   dialogTitle: string;
   dialogContentText: string;
   dialogCancelText: string;
@@ -23,6 +23,8 @@ type SignOffActionPropsType = {
   confirmName?: string;
   rejectName?: string;
   onSubmit: (msg: string) => void;
+  ButtonComponent?: React.ElementType<{ onClick: ButtonProps["onClick"] }>;
+  buttonProps?: Partial<ButtonProps>;
   children?: React.Props<{}>["children"];
 };
 
@@ -37,6 +39,8 @@ const SignOffAction: React.FC<SignOffActionPropsType> = ({
   confirmName,
   rejectName,
   onSubmit,
+  ButtonComponent = Button,
+  buttonProps = {},
   children,
 }: SignOffActionPropsType) => {
   const classes = useStyles();
@@ -48,8 +52,11 @@ const SignOffAction: React.FC<SignOffActionPropsType> = ({
   const handleClose = () => setOpen(false);
 
   const onConfirm = () => {
-    handleClose();
-    if (message) onSubmit(message);
+    if (message) {
+      onSubmit(message);
+      setOpen(false);
+      setMessage(undefined);
+    }
   };
 
   const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => setMessage(e.target.value);
@@ -64,9 +71,9 @@ const SignOffAction: React.FC<SignOffActionPropsType> = ({
 
   return (
     <div>
-      <Button onClick={handleOpen} className={classes.dangerousButton}>
+      <ButtonComponent onClick={handleOpen} className={classes.dangerousButton} {...buttonProps}>
         {dialogButtonText}
-      </Button>
+      </ButtonComponent>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>{dialogTitle}</DialogTitle>
         <DialogContent>

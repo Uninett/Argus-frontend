@@ -1,17 +1,35 @@
 import React from "react";
 
-import SignOffAction from "./SignOffAction";
+import Button, { ButtonProps } from "@material-ui/core/Button";
+
 import { useStyles } from "./styles";
 
+import SignOffAction, { SignOffActionPropsType } from "./SignOffAction";
 import { makeConfirmationButton } from "../../components/buttons/ConfirmationButton";
 
 type ManualClosePropsType = {
   open: boolean;
   onManualClose: (msg: string) => void;
   onManualOpen: () => void;
+
+  reopenButtonText?: string;
+  closeButtonText?: string;
+
+  signOffActionProps?: Partial<SignOffActionPropsType>;
+  reopenButtonProps?: Partial<ButtonProps>;
+  ButtonComponent?: React.ElementType<{ onClick: ButtonProps["onClick"] }>;
 };
 
-const ManualClose: React.FC<ManualClosePropsType> = ({ open, onManualClose, onManualOpen }: ManualClosePropsType) => {
+const ManualClose: React.FC<ManualClosePropsType> = ({
+  open,
+  onManualClose,
+  onManualOpen,
+  reopenButtonText = "Open incident",
+  closeButtonText = "Close incident",
+  signOffActionProps = {},
+  reopenButtonProps = {},
+  ButtonComponent = Button,
+}: ManualClosePropsType) => {
   const classes = useStyles();
 
   if (open) {
@@ -21,10 +39,11 @@ const ManualClose: React.FC<ManualClosePropsType> = ({ open, onManualClose, onMa
         dialogContentText="Write a message describing why the incident was manually closed"
         dialogSubmitText="Close now"
         dialogCancelText="Cancel"
-        dialogButtonText="Close incident"
+        dialogButtonText={closeButtonText}
         title="Manually close incident"
         question="Are you sure you want to close this incident?"
         onSubmit={onManualClose}
+        {...signOffActionProps}
       />
     );
   } else {
@@ -32,11 +51,12 @@ const ManualClose: React.FC<ManualClosePropsType> = ({ open, onManualClose, onMa
       title: "Reopen incident",
       question: "Are you sure you want to reopen this incident?",
       onConfirm: onManualOpen,
+      ButtonComponent,
     });
 
     return (
-      <ReopenButton variant="contained" className={classes.dangerousButton}>
-        Reopen incident
+      <ReopenButton variant="contained" className={classes.dangerousButton} {...reopenButtonProps}>
+        {reopenButtonText}
       </ReopenButton>
     );
   }
