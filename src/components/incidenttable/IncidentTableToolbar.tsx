@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useCallback } from "react";
 
 import classNames from "classnames";
 
@@ -17,6 +17,7 @@ import { Incident, AcknowledgementBody } from "../../api";
 
 // Contexts/Hooks
 import { useIncidentsContext } from "../../components/incidentsprovider";
+import { useSelectedFilter } from "../../components/filterprovider";
 import { useIncidents } from "../../api/actions";
 
 // Components
@@ -42,20 +43,24 @@ const useToolbarStyles = makeStyles((theme: Theme) =>
 
 interface TableToolbarPropsType {
   selectedIncidents: Set<Incident["pk"]>;
+  onClearSelection: () => void;
   isLoading?: boolean;
-  onClearSelection?: () => void;
 }
 
 export const TableToolbar: React.FC<TableToolbarPropsType> = ({
   selectedIncidents,
+  onClearSelection,
   isLoading,
-  onClearSelection = () => undefined,
 }: TableToolbarPropsType) => {
   const classes = useToolbarStyles();
   const rootClasses = useStyles();
 
   const [, { closeIncident, reopenIncident, acknowledgeIncident }] = useIncidents();
   const [incidents, { incidentByPk }] = useIncidentsContext();
+
+  // XXX: In the future there should be better seperation of components, and this
+  // shouldn't be needed here. Now it's used to clear selection when the filter changes.
+  const [{ filter: selectedFilter }, {}] = useSelectedFilter();
 
   const allState: "mixed" | "open" | "closed" = useMemo(() => {
     const pks: Incident["pk"][] = [...selectedIncidents.keys()];
@@ -76,7 +81,11 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
       return firstState;
     }
     return "mixed";
-  }, [selectedIncidents, incidents, incidentByPk]);
+  }, [selectedIncidents, incidentByPk]);
+
+  useEffect(() => {
+    onClearSelection();
+  }, [selectedFilter, onClearSelection]);
 
   return (
     <Toolbar
