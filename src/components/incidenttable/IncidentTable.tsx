@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 
 import { Link } from "react-router-dom";
 
@@ -124,13 +124,15 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
 
   const multiSelect = true;
 
+  const handleClearSelection = useCallback(() => setSelectedIncidents(new Set<Incident["pk"]>([])), []);
+
   return (
     <Paper>
       {multiSelect && (
         <IncidentTableToolbar
           isLoading={isLoading}
           selectedIncidents={selectedIncidents}
-          onClearSelection={() => setSelectedIncidents(new Set<Incident["pk"]>([]))}
+          onClearSelection={handleClearSelection}
         />
       )}
       <TableContainer component={Paper}>
