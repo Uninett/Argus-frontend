@@ -61,19 +61,25 @@ export type IncidentsFilter = {
 type FilteredIncidentsTablePropsType = {};
 
 const FilteredIncidentTable = () => {
+  // Keep track of last time a refresh of data was done in order to update on interval.
   const [lastRefresh, setLastRefresh] = useState<{ time: Date; filter: IncidentsFilter } | undefined>(undefined);
 
+  // Get the incidents and seleceted filter from context
   const [{ incidents }, { loadAllIncidents }] = useIncidentsContext();
   const [{ filter }, {}] = useSelectedFilter();
 
+  // Keep track of the pagination cursor
   const [paginationCursor, setPaginationCursor] = useState<PaginationCursor>(DEFAULT_PAGINATION_CURSOR);
+  // We need a virtual cursor in order to retain information
+  // about the maxiumum observed amount of pages (we don't get this information from the backend)
+  // and the total amount of elements (which we know when we reach the end)
   const [virtCursor, setVirtCursor] = useState<VirtCursor>(DEFAULT_VIRT_CURSOR);
 
+  // These cursors are the one returned by the last api call.
   const [cursors, setCursors] = useState<{ previous: string | null; next: string | null }>({
     previous: null,
     next: null,
   });
-  // const [incidents, cursors] = [paginatedResult?.incidents || [], paginatedResult?.cursors];
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const refresh = useCallback(() => {
