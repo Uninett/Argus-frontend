@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useCallback, useContext } from "react";
 import api, {
   Filter,
   FilterSuccessResponse,
@@ -104,30 +104,51 @@ export type UseIncidentsActionType = {
 
 export const useIncidents = (): [IncidentsStateType, UseIncidentsActionType] => {
   const [state, { loadAllIncidents, closeIncident, reopenIncident, acknowledgeIncident }] = useIncidentsContext();
+
+  const loadIncidentsFiltered = useCallback(
+    (filter: Omit<IncidentsFilter, "sources">) => {
+      return api.getAllIncidentsFiltered(filterToQueryFilter(filter)).then((incidents: Incident[]) => {
+        loadAllIncidents(incidents);
+        return incidents;
+      });
+    },
+    [loadAllIncidents],
+  );
+
+  const closeIncidentCallback = useCallback(
+    (pk: Incident["pk"], description?: string) =>
+      api.postIncidentCloseEvent(pk, description).then((closeEvent: Event) => {
+        closeIncident(pk);
+        return closeEvent;
+      }),
+    [closeIncident],
+  );
+
+  const reopenIncidentCallback = useCallback(
+    (pk: Incident["pk"]) =>
+      api.postIncidentReopenEvent(pk).then((closeEvent: Event) => {
+        reopenIncident(pk);
+        return closeEvent;
+      }),
+    [reopenIncident],
+  );
+
+  const acknowledgeIncidentCallback = useCallback(
+    (pk: Incident["pk"], ackBody: AcknowledgementBody) =>
+      api.postAck(pk, ackBody).then((ack: Acknowledgement) => {
+        acknowledgeIncident(pk);
+        return ack;
+      }),
+    [acknowledgeIncident],
+  );
+
   return [
     state,
     {
-      loadIncidentsFiltered: (filter: Omit<IncidentsFilter, "sources">) => {
-        return api.getAllIncidentsFiltered(filterToQueryFilter(filter)).then((incidents: Incident[]) => {
-          loadAllIncidents(incidents);
-          return incidents;
-        });
-      },
-      closeIncident: (pk: Incident["pk"], description?: string) =>
-        api.postIncidentCloseEvent(pk, description).then((closeEvent: Event) => {
-          closeIncident(pk);
-          return closeEvent;
-        }),
-      reopenIncident: (pk: Incident["pk"]) =>
-        api.postIncidentReopenEvent(pk).then((closeEvent: Event) => {
-          reopenIncident(pk);
-          return closeEvent;
-        }),
-      acknowledgeIncident: (pk: Incident["pk"], ackBody: AcknowledgementBody) =>
-        api.postAck(pk, ackBody).then((ack: Acknowledgement) => {
-          acknowledgeIncident(pk);
-          return ack;
-        }),
+      loadIncidentsFiltered,
+      closeIncident: closeIncidentCallback,
+      reopenIncident: reopenIncidentCallback,
+      acknowledgeIncident: acknowledgeIncidentCallback,
     },
   ];
 };
