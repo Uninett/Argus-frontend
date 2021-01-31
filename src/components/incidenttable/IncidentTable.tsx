@@ -416,10 +416,7 @@ export const MinimalIncidentTable = ({
 }: MinimalIncidentTablePropsType) => {
   const displayAlert = useAlerts();
 
-  const [
-    { incidents },
-    { incidentByPk, loadAllIncidents, addIncident, modifyIncident, removeIncident },
-  ] = useIncidentsContext();
+  const [{ incidents }, { incidentByPk, modifyIncident }] = useIncidentsContext();
 
   const [detailPk, setDetailPk] = useState<Incident["pk"] | undefined>(undefined);
 
@@ -435,15 +432,6 @@ export const MinimalIncidentTable = ({
     modifyIncident(incident);
   };
 
-  const copyCanonicalUrlToClipboard = () => {
-    if (detailPk) {
-      const relativeUrl = `/incidents/${detailPk}/`;
-      const canonicalUrl = `${window.location.protocol}//${window.location.host}${relativeUrl}`;
-      copyTextToClipboard(canonicalUrl);
-      displayAlert("Copied URL to clipboard", "success");
-    }
-  };
-
   const detailModal = useMemo(() => {
     const pk = detailPk;
 
@@ -455,6 +443,15 @@ export const MinimalIncidentTable = ({
     if (incident === undefined) {
       return null;
     }
+
+    const copyCanonicalUrlToClipboard = () => {
+      if (detailPk) {
+        const relativeUrl = `/incidents/${detailPk}/`;
+        const canonicalUrl = `${window.location.protocol}//${window.location.host}${relativeUrl}`;
+        copyTextToClipboard(canonicalUrl);
+        displayAlert("Copied URL to clipboard", "success");
+      }
+    };
 
     return (
       <Modal
@@ -470,7 +467,7 @@ export const MinimalIncidentTable = ({
         dialogProps={{ maxWidth: "lg", fullWidth: true }}
       />
     );
-  }, [detailPk]);
+  }, [detailPk, displayAlert]);
 
   return (
     <ClickAwayListener onClickAway={onModalClose}>
