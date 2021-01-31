@@ -1,4 +1,4 @@
-import React, { useState, useContext, createContext, Dispatch, SetStateAction } from "react";
+import React, { useState, useCallback, useContext, createContext, Dispatch, SetStateAction } from "react";
 
 import Alert from "@material-ui/lab/Alert";
 import MaterialUISnackbar from "@material-ui/core/Snackbar";
@@ -117,14 +117,13 @@ export const AlertSnackbarProvider = ({ children }: { children?: React.ReactNode
 
   const component = <AlertSnackbar onOpen={onOpen} onClose={onClose} {...state} />;
 
-  const displayAlertSnackbar = (message: string, severity?: AlertSnackbarSeverity) => {
-    if (message === state.message && severity === state.severity && state.open) return;
-
+  const displayAlertSnackbar = useCallback((message: string, severity?: AlertSnackbarSeverity) => {
+    // if (message === state.message && severity === state.severity && state.open) return;
     debuglog(`Displaying message with severity ${severity}: ${message}`);
     setState((state: AlertSnackbarState) => {
       return { ...state, open: true, message, severity: severity || "success", keepOpen: severity === "error" };
     });
-  };
+  }, []);
 
   return (
     <AlertsContext.Provider value={displayAlertSnackbar}>
