@@ -78,6 +78,7 @@ type MUIIncidentTablePropsType = {
   onShowDetail: (incide: Incident) => void;
   isLoading?: boolean;
   isRealtime?: boolean;
+  isLoadingRealtime?: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   paginationComponent?: any;
 };
@@ -87,6 +88,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
   onShowDetail,
   isLoading,
   isRealtime = false,
+  isLoadingRealtime = true,
   paginationComponent,
 }: MUIIncidentTablePropsType) => {
   const style = useStyles();
@@ -140,7 +142,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
               className={classNames(
                 style.tableRow,
                 isRealtime
-                  ? isLoading
+                  ? isLoadingRealtime
                     ? style.tableRowHeadRealtimeLoading
                     : style.tableRowHeadRealtime
                   : style.tableRowHeadNormal,
@@ -401,9 +403,10 @@ const IncidentTable: React.FC<IncidentsProps> = ({
 export type MinimalIncidentTablePropsType = {
   isLoading: boolean;
   isRealtime: boolean;
+  isLoadingRealtime: boolean;
 };
 
-export const MinimalIncidentTable = ({ isLoading, isRealtime }: MinimalIncidentTablePropsType) => {
+export const MinimalIncidentTable = ({ isLoading, isRealtime, isLoadingRealtime }: MinimalIncidentTablePropsType) => {
   const displayAlert = useAlerts();
 
   const [
@@ -469,6 +472,7 @@ export const MinimalIncidentTable = ({ isLoading, isRealtime }: MinimalIncidentT
         <MUIIncidentTable
           isRealtime={isRealtime}
           isLoading={isLoading}
+          isLoadingRealtime={isLoadingRealtime}
           incidents={incidents}
           onShowDetail={handleShowDetail}
         />
