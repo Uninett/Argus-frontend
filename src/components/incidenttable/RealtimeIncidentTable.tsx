@@ -171,8 +171,7 @@ const RealtimeIncidentTable = () => {
       );
     };
     setFilterMatcher(() => incidentMatchesFilter);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showAcked, show, tags, sourcesById, autoUpdate]);
+  }, [showAcked, show, tags, sourcesById, autoUpdate, loadIncidentsFiltered]);
 
   // Effect for creating RealtimeServiceConfig
   useEffect(() => {
