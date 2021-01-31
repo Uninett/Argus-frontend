@@ -404,9 +404,16 @@ export type MinimalIncidentTablePropsType = {
   isLoading: boolean;
   isRealtime: boolean;
   isLoadingRealtime: boolean;
+
+  paginationComponent?: MUIIncidentTablePropsType["paginationComponent"];
 };
 
-export const MinimalIncidentTable = ({ isLoading, isRealtime, isLoadingRealtime }: MinimalIncidentTablePropsType) => {
+export const MinimalIncidentTable = ({
+  isLoading,
+  isRealtime,
+  isLoadingRealtime,
+  paginationComponent,
+}: MinimalIncidentTablePropsType) => {
   const displayAlert = useAlerts();
 
   const [
@@ -475,6 +482,7 @@ export const MinimalIncidentTable = ({ isLoading, isRealtime, isLoadingRealtime 
           isLoadingRealtime={isLoadingRealtime}
           incidents={incidents}
           onShowDetail={handleShowDetail}
+          paginationComponent={paginationComponent}
         />
       </div>
     </ClickAwayListener>
