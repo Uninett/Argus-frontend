@@ -139,7 +139,14 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
         <MuiTable size="small" aria-label="incident table">
           <TableHead>
             <TableRow
-              className={classNames(style.tableRow, isRealtime ? style.tableRowHeadRealtime : style.tableRowHeadNormal)}
+              className={classNames(
+                style.tableRow,
+                isRealtime
+                  ? isLoading
+                    ? style.tableRowHeadRealtimeLoading
+                    : style.tableRowHeadRealtime
+                  : style.tableRowHeadNormal,
+              )}
             >
               {multiSelect && <TableCell></TableCell>}
               <TableCell>Timestamp</TableCell>
