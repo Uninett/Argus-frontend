@@ -54,6 +54,11 @@ export const useStyles = makeStyles((theme: Theme) =>
       borderBottomStyle: "solid",
       borderBottomColor: blue["300"],
     },
+    tableRowHeadRealtimeLoading: {
+      borderBottomWidth: "5px",
+      borderBottomStyle: "solid",
+      borderBottomColor: red["300"],
+    },
     tableRowHeadNormal: {},
     tableRowLoading: {
       borderLeftColor: grey["300"],
