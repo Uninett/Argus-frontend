@@ -33,8 +33,6 @@ import { useStyles } from "../incident/styles";
 import { AckedItem, OpenItem } from "../incident/Chips";
 import IncidentDetails from "../incident/IncidentDetails";
 
-import { RealtimeService } from "../../services/RealtimeService";
-
 import Modal from "../../components/modal/Modal";
 
 import IncidentTableToolbar from "../../components/incidenttable/IncidentTableToolbar";
@@ -353,58 +351,6 @@ const IncidentTable: React.FC<IncidentsProps> = ({
       });
     }, 5000);
   };
-
-  // TODO: move this logic somewhere else
-  useEffect(() => {
-    const onIncidentAdded = (incident: Incident) => {
-      if (open && !incident.open) {
-        // TODO: how to handle this?
-        return;
-      }
-      setIncidentsDict((oldDict: Revisioned<Map<Incident["pk"], Incident>>) => {
-        const newDict: typeof oldDict = new Map<Incident["pk"], Incident>(oldDict);
-        newDict.revision = (newDict.revision || 1) + 1;
-        newDict.set(incident.pk, incident);
-        return newDict;
-      });
-    };
-
-    const onIncidentModified = (incident: Incident) => {
-      handleTimedIncidentChange(incident);
-    };
-
-    const onIncidentRemoved = (incident: Incident) => {
-      setIncidentsDict((oldDict: Revisioned<Map<Incident["pk"], Incident>>) => {
-        const newDict: typeof oldDict = new Map<Incident["pk"], Incident>(oldDict);
-        newDict.revision = (newDict.revision || 1) + 1;
-        newDict.delete(incident.pk);
-        return newDict;
-      });
-    };
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const onIncidentsInitial = (incidents: Incident[]) => {
-      // NOTE: Ignore this for now, because we automatically load
-      // the top incidents we care about on table load. We only care
-      // about new incidents, or changes to incidents atmm.
-      // setIncidentsDict((oldDict: Revisioned<Map<Incident["pk"], Incident>>) => {
-      //   const newDict: typeof oldDict = new Map<Incident["pk"], Incident>(oldDict);
-      //   newDict.revision = (newDict.revision || 1) + 1;
-      //   incidents.map((incident: Incident) => newDict.set(incident.pk, incident));
-      //   return newDict;
-      // });
-    };
-
-    const rts = new RealtimeService({
-      onIncidentAdded,
-      onIncidentModified,
-      onIncidentRemoved,
-      onIncidentsInitial,
-    });
-    rts.connect();
-    console.log("created rts and connect()");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const copyCanonicalUrlToClipboard = () => {
     if (incidentForDetail) {
