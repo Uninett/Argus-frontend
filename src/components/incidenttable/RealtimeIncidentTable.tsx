@@ -144,7 +144,7 @@ const RealtimeIncidentTable = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <MinimalIncidentTable isRealtime isLoading={isLoading || isLoadingRealtime} />;
+  return <MinimalIncidentTable isRealtime isLoading={isLoading} isLoadingRealtime={isLoadingRealtime} />;
 };
 
 export default RealtimeIncidentTable;
