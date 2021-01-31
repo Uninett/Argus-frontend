@@ -30,7 +30,6 @@ const matchesOnTags = (incident: Incident, tags: Tag[]): boolean => {
     const tagsOnKey = tagsGroupedByKey.get(tagKey) || new Set<Tag>();
     return [...tagsOnKey.values()].some((tag: Tag) => incidentTagsSet.has(tag.original));
   });
-  console.log("incidentTagsSet", incidentTagsSet, "tagsGroupedByKey", tagsGroupedByKey);
   return returnVal;
 };
 
@@ -51,6 +50,27 @@ const matchesShow = (incident: Incident, show: "open" | "closed" | "both"): bool
 const matchesAcked = (incident: Incident, showAcked: boolean): boolean => {
   if (showAcked) return true;
   return !incident.acked;
+};
+
+export const FilteredIncidentsProvider = ({
+  filterMatcher,
+  children,
+}: {
+  filterMatcher: ((incident: Incident) => boolean) | undefined;
+  children?: React.ReactNode;
+}) => {
+  const { state, dispatch } = useContext(IncidentsContext);
+
+  const filteredIncidents = useMemo(() => {
+    if (filterMatcher === undefined) return state.incidents;
+    return state.incidents.filter(filterMatcher);
+  }, [filterMatcher, state.incidents]);
+
+  return (
+    <IncidentsContext.Provider value={{ state: { ...state, incidents: filteredIncidents }, dispatch }}>
+      {children}
+    </IncidentsContext.Provider>
+  );
 };
 
 type RealtimeIncidentTablePropsType = {};
@@ -268,7 +288,11 @@ const RealtimeIncidentTable = () => {
     };
   }, [rtsConfig, realtimeService, displayAlert]);
 
-  return <MinimalIncidentTable isRealtime isLoading={isLoading} isLoadingRealtime={isLoadingRealtime} />;
+  return (
+    <FilteredIncidentsProvider filterMatcher={filterMatcher}>
+      <MinimalIncidentTable isRealtime isLoading={isLoading} isLoadingRealtime={isLoadingRealtime} />
+    </FilteredIncidentsProvider>
+  );
 };
 
 export default RealtimeIncidentTable;
