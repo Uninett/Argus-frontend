@@ -1,4 +1,4 @@
-import React, { useReducer, useContext, createContext } from "react";
+import React, { useReducer, useCallback, useContext, createContext } from "react";
 
 import { Incident } from "../api";
 
@@ -185,44 +185,71 @@ export const IncidentsProvider = ({ children }: { children?: React.ReactNode }) 
   return <IncidentsContext.Provider value={{ state, dispatch }}>{children}</IncidentsContext.Provider>;
 };
 
-export const useIncidentsContext = (): [
-  IncidentsStateType,
-  {
-    loadAllIncidents: (incidents: Incident[]) => void;
-    modifyIncident: (incident: Incident) => void;
-    removeIncident: (pk: Incident["pk"]) => void;
-    addIncident: (incident: Incident) => void;
+export type IncidentsActionsType = {
+  loadAllIncidents: (incidents: Incident[]) => void;
+  modifyIncident: (incident: Incident) => void;
+  removeIncident: (pk: Incident["pk"]) => void;
+  addIncident: (incident: Incident) => void;
 
-    // Helpers
-    incidentByPk: (pk: Incident["pk"]) => Incident | undefined;
-    closeIncident: (pk: Incident["pk"]) => void;
-    reopenIncident: (pk: Incident["pk"]) => void;
-    acknowledgeIncident: (pk: Incident["pk"]) => void;
+  // Helpers
+  incidentByPk: (pk: Incident["pk"]) => Incident | undefined;
+  closeIncident: (pk: Incident["pk"]) => void;
+  reopenIncident: (pk: Incident["pk"]) => void;
+  acknowledgeIncident: (pk: Incident["pk"]) => void;
 
-    dispatch: Dispatch;
-  },
-] => {
+  dispatch: Dispatch;
+};
+
+export const useIncidentsContext = (): [IncidentsStateType, IncidentsActionsType] => {
   const { state, dispatch } = useContext(IncidentsContext);
+
+  const loadAllIncidentsCallback = useCallback((incidents: Incident[]) => loadAllIncidents(dispatch, incidents), [
+    dispatch,
+  ]);
+  const modifyIncidentCallback = useCallback((incident: Incident) => modifyIncident(dispatch, incident), [dispatch]);
+  const removeIncidentCallback = useCallback((pk: Incident["pk"]) => removeIncident(dispatch, pk), [dispatch]);
+
+  const addIncidentCallback = useCallback((incident: Incident) => addIncident(dispatch, incident), [dispatch]);
+
+  const incidentByPkCallback = useCallback((pk: Incident["pk"]): Incident | undefined => findIncidentByPk(state, pk), [
+    state,
+  ]);
+
+  const closeIncidentCallback = useCallback((pk: Incident["pk"]) => closeIncident(state, dispatch, pk), [
+    state,
+    dispatch,
+  ]);
+
+  const reopenIncidentCallback = useCallback((pk: Incident["pk"]) => reopenIncident(state, dispatch, pk), [
+    state,
+    dispatch,
+  ]);
+
+  const acknowledgeIncidentCallback = useCallback(
+    (pk: Incident["pk"]) => {
+      const incident = findIncidentByPk(state, pk);
+      if (incident === undefined) {
+        throw new Error(`Unable to acknowledge incident with pk: ${pk}, couldn't find it`);
+        return;
+      }
+      modifyIncident(dispatch, { ...incident, acked: true });
+    },
+    [state, dispatch],
+  );
+
   return [
     state,
     {
-      loadAllIncidents: (incidents: Incident[]) => loadAllIncidents(dispatch, incidents),
-      modifyIncident: (incident: Incident) => modifyIncident(dispatch, incident),
-      removeIncident: (pk: Incident["pk"]) => removeIncident(dispatch, pk),
-      addIncident: (incident: Incident) => addIncident(dispatch, incident),
+      loadAllIncidents: loadAllIncidentsCallback,
+      modifyIncident: modifyIncidentCallback,
+      removeIncident: removeIncidentCallback,
+      addIncident: addIncidentCallback,
 
       // Helpers
-      incidentByPk: (pk: Incident["pk"]): Incident | undefined => findIncidentByPk(state, pk),
-      closeIncident: (pk: Incident["pk"]) => closeIncident(state, dispatch, pk),
-      reopenIncident: (pk: Incident["pk"]) => reopenIncident(state, dispatch, pk),
-      acknowledgeIncident: (pk: Incident["pk"]) => {
-        const incident = findIncidentByPk(state, pk);
-        if (incident === undefined) {
-          throw new Error(`Unable to acknowledge incident with pk: ${pk}, couldn't find it`);
-          return;
-        }
-        modifyIncident(dispatch, { ...incident, acked: true });
-      },
+      incidentByPk: incidentByPkCallback,
+      closeIncident: closeIncidentCallback,
+      reopenIncident: reopenIncidentCallback,
+      acknowledgeIncident: acknowledgeIncidentCallback,
 
       dispatch,
     },
