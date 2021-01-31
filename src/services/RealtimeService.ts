@@ -3,7 +3,10 @@ import { BACKEND_WS_URL } from "../config";
 import { Incident } from "../api";
 
 export type RealtimeServiceConfig = {
+  // NOT IMPLEMENTED
   restartOnFailure?: boolean;
+
+  // NOT IMPLEMENTED
   fallbackToInterval?: boolean;
 
   // onIncidentsInitial: called on subscribe, where
@@ -15,7 +18,10 @@ export type RealtimeServiceConfig = {
   onIncidentAdded: (incident: Incident) => void;
 };
 
-export type RealtimeServiceState = "connecting" | "opened" | "closed" | "disconnecting";
+export type RealtimeServiceState = "connecting" | "opened" | "closed" | "disconnecting" | "connected";
+
+let numberOfRTs = 0;
+
 // RealtimeService represents all the
 // code required to add WebSockets Realtime
 // incident updates.
@@ -23,6 +29,7 @@ export type RealtimeServiceState = "connecting" | "opened" | "closed" | "disconn
 // Authentication works by using the "token" cookie,
 // and that should be set before using this.
 export class RealtimeService {
+  id: number;
   ws: WebSocket | undefined;
   config: RealtimeServiceConfig;
   state: RealtimeServiceState;
@@ -33,7 +40,12 @@ export class RealtimeService {
   // eslint-disable-next-line
   reconnectInterval: ReturnType<typeof setTimeout> | undefined;
 
+  onStateChange: (prev: RealtimeServiceState, state: RealtimeServiceState) => void;
+
   public constructor({ restartOnFailure = true, fallbackToInterval = true, ...params }: RealtimeServiceConfig) {
+    this.id = numberOfRTs;
+    numberOfRTs += 1;
+
     this.config = { restartOnFailure, fallbackToInterval, ...params };
     this.state = "closed";
 
@@ -44,76 +56,94 @@ export class RealtimeService {
     this.disconnect = this.disconnect.bind(this);
 
     this.reconnectInterval = undefined;
+
+    this.onStateChange = () => undefined;
+  }
+
+  public resetOnStateChange() {
+    this.onStateChange = () => undefined;
+  }
+
+  private setState(state: RealtimeServiceState) {
+    console.log(`[RTS ${this.id}] setState`, state);
+    this.onStateChange(this.state, state);
+    this.state = state;
+  }
+
+  public setConfig(updatedConfig: Partial<RealtimeServiceConfig>) {
+    this.config = { ...this.config, ...updatedConfig };
   }
 
   public checkConnection() {
-    console.log("[RealtimeService] checking connection");
+    console.log(`[RealtimeService ${this.id}] checking connection`);
     if (!this.ws || this.ws.readyState === WebSocket.CLOSED) {
-      this.state = "closed";
+      this.setState("closed");
       this.connect();
     }
   }
 
   public disconnect() {
-    if (this.ws && this.ws.readyState !== WebSocket.CLOSED) {
-      console.log("[RealtimeService] closing");
-      if (this.reconnectInterval) {
-        type ClearTimeoutParams = Parameters<typeof clearTimeout>;
-        clearTimeout(this.reconnectInterval as ClearTimeoutParams[0]);
-      }
-      this.state = "disconnecting";
-      this.ws.close();
+    // if (this.ws && this.ws.readyState !== WebSocket.CLOSED) {
+    console.log(`[RealtimeService ${this.id}] closing`);
+    if (this.reconnectInterval) {
+      type ClearTimeoutParams = Parameters<typeof clearTimeout>;
+      clearTimeout(this.reconnectInterval as ClearTimeoutParams[0]);
     }
+    this.setState("disconnecting");
+    if (this.ws) this.ws.close();
+    // }
   }
 
   public connect() {
     /// let reconnectInterval: ReturnType<typeof setTimeout> | undefined = undefined;
     if (this.state !== "closed") {
-      console.log("[RealtimeService] calling connect() when there is existing ws connection. returning");
+      console.log(`[RealtimeService ${this.id}] calling connect() when there is existing ws connection. returning`);
       return;
     }
 
-    this.state = "connecting";
+    this.setState("connecting");
     this.ws = undefined;
 
     const ws = new WebSocket(`${BACKEND_WS_URL}/open/`);
     ws.onmessage = (event: MessageEvent) => {
       const data = JSON.parse(event.data);
 
+      this.setState("connected");
+
       switch (data.type) {
         case "modified":
           const modified: Incident = data.payload;
-          console.debug("[RealtimeService] onmessage: modified", modified);
+          console.debug(`[RealtimeService ${this.id}] onmessage: modified`, modified);
           this.config.onIncidentModified(modified);
           break;
 
         case "created":
           const added: Incident = data.payload;
-          console.debug("[RealtimeService] onmessage: created", added);
+          console.debug(`[RealtimeService ${this.id}] onmessage: created`, added);
           this.config.onIncidentAdded(added);
           break;
 
         case "deleted":
           const removed: Incident = data.payload;
-          console.debug("[RealtimeService] onmessage: deleted", removed);
+          console.debug(`[RealtimeService ${this.id}] onmessage: deleted`, removed);
           this.config.onIncidentRemoved(removed);
           break;
 
         case "subscribed":
           const incidents: Incident[] = data.start_incidents;
-          console.debug("[RealtimeService] onmessage: subscribed", incidents);
+          console.debug(`[RealtimeService ${this.id}] onmessage: subscribed`, incidents);
           this.config.onIncidentsInitial(incidents);
           break;
 
         default:
-          console.error(`[RealtimeService] Unhandled WebSockets message type: ${data.type}`);
+          console.error(`[RealtimeService ${this.id}] Unhandled WebSockets message type: ${data.type}`);
           break;
       }
     };
     ws.onopen = () => {
-      console.log("[RealtimeService] Realtime socket opened");
+      console.log(`[RealtimeService ${this.id}] Realtime socket opened`);
 
-      this.state = "opened";
+      this.setState("opened");
       this.ws = ws;
 
       // The "subscribe" action is required to actually
@@ -129,21 +159,22 @@ export class RealtimeService {
       // we set the state to disconnecting when we are on purpose
       // closing the connection
       if (this.state === "disconnecting") {
-        console.log("[RealtimeService] Realtime socket disconnected (purposefully closed)");
+        console.log(`[RealtimeService ${this.id}] Realtime socket disconnected (purposefully closed)`);
       } else {
         // Was closed, but not by calling disconnect(), so we try to open it again.
-        console.log(`[RealtimeService] Realtime socket was closed: ${e.reason}`);
+        console.log(`[RealtimeService ${this.id}] Realtime socket was closed: ${e.reason}`);
         this.reconnectInterval = setTimeout(this.checkConnection, 1000 * this.retryInterval);
         this.retryInterval *= this.retryIntervalBackoffFactor;
       }
-      this.state = "closed";
+      this.setState("closed");
       this.ws = undefined;
     };
 
     // eslint-disable-next-line
     ws.onerror = (e: any) => {
-      console.error(`[RealtimeService] got error on websocket client, closing: ${e.message}`);
+      console.error(`[RealtimeService ${this.id}] got error on websocket client, closing: ${e.message}`);
       ws.close();
+      // this.setState("closed"); // TODO: should this be set?
     };
   }
 }
