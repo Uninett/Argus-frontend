@@ -1,18 +1,25 @@
 import React, { useCallback, useEffect, useState, useMemo } from "react";
-import IncidentTable from "./IncidentTable";
 
-import "./FilteredIncidentTable.css";
-import "../../components/incidenttable/incidenttable.css";
-
-import { Tag } from "../../components/tagselector";
+// MUI
 import TablePagination from "@material-ui/core/TablePagination";
 
-import api, { Filter, IncidentsFilterOptions } from "../../api";
+// Config
+import { DEFAULT_AUTO_REFRESH_INTERVAL } from "../../config";
+
+// Api
+import api, { Incident, IncidentsFilterOptions, CursorPaginationResponse } from "../../api";
+
+// Contexts/Hooks
 import { useApiPaginatedIncidents } from "../../api/hooks";
+import { useIncidentsContext } from "../../components/incidentsprovider";
 import { useSelectedFilter } from "../../components/filterprovider";
 
-import { DEFAULT_AUTO_REFRESH_INTERVAL } from "../../config";
-import { LOADING_TEXT, ERROR_TEXT, NO_DATA_TEXT } from "../../constants";
+// Providers
+import FilteredIncidentsProvider, { matchesFilter } from "../../components/filteredincidentprovider";
+
+// Components
+import { MinimalIncidentTable } from "./IncidentTable";
+import { Tag } from "../../components/tagselector";
 
 type PaginationCursor = {
   next: string | null;
@@ -51,30 +58,23 @@ export type IncidentsFilter = {
   autoUpdate: AutoUpdate;
 };
 
-type FilteredIncidentsTablePropsType = {
-  onLoad?: () => void;
-};
+type FilteredIncidentsTablePropsType = {};
 
-const FilteredIncidentTable: React.FC<FilteredIncidentsTablePropsType> = ({
-  onLoad,
-}: FilteredIncidentsTablePropsType) => {
+const FilteredIncidentTable = () => {
   const [lastRefresh, setLastRefresh] = useState<{ time: Date; filter: IncidentsFilter } | undefined>(undefined);
 
+  const [{ incidents }, { loadAllIncidents }] = useIncidentsContext();
   const [{ filter }, {}] = useSelectedFilter();
 
   const [paginationCursor, setPaginationCursor] = useState<PaginationCursor>(DEFAULT_PAGINATION_CURSOR);
   const [virtCursor, setVirtCursor] = useState<VirtCursor>(DEFAULT_VIRT_CURSOR);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [tags, setTags] = useState<Tag[]>([
-    { key: "url", value: "https://test.test", original: "url=https://test.test" },
-    { key: "host", value: "localhost", original: "host=localhost" },
-  ]);
-
-  // const [{ result: incidents, isLoading, isError }, setPromise] = useApiIncidents();
-  const [{ result: paginatedResult, isLoading, isError }, setPromise] = useApiPaginatedIncidents();
-
-  const [incidents, cursors] = [paginatedResult?.incidents || [], paginatedResult?.cursors];
+  const [cursors, setCursors] = useState<{ previous: string | null; next: string | null }>({
+    previous: null,
+    next: null,
+  });
+  // const [incidents, cursors] = [paginatedResult?.incidents || [], paginatedResult?.cursors];
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const refresh = useCallback(() => {
     const showToOpenMap: Record<IncidentsFilter["show"], boolean | undefined> = {
@@ -95,24 +95,22 @@ const FilteredIncidentTable: React.FC<FilteredIncidentsTablePropsType> = ({
       sourceSystemIds: filter.sourcesById,
     };
 
-    setPromise(
-      api
-        .getPaginatedIncidentsFiltered(filterOptions, paginationCursor.current, paginationCursor.pageSize)
-        .then((response) => {
-          if (onLoad) {
-            onLoad();
-          }
-          setLastRefresh({ time: new Date(), filter });
-          return response;
-        }),
-    );
-  }, [setPromise, filter, paginationCursor, onLoad]);
+    setIsLoading(true);
+    api
+      .getPaginatedIncidentsFiltered(filterOptions, paginationCursor.current, paginationCursor.pageSize)
+      .then((response: CursorPaginationResponse<Incident>) => {
+        loadAllIncidents(response.results);
+        const { previous, next } = response;
+        setCursors({ previous, next });
+        setLastRefresh({ time: new Date(), filter });
+        setIsLoading(false);
+        return response;
+      });
+  }, [filter, paginationCursor, loadAllIncidents]);
 
   useEffect(() => {
     refresh();
   }, [refresh]);
-
-  const noDataText = isLoading ? LOADING_TEXT : isError ? ERROR_TEXT : NO_DATA_TEXT;
 
   const totalElements = useMemo(() => {
     if (!cursors?.next && incidents) {
@@ -198,9 +196,18 @@ const FilteredIncidentTable: React.FC<FilteredIncidentsTablePropsType> = ({
   }, [paginationCursor, cursors, virtCursor, isLoading, totalElements]);
 
   // Reset pagination when any of the filter options are changed.
+  // Also set the filter matcher
   useEffect(() => {
     setVirtCursor(DEFAULT_VIRT_CURSOR);
     setPaginationCursor(DEFAULT_PAGINATION_CURSOR);
+  }, [filter]);
+
+  const filterMatcher = useMemo(() => {
+    const { showAcked, show, tags, sourcesById } = filter;
+    const incidentMatchesFilter = (incident: Incident): boolean => {
+      return matchesFilter(incident, { showAcked, show, tags, sourcesById });
+    };
+    return incidentMatchesFilter;
   }, [filter]);
 
   useEffect(() => {
@@ -223,15 +230,15 @@ const FilteredIncidentTable: React.FC<FilteredIncidentsTablePropsType> = ({
   const autoUpdateText = autoUpdateTextOpts[filter.autoUpdate];
 
   return (
-    <div className="table">
-      <IncidentTable
-        isLoading={isLoading}
-        realtime={filter.autoUpdate === "realtime"}
-        open={filter.show === "open"}
-        incidents={incidents}
-        noDataText={noDataText}
-        paginationComponent={paginationComponent}
-      />
+    <div>
+      <FilteredIncidentsProvider filterMatcher={filterMatcher}>
+        <MinimalIncidentTable
+          isRealtime={false}
+          isLoading={isLoading}
+          isLoadingRealtime={false}
+          paginationComponent={paginationComponent}
+        />
+      </FilteredIncidentsProvider>
       <p>
         Last refreshed {lastRefresh === undefined ? "never" : lastRefresh.time.toLocaleTimeString()}, {autoUpdateText}
       </p>
