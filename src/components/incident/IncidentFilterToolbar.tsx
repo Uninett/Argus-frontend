@@ -6,10 +6,6 @@ import Typography from "@material-ui/core/Typography";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
 import SettingsIcon from "@material-ui/icons/Settings";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import TextField from "@material-ui/core/TextField";
-
-import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import FormControl from "@material-ui/core/FormControl";
@@ -265,7 +261,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
     : ["never", "interval"];
 
   const useExistingFilter =
-    existingFilter != -1 && existingFilter >= 0 && existingFilter < existingFilters.length ? true : false;
+    existingFilter !== -1 && existingFilter >= 0 && existingFilter < existingFilters.length ? true : false;
 
   const autoUpdateToolbarItem = (
     <ToolbarItem name="Auto Update">

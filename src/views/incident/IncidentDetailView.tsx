@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { BrowserRouter as Router, Switch, Route, Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 import Typography from "@material-ui/core/Typography";
 
@@ -11,7 +11,7 @@ import IncidentDetails from "../../components/incident/IncidentDetails";
 
 type IncidentDetailsViewPropsType = {};
 
-export const IncidentDetailsView: React.FC<IncidentDetailsViewPropsType> = ({}: IncidentDetailsViewPropsType) => {
+export const IncidentDetailsView: React.FC<IncidentDetailsViewPropsType> = () => {
   const { pk } = useParams<{ pk: string | undefined }>();
 
   const { incidentSnackbar, displayAlertSnackbar }: UseAlertSnackbarResultType = useAlertSnackbar();

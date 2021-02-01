@@ -17,7 +17,7 @@ import { loadAllFilters } from "../../reducers/filter";
 
 type IncidentViewPropsType = {};
 
-const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType) => {
+const IncidentView: React.FC<IncidentViewPropsType> = () => {
   const {
     state: { filters },
     dispatch,
@@ -27,7 +27,7 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
     api.getAllFilters().then((filters: Filter[]) => {
       dispatch(loadAllFilters(filters));
     });
-  }, []);
+  }, [dispatch]);
 
   const [existingFilter, setExistingFilter] = useState<number>(-1);
 
@@ -47,7 +47,7 @@ const IncidentView: React.FC<IncidentViewPropsType> = ({}: IncidentViewPropsType
   // The reasoning being that this is what the preview does.
   // TODO: When real-time is supported better it should be enabled
   const selectedFilter = useMemo((): IncidentsFilter => {
-    if (existingFilter == -1 || existingFilter >= filters.length || existingFilter < 0) {
+    if (existingFilter === -1 || existingFilter >= filters.length || existingFilter < 0) {
       return filter;
     }
 
