@@ -4,6 +4,7 @@ import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import Typography from "@material-ui/core/Typography";
 import Toolbar from "@material-ui/core/Toolbar";
+import Tooltip from "@material-ui/core/Tooltip";
 import IconButton from "@material-ui/core/IconButton";
 import SettingsIcon from "@material-ui/icons/Settings";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -77,6 +78,7 @@ type ButtonGroupSwitchPropsType<T> = {
   options: T[];
   getLabel: (option: T) => string;
   getColor: (selected: boolean) => "inherit" | "default" | "primary";
+  getTooltip?: (option: T) => string;
   onSelect: (option: T) => void;
   disabled?: boolean;
 };
@@ -86,13 +88,17 @@ export function ButtonGroupSwitch<T>({
   options,
   getLabel,
   getColor,
+  getTooltip,
   onSelect,
   disabled,
 }: ButtonGroupSwitchPropsType<T>) {
+  const tooltipWrap = (option: T, children: React.ReactElement) =>
+    getTooltip === undefined ? children : <Tooltip title={getTooltip(option)}>{children}</Tooltip>;
   return (
     <ButtonGroup variant="contained" color="default" aria-label="text primary button group">
       {options.map((option: T, index: number) => {
-        return (
+        return tooltipWrap(
+          option,
           <Button
             disabled={disabled}
             key={index}
@@ -100,7 +106,7 @@ export function ButtonGroupSwitch<T>({
             onClick={() => onSelect(option)}
           >
             {getLabel(option)}
-          </Button>
+          </Button>,
         );
       })}
     </ButtonGroup>
@@ -201,13 +207,15 @@ export const MoreSettingsToolbarItem: React.FC<MoreSettingsToolbarItemPropsType>
 
   return (
     <div className={classNames(style.moreSettingsItemContainer, className)}>
-      <IconButton
-        color={(!open && "primary") || undefined}
-        aria-label="more-filter-settings-toggle"
-        onClick={() => onChange(!open)}
-      >
-        <SettingsIcon />
-      </IconButton>
+      <Tooltip title="Additional settings">
+        <IconButton
+          color={(!open && "primary") || undefined}
+          aria-label="more-filter-settings-toggle"
+          onClick={() => onChange(!open)}
+        >
+          <SettingsIcon />
+        </IconButton>
+      </Tooltip>
     </div>
   );
 };
@@ -272,6 +280,11 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
         getLabel={(autoUpdate: AutoUpdate) =>
           ({ never: "Never", realtime: "Realtime", interval: "Interval" }[autoUpdate])
         }
+        getTooltip={(autoUpdate: AutoUpdate) =>
+          ({ never: "Never update", realtime: "Update in realtime", interval: "Update on a predefined interval" }[
+            autoUpdate
+          ])
+        }
         getColor={(selected: boolean) => (selected ? "primary" : "default")}
         onSelect={(autoUpdate: AutoUpdate) =>
           (autoUpdate === "realtime" ? ENABLE_WEBSOCKETS_SUPPORT : true) && onAutoUpdateChange(autoUpdate)
@@ -297,6 +310,13 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
             options={["open", "closed", "both"]}
             getLabel={(show: "open" | "closed" | "both") => ({ open: "Open", closed: "Closed", both: "Both" }[show])}
             getColor={(selected: boolean) => (selected ? "primary" : "default")}
+            getTooltip={(show: "open" | "closed" | "both") =>
+              ({
+                open: "Only open incidents",
+                closed: "Only closed incidents",
+                both: "Both open and closed incidents ",
+              }[show])
+            }
             onSelect={(show: "open" | "closed" | "both") => onShowChange(show)}
           />
         </ToolbarItem>
@@ -308,6 +328,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
             options={[false, true]}
             getLabel={(showAcked: boolean) => (showAcked ? "Both" : "Unacked")}
             getColor={(selected: boolean) => (selected ? "primary" : "default")}
+            getTooltip={(showAcked: boolean) => (showAcked ? "Unacked and acked incidents" : "Only unacked incidents")}
             onSelect={(showAcked: boolean) => onShowAchedChange(showAcked)}
           />
         </ToolbarItem>
