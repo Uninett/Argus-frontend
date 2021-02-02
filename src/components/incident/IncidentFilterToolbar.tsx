@@ -215,7 +215,10 @@ export const FiltersDropdownToolbarItem = ({ className }: FiltersDropdownToolbar
       sourceSystemIds: selectedFilter.filter.sourcesById || [],
     };
     createFilter(newFilter)
-      .then((filter: Filter) => displayAlert(`Created filter: ${filter.pk}`, "success"))
+      .then((filter: Filter) => {
+        setExistingFilter(filter);
+        displayAlert(`Created filter: ${filter.pk}`, "success");
+      })
       .catch((error) => displayAlert(`Failed to create filter: ${error}`, "error"));
   };
 
