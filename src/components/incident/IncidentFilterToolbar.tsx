@@ -236,6 +236,7 @@ export const FiltersDropdownToolbarItem = ({ className }: FiltersDropdownToolbar
     modifyFilter(modified)
       .then(() => {
         setExistingFilter(modified);
+        setSaveToDialogOpen(false);
         displayAlert("Updated filter", "success");
       })
       .catch((error) => displayAlert(`Failed to update filter: ${error}`, "error"));
