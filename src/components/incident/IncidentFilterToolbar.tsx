@@ -217,6 +217,7 @@ export const FiltersDropdownToolbarItem = ({ className }: FiltersDropdownToolbar
     createFilter(newFilter)
       .then((filter: Filter) => {
         setExistingFilter(filter);
+        setCreateDialogOpen(false);
         displayAlert(`Created filter: ${filter.pk}`, "success");
       })
       .catch((error) => displayAlert(`Failed to create filter: ${error}`, "error"));
@@ -301,6 +302,7 @@ export const FiltersDropdownToolbarItem = ({ className }: FiltersDropdownToolbar
         onClose={() => setCreateDialogOpen(false)}
         content={
           <TextField
+            autoFocus
             value={newFilterName}
             onChange={(event) => setNewFilterName(event.target.value)}
             label="Filter name"
@@ -308,7 +310,7 @@ export const FiltersDropdownToolbarItem = ({ className }: FiltersDropdownToolbar
           />
         }
         actions={
-          <Button autoFocus onClick={onCreateFilter} color="primary">
+          <Button onClick={onCreateFilter} color="primary">
             Create
           </Button>
         }
@@ -332,7 +334,7 @@ export const FiltersDropdownToolbarItem = ({ className }: FiltersDropdownToolbar
           </List>
         }
         actions={
-          <Button autoFocus disabled={!saveToFilter} onClick={() => onUpdateFilter()} color="primary">
+          <Button disabled={!saveToFilter} onClick={() => onUpdateFilter()} color="primary">
             Save to
           </Button>
         }
