@@ -38,14 +38,16 @@ export type IncidentsPayload = {
 };
 
 export type IncidentsActions = ActionMap<IncidentsPayload>[keyof ActionMap<IncidentsPayload>];
-export const incidentsReducer = (state: IncidentsStateType, action: IncidentsActions): IncidentsStateType => {
-  const createIncidentsIndex = (incidents: Incident[]): { [pk: number]: Index } => {
+
+  export const createIncidentsIndex = (incidents: Incident[]): { [pk: number]: Index } => {
     const mapping: { [pk: number]: Index } = {};
     incidents.forEach((incident: Incident, index: number) => {
       mapping[incident.pk] = index;
     });
     return mapping;
   };
+
+export const incidentsReducer = (state: IncidentsStateType, action: IncidentsActions): IncidentsStateType => {
 
   const createUpdatedLM = (pk: Incident["pk"]): { [pk: number]: number } => {
     return { ...state.lastModified, [pk]: new Date().getTime() };
@@ -149,7 +151,15 @@ export const addIncident = (dispatch: Dispatch, incident: Incident) =>
 const findIncidentByPk = (state: IncidentsStateType, pk: Incident["pk"]): Incident | undefined => {
   if (pk in state._indexByPk) {
     const index = state._indexByPk[pk];
-    return state.incidents[index];
+    const incident = state.incidents[index];
+    if (incident.pk !== pk) {
+      // index is invalid.
+      throw new Error(
+        `_indexByPk is invalid, index ${index} points to wrong index: expected ${pk} but got ${incident.pk}`,
+      );
+      return;
+    }
+    return incident;
   }
   return undefined;
 };
