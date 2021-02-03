@@ -3,15 +3,15 @@ import React from "react";
 import "./variables.css";
 import "./colorscheme.css";
 
+import { Route, Switch, useHistory } from "react-router-dom";
+import { ProtectedRoute } from "./protected.route";
+
 import IncidentDetailsView from "./views/incident/IncidentDetailView";
 import IncidentView from "./views/incident/IncidentView";
 import LoginView from "./views/login/LoginView";
-import { Route, Switch, useHistory } from "react-router-dom";
-import { ProtectedRoute } from "./protected.route";
 import NotificationProfileView from "./views/notificationprofile/NotificationProfileView";
-import FiltersView from "./views/filters/FiltersView";
-import TimeslotView from "./views/timeslot/TimeslotView";
 import SettingsView from "./views/settings/SettingsView";
+import TimeslotView from "./views/timeslot/TimeslotView";
 
 import api from "./api";
 import auth from "./auth";
@@ -56,7 +56,6 @@ const App: React.SFC = () => {
             <ProtectedRoute path="/notificationprofiles" component={withHeader(NotificationProfileView)} />
             <ProtectedRoute path="/timeslots" component={withHeader(TimeslotView)} />
             <ProtectedRoute path="/settings" component={withHeader(SettingsView)} />
-            <ProtectedRoute path="/filters" component={withHeader(FiltersView)} />
             <Route path="/login" component={LoginView} />
             <Route
               path="*"
