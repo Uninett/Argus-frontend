@@ -7,7 +7,7 @@ import { Incident, IncidentTag } from "../api";
 import { groupBy } from "../utils";
 
 // Contexts/Hooks
-import { IncidentsContext } from "../components/incidentsprovider";
+import { IncidentsStateType, IncidentsContext, createIncidentsIndex } from "../components/incidentsprovider";
 
 // Components
 import { Tag } from "../components/tagselector";
@@ -89,16 +89,15 @@ export const FilteredIncidentsProvider = ({
 }) => {
   const { state, dispatch } = useContext(IncidentsContext);
 
-  const filteredIncidents = useMemo(() => {
-    if (filterMatcher === undefined) return state.incidents;
-    return state.incidents.filter(filterMatcher);
-  }, [filterMatcher, state.incidents]);
+  // This isn't efficient, but it is efficient enough.
+  const newState: IncidentsStateType = useMemo(() => {
+    if (filterMatcher === undefined) return state;
+    const incidents = state.incidents.filter(filterMatcher);
+    const _indexByPk = createIncidentsIndex(incidents);
+    return { incidents, _indexByPk, lastModified: state.lastModified };
+  }, [filterMatcher, state]);
 
-  return (
-    <IncidentsContext.Provider value={{ state: { ...state, incidents: filteredIncidents }, dispatch }}>
-      {children}
-    </IncidentsContext.Provider>
-  );
+  return <IncidentsContext.Provider value={{ state: newState, dispatch }}>{children}</IncidentsContext.Provider>;
 };
 
 export default FilteredIncidentsProvider;
