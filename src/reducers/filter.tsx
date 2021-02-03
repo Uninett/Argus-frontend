@@ -1,6 +1,6 @@
 import { Filter } from "../api";
 
-import { ActionMap } from "./common";
+import { ActionMap, makeAction } from "./common";
 
 export enum FilterType {
   Create = "CREATE_FILTER",
@@ -39,15 +39,10 @@ export const filterReducer = (state: Filter[], action: FilterActions) => {
       return [...state, action.payload];
     case FilterType.Delete:
       return [...state.filter((filter: Filter) => filter.pk !== action.payload)];
+    default:
+      return state;
   }
 };
-
-type Action<T, P> = (payload: P) => { type: T; payload: P };
-function makeAction<T, P>(type: T): Action<T, P> {
-  return (payload: P): { type: T; payload: P } => {
-    return { type, payload };
-  };
-}
 
 export const loadAllFilters = makeAction<FilterType.LoadAll, Filter[]>(FilterType.LoadAll);
 export const modifyFilter = makeAction<FilterType.Modify, Filter>(FilterType.Modify);

@@ -1,10 +1,10 @@
-import React from "react";
-import "./Header.css";
-import auth from "../../auth";
+import React, { useContext } from "react";
+
 import { Link, useHistory, withRouter } from "react-router-dom";
 
-import Logo from "../logo/Logo";
+import classNames from "classnames";
 
+// MUI
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -12,10 +12,18 @@ import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import Avatar from "@material-ui/core/Avatar";
 import MenuItem from "@material-ui/core/MenuItem";
+import Skeleton from "@material-ui/lab/Skeleton";
 
+// Api
+import auth from "../../auth";
+
+// Contexts/Hooks
+import { AppContext } from "../../contexts";
+import { loginUser, logoutUser } from "../../reducers/user";
+
+// Components
 import Menu from "../../components/menu";
-
-import classNames from "classnames";
+import Logo from "../logo/Logo";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -124,8 +132,10 @@ const Header: React.FC<HeaderPropsType> = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const isMenuOpen = Boolean(anchorEl);
 
-  // TODO: Use react context
-  const user = localStorage.getItem("user") || "unknown";
+  const {
+    state: { user },
+    dispatch,
+  } = useContext(AppContext);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -137,7 +147,10 @@ const Header: React.FC<HeaderPropsType> = () => {
 
   const handleLogout = () => {
     handleMenuClose();
-    auth.logout(() => history.push("/login"));
+    auth.logout(() => {
+      dispatch(logoutUser());
+      history.push("/login");
+    });
   };
 
   const menuId = "primary-search-account-menu";
@@ -164,10 +177,21 @@ const Header: React.FC<HeaderPropsType> = () => {
           <div className={style.grow} />
           <div>
             <div className={classNames(style.navItem, style.navItemSelected)} onClick={handleMenuOpen}>
-              <div className={style.avatarContainer}>
-                <Avatar>{user[0]}</Avatar>
-                <Typography>{user}</Typography>
-              </div>
+              {user.isAuthenticated ? (
+                <div className={style.avatarContainer}>
+                  <Avatar>{user.displayName[0]}</Avatar>
+                  <Typography>{user.displayName}</Typography>
+                </div>
+              ) : (
+                <div className={style.avatarContainer}>
+                  <Skeleton variant="circle">
+                    <Avatar>User</Avatar>
+                  </Skeleton>
+                  <Skeleton>
+                    <Typography>User</Typography>
+                  </Skeleton>
+                </div>
+              )}
             </div>
           </div>
         </Toolbar>
