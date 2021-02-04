@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 
 import { useHistory } from "react-router-dom";
 
@@ -8,11 +8,15 @@ import { TextFieldProps } from "@material-ui/core/TextField";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 
 // Api
-import api, { Token } from "../../api";
-import Auth from "../../auth";
+import api, { Token, User } from "../../api";
+import auth from "../../auth";
 
+// Config
 import { BACKEND_URL } from "../../config";
-import { loginAndSetUser } from "../../utils";
+
+// Contexts/Hooks
+import { AppContext } from "../../contexts";
+import { loginUser } from "../../reducers/user";
 
 // Components
 import OutlinedTextField from "../../components/textfields/OutlinedTextField";
@@ -85,6 +89,8 @@ const LoginForm: React.FC<{}> = () => {
   const style = useStyles();
   const history = useHistory();
 
+  const { dispatch } = useContext(AppContext);
+
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
@@ -96,19 +102,24 @@ const LoginForm: React.FC<{}> = () => {
     await api
       .userpassAuth(username, password)
       .then((token: Token) => {
-        loginAndSetUser(token)
-          .then(() => {
-            history.push("/");
-          })
-          .catch(() => {
-            console.log("failed to login");
-            setLoginFailed(true);
-          });
+        auth.login(token, () => {
+          api
+            .authGetCurrentUser()
+            .then((user: User) => {
+              console.debug("[userpass-auth] logged in as user", user);
+              dispatch(loginUser(user));
+              history.push("/");
+            })
+            .catch((error) => {
+              console.error("[userpass-auth] error logging in as user", username, error);
+              setLoginFailed(true);
+            });
+        });
       })
       .catch((error) => {
         console.log(error);
         setLoginFailed(true);
-        Auth.logout();
+        auth.logout();
       });
   };
 
