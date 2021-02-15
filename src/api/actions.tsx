@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import api, { Filter, FilterSuccessResponse } from "../api";
+import api, { Filter, FilterSuccessResponse, Incident, IncidentsFilterOptions } from "../api";
 import { InitialStateType, ActionsType } from "../contexts";
 import {
   createFilter as createFilterAction,
@@ -7,6 +7,10 @@ import {
   modifyFilter as modifyFilterAction,
   loadAllFilters as loadAllFiltersAction,
 } from "../reducers/filter";
+
+import { IncidentsFilter } from "../components/incidenttable/FilteredIncidentTable";
+import { Tag } from "../components/tagselector";
+import { IncidentsType, IncidentsStateType, useIncidentsContext } from "../components/incidentsprovider";
 
 import { AppContext } from "../contexts";
 
@@ -72,3 +76,33 @@ export function useFilters(): [InitialStateType["filters"], UseFiltersActionType
     },
   ];
 }
+
+const filterToQueryFilter = (filter: Omit<IncidentsFilter, "sources">): IncidentsFilterOptions => {
+  return {
+    acked: filter.showAcked ? undefined : false,
+    open: filter.show === "both" ? undefined : filter.show === "open",
+    // stateful:
+    sourceSystemIds: filter.sourcesById,
+    tags: filter.tags.map((tag: Tag) => tag.original),
+  };
+};
+
+export const useIncidents = (): [
+  IncidentsStateType,
+  {
+    loadIncidentsFiltered: (filter: Omit<IncidentsFilter, "sources">) => Promise<Incident[]>;
+  },
+] => {
+  const [state, { loadAllIncidents }] = useIncidentsContext();
+  return [
+    state,
+    {
+      loadIncidentsFiltered: (filter: Omit<IncidentsFilter, "sources">) => {
+        return api.getAllIncidentsFiltered(filterToQueryFilter(filter)).then((incidents: Incident[]) => {
+          loadAllIncidents(incidents);
+          return incidents;
+        });
+      },
+    },
+  ];
+};

@@ -15,7 +15,7 @@ export type RealtimeServiceConfig = {
   onIncidentAdded: (incident: Incident) => void;
 };
 
-export type RealtimeServiceState = "connecting" | "opened" | "closed";
+export type RealtimeServiceState = "connecting" | "opened" | "closed" | "disconnecting";
 // RealtimeService represents all the
 // code required to add WebSockets Realtime
 // incident updates.
@@ -30,6 +30,9 @@ export class RealtimeService {
   retryInterval = 1; // seconds
   retryIntervalBackoffFactor = 2;
 
+  // eslint-disable-next-line
+  reconnectInterval: ReturnType<typeof setTimeout> | undefined;
+
   public constructor({ restartOnFailure = true, fallbackToInterval = true, ...params }: RealtimeServiceConfig) {
     this.config = { restartOnFailure, fallbackToInterval, ...params };
     this.state = "closed";
@@ -38,6 +41,9 @@ export class RealtimeService {
     // so you have to bind it yourself.
     this.checkConnection = this.checkConnection.bind(this);
     this.connect = this.connect.bind(this);
+    this.disconnect = this.disconnect.bind(this);
+
+    this.reconnectInterval = undefined;
   }
 
   public checkConnection() {
@@ -48,8 +54,20 @@ export class RealtimeService {
     }
   }
 
+  public disconnect() {
+    if (this.ws && this.ws.readyState !== WebSocket.CLOSED) {
+      console.log("[RealtimeService] closing");
+      if (this.reconnectInterval) {
+        type ClearTimeoutParams = Parameters<typeof clearTimeout>;
+        clearTimeout(this.reconnectInterval as ClearTimeoutParams[0]);
+      }
+      this.state = "disconnecting";
+      this.ws.close();
+    }
+  }
+
   public connect() {
-    let reconnectInterval: ReturnType<typeof setTimeout> | undefined = undefined;
+    /// let reconnectInterval: ReturnType<typeof setTimeout> | undefined = undefined;
     if (this.state !== "closed") {
       console.log("[RealtimeService] calling connect() when there is existing ws connection. returning");
       return;
@@ -93,6 +111,8 @@ export class RealtimeService {
       }
     };
     ws.onopen = () => {
+      console.log("[RealtimeService] Realtime socket opened");
+
       this.state = "opened";
       this.ws = ws;
 
@@ -103,13 +123,21 @@ export class RealtimeService {
 
       this.retryInterval = 1;
       type ClearTimeoutParams = Parameters<typeof clearTimeout>;
-      clearTimeout(reconnectInterval as ClearTimeoutParams[0]);
+      clearTimeout(this.reconnectInterval as ClearTimeoutParams[0]);
     };
     ws.onclose = (e: CloseEvent) => {
+      // we set the state to disconnecting when we are on purpose
+      // closing the connection
+      if (this.state === "disconnecting") {
+        console.log("[RealtimeService] Realtime socket disconnected (purposefully closed)");
+      } else {
+        // Was closed, but not by calling disconnect(), so we try to open it again.
+        console.log(`[RealtimeService] Realtime socket was closed: ${e.reason}`);
+        this.reconnectInterval = setTimeout(this.checkConnection, 1000 * this.retryInterval);
+        this.retryInterval *= this.retryIntervalBackoffFactor;
+      }
       this.state = "closed";
-      console.log(`[RealtimeService] Realtime socket was closed: ${e.reason}`);
-      reconnectInterval = setTimeout(this.checkConnection, 1000 * this.retryInterval);
-      this.retryInterval *= this.retryIntervalBackoffFactor;
+      this.ws = undefined;
     };
 
     // eslint-disable-next-line
