@@ -18,7 +18,7 @@ export type RealtimeServiceConfig = {
   onIncidentAdded: (incident: Incident) => void;
 };
 
-export type RealtimeServiceState = "connecting" | "opened" | "closed" | "disconnecting" | "connected";
+export type RealtimeServiceState = "connecting" | "opened" | "closed" | "disconnecting" | "connected" | "failed";
 
 let numberOfRTs = 0;
 
@@ -34,8 +34,9 @@ export class RealtimeService {
   config: RealtimeServiceConfig;
   state: RealtimeServiceState;
 
-  retryInterval = 1; // seconds
-  retryIntervalBackoffFactor = 2;
+  retries: number; // times
+  retryInterval: number; // seconds
+  retryIntervalBackoffFactor: number;
 
   // eslint-disable-next-line
   reconnectInterval: ReturnType<typeof setTimeout> | undefined;
@@ -51,10 +52,18 @@ export class RealtimeService {
 
     // JavaScript doesn't automatically bind "this" properly when using ES6 classes
     // so you have to bind it yourself.
+    this.resetOnStateChange = this.resetOnStateChange.bind(this);
+    this.setState = this.setState.bind(this);
+    this.resetRetry = this.resetRetry.bind(this);
+
     this.checkConnection = this.checkConnection.bind(this);
     this.connect = this.connect.bind(this);
     this.disconnect = this.disconnect.bind(this);
+    this.reconnect = this.reconnect.bind(this);
 
+    this.retries = 0;
+    this.retryInterval = 1;
+    this.retryIntervalBackoffFactor = 2;
     this.reconnectInterval = undefined;
 
     this.onStateChange = () => undefined;
@@ -65,7 +74,7 @@ export class RealtimeService {
   }
 
   private setState(state: RealtimeServiceState) {
-    console.log(`[RTS ${this.id}] setState`, state);
+    // console.debug(`[RTS ${this.id}] setState`, state);
     this.onStateChange(this.state, state);
     this.state = state;
   }
@@ -75,40 +84,65 @@ export class RealtimeService {
   }
 
   public checkConnection() {
-    console.log(`[RealtimeService ${this.id}] checking connection`);
+    console.debug(`[RealtimeService ${this.id}] checking connection`);
     if (!this.ws || this.ws.readyState === WebSocket.CLOSED) {
       this.setState("closed");
       this.connect();
     }
   }
 
+  private resetRetry() {
+    this.retryInterval = 1;
+    // this.retries = 0;
+    type ClearTimeoutParams = Parameters<typeof clearTimeout>;
+    clearTimeout(this.reconnectInterval as ClearTimeoutParams[0]);
+    this.reconnectInterval = undefined;
+  }
+
+  private reconnect() {
+    this.retries++;
+    this.retryInterval *= this.retryIntervalBackoffFactor;
+    type ClearTimeoutParams = Parameters<typeof clearTimeout>;
+    clearTimeout(this.reconnectInterval as ClearTimeoutParams[0]);
+    this.connect();
+  }
+
   public disconnect() {
-    // if (this.ws && this.ws.readyState !== WebSocket.CLOSED) {
     console.log(`[RealtimeService ${this.id}] closing`);
-    if (this.reconnectInterval) {
-      type ClearTimeoutParams = Parameters<typeof clearTimeout>;
-      clearTimeout(this.reconnectInterval as ClearTimeoutParams[0]);
-    }
+    this.resetRetry();
+    this.retries = 0;
     this.setState("disconnecting");
-    if (this.ws) this.ws.close();
-    // }
+
+    if (this.ws) {
+      this.ws.close();
+      this.ws = undefined;
+    }
   }
 
   public connect() {
     /// let reconnectInterval: ReturnType<typeof setTimeout> | undefined = undefined;
-    if (this.state !== "closed") {
-      console.log(`[RealtimeService ${this.id}] calling connect() when there is existing ws connection. returning`);
+    if (this.state !== "closed" || this.ws !== undefined) {
+      console.error(`[RealtimeService ${this.id}] calling connect() when there is existing ws connection. returning`);
+      return;
+    }
+
+    if (this.retries > 2) {
+      console.error(`[RealtimeService ${this.id}] refusing to connected, exceeded 10 retires`);
+      this.setState("failed");
       return;
     }
 
     this.setState("connecting");
     this.ws = undefined;
 
-    const ws = new WebSocket(`${BACKEND_WS_URL}/open/`);
-    ws.onmessage = (event: MessageEvent) => {
+    this.retries++;
+
+    this.ws = new WebSocket(`${BACKEND_WS_URL}/open/`);
+    this.ws.onmessage = (event: MessageEvent) => {
       const data = JSON.parse(event.data);
 
       this.setState("connected");
+      this.resetRetry();
 
       switch (data.type) {
         case "modified":
@@ -140,40 +174,42 @@ export class RealtimeService {
           break;
       }
     };
-    ws.onopen = () => {
-      console.log(`[RealtimeService ${this.id}] Realtime socket opened`);
+    this.ws.onopen = () => {
+      console.log(`[RealtimeService ${this.id}] Realtime socket opened, state: ${this.state}`);
+      if (this.state === "disconnecting") {
+        return;
+      }
 
       this.setState("opened");
-      this.ws = ws;
+      // console.log(ws.open)
 
       // The "subscribe" action is required to actually
       // make the server send updates. So we subscribe
       // to all updates to all incidents here.
-      this.ws.send(JSON.stringify({ action: "subscribe" }));
-
-      this.retryInterval = 1;
-      type ClearTimeoutParams = Parameters<typeof clearTimeout>;
-      clearTimeout(this.reconnectInterval as ClearTimeoutParams[0]);
+      if (this.ws) this.ws.send(JSON.stringify({ action: "subscribe" }));
     };
-    ws.onclose = (e: CloseEvent) => {
+
+    this.ws.onclose = (e: CloseEvent) => {
       // we set the state to disconnecting when we are on purpose
       // closing the connection
       if (this.state === "disconnecting") {
         console.log(`[RealtimeService ${this.id}] Realtime socket disconnected (purposefully closed)`);
       } else {
         // Was closed, but not by calling disconnect(), so we try to open it again.
-        console.log(`[RealtimeService ${this.id}] Realtime socket was closed: ${e.reason}`);
-        this.reconnectInterval = setTimeout(this.checkConnection, 1000 * this.retryInterval);
-        this.retryInterval *= this.retryIntervalBackoffFactor;
+        console.warn(
+          `[RealtimeService ${this.id}] Realtime socket was closed: ${e.reason}, retrying in ${this.retryInterval}`,
+        );
+        this.reconnectInterval = setTimeout(this.reconnect, 1000 * this.retryInterval);
+        this.retryInterval = this.retryInterval * this.retryIntervalBackoffFactor;
       }
       this.setState("closed");
       this.ws = undefined;
     };
 
     // eslint-disable-next-line
-    ws.onerror = (e: any) => {
+    this.ws.onerror = (e: any) => {
       console.error(`[RealtimeService ${this.id}] got error on websocket client, closing: ${e.message}`);
-      ws.close();
+      if (this.ws) this.ws.close();
       // this.setState("closed"); // TODO: should this be set?
     };
   }
