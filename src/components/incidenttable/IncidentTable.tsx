@@ -3,18 +3,19 @@ import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { Link } from "react-router-dom";
 
 import Button from "@material-ui/core/Button";
+import Checkbox from "@material-ui/core/Checkbox";
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import IconButton from "@material-ui/core/IconButton";
+import MuiTable from "@material-ui/core/Table";
 import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 import Paper from "@material-ui/core/Paper";
-import Checkbox from "@material-ui/core/Checkbox";
-import TicketIcon from "@material-ui/icons/LocalOffer";
-import ClickAwayListener from "@material-ui/core/ClickAwayListener";
-import MuiTable from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell, { TableCellProps } from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
+import TicketIcon from "@material-ui/icons/LocalOffer";
+import Typography from "@material-ui/core/Typography";
 import { Skeleton } from "@material-ui/lab";
 
 import classNames from "classnames";
@@ -247,6 +248,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                 })}
           </TableBody>
         </MuiTable>
+        {!isLoading && incidents.length === 0 && <Typography>No incidents</Typography>}
       </TableContainer>
       {paginationComponent}
     </Paper>
