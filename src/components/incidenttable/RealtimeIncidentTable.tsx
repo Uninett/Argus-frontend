@@ -16,6 +16,13 @@ import FilteredIncidentsProvider, { matchesFilter } from "../../components/filte
 // Components
 import { MinimalIncidentTable } from "./IncidentTable";
 
+const defaultRtsConfig = {
+  onIncidentAdded: () => undefined,
+  onIncidentModified: () => undefined,
+  onIncidentRemoved: () => undefined,
+  onIncidentsInitial: () => undefined,
+};
+
 type RealtimeIncidentTablePropsType = {};
 
 const RealtimeIncidentTable = () => {
@@ -34,7 +41,12 @@ const RealtimeIncidentTable = () => {
   const [filterMatcher, setFilterMatcher] = useState<((incident: Incident) => boolean) | undefined>(undefined);
 
   const [rtsState, setRtsState] = useState<RealtimeServiceState | undefined>(undefined);
-  const [rtsConfig, setRtsConfig] = useState<RealtimeServiceConfig | undefined>(undefined);
+  const [rtsConfig, setRtsConfig] = useState<RealtimeServiceConfig>({
+    onIncidentAdded: () => undefined,
+    onIncidentModified: () => undefined,
+    onIncidentRemoved: () => undefined,
+    onIncidentsInitial: () => undefined,
+  });
   const [realtimeService, setRealtimeService] = useState<RealtimeService | undefined>(undefined);
 
   // const onIncidentsInitial = (/* incidents: Incident[] */) => {
@@ -54,23 +66,28 @@ const RealtimeIncidentTable = () => {
         break;
 
       case "connected":
-        displayAlert("Realtime connected", "success");
+        displayAlert("Established realtime connection", "success");
         setIsLoadingRealtime(false);
         break;
 
       case "closed": {
         setIsLoadingRealtime(true);
-        displayAlert("Realtime closed", "warning");
+        displayAlert("Closed realtime connection", "warning");
         break;
       }
 
       case "disconnecting":
         setIsLoadingRealtime(true);
-        displayAlert("Realtime disconnecting", "info");
+        displayAlert("Disconnecting realtime connection", "info");
         break;
 
       case "connecting":
-        displayAlert("Realtime connecting", "info");
+        displayAlert("Establishing realtime connection", "info");
+        setIsLoadingRealtime(true);
+        break;
+
+      case "failed":
+        displayAlert("Failed to establish realtime connection", "error");
         setIsLoadingRealtime(true);
         break;
     }
@@ -136,43 +153,14 @@ const RealtimeIncidentTable = () => {
     if (realtimeService.config === rtsConfig) {
       return;
     }
-    console.log("updating config", rtsConfig);
+    // console.log("updating config", rtsConfig);
     realtimeService.setConfig(rtsConfig);
 
     realtimeService.onStateChange = (prev: RealtimeServiceState, curr: RealtimeServiceState) => {
-      console.log("rts.onStateChange", prev, curr);
-
+      // console.log("rts.onStateChange", prev, curr);
       if (curr === prev) {
         // Ignore.
         return;
-      }
-
-      switch (curr) {
-        case "opened":
-          displayAlert("Realtime opened", "info");
-          setIsLoadingRealtime(true);
-          break;
-
-        case "connected":
-          displayAlert("Realtime connected", "success");
-          setIsLoadingRealtime(false);
-          break;
-
-        case "closed": {
-          setIsLoadingRealtime(true);
-          displayAlert("Realtime closed", "warning");
-          break;
-        }
-
-        case "disconnecting":
-          setIsLoadingRealtime(true);
-          displayAlert("Realtime disconnecting", "info");
-          break;
-
-        case "connecting":
-          displayAlert("Realtime connecting", "info");
-          setIsLoadingRealtime(true);
-          break;
       }
       setRtsState(curr);
       return;
@@ -180,32 +168,27 @@ const RealtimeIncidentTable = () => {
   }, [rtsConfig, realtimeService, displayAlert]);
 
   useEffect(() => {
-    if (rtsConfig === undefined) {
-      // Wait until rtsConfig is set
-      return;
-    }
+    console.debug("updating config", rtsConfig);
+    if (realtimeService) realtimeService.setConfig(rtsConfig);
+  }, [rtsConfig, realtimeService]);
 
-    if (realtimeService !== undefined) {
-      // We have already created an realtime service,
-      // so don't make another one.
-      return;
-    }
-
-    console.log("Creating realtime service!");
+  useEffect(() => {
+    // Create RTS
+    const rts = new RealtimeService(defaultRtsConfig);
+    setRealtimeService(rts);
+    rts.connect();
 
     setIsLoadingRealtime(true);
 
-    const rts = new RealtimeService(rtsConfig);
-    setRealtimeService(rts);
-    rts.connect();
-    console.debug("created rts and connect()");
-
     return () => {
-      console.debug("disconnecting rts");
-      rts.disconnect();
+      // on unmount
       rts.resetOnStateChange();
+      rts.disconnect();
+      setRealtimeService(undefined);
+      displayAlert("Disconnecting realtime connection", "warning");
+      console.debug("Unmounting realtime table");
     };
-  }, [rtsConfig, realtimeService, displayAlert]);
+  }, [displayAlert]);
 
   return (
     <FilteredIncidentsProvider filterMatcher={filterMatcher}>

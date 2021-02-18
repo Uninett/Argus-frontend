@@ -14,7 +14,11 @@ import IncidentsProvider from "../../components/incidentsprovider"; // TODO: mov
 
 const IncidentComponent = () => {
   const [{ filter }, {}] = useSelectedFilter();
-  return filter.autoUpdate === "realtime" ? <RealtimeIncidentTable /> : <FilteredIncidentTable />;
+  return filter.autoUpdate === "realtime" ? (
+    <RealtimeIncidentTable key="realtime" />
+  ) : (
+    <FilteredIncidentTable key="interval" />
+  );
 };
 
 type IncidentViewPropsType = {};
