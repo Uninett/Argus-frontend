@@ -276,21 +276,6 @@ export function defaultErrorHandler(callback?: (message: string) => void): (erro
   };
 }
 
-function resolveOrReject<T, P = T>(
-  promise: Promise<AxiosResponse<T>>,
-  resolver: Resolver<T, P>,
-  errorCreator: ErrorCreator,
-): Promise<P> {
-  return promise
-    .then((response) => {
-      const value = resolver(response.data);
-      return Promise.resolve(value);
-    })
-    .catch((error) => {
-      return Promise.reject(errorCreator(error));
-    });
-}
-
 function configWithAuth(config: AxiosRequestConfig, token: string) {
   const headers = { ...config.headers, Authorization: `Token ${token}` };
   config.headers = headers;
@@ -299,31 +284,66 @@ function configWithAuth(config: AxiosRequestConfig, token: string) {
 
 type CB = (response: AxiosResponse, error: ErrorType) => void;
 
+export type ApiEventType = "error" | "success";
+
+type WithType<T extends ApiEventType, V> = V & { type: T };
+type ApiEventVariants = {
+  error: WithType<"error", { response: AxiosResponse; error: ErrorType }>;
+  success: WithType<"success", { response: AxiosResponse }>;
+};
+
+export type ApiEvent = ApiEventVariants["error"] | ApiEventVariants["success"];
+
+export type ApiListener = (event: ApiEvent) => void;
+
 export class ApiClient {
   api: AxiosInstance;
   token?: string;
   config: AxiosRequestConfig;
+
+  _listenersId: number;
+  _listeners: [number, ApiListener][];
 
   public constructor(config?: AxiosRequestConfig) {
     this.config = config || apiConfig;
     this.api = axios.create(this.config);
     this.token = auth.token();
 
-    this.registerInterceptors = this.registerInterceptors.bind(this);
+    this._listenersId = 1;
+    this._listeners = [];
 
-    // this.registerInterceptors(() => {
-    //   debuglog("Unauthorized response recieved, logging out!");
-    //   auth.logout();
-    // });
+    this.registerInterceptors = this.registerInterceptors.bind(this);
   }
 
-  // eslint-disable-next-line
+  private resolveOrReject<T, P = T>(
+    promise: Promise<AxiosResponse<T>>,
+    resolver: Resolver<T, P>,
+    errorCreator: ErrorCreator,
+  ): Promise<P> {
+    return promise
+      .then((response) => {
+        const value = resolver(response.data);
+        this._listeners.forEach(([, cb]: [number, ApiListener]) => cb({ type: "success", response }));
+        return Promise.resolve(value);
+      })
+      .catch((error) => {
+        const createdError = errorCreator(error);
+
+        this._listeners.forEach(([, cb]: [number, ApiListener]) =>
+          cb({ type: "error", response: error, error: createdError }),
+        );
+
+        return Promise.reject(createdError);
+      });
+  }
+
   public registerInterceptors(unauthorizedCallback: CB, serverErrorCallback: CB) {
     this.api.interceptors.response.use(
       (response) => response,
       (error) => {
         if (error && error.response) {
           debuglog(error);
+
           const { status } = error.response;
           if (status === 401) {
             unauthorizedCallback(error.response, error);
@@ -336,6 +356,31 @@ export class ApiClient {
     );
   }
 
+  public unregisterInterceptors() {
+    this.api.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        return Promise.reject(error);
+      },
+    );
+  }
+
+  public subscribe(listener: ApiListener): number {
+    const id = this._listenersId;
+    this._listenersId++;
+    this._listeners.push([id, listener]);
+    return id;
+  }
+
+  public unsubscribe(id: number): boolean {
+    const index = this._listeners.findIndex((elem: [number, ApiListener]) => id === elem[0]);
+    if (index === -1) {
+      return false;
+    }
+    this._listeners.splice(index, 1);
+    return true;
+  }
+
   // @deprecated
   public useAuthToken(token: string): void {
     this.token = token;
@@ -343,7 +388,7 @@ export class ApiClient {
 
   // userpassAuth: returns token on success, null on failure
   public userpassAuth(username: string, password: string): Promise<Token> {
-    return resolveOrReject(
+    return this.resolveOrReject(
       this.post<AuthTokenSuccessResponse, AuthTokenRequest>("/api/v1/token-auth/", { username, password }),
       (data: AuthTokenSuccessResponse) => data.token,
       defaultError,
@@ -351,12 +396,12 @@ export class ApiClient {
   }
 
   public postLogout(): Promise<void> {
-    return resolveOrReject(this.authPost<void, {}>("/api/v1/auth/logout/"), defaultResolver, defaultError);
+    return this.resolveOrReject(this.authPost<void, {}>("/api/v1/auth/logout/"), defaultResolver, defaultError);
   }
 
   // authUser: returns the information about an authenticated user
   public authGetCurrentUser(): Promise<User> {
-    return resolveOrReject(
+    return this.resolveOrReject(
       this.authGet<User, {}>("/api/v1/auth/user/"),
       defaultResolver,
       (error) => new Error(`Failed to get current user: ${error}`),
@@ -364,7 +409,7 @@ export class ApiClient {
   }
 
   public getUser(userPK: number): Promise<User> {
-    return resolveOrReject(
+    return this.resolveOrReject(
       this.authGet<User, {}>(`/api/v1/auth/users/${userPK}/`),
       defaultResolver,
       (error) => new Error(`Failed to get user: ${error}`),
@@ -373,7 +418,7 @@ export class ApiClient {
 
   // Phone number
   public getAllPhoneNumbers(): Promise<PhoneNumber[]> {
-    return resolveOrReject(
+    return this.resolveOrReject(
       this.authGet<PhoneNumber[], never>(`/api/v1/auth/phone-number/`),
       defaultResolver,
       (error) => new Error(`Failed to get phone numbers: ${error}`),
@@ -381,7 +426,7 @@ export class ApiClient {
   }
 
   public putPhoneNumber(phoneNumberPK: PhoneNumberPK, phoneNumber: string): Promise<PhoneNumber> {
-    return resolveOrReject(
+    return this.resolveOrReject(
       this.authPut<PhoneNumberSuccessResponse, PhoneNumberRequest>(`/api/v1/auth/phone-number/${phoneNumberPK}/`, {
         // eslint-disable-next-line @typescript-eslint/camelcase
         phone_number: phoneNumber,
@@ -392,7 +437,7 @@ export class ApiClient {
   }
 
   public postPhoneNumber(phoneNumber: string): Promise<PhoneNumber> {
-    return resolveOrReject(
+    return this.resolveOrReject(
       this.authPost<PhoneNumberSuccessResponse, PhoneNumberRequest>(`/api/v1/auth/phone-number/`, {
         // eslint-disable-next-line @typescript-eslint/camelcase
         phone_number: phoneNumber,
@@ -403,7 +448,7 @@ export class ApiClient {
   }
 
   public deletePhoneNumber(pk: PhoneNumberPK): Promise<void> {
-    return resolveOrReject(
+    return this.resolveOrReject(
       this.authDelete<never, never>(`/api/v1/auth/phone-number/${pk}/`),
       defaultResolver,
       (error) => new Error(`Failed to delete phone number ${pk}: ${error}`),
@@ -412,7 +457,7 @@ export class ApiClient {
 
   // NotificationProfile
   public getNotificationProfile(timeslot: TimeslotPK): Promise<NotificationProfile> {
-    return resolveOrReject(
+    return this.resolveOrReject(
       this.authGet<NotificationProfile, GetNotificationProfileRequest>(`/api/v1/notificationprofile/${timeslot}/`),
       defaultResolver,
       (error) => new Error(`Failed to get notification profile: ${error}`),
@@ -420,7 +465,7 @@ export class ApiClient {
   }
 
   public getAllNotificationProfiles(): Promise<NotificationProfile[]> {
-    return resolveOrReject(
+    return this.resolveOrReject(
       this.authGet<NotificationProfile[], GetNotificationProfileRequest>(`/api/v1/notificationprofiles/`),
       defaultResolver,
       (error) => new Error(`Failed to get notification profiles: ${error}`),
@@ -435,7 +480,7 @@ export class ApiClient {
     // eslint-disable-next-line @typescript-eslint/camelcase
     phone_number?: PhoneNumberPK | null,
   ): Promise<NotificationProfile> {
-    return resolveOrReject(
+    return this.resolveOrReject(
       this.authPut<NotificationProfileSuccessResponse, NotificationProfileRequest>(
         `/api/v1/notificationprofiles/${timeslot}/`,
         {
@@ -460,7 +505,7 @@ export class ApiClient {
     // eslint-disable-next-line
     phone_number?: PhoneNumberPK | null,
   ): Promise<NotificationProfile> {
-    return resolveOrReject(
+    return this.resolveOrReject(
       this.authPost<NotificationProfileSuccessResponse, NotificationProfileRequest>(`/api/v1/notificationprofiles/`, {
         // eslint-disable-next-line
         timeslot: timeslot,
@@ -494,7 +539,7 @@ export class ApiClient {
       return Promise.reject(new Error(`Failed to put incident`));
     }
     return Promise.resolve(incident);
-    // return resolveOrReject(
+    // return this.resolveOrReject(
     //   this.authPut<Incident, Incident>(`/api/v1/incidents/${incident.pk}`, incident),
     //   defaultResolver,
     //   (error) => new Error(`Failed to put incident: ${error}`),
@@ -502,7 +547,7 @@ export class ApiClient {
   }
 
   public postIncidentReopenEvent(pk: number): Promise<Event> {
-    return resolveOrReject(
+    return this.resolveOrReject(
       this.authPost<Event, EventWithoutDescriptionBody>(`/api/v1/incidents/${pk}/events/`, { type: EventType.REOPEN }),
       defaultResolver,
       (error) => new Error(`Failed to post incident reopen event: ${error}`),
@@ -510,7 +555,7 @@ export class ApiClient {
   }
 
   public getIncidentAcks(pk: number): Promise<Acknowledgement[]> {
-    return resolveOrReject(
+    return this.resolveOrReject(
       this.authGet<Acknowledgement[], never>(`/api/v1/incidents/${pk}/acks/`),
       defaultResolver,
       (error) => new Error(`Failed to get incident acks: ${error}`),
@@ -518,7 +563,7 @@ export class ApiClient {
   }
 
   public getIncidentEvents(pk: number): Promise<Event[]> {
-    return resolveOrReject(
+    return this.resolveOrReject(
       this.authGet<Event[], never>(`/api/v1/incidents/${pk}/events/`),
       defaultResolver,
       (error) => new Error(`Failed to get incident events: ${error}`),
@@ -526,7 +571,7 @@ export class ApiClient {
   }
 
   public postIncidentCloseEvent(pk: number, description?: string): Promise<Event> {
-    return resolveOrReject(
+    return this.resolveOrReject(
       this.authPost<Event, EventBody | EventWithoutDescriptionBody>(
         `/api/v1/incidents/${pk}/events/`,
         description
@@ -542,7 +587,7 @@ export class ApiClient {
   }
 
   public patchIncidentTicketUrl(pk: number, ticketUrl: string): Promise<IncidentTicketUrlBody> {
-    return resolveOrReject(
+    return this.resolveOrReject(
       this.authPut<IncidentTicketUrlBody, IncidentTicketUrlBody>(`/api/v1/incidents/${pk}/ticket_url/`, {
         // eslint-disable-next-line @typescript-eslint/camelcase
         ticket_url: ticketUrl,
@@ -588,13 +633,13 @@ export class ApiClient {
     if (!cursor) {
       const queryString = buildIncidentsQuery(filter, pageSize);
 
-      return resolveOrReject(
+      return this.resolveOrReject(
         this.authGet<CursorPaginationResponse<Incident>, never>(`/api/v1/incidents/${queryString}`),
         defaultResolver,
         (error) => new Error(`Failed to get incidents: ${error}`),
       );
     } else {
-      return resolveOrReject(
+      return this.resolveOrReject(
         this.authGet<CursorPaginationResponse<Incident>, never>(cursor),
         defaultResolver,
         (error) => new Error(`Failed to get incidents: ${error}`),
@@ -603,7 +648,7 @@ export class ApiClient {
   }
 
   public getIncident(pk: Incident["pk"]): Promise<Incident> {
-    return resolveOrReject(
+    return this.resolveOrReject(
       this.authGet<Incident, never>(`/api/v1/incidents/${pk}/`),
       defaultResolver,
       (error) => new Error(`Failed to get incident with pk=${pk}: ${error}`),
@@ -617,7 +662,7 @@ export class ApiClient {
   }
 
   public getAllIncidents(): Promise<Incident[]> {
-    return resolveOrReject(
+    return this.resolveOrReject(
       this.authGet<CursorPaginationResponse<Incident>, never>(`/api/v1/incidents/`),
       paginationResponseResolver,
       (error) => new Error(`Failed to get incidents: ${error}`),
@@ -625,7 +670,7 @@ export class ApiClient {
   }
 
   public getOpenIncidents(): Promise<Incident[]> {
-    return resolveOrReject(
+    return this.resolveOrReject(
       this.authGet<CursorPaginationResponse<Incident>, never>(`/api/v1/incidents/open/`),
       paginationResponseResolver,
       (error) => new Error(`Failed to get incidents: ${error}`),
@@ -633,7 +678,7 @@ export class ApiClient {
   }
 
   public getOpenUnAckedIncidents(): Promise<Incident[]> {
-    return resolveOrReject(
+    return this.resolveOrReject(
       this.authGet<CursorPaginationResponse<Incident>, never>(`/api/v1/incidents/open+unacked/`),
       paginationResponseResolver,
       (error) => new Error(`Failed to get incidents: ${error}`),
@@ -641,7 +686,7 @@ export class ApiClient {
   }
 
   public getAllIncidentsMetadata(): Promise<IncidentMetadata> {
-    return resolveOrReject(
+    return this.resolveOrReject(
       this.authGet<IncidentMetadata, never>(`/api/v1/incidents/metadata/`),
       defaultResolver,
       (error) => new Error(`Failed to get incidents metadata: ${error}`),
@@ -649,7 +694,7 @@ export class ApiClient {
   }
 
   public postFilterPreview(filterDefinition: FilterDefinition): Promise<Incident[]> {
-    return resolveOrReject(
+    return this.resolveOrReject(
       this.authPost<Incident[], FilterDefinition>(`/api/v1/notificationprofiles/filterpreview/`, filterDefinition),
       defaultResolver,
       (error) => new Error(`Failed to get filtered incidents: ${error}`),
@@ -658,7 +703,7 @@ export class ApiClient {
 
   // Filter
   public getAllFilters(): Promise<Filter[]> {
-    return resolveOrReject(
+    return this.resolveOrReject(
       this.authGet<FilterSuccessResponse[], never>(`/api/v1/notificationprofiles/filters/`),
       (resps: FilterSuccessResponse[]): Filter[] =>
         resps.map(
@@ -677,7 +722,7 @@ export class ApiClient {
   }
 
   public postFilter(name: string, definition: FilterDefinition): Promise<FilterSuccessResponse> {
-    return resolveOrReject(
+    return this.resolveOrReject(
       this.authPost<FilterSuccessResponse, FilterRequest>(`/api/v1/notificationprofiles/filters/`, {
         name,
         // This is really ugly
@@ -690,7 +735,7 @@ export class ApiClient {
   }
 
   public putFilter(pk: number, name: string, definition: FilterDefinition): Promise<FilterSuccessResponse> {
-    return resolveOrReject(
+    return this.resolveOrReject(
       this.authPut<FilterSuccessResponse, FilterRequest>(`/api/v1/notificationprofiles/filters/${pk}/`, {
         name,
         // This is really ugly
@@ -703,7 +748,7 @@ export class ApiClient {
   }
 
   public deleteFilter(pk: FilterPK): Promise<void> {
-    return resolveOrReject(
+    return this.resolveOrReject(
       this.authDelete<never, never>(`/api/v1/notificationprofiles/filters/${pk}/`),
       defaultResolver,
       (error) => new Error(`Failed to delete notification filter ${pk}: ${error}`),
@@ -712,7 +757,7 @@ export class ApiClient {
 
   // Timeslots
   public getAllTimeslots(): Promise<Timeslot[]> {
-    return resolveOrReject(
+    return this.resolveOrReject(
       this.authGet<Timeslot[], never>(`/api/v1/notificationprofiles/timeslots/`),
       defaultResolver,
       (error) => new Error(`Failed to get notificationprofile timeslots: ${error}`),
@@ -720,7 +765,7 @@ export class ApiClient {
   }
 
   public deleteTimeslot(timeslotPK: TimeslotPK): Promise<boolean> {
-    return resolveOrReject(
+    return this.resolveOrReject(
       this.authDelete<boolean, never>(`/api/v1/notificationprofiles/timeslots/${timeslotPK}/`),
       () => true,
       (error) => new Error(`Failed to delete notificationprofile timeslots: ${error}`),
@@ -728,7 +773,7 @@ export class ApiClient {
   }
 
   public putTimeslot(timeslotPK: TimeslotPK, name: string, timeRecurrences: TimeRecurrence[]): Promise<Timeslot> {
-    return resolveOrReject(
+    return this.resolveOrReject(
       this.authPut<Timeslot, Omit<Timeslot, "pk">>(`/api/v1/notificationprofiles/timeslots/${timeslotPK}/`, {
         name,
         // eslint-disable-next-line @typescript-eslint/camelcase
@@ -740,7 +785,7 @@ export class ApiClient {
   }
 
   public postTimeslot(name: string, timeRecurrences: TimeRecurrence[]): Promise<Timeslot> {
-    return resolveOrReject(
+    return this.resolveOrReject(
       this.authPost<Timeslot, Omit<Timeslot, "pk">>(`/api/v1/notificationprofiles/timeslots/`, {
         name,
         // eslint-disable-next-line @typescript-eslint/camelcase
@@ -753,7 +798,7 @@ export class ApiClient {
 
   // Acknowledgements
   public postAck(incidentPK: number, ack: AcknowledgementBody): Promise<Acknowledgement> {
-    return resolveOrReject(
+    return this.resolveOrReject(
       this.authPost<Acknowledgement, AcknowledgementBody>(`/api/v1/incidents/${incidentPK}/acks/`, ack),
       defaultResolver,
       (error) => new Error(`Failed to post incident ack: ${error}`),
