@@ -43,6 +43,10 @@ import api, { Filter, IncidentMetadata, SourceSystem } from "../../api";
 // Config
 import { ENABLE_WEBSOCKETS_SUPPORT } from "../../config";
 
+// Utils
+import { saveToLocalStorage, fromLocalStorageOrDefault } from "../../utils";
+import { DROPDOWN_TOOLBAR } from "../../localstorageconsts";
+
 // Contexts/hooks
 import { useAlerts } from "../../components/alertsnackbar";
 import { useFilters } from "../../api/actions";
@@ -382,7 +386,15 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
   const style = useStyles();
   const [selectedFilter, { setSelectedFilter }] = useSelectedFilter();
 
-  const [dropdownToolbarOpen, setDropdownToolbarOpen] = useState<boolean>(false);
+  const [dropdownToolbarOpen, setDropdownToolbarOpen] = useState<boolean>(
+    // Load from localstorage if possible
+    fromLocalStorageOrDefault(DROPDOWN_TOOLBAR, false, (value: boolean) => value === true || value === false),
+  );
+
+  useEffect(() => {
+    // Save state so that refresh will result in open state if already opened.
+    saveToLocalStorage(DROPDOWN_TOOLBAR, dropdownToolbarOpen);
+  }, [dropdownToolbarOpen]);
 
   const [knownSources, setKnownSources] = useState<string[]>([]);
   const [sourceIdByName, setSourceIdByName] = useState<{ [name: string]: number }>({});
