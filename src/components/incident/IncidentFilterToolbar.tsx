@@ -122,12 +122,19 @@ export function ButtonGroupSwitch<T>({
   onSelect,
   disabled,
 }: ButtonGroupSwitchPropsType<T>) {
-  const tooltipWrap = (option: T, children: React.ReactElement) =>
-    getTooltip === undefined ? children : <Tooltip title={getTooltip(option)}>{children}</Tooltip>;
+  const tooltipWrap = (key: number, option: T, children: React.ReactElement) =>
+    getTooltip === undefined ? (
+      children
+    ) : (
+      <Tooltip key={key} title={getTooltip(option)}>
+        {children}
+      </Tooltip>
+    );
   return (
     <ButtonGroup variant="contained" color="default" aria-label="text primary button group">
       {options.map((option: T, index: number) => {
         return tooltipWrap(
+          index,
           option,
           <Button
             disabled={disabled}
