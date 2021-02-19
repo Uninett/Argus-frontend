@@ -297,6 +297,8 @@ function configWithAuth(config: AxiosRequestConfig, token: string) {
   return config;
 }
 
+type CB = (response: AxiosResponse, error: ErrorType) => void;
+
 export class ApiClient {
   api: AxiosInstance;
   token?: string;
@@ -307,14 +309,16 @@ export class ApiClient {
     this.api = axios.create(this.config);
     this.token = auth.token();
 
-    this.registerUnauthorizedCallback(() => {
-      debuglog("Unauthorized response recieved, logging out!");
-      auth.logout();
-    });
+    this.registerInterceptors = this.registerInterceptors.bind(this);
+
+    // this.registerInterceptors(() => {
+    //   debuglog("Unauthorized response recieved, logging out!");
+    //   auth.logout();
+    // });
   }
 
   // eslint-disable-next-line
-  public registerUnauthorizedCallback(callback: (response: AxiosResponse, error: ErrorType) => void) {
+  public registerInterceptors(unauthorizedCallback: CB, serverErrorCallback: CB) {
     this.api.interceptors.response.use(
       (response) => response,
       (error) => {
@@ -322,7 +326,9 @@ export class ApiClient {
           debuglog(error);
           const { status } = error.response;
           if (status === 401) {
-            callback(error.response, error);
+            unauthorizedCallback(error.response, error);
+          } else if (status >= 500 && status <= 599) {
+            serverErrorCallback(error.response, error);
           }
         }
         return Promise.reject(error);
