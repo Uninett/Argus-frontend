@@ -1,8 +1,21 @@
 import { useState, useEffect, Dispatch, SetStateAction } from "react";
-import moment from "moment";
+
+import format from "date-fns/format";
+import formatDistance from "date-fns/formatDistance";
+
+// Api
 import api, { Incident, User, Token } from "./api";
 import auth from "./auth";
-import { DEBUG } from "./config";
+
+// Config
+import {
+  DEBUG,
+  TIMESTAMP_FORMAT,
+  TIMESTAMP_DATE_FORMAT,
+  TIMESTAMP_TIME_FORMAT,
+  TIMESTAMP_TIME_NO_SECONDS,
+  TIMESTAMP_TIMEZONE_OFFSET_FORMAT,
+} from "./config";
 
 export type ErrorType = string | Error;
 
@@ -13,7 +26,7 @@ export interface IncidentWithFormattedTimestamp extends Incident {
 export function incidentWithFormattedTimestamp(incident: Incident): IncidentWithFormattedTimestamp {
   return {
     ...incident,
-    formattedTimestamp: moment(incident.start_time).format("YYYY.MM.DD  hh:mm:ss"),
+    formattedTimestamp: format(new Date(incident.start_time), "YYYY.MM.DD  hh:mm:ss"),
   };
 }
 
@@ -140,25 +153,43 @@ export function timeOfDayFromDate(date: Date): string {
   return `${hours}:${minutes}:${seconds}`;
 }
 
-export function formatTimestamp(timestamp: Date | string): string {
+export type FormatTimestampOptions = Partial<{
+  withSeconds: boolean;
+  withTimezoneOffset: boolean;
+}>;
+
+export function formatTimestamp(timestamp: Date | string, options?: FormatTimestampOptions): string {
   /* TODO: Have (global?) setting on user to allow forcing of ISO 8601 */
   const dateTimestamp = new Date(timestamp);
-  return dateTimestamp.toLocaleString();
-}
 
-// eslint-disable-next-line @typescript-eslint/camelcase
-export function formatDuration(start_time: Date | string, end_time?: Date | string): string {
-  const start = moment(start_time);
+  let formatString = TIMESTAMP_FORMAT;
+  formatString = formatString.replace("{date}", TIMESTAMP_DATE_FORMAT);
 
-  let end;
-  // eslint-disable-next-line @typescript-eslint/camelcase
-  if (end_time !== "infinity" && end_time) {
-    end = moment(end_time);
+  if (options?.withSeconds) {
+    formatString = formatString.replace("{time}", TIMESTAMP_TIME_FORMAT);
   } else {
-    end = moment.now();
+    formatString = formatString.replace("{time}", TIMESTAMP_TIME_NO_SECONDS);
   }
 
-  return moment.duration(start.diff(end)).humanize();
+  if (options?.withTimezoneOffset) {
+    formatString = formatString.replace("{timezone_offset}", TIMESTAMP_TIMEZONE_OFFSET_FORMAT);
+  } else {
+    formatString = formatString.replace("{timezone_offset}", "");
+  }
+
+  return format(dateTimestamp, formatString);
+}
+
+export function formatDuration(startTime: Date | string, endTime?: Date | string): string {
+  const start = new Date(startTime);
+
+  let end;
+  if (endTime !== "infinity" && endTime) {
+    end = new Date(endTime);
+  } else {
+    end = new Date();
+  }
+  return formatDistance(start, end, { addSuffix: false });
 }
 
 export function truncateMultilineString(multilineString: string, length: number): string {

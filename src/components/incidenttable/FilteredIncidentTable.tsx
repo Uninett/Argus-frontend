@@ -9,8 +9,10 @@ import { DEFAULT_AUTO_REFRESH_INTERVAL } from "../../config";
 // Api
 import api, { Incident, IncidentsFilterOptions, CursorPaginationResponse } from "../../api";
 
+// Utils
+import { formatTimestamp } from "../../utils";
+
 // Contexts/Hooks
-import { useApiPaginatedIncidents } from "../../api/hooks";
 import { useIncidentsContext } from "../../components/incidentsprovider";
 import { useSelectedFilter } from "../../components/filterprovider";
 
@@ -246,7 +248,8 @@ const FilteredIncidentTable = () => {
         />
       </FilteredIncidentsProvider>
       <p>
-        Last refreshed {lastRefresh === undefined ? "never" : lastRefresh.time.toLocaleTimeString()}, {autoUpdateText}
+        Last refreshed {lastRefresh === undefined ? "never" : formatTimestamp(lastRefresh.time, { withSeconds: true })}{" "}
+        {autoUpdateText}
       </p>
     </div>
   );
