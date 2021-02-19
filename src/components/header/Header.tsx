@@ -86,6 +86,12 @@ const useStyles = makeStyles((theme: Theme) =>
         cursor: "pointer",
       },
     },
+    errorContainer: {
+      display: "flex",
+      flexFlow: "column wrap",
+      alignItems: "center",
+      margin: "4px",
+    },
     errorTypography: {
       alignItems: "center",
       fontWeight: "bold",
@@ -206,7 +212,11 @@ const Header: React.FC<HeaderPropsType> = () => {
       </AppBar>
       {apiState.hasConnectionProblems && (
         <AppBar className={classNames(style.root, style.rootNetworkError)} position="relative">
-          <Typography className={style.errorTypography}>Problems connecting to server...</Typography>
+          <div className={style.errorContainer}>
+            <Typography className={style.errorTypography}>
+              Problems connecting to server... Please try again.
+            </Typography>
+          </div>
         </AppBar>
       )}
 
