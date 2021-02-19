@@ -35,6 +35,9 @@ const useStyles = makeStyles((theme: Theme) =>
       transition: "0.4s",
       zIndex: theme.zIndex.drawer + 1,
     },
+    rootNetworkError: {
+      backgroundColor: theme.palette.error.dark,
+    },
     grow: { flexGrow: 1 },
     rightAligned: { marginRight: theme.spacing(2) },
     navWrapper: {
@@ -82,6 +85,11 @@ const useStyles = makeStyles((theme: Theme) =>
       "&:hover": {
         cursor: "pointer",
       },
+    },
+    errorTypography: {
+      alignItems: "center",
+      fontWeight: "bold",
+      color: "white",
     },
   }),
 );
@@ -133,7 +141,7 @@ const Header: React.FC<HeaderPropsType> = () => {
   const isMenuOpen = Boolean(anchorEl);
 
   const {
-    state: { user },
+    state: { user, apiState },
     dispatch,
   } = useContext(AppContext);
 
@@ -196,6 +204,12 @@ const Header: React.FC<HeaderPropsType> = () => {
           </div>
         </Toolbar>
       </AppBar>
+      {apiState.hasConnectionProblems && (
+        <AppBar className={classNames(style.root, style.rootNetworkError)} position="relative">
+          <Typography className={style.errorTypography}>Problems connecting to server...</Typography>
+        </AppBar>
+      )}
+
       {renderMenu}
     </div>
   );
