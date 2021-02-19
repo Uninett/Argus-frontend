@@ -19,7 +19,7 @@ import auth from "../../auth";
 
 // Contexts/Hooks
 import { AppContext } from "../../contexts";
-import { loginUser, logoutUser } from "../../reducers/user";
+import { logoutUser } from "../../reducers/user";
 
 // Components
 import Menu from "../../components/menu";

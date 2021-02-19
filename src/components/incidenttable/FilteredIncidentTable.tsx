@@ -10,7 +10,6 @@ import { DEFAULT_AUTO_REFRESH_INTERVAL } from "../../config";
 import api, { Incident, IncidentsFilterOptions, CursorPaginationResponse } from "../../api";
 
 // Contexts/Hooks
-import { useApiPaginatedIncidents } from "../../api/hooks";
 import { useIncidentsContext } from "../../components/incidentsprovider";
 import { useSelectedFilter } from "../../components/filterprovider";
 
@@ -66,7 +65,7 @@ const FilteredIncidentTable = () => {
 
   // Get the incidents and seleceted filter from context
   const [{ incidents }, { loadAllIncidents }] = useIncidentsContext();
-  const [{ filter }, {}] = useSelectedFilter();
+  const [{ filter }] = useSelectedFilter();
 
   // Keep track of the pagination cursor
   const [paginationCursor, setPaginationCursor] = useState<PaginationCursor>(DEFAULT_PAGINATION_CURSOR);

@@ -22,13 +22,10 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 
 import AddIcon from "@material-ui/icons/Add";
-import DeleteIcon from "@material-ui/icons/Delete";
 import ClearIcon from "@material-ui/icons/Clear";
 import IconButton from "@material-ui/core/IconButton";
 import SaveAltIcon from "@material-ui/icons/SaveAlt";
 import SettingsIcon from "@material-ui/icons/Settings";
-
-import { makeConfirmationButton } from "../../components/buttons/ConfirmationButton";
 
 // Components
 import { AutoUpdate } from "../../components/incidenttable/FilteredIncidentTable";
