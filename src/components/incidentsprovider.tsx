@@ -39,16 +39,15 @@ export type IncidentsPayload = {
 
 export type IncidentsActions = ActionMap<IncidentsPayload>[keyof ActionMap<IncidentsPayload>];
 
-  export const createIncidentsIndex = (incidents: Incident[]): { [pk: number]: Index } => {
-    const mapping: { [pk: number]: Index } = {};
-    incidents.forEach((incident: Incident, index: number) => {
-      mapping[incident.pk] = index;
-    });
-    return mapping;
-  };
+export const createIncidentsIndex = (incidents: Incident[]): { [pk: number]: Index } => {
+  const mapping: { [pk: number]: Index } = {};
+  incidents.forEach((incident: Incident, index: number) => {
+    mapping[incident.pk] = index;
+  });
+  return mapping;
+};
 
 export const incidentsReducer = (state: IncidentsStateType, action: IncidentsActions): IncidentsStateType => {
-
   const createUpdatedLM = (pk: Incident["pk"]): { [pk: number]: number } => {
     return { ...state.lastModified, [pk]: new Date().getTime() };
   };
