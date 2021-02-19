@@ -22,7 +22,7 @@ export const USE_24H_TIME = true;
 export const TIMESTAMP_DATE_FORMAT = "yyyy-MM-dd";
 export const TIMESTAMP_TIME_FORMAT = "HH:mm:ss";
 export const TIMESTAMP_TIME_NO_SECONDS = "HH:mm";
-export const TIMESTAMP_TIMEZONE_OFFSET_FORMAT = "x";
+export const TIMESTAMP_TIMEZONE_OFFSET_FORMAT = "xxx";
 
 // String replacements are used on this format string to build
 // the timestamp. This allows for switching of time, and disabling
