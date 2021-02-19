@@ -1,4 +1,4 @@
-import React, { useReducer, useContext, createContext } from "react";
+import React, { useEffect, useReducer, useContext, createContext } from "react";
 
 import { IncidentsFilter, AutoUpdate } from "../components/incidenttable/FilteredIncidentTable";
 import { Filter } from "../api";
@@ -6,6 +6,10 @@ import { Tag, originalToTag } from "../components/tagselector";
 
 // Store
 import { ActionMap } from "../reducers/common";
+import { SELECTED_FILTER } from "../localstorageconsts";
+
+// Utils
+import { fromLocalStorageOrDefault, saveToLocalStorage } from "../utils";
 
 export type SelectedFilterStateType = {
   // Optionally selected using drop-down
@@ -146,7 +150,15 @@ export const SelectedFilterContext = createContext<{
 });
 
 export const SelectedFilterProvider = ({ children }: { children?: React.ReactNode }) => {
-  const [state, dispatch] = useReducer(selectedFilterReducer, initialSelectedFilter);
+  const [state, dispatch] = useReducer(
+    selectedFilterReducer,
+    fromLocalStorageOrDefault<SelectedFilterStateType>(SELECTED_FILTER, initialSelectedFilter),
+  );
+
+  useEffect(() => {
+    // Save to local storage
+    saveToLocalStorage<SelectedFilterStateType>(SELECTED_FILTER, state);
+  }, [state]);
 
   return <SelectedFilterContext.Provider value={{ state, dispatch }}>{children}</SelectedFilterContext.Provider>;
 };

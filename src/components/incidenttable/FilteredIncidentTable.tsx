@@ -10,7 +10,9 @@ import { DEFAULT_AUTO_REFRESH_INTERVAL } from "../../config";
 import api, { Incident, IncidentsFilterOptions, CursorPaginationResponse } from "../../api";
 
 // Utils
-import { formatTimestamp } from "../../utils";
+import { formatTimestamp, saveToLocalStorage, fromLocalStorageOrDefault } from "../../utils";
+
+import { PAGINATION_CURSOR_PAGE_SIZE } from "../../localstorageconsts";
 
 // Contexts/Hooks
 import { useIncidentsContext } from "../../components/incidentsprovider";
@@ -71,7 +73,13 @@ const FilteredIncidentTable = () => {
   const [{ filter }, {}] = useSelectedFilter();
 
   // Keep track of the pagination cursor
-  const [paginationCursor, setPaginationCursor] = useState<PaginationCursor>(DEFAULT_PAGINATION_CURSOR);
+  const [paginationCursor, setPaginationCursor] = useState<PaginationCursor>(
+    // Load page size from local storage if possible
+    {
+      ...DEFAULT_PAGINATION_CURSOR,
+      pageSize: fromLocalStorageOrDefault<number>(PAGINATION_CURSOR_PAGE_SIZE, 25, (pageSize: number) => pageSize > 0),
+    },
+  );
   // We need a virtual cursor in order to retain information
   // about the maxiumum observed amount of pages (we don't get this information from the backend)
   // and the total amount of elements (which we know when we reach the end)
@@ -119,6 +127,11 @@ const FilteredIncidentTable = () => {
   useEffect(() => {
     refresh();
   }, [refresh]);
+
+  useEffect(() => {
+    // Save current pagination size to local storage.
+    saveToLocalStorage<PaginationCursor["pageSize"]>(PAGINATION_CURSOR_PAGE_SIZE, paginationCursor.pageSize);
+  }, [paginationCursor]);
 
   const totalElements = useMemo(() => {
     if (!cursors?.next && incidents) {
@@ -207,7 +220,7 @@ const FilteredIncidentTable = () => {
   // Also set the filter matcher
   useEffect(() => {
     setVirtCursor(DEFAULT_VIRT_CURSOR);
-    setPaginationCursor(DEFAULT_PAGINATION_CURSOR);
+    setPaginationCursor((old: PaginationCursor) => ({ ...DEFAULT_PAGINATION_CURSOR, pageSize: old.pageSize }));
   }, [filter]);
 
   const filterMatcher = useMemo(() => {

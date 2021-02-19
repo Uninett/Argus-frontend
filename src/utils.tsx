@@ -203,3 +203,30 @@ export function truncateMultilineString(multilineString: string, length: number)
 export const copyTextToClipboard = (text: string) => {
   navigator.clipboard.writeText(text);
 };
+
+type LocalStorageItem<T = { [key: string]: unknown }> = { timestamp: number; value: T };
+
+export function saveToLocalStorage<T>(key: string, data: T): boolean {
+  const exists = !!window.localStorage.getItem(key);
+
+  // Store a timestamp for easy debugging
+  const item: LocalStorageItem<T> = { timestamp: new Date().getTime(), value: data };
+  window.localStorage.setItem(key, JSON.stringify(item));
+  return exists;
+}
+
+export function fromLocalStorageOrDefault<T>(key: string, defaultData: T, validate?: (data: T) => boolean): T {
+  const data = window.localStorage.getItem(key);
+  if (!data) {
+    return defaultData;
+  }
+
+  const { value }: LocalStorageItem<T> = JSON.parse(data);
+
+  if (validate && !validate(value)) {
+    console.warn("LocalStorage item with key", key, "failed to validate:", value);
+    return defaultData;
+  }
+
+  return value;
+}
