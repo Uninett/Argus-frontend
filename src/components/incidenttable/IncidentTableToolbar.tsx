@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useCallback } from "react";
+import React, { useEffect, useMemo } from "react";
 
 import classNames from "classnames";
 
@@ -56,11 +56,11 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
   const rootClasses = useStyles();
 
   const [, { closeIncident, reopenIncident, acknowledgeIncident }] = useIncidents();
-  const [incidents, { incidentByPk }] = useIncidentsContext();
+  const [, { incidentByPk }] = useIncidentsContext();
 
   // XXX: In the future there should be better seperation of components, and this
   // shouldn't be needed here. Now it's used to clear selection when the filter changes.
-  const [{ filter: selectedFilter }, {}] = useSelectedFilter();
+  const [{ filter: selectedFilter }] = useSelectedFilter();
 
   const allState: "mixed" | "open" | "closed" = useMemo(() => {
     const pks: Incident["pk"][] = [...selectedIncidents.keys()];
