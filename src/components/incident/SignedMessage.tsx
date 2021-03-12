@@ -1,17 +1,53 @@
 import React from "react";
 
-import ListItemText from "@material-ui/core/ListItemText";
-import Grid from "@material-ui/core/Grid";
+// MUI
+import Typography from "@material-ui/core/Typography";
+import grey from "@material-ui/core/colors/grey";
+import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 
+import classNames from "classnames";
+
+// Api
 import { Timestamp } from "../../api";
 
+// Utils
 import { formatTimestamp } from "../../utils";
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      display: "flex",
+      flexDirection: "column",
+      padding: "10px",
+    },
+    content: {
+      padding: theme.spacing(2),
+      backgroundColor: theme.palette.background.paper,
+    },
+    footer: {
+      padding: theme.spacing(2),
+
+      display: "flex",
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+
+      backgroundColor: grey["200"],
+
+      // Divider
+      borderTopStyle: "solid",
+      borderTopColor: "gray",
+      borderTopWidth: "2px",
+    },
+  }),
+);
 
 type SignedMessagePropsType = {
   message: string;
   username: string;
   timestamp: Timestamp;
 
+  className?: string;
   content?: React.ReactNode;
   TextComponent?: React.ComponentType;
 };
@@ -20,27 +56,27 @@ const SignedMessage: React.FC<SignedMessagePropsType> = ({
   message,
   username,
   timestamp,
+  className,
   content,
   TextComponent,
 }: SignedMessagePropsType) => {
+  const classes = useStyles();
   const ackDate = new Date(timestamp);
   const formattedAckDate = formatTimestamp(ackDate);
 
-  const Component: React.ComponentType = TextComponent || ListItemText;
+  const Component: React.ComponentType = TextComponent || Typography;
 
   return (
-    <Grid container direction="column" spacing={2}>
-      {content || <Component>{message}</Component>}
+    <div className={classNames(classes.root, className)}>
+      <div className={classes.content} style={{ visibility: message ? "visible" : "hidden" }}>
+        {content}
+      </div>
 
-      <Grid container direction="row" spacing={2}>
-        <Grid item sm>
-          <Component>{username}</Component>
-        </Grid>
-        <Grid item container sm alignItems="flex-end" justify="space-evenly">
-          <Component>{formattedAckDate}</Component>
-        </Grid>
-      </Grid>
-    </Grid>
+      <div className={classes.footer}>
+        <Component>{username}</Component>
+        <Component>{formattedAckDate}</Component>
+      </div>
+    </div>
   );
 };
 

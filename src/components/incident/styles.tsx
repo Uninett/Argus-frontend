@@ -11,7 +11,8 @@ import { WHITE } from "../../colorscheme";
 export const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      backgroundColor: theme.palette.background.paper,
+      // backgroundColor: theme.palette.background.paper,
+      backgroundColor: grey["100"],
       boxShadow: theme.shadows[5],
       padding: theme.spacing(2, 4, 3),
     },
@@ -36,9 +37,10 @@ export const useStyles = makeStyles((theme: Theme) =>
       color: WHITE,
     },
     message: {
-      backgroundColor: theme.palette.background.paper,
-      boxShadow: theme.shadows[2],
-      padding: theme.spacing(2, 4, 3),
+      borderStyle: "solid",
+      borderColor: "gray",
+      borderWidth: "2px",
+      borderRadius: "10px",
     },
     closedMessage: {
       backgroundColor: theme.palette.success.main,

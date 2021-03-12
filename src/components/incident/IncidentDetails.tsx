@@ -69,19 +69,15 @@ type EventListItemPropsType = {
 const EventListItem: React.FC<EventListItemPropsType> = ({ event }: EventListItemPropsType) => {
   const classes = useStyles();
   return (
-    <div className={classes.message}>
-      <SignedMessage
-        message={event.description}
-        timestamp={event.timestamp}
-        username={event.actor.username}
-        content={
-          <ListItemText
-            primary={event.type.display}
-            secondary={<Typography paragraph>{event.description}</Typography>}
-          />
-        }
-      />
-    </div>
+    <SignedMessage
+      className={classes.message}
+      message={event.description}
+      timestamp={event.timestamp}
+      username={event.actor.username}
+      content={
+        <ListItemText primary={event.type.display} secondary={<Typography paragraph>{event.description}</Typography>} />
+      }
+    />
   );
 };
 
@@ -207,23 +203,22 @@ const AckListItem: React.FC<AckListItemPropsType> = ({ ack }: AckListItemPropsTy
   }
 
   return (
-    <div className={classes.message}>
-      <SignedMessage
-        message={ack.event.description}
-        timestamp={formattedAckDate}
-        username={ack.event.actor.username}
-        content={
-          <ListItemText
-            primary={expiresMessage || ""}
-            secondary={
-              <Typography paragraph style={{ textDecoration: hasExpired ? "line-through" : "none" }}>
-                {ack.event.description}
-              </Typography>
-            }
-          />
-        }
-      />
-    </div>
+    <SignedMessage
+      className={classes.message}
+      message={ack.event.description}
+      timestamp={formattedAckDate}
+      username={ack.event.actor.username}
+      content={
+        <ListItemText
+          primary={expiresMessage || ""}
+          secondary={
+            <Typography paragraph style={{ textDecoration: hasExpired ? "line-through" : "none" }}>
+              {ack.event.description}
+            </Typography>
+          }
+        />
+      }
+    />
   );
 };
 
@@ -451,23 +446,21 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
             </CenterContainer>
           </Grid>
         </Grid>
-        <Grid container item spacing={2} md direction="column">
+        <Grid container item md direction="column">
           <Grid item>
             <Typography color="textSecondary" gutterBottom>
               Related events
             </Typography>
-            <List>
-              {(isEventsLoading &&
-                Array.from(new Array(3)).map((item: number, index: number) => (
-                  <Skeleton key={index} variant="rect" animation="wave">
-                    {" "}
-                    <EventListItem event={defaultEvent} />
-                  </Skeleton>
-                ))) ||
-                (events || [])
-                  .filter((event: Event) => event.type.value !== "ACK")
-                  .map((event: Event) => <EventListItem key={event.pk} event={event} />)}
-            </List>
+            {(isEventsLoading &&
+              Array.from(new Array(3)).map((item: number, index: number) => (
+                <Skeleton key={index} variant="rect" animation="wave">
+                  {" "}
+                  <EventListItem event={defaultEvent} />
+                </Skeleton>
+              ))) ||
+              (events || [])
+                .filter((event: Event) => event.type.value !== "ACK")
+                .map((event: Event) => <EventListItem key={event.pk} event={event} />)}
           </Grid>
         </Grid>
       </Grid>
