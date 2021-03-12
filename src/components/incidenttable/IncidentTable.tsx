@@ -318,6 +318,7 @@ export const MinimalIncidentTable = ({
     <ClickAwayListener onClickAway={onModalClose}>
       <div>
         <Modal
+          truncateTitle
           open={modalDetails.open}
           title={modalDetails.title}
           onClose={onModalClose}
