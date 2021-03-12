@@ -283,52 +283,52 @@ export const MinimalIncidentTable = ({
     setDetailPk(undefined);
   };
 
-  const handleIncidentChange = (incident: Incident) => {
-    modifyIncident(incident);
-  };
-
-  const detailModal = useMemo(() => {
-    const pk = detailPk;
-
-    if (pk === undefined) {
-      return null;
+  const copyCanonicalUrlToClipboard = useCallback(() => {
+    if (detailPk) {
+      const relativeUrl = `/incidents/${detailPk}/`;
+      const canonicalUrl = `${window.location.protocol}//${window.location.host}${relativeUrl}`;
+      copyTextToClipboard(canonicalUrl);
+      displayAlert("Copied URL to clipboard", "success");
     }
-
-    const incident = incidentByPk(pk);
-    if (incident === undefined) {
-      return null;
-    }
-
-    const copyCanonicalUrlToClipboard = () => {
-      if (detailPk) {
-        const relativeUrl = `/incidents/${detailPk}/`;
-        const canonicalUrl = `${window.location.protocol}//${window.location.host}${relativeUrl}`;
-        copyTextToClipboard(canonicalUrl);
-        displayAlert("Copied URL to clipboard", "success");
-      }
-    };
-
-    return (
-      <Modal
-        open
-        title={`${detailPk}: ${truncateMultilineString(incident.description, 50)}`}
-        onClose={onModalClose}
-        content={<IncidentDetails onIncidentChange={handleIncidentChange} incident={incident} />}
-        actions={
-          <Button autoFocus onClick={copyCanonicalUrlToClipboard} color="primary">
-            Copy URL
-          </Button>
-        }
-        dialogProps={{ maxWidth: "lg", fullWidth: true }}
-      />
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [detailPk, displayAlert]);
+
+  type ModalDetails = {
+    title: string;
+    open: boolean;
+    incident: Incident | undefined;
+    content: React.ReactNode | undefined;
+  };
+  const modalDetails: ModalDetails = useMemo((): ModalDetails => {
+    const defaultDetails: ModalDetails = { title: "", open: false, incident: undefined, content: undefined };
+    if (detailPk === undefined) return defaultDetails;
+    const incident = incidentByPk(detailPk);
+    if (incident === undefined) return defaultDetails;
+
+    return {
+      title: `${incident.pk}: ${incident.description}`,
+      open: true,
+      incident: incident,
+      content: (
+        <IncidentDetails onIncidentChange={(incident: Incident) => modifyIncident(incident)} incident={incident} />
+      ),
+    };
+  }, [detailPk, incidentByPk, modifyIncident]);
 
   return (
     <ClickAwayListener onClickAway={onModalClose}>
       <div>
-        {detailModal}
+        <Modal
+          open={modalDetails.open}
+          title={modalDetails.title}
+          onClose={onModalClose}
+          content={modalDetails.content}
+          actions={
+            <Button autoFocus onClick={copyCanonicalUrlToClipboard} color="primary">
+              Copy URL
+            </Button>
+          }
+          dialogProps={{ maxWidth: "lg", fullWidth: true }}
+        />
         <MUIIncidentTable
           isRealtime={isRealtime}
           isLoading={isLoading}
