@@ -14,7 +14,6 @@ services:
       - REACT_APP_BACKEND_WS_URL=ws://localhost:8000/ws
       - REACT_APP_USE_SECURE_COOKIE=false
       - REACT_APP_DEBUG=true
-    restart: always
 
   api:
     build:
@@ -33,14 +32,12 @@ services:
       - DATABASE_URL=postgresql://argus:HahF9araeKoo@postgres/argus
       - ARGUS_FRONTEND_URL=http://localhost:8080
       - ARGUS_REDIS_SERVER=redis
-    restart: always
 
 
   postgres:
     image: "postgres:12"
     volumes:
       - postgres:/var/lib/postgresql/data:Z
-    restart: always
     environment:
       - POSTGRES_USER=argus
       - POSTGRES_PASSWORD=HahF9araeKoo
@@ -49,7 +46,6 @@ services:
 
   redis:
     image: "redis:latest"
-    restart: always
 
 
 volumes:
