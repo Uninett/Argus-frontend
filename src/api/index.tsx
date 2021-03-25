@@ -86,7 +86,7 @@ export interface Filter {
   tags: string[];
 }
 
-export interface FilterDefinition {
+export interface FilterString {
   sourceSystemIds: number[];
   tags: string[];
 
@@ -693,9 +693,9 @@ export class ApiClient {
     );
   }
 
-  public postFilterPreview(filterDefinition: FilterDefinition): Promise<Incident[]> {
+  public postFilterPreview(filterDefinition: FilterString): Promise<Incident[]> {
     return this.resolveOrReject(
-      this.authPost<Incident[], FilterDefinition>(`/api/v1/notificationprofiles/filterpreview/`, filterDefinition),
+      this.authPost<Incident[], FilterString>(`/api/v1/notificationprofiles/filterpreview/`, filterDefinition),
       defaultResolver,
       (error) => new Error(`Failed to get filtered incidents: ${error}`),
     );
@@ -708,7 +708,7 @@ export class ApiClient {
       (resps: FilterSuccessResponse[]): Filter[] =>
         resps.map(
           (resp: FilterSuccessResponse): Filter => {
-            const definition: FilterDefinition = JSON.parse(resp.filter_string);
+            const definition: FilterString = JSON.parse(resp.filter_string);
 
             return {
               pk: resp.pk,
@@ -721,7 +721,7 @@ export class ApiClient {
     );
   }
 
-  public postFilter(name: string, definition: FilterDefinition): Promise<FilterSuccessResponse> {
+  public postFilter(name: string, definition: FilterString): Promise<FilterSuccessResponse> {
     return this.resolveOrReject(
       this.authPost<FilterSuccessResponse, FilterRequest>(`/api/v1/notificationprofiles/filters/`, {
         name,
@@ -734,7 +734,7 @@ export class ApiClient {
     );
   }
 
-  public putFilter(pk: number, name: string, definition: FilterDefinition): Promise<FilterSuccessResponse> {
+  public putFilter(pk: number, name: string, definition: FilterString): Promise<FilterSuccessResponse> {
     return this.resolveOrReject(
       this.authPut<FilterSuccessResponse, FilterRequest>(`/api/v1/notificationprofiles/filters/${pk}/`, {
         name,
