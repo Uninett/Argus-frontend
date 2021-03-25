@@ -192,17 +192,17 @@ const AckListItem: React.FC<AckListItemPropsType> = ({ ack }: AckListItemPropsTy
   const classes = useStyles();
 
   const ackDate = new Date(ack.event.timestamp);
-  const formattedAckDate = formatTimestamp(ackDate);
+  const formattedAckDate = formatTimestamp(ackDate, { withSeconds: true });
 
   let hasExpired = false;
   let expiresMessage;
   if (ack.expiration) {
     const date = new Date(ack.expiration);
     if (Date.parse(ack.expiration) < Date.now()) {
-      expiresMessage = `Expired ${formatTimestamp(date)}`;
+      expiresMessage = `Expired ${formatTimestamp(date, { withSeconds: true })}`;
       hasExpired = true;
     } else {
-      expiresMessage = `Expires ${formatTimestamp(date)}`;
+      expiresMessage = `Expires ${formatTimestamp(date, { withSeconds: true })}`;
     }
   }
 
@@ -366,7 +366,10 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                 </Typography>
                 <List>
                   <IncidentDetailsListItem title="Description" detail={incident.description} />
-                  <IncidentDetailsListItem title="Start time" detail={formatTimestamp(incident.start_time)} />
+                  <IncidentDetailsListItem
+                    title="Start time"
+                    detail={formatTimestamp(incident.start_time, { withSeconds: true })}
+                  />
                   {incident.stateful && (
                     <IncidentDetailsListItem
                       title="Duration"
