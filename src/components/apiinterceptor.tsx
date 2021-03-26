@@ -8,7 +8,7 @@ import api from "../api";
 import auth from "../auth";
 
 // Contexts/Hooks
-import { AppContext } from "../contexts";
+import { AppContext } from "../state/contexts";
 import { useAlerts } from "../components/alertsnackbar";
 
 import { setHasConnectionProblems, unsetHasConnectionProblems } from "../reducers/apistate";

@@ -9,7 +9,7 @@ import api from "./api";
 import auth from "./auth";
 
 // Contexts/Hooks
-import { AppContext } from "./contexts";
+import { AppContext } from "./state/contexts";
 import { loginUser } from "./reducers/user";
 
 type ProtectedRoutePropsType = {
