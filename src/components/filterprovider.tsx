@@ -20,7 +20,7 @@ export type SelectedFilterStateType = {
   sourcesById: number[];
 
   showAcked: boolean;
-  autoUpdate: AutoUpdateMethod;
+  // autoUpdate: AutoUpdateMethod;
   show: "open" | "closed" | "both";
 
   // The resulting incidents filter
@@ -36,7 +36,7 @@ const initialSelectedFilter: SelectedFilterStateType = {
   sourcesById: [],
 
   showAcked: false,
-  autoUpdate: "realtime", // TODO: this should not be here...
+  // autoUpdate: "realtime", // TODO: this should not be here...
   show: "open",
 
   incidentsFilter: {
@@ -45,7 +45,7 @@ const initialSelectedFilter: SelectedFilterStateType = {
     tags: [],
     sourcesById: undefined,
     sources: "AllSources",
-    autoUpdate: "realtime",
+    // autoUpdate: "realtime",
   },
 };
 
@@ -79,7 +79,7 @@ export const selectedFilterReducer = (
   switch (action.type) {
     case SelectedFilterType.SetSelectedFilter: {
       const selected = action.payload;
-      const { showAcked, autoUpdate, show } = { ...state, ...selected };
+      const { showAcked, /* autoUpdate, */ show } = { ...state, ...selected };
 
       let unset = false;
       if (selected.tags && !arrayEquals(selected.tags, state.incidentsFilter.tags)) {
@@ -97,7 +97,7 @@ export const selectedFilterReducer = (
       const sourcesById: number[] | undefined = selected.sourcesById
         ? selected.sourcesById
         : state.incidentsFilter.sourcesById;
-      const updated = { tags, sourcesById, showAcked, autoUpdate, show };
+      const updated = { tags, sourcesById, showAcked, /* autoUpdate, */ show };
 
       const incidentsFilter: IncidentsFilter = {
         sources: undefined,
@@ -112,16 +112,16 @@ export const selectedFilterReducer = (
     }
 
     case SelectedFilterType.UnsetExistingFilter: {
-      const { showAcked, autoUpdate, show } = state;
-      const updated = { tags: [], sourcesById: [], showAcked, autoUpdate, show };
+      const { showAcked, /* autoUpdate, */ show } = state;
+      const updated = { tags: [], sourcesById: [], showAcked, /* autoUpdate, */ show };
       const incidentsFilter: IncidentsFilter = { ...updated, sources: undefined };
       return { ...state, ...updated, existingFilter: undefined, incidentsFilter };
     }
 
     case SelectedFilterType.SetExistingFilter: {
       const existingFilter = action.payload;
-      const { showAcked, autoUpdate, show } = state;
-      const updated = { tags: [], sourcesById: [], showAcked, autoUpdate, show };
+      const { showAcked, /* autoUpdate, */ show } = state;
+      const updated = { tags: [], sourcesById: [], showAcked, /* autoUpdate, */ show };
 
       const incidentsFilter: IncidentsFilter = {
         sources: undefined,
