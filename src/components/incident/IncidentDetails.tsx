@@ -25,15 +25,17 @@ import { formatDuration, formatTimestamp } from "../../utils";
 
 import CenterContainer from "../../components/centercontainer";
 
-import api, {
-  Event,
+import api from "../../api";
+
+import {
+    Event,
   EventType,
   Incident,
   IncidentTag,
   IncidentTicketUrlBody,
   Acknowledgement,
   AcknowledgementBody,
-} from "../../api";
+} from "../../api/types.d";
 
 import SignedMessage from "./SignedMessage";
 import { useStyles } from "./styles";

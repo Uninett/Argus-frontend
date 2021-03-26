@@ -1,6 +1,6 @@
 import { BACKEND_WS_URL, REALTIME_SERVICE_MAX_RETRIES } from "../config";
 
-import { Incident } from "../api";
+import type { Incident } from "../api/types.d";
 
 export type RealtimeServiceConfig = {
   // NOT IMPLEMENTED

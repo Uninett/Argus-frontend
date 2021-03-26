@@ -27,13 +27,8 @@ import TimePicker from "../TimePicker";
 import { useStateWithDynamicDefault, dateFromTimeOfDayString, timeOfDayFromDate } from "../../utils";
 import { makeConfirmationButton } from "../buttons/ConfirmationButton";
 
-import {
-  TimeslotPK,
-  TimeRecurrence,
-  TimeRecurrenceDay,
-  TimeRecurrenceDayNameMap,
-  TIME_RECURRENCE_DAY_IN_ORDER,
-} from "../../api";
+import type { TimeslotPK, TimeRecurrence, TimeRecurrenceDay } from "../../api/types.d";
+import { TimeRecurrenceDayNameMap, TIME_RECURRENCE_DAY_IN_ORDER } from "../../api/consts";
 
 import { WHITE } from "../../colorscheme";
 

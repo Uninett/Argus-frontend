@@ -4,7 +4,8 @@ import { useParams } from "react-router-dom";
 
 import Typography from "@material-ui/core/Typography";
 
-import api, { Incident } from "../../api";
+import type { Incident } from "../../api/types.d";
+import api from "../../api";
 import { useAlerts } from "../../components/alertsnackbar";
 
 import IncidentDetails from "../../components/incident/IncidentDetails";

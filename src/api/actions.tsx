@@ -1,5 +1,5 @@
 import React, { useCallback, useContext } from "react";
-import api, {
+import type {
   Filter,
   FilterSuccessResponse,
   Incident,
@@ -7,7 +7,9 @@ import api, {
   Event,
   AcknowledgementBody,
   Acknowledgement,
-} from "../api";
+} from "../api/types.d";
+
+import api from "../api";
 import { InitialStateType, ActionsType } from "../contexts";
 import {
   createFilter as createFilterAction,

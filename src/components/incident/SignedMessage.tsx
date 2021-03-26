@@ -8,7 +8,7 @@ import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import classNames from "classnames";
 
 // Api
-import { Timestamp } from "../../api";
+import type { Timestamp } from "../../api/types.d";
 
 // Utils
 import { formatTimestamp } from "../../utils";
