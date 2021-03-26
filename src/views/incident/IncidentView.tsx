@@ -6,15 +6,17 @@ import RealtimeIncidentTable from "../../components/incidenttable/RealtimeIncide
 
 import { IncidentFilterToolbar } from "../../components/incident/IncidentFilterToolbar";
 
+import type { AutoUpdateMethod } from "../../api/types.d";
+
 // Context/Hooks
 import { useFilters } from "../../api/actions";
 import { useAlerts } from "../../components/alertsnackbar";
+import { useApiState } from "../../state/hooks";
 import SelectedFilterProvider, { useSelectedFilter } from "../../components/filterprovider"; // TODO: move
 import IncidentsProvider from "../../components/incidentsprovider"; // TODO: move
 
-const IncidentComponent = () => {
-  const [{ incidentsFilter }] = useSelectedFilter();
-  return incidentsFilter.autoUpdate === "realtime" ? (
+const IncidentComponent = ({ autoUpdateMethod }: { autoUpdateMethod: AutoUpdateMethod }) => {
+  return autoUpdateMethod === "realtime" ? (
     <RealtimeIncidentTable key="realtime" />
   ) : (
     <FilteredIncidentTable key="interval" />
@@ -24,8 +26,8 @@ const IncidentComponent = () => {
 type IncidentViewPropsType = {};
 
 const IncidentView: React.FC<IncidentViewPropsType> = () => {
+  const [{ autoUpdateMethod }] = useApiState();
   const [, { loadAllFilters }] = useFilters();
-  // TODO: Fix useAlerts() so that it doesn't result in refresh all the time.
   const displayAlert = useAlerts();
 
   useEffect(() => {
@@ -39,7 +41,7 @@ const IncidentView: React.FC<IncidentViewPropsType> = () => {
       <SelectedFilterProvider>
         <IncidentsProvider>
           <IncidentFilterToolbar />
-          <IncidentComponent />
+          <IncidentComponent autoUpdateMethod={autoUpdateMethod} />
         </IncidentsProvider>
       </SelectedFilterProvider>
     </div>

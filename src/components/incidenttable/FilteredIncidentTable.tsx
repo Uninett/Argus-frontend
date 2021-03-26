@@ -18,6 +18,7 @@ import { PAGINATION_CURSOR_PAGE_SIZE } from "../../localstorageconsts";
 // Contexts/Hooks
 import { useIncidentsContext } from "../../components/incidentsprovider";
 import { useSelectedFilter } from "../../components/filterprovider";
+import { useApiState } from "../../state/hooks";
 
 // Providers
 import FilteredIncidentsProvider, { matchesFilter } from "../../components/filteredincidentprovider";
@@ -58,7 +59,7 @@ export type IncidentsFilter = {
   sourcesById: number[] | undefined;
   show: "open" | "closed" | "both";
   showAcked: boolean;
-  autoUpdate: AutoUpdateMethod;
+  // autoUpdate: AutoUpdateMethod;
 };
 
 type FilteredIncidentsTablePropsType = {};
@@ -70,6 +71,8 @@ const FilteredIncidentTable = () => {
   // Get the incidents and seleceted filter from context
   const [{ incidents }, { loadAllIncidents }] = useIncidentsContext();
   const [{ incidentsFilter }] = useSelectedFilter();
+
+  const [{ autoUpdateMethod }] = useApiState();
 
   // Keep track of the pagination cursor
   const [paginationCursor, setPaginationCursor] = useState<PaginationCursor>(
@@ -233,7 +236,7 @@ const FilteredIncidentTable = () => {
   useEffect(() => {
     // refresh incidents from backend at a set interval if we
     // are utilizing the interval auto-update strategy
-    if (incidentsFilter.autoUpdate === "interval") {
+    if (autoUpdateMethod === "interval") {
       const interval = setInterval(() => {
         refresh();
       }, 1000 * DEFAULT_AUTO_REFRESH_INTERVAL);
@@ -247,7 +250,7 @@ const FilteredIncidentTable = () => {
     interval: `updating every ${DEFAULT_AUTO_REFRESH_INTERVAL}`,
   };
 
-  const autoUpdateText = autoUpdateTextOpts[incidentsFilter.autoUpdate];
+  const autoUpdateText = autoUpdateTextOpts[autoUpdateMethod];
 
   return (
     <div>

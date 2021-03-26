@@ -27,10 +27,9 @@ type RealtimeIncidentTablePropsType = {};
 
 const RealtimeIncidentTable = () => {
   const displayAlert = useAlerts();
-
   const [
     {
-      incidentsFilter: { showAcked, show, tags, sourcesById, autoUpdate },
+      incidentsFilter: { showAcked, show, tags, sourcesById },
     },
   ] = useSelectedFilter();
   const [, { addIncident, modifyIncident, removeIncident }] = useIncidentsContext();
@@ -97,7 +96,7 @@ const RealtimeIncidentTable = () => {
     // We still load incidents initially using REST, because
     // the websockets implementation in the backend is lacking
     // some features....
-    loadIncidentsFiltered({ showAcked, show, tags, sourcesById, autoUpdate }).then(() => {
+    loadIncidentsFiltered({ showAcked, show, tags, sourcesById }).then(() => {
       setIsLoading(false);
     });
 
@@ -107,7 +106,7 @@ const RealtimeIncidentTable = () => {
       return matchesFilter(incident, { showAcked, show, tags, sourcesById });
     };
     setFilterMatcher(() => incidentMatchesFilter);
-  }, [showAcked, show, tags, sourcesById, autoUpdate, loadIncidentsFiltered]);
+  }, [showAcked, show, tags, sourcesById, loadIncidentsFiltered]);
 
   // Effect for creating RealtimeServiceConfig
   useEffect(() => {

@@ -48,6 +48,7 @@ import { DROPDOWN_TOOLBAR } from "../../localstorageconsts";
 import { useAlerts } from "../../components/alertsnackbar";
 import { useFilters } from "../../api/actions";
 import { useSelectedFilter } from "../../components/filterprovider";
+import { useApiState } from "../../state/hooks";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -391,6 +392,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
 }: IncidentFilterToolbarPropsType) => {
   const style = useStyles();
   const [selectedFilter, { setSelectedFilter }] = useSelectedFilter();
+  const [{ autoUpdateMethod }, { setAutoUpdateMethod }] = useApiState();
 
   const [dropdownToolbarOpen, setDropdownToolbarOpen] = useState<boolean>(
     // Load from localstorage if possible
@@ -432,7 +434,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
   };
 
   const onAutoUpdateChange = (autoUpdate: AutoUpdateMethod) => {
-    setSelectedFilter({ autoUpdate });
+    setAutoUpdateMethod(autoUpdate);
   };
 
   const autoUpdateOptions: AutoUpdateMethod[] = ENABLE_WEBSOCKETS_SUPPORT
@@ -445,7 +447,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
     <ToolbarItem name="Auto Update">
       <ButtonGroupSwitch
         disabled={useExistingFilter}
-        selected={selectedFilter.incidentsFilter.autoUpdate}
+        selected={autoUpdateMethod}
         options={autoUpdateOptions}
         getLabel={(autoUpdate: AutoUpdateMethod) =>
           ({ never: "Never", realtime: "Realtime", interval: "Interval" }[autoUpdate])
