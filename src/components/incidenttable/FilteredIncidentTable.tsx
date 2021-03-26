@@ -70,7 +70,7 @@ const FilteredIncidentTable = () => {
 
   // Get the incidents and seleceted filter from context
   const [{ incidents }, { loadAllIncidents }] = useIncidentsContext();
-  const [{ filter }, {}] = useSelectedFilter();
+  const [{ filter }] = useSelectedFilter();
 
   // Keep track of the pagination cursor
   const [paginationCursor, setPaginationCursor] = useState<PaginationCursor>(

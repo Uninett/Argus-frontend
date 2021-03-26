@@ -39,16 +39,15 @@ export type IncidentsPayload = {
 
 export type IncidentsActions = ActionMap<IncidentsPayload>[keyof ActionMap<IncidentsPayload>];
 
-  export const createIncidentsIndex = (incidents: Incident[]): { [pk: number]: Index } => {
-    const mapping: { [pk: number]: Index } = {};
-    incidents.forEach((incident: Incident, index: number) => {
-      mapping[incident.pk] = index;
-    });
-    return mapping;
-  };
+export const createIncidentsIndex = (incidents: Incident[]): { [pk: number]: Index } => {
+  const mapping: { [pk: number]: Index } = {};
+  incidents.forEach((incident: Incident, index: number) => {
+    mapping[incident.pk] = index;
+  });
+  return mapping;
+};
 
 export const incidentsReducer = (state: IncidentsStateType, action: IncidentsActions): IncidentsStateType => {
-
   const createUpdatedLM = (pk: Incident["pk"]): { [pk: number]: number } => {
     return { ...state.lastModified, [pk]: new Date().getTime() };
   };
@@ -157,7 +156,6 @@ const findIncidentByPk = (state: IncidentsStateType, pk: Incident["pk"]): Incide
       throw new Error(
         `_indexByPk is invalid, index ${index} points to wrong index: expected ${pk} but got ${incident.pk}`,
       );
-      return;
     }
     return incident;
   }
@@ -240,7 +238,6 @@ export const useIncidentsContext = (): [IncidentsStateType, IncidentsActionsType
       const incident = findIncidentByPk(state, pk);
       if (incident === undefined) {
         throw new Error(`Unable to acknowledge incident with pk: ${pk}, couldn't find it`);
-        return;
       }
       modifyIncident(dispatch, { ...incident, acked: true });
     },

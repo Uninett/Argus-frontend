@@ -37,7 +37,7 @@ export const matchesOnSources = (incident: Incident, sources: number[] | undefin
 
 export const matchesShow = (incident: Incident, show: "open" | "closed" | "both"): boolean => {
   if (show === "both") return true;
-  const openState = show == "open";
+  const openState = show === "open";
   return incident.open === openState;
   // return incident.open ? show === "open" : show === "closed";
 };

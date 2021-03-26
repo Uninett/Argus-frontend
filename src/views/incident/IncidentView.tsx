@@ -13,7 +13,7 @@ import SelectedFilterProvider, { useSelectedFilter } from "../../components/filt
 import IncidentsProvider from "../../components/incidentsprovider"; // TODO: move
 
 const IncidentComponent = () => {
-  const [{ filter }, {}] = useSelectedFilter();
+  const [{ filter }] = useSelectedFilter();
   return filter.autoUpdate === "realtime" ? (
     <RealtimeIncidentTable key="realtime" />
   ) : (

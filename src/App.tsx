@@ -1,11 +1,9 @@
 import React from "react";
 
-import "./variables.css";
-import "./colorscheme.css";
-
-import { Route, Switch, useHistory } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 import { ProtectedRoute } from "./protected.route";
 
+// Views
 import IncidentDetailsView from "./views/incident/IncidentDetailView";
 import IncidentView from "./views/incident/IncidentView";
 import LoginView from "./views/login/LoginView";
@@ -13,14 +11,15 @@ import NotificationProfileView from "./views/notificationprofile/NotificationPro
 import SettingsView from "./views/settings/SettingsView";
 import TimeslotView from "./views/timeslot/TimeslotView";
 
-import api from "./api";
-import auth from "./auth";
-
+// MUI
 import { ThemeProvider } from "@material-ui/core/styles";
-import { MUI_THEME } from "./colorscheme";
 
-import { AlertSnackbarProvider, useAlerts } from "./components/alertsnackbar";
+// Components
 import Header from "./components/header/Header";
+import ApiInterceptor from "./components/apiinterceptor";
+
+import { MUI_THEME } from "./colorscheme";
+import { AlertSnackbarProvider } from "./components/alertsnackbar";
 
 // eslint-disable-next-line
 const withHeader = (Component: any) => {
@@ -35,27 +34,7 @@ const withHeader = (Component: any) => {
   );
 };
 
-// eslint-disable-next-line
-const ApiInterceptor = (props: any) => {
-  const history = useHistory();
-  const displayAlert = useAlerts();
-  api.registerInterceptors(
-    () => {
-      displayAlert("Unauthorized, logging out", "error");
-      auth.logout();
-      history.push("/login");
-    },
-    (response, error) => {
-      displayAlert(`Api Server Error: ${error}`, "error");
-    },
-  );
-
-  return <>{props.children}</>;
-};
-
-const App: React.SFC = () => {
-  // const { incidentSnackbar, displayAlertSnackbar } = useAlertSnackbar();
-
+const App = () => {
   return (
     <div>
       <ThemeProvider theme={MUI_THEME}>

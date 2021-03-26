@@ -273,7 +273,6 @@ const IncidentTable: React.FC<IncidentsProps> = ({
   isLoading,
   paginationComponent,
 }: IncidentsProps) => {
-  const displayAlert = useAlerts();
   const [incidentForDetail, setIncidentForDetail] = useState<Incident | undefined>(undefined);
 
   const incidentsDictFromProps = useMemo<Revisioned<Map<Incident["pk"], Incident>>>(

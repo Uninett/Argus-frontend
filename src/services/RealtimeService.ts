@@ -1,4 +1,4 @@
-import { BACKEND_WS_URL } from "../config";
+import { BACKEND_WS_URL, REALTIME_SERVICE_MAX_RETRIES } from "../config";
 
 import { Incident } from "../api";
 
@@ -126,8 +126,10 @@ export class RealtimeService {
       return;
     }
 
-    if (this.retries > 2) {
-      console.error(`[RealtimeService ${this.id}] refusing to connected, exceeded 10 retires`);
+    if (this.retries > REALTIME_SERVICE_MAX_RETRIES) {
+      console.error(
+        `[RealtimeService ${this.id}] refusing to connected, exceeded ${REALTIME_SERVICE_MAX_RETRIES} retires`,
+      );
       this.setState("failed");
       return;
     }

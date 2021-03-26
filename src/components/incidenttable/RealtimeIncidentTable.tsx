@@ -32,10 +32,9 @@ const RealtimeIncidentTable = () => {
     {
       filter: { showAcked, show, tags, sourcesById, autoUpdate },
     },
-    {},
   ] = useSelectedFilter();
-  const [{}, { addIncident, modifyIncident, removeIncident }] = useIncidentsContext();
-  const [{}, { loadIncidentsFiltered }] = useIncidents();
+  const [, { addIncident, modifyIncident, removeIncident }] = useIncidentsContext();
+  const [, { loadIncidentsFiltered }] = useIncidents();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isLoadingRealtime, setIsLoadingRealtime] = useState<boolean>(true);
   const [filterMatcher, setFilterMatcher] = useState<((incident: Incident) => boolean) | undefined>(undefined);

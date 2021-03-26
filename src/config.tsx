@@ -12,6 +12,17 @@ if (process.env.REACT_APP_DEFAULT_AUTO_REFRESH_INTERVAL) {
 
 export const DEFAULT_AUTO_REFRESH_INTERVAL = refreshInterval; // seconds
 
+let rtsRetries = 7;
+if (process.env.REACT_APP_REALTIME_SERVICE_MAX_RETRIES) {
+  const parsedRetries = Number.parseInt(process.env.REACT_APP_REALTIME_SERVICE_MAX_RETRIES);
+  if (parsedRetries > 0) rtsRetries = parsedRetries;
+}
+
+// The number of times the realtime service will try to establish
+// a websocket connection, with exponential backoff, before declaring
+// it a failure, and stops retrying.
+export const REALTIME_SERVICE_MAX_RETRIES = rtsRetries;
+
 // Will be replaced by user-settable config later
 // NOTE: You need to update the TIMESTAMP_TIME_FORMAT
 // if you want timestamps to be 24h/AM-PM

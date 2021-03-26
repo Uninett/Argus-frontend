@@ -19,7 +19,7 @@ import auth from "../../auth";
 
 // Contexts/Hooks
 import { AppContext } from "../../contexts";
-import { loginUser, logoutUser } from "../../reducers/user";
+import { logoutUser } from "../../reducers/user";
 
 // Components
 import Menu from "../../components/menu";
@@ -34,6 +34,9 @@ const useStyles = makeStyles((theme: Theme) =>
       flexGrow: 1,
       transition: "0.4s",
       zIndex: theme.zIndex.drawer + 1,
+    },
+    rootNetworkError: {
+      backgroundColor: theme.palette.error.dark,
     },
     grow: { flexGrow: 1 },
     rightAligned: { marginRight: theme.spacing(2) },
@@ -82,6 +85,17 @@ const useStyles = makeStyles((theme: Theme) =>
       "&:hover": {
         cursor: "pointer",
       },
+    },
+    errorContainer: {
+      display: "flex",
+      flexFlow: "column wrap",
+      alignItems: "center",
+      margin: "4px",
+    },
+    errorTypography: {
+      alignItems: "center",
+      fontWeight: "bold",
+      color: "white",
     },
   }),
 );
@@ -133,7 +147,7 @@ const Header: React.FC<HeaderPropsType> = () => {
   const isMenuOpen = Boolean(anchorEl);
 
   const {
-    state: { user },
+    state: { user, apiState },
     dispatch,
   } = useContext(AppContext);
 
@@ -196,6 +210,16 @@ const Header: React.FC<HeaderPropsType> = () => {
           </div>
         </Toolbar>
       </AppBar>
+      {apiState.hasConnectionProblems && (
+        <AppBar className={classNames(style.root, style.rootNetworkError)} position="relative">
+          <div className={style.errorContainer}>
+            <Typography className={style.errorTypography}>
+              Problems connecting to server... Please try again.
+            </Typography>
+          </div>
+        </AppBar>
+      )}
+
       {renderMenu}
     </div>
   );
