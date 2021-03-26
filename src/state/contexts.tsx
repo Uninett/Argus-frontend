@@ -1,9 +1,9 @@
 import React, { createContext, useReducer } from "react";
 
 import type { Filter } from "../api/types.d";
-import { filterReducer, FilterActions } from "../reducers/filter";
-import { initialUserState, userReducer, UserActions, UserStateType } from "../reducers/user";
-import { initialApiState, apiStateReducer, ApiStateActions, ApiState } from "../reducers/apistate";
+import { filterReducer, FilterActions } from "../state/reducers/filter";
+import { initialUserState, userReducer, UserActions, UserStateType } from "../state/reducers/user";
+import { initialApiState, apiStateReducer, ApiStateActions, ApiState } from "../state/reducers/apistate";
 
 export type InitialStateType = {
   // List of all filters that the currently

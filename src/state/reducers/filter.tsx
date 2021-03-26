@@ -1,4 +1,4 @@
-import type { Filter } from "../api/types.d";
+import type { Filter } from "../../api/types.d";
 
 import { ActionMap, makeAction } from "./common";
 

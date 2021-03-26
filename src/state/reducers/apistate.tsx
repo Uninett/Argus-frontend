@@ -1,6 +1,6 @@
 import { ActionMap, makeActionWithoutPayload, makeAction } from "./common";
 
-import type { AutoUpdateMethod } from "../api/types.d";
+import type { AutoUpdateMethod } from "../../api/types.d";
 
 export type ApiState = {
   autoUpdateMethod: AutoUpdateMethod;

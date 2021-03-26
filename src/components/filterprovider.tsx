@@ -5,7 +5,7 @@ import type { Filter, AutoUpdateMethod } from "../api/types.d";
 import { Tag, originalToTag } from "../components/tagselector";
 
 // Store
-import { ActionMap } from "../reducers/common";
+import { ActionMap } from "../state/reducers/common";
 import { SELECTED_FILTER } from "../localstorageconsts";
 
 // Utils

@@ -4,7 +4,7 @@ import React, { useReducer, useCallback, useContext, createContext } from "react
 import type { Incident } from "../api/types.d";
 
 // Store
-import { ActionMap } from "../reducers/common";
+import { ActionMap } from "../state/reducers/common";
 
 type Index = number;
 

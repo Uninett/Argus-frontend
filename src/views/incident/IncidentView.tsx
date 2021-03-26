@@ -12,7 +12,7 @@ import type { AutoUpdateMethod } from "../../api/types.d";
 import { useFilters } from "../../api/actions";
 import { useAlerts } from "../../components/alertsnackbar";
 import { useApiState } from "../../state/hooks";
-import SelectedFilterProvider, { useSelectedFilter } from "../../components/filterprovider"; // TODO: move
+import SelectedFilterProvider from "../../components/filterprovider"; // TODO: move
 import IncidentsProvider from "../../components/incidentsprovider"; // TODO: move
 
 const IncidentComponent = ({ autoUpdateMethod }: { autoUpdateMethod: AutoUpdateMethod }) => {
