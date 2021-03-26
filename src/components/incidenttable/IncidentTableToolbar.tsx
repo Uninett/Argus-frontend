@@ -60,7 +60,7 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
 
   // XXX: In the future there should be better seperation of components, and this
   // shouldn't be needed here. Now it's used to clear selection when the filter changes.
-  const [{ filter: selectedFilter }] = useSelectedFilter();
+  const [{ incidentsFilter: selectedFilter }] = useSelectedFilter();
 
   const allState: "mixed" | "open" | "closed" = useMemo(() => {
     const pks: Incident["pk"][] = [...selectedIncidents.keys()];

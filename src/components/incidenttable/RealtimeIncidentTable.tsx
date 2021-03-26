@@ -30,7 +30,7 @@ const RealtimeIncidentTable = () => {
 
   const [
     {
-      filter: { showAcked, show, tags, sourcesById, autoUpdate },
+      incidentsFilter: { showAcked, show, tags, sourcesById, autoUpdate },
     },
   ] = useSelectedFilter();
   const [, { addIncident, modifyIncident, removeIncident }] = useIncidentsContext();
