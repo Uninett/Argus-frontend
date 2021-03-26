@@ -10,7 +10,7 @@ import auth from "./auth";
 
 // Contexts/Hooks
 import { AppContext } from "./state/contexts";
-import { loginUser } from "./reducers/user";
+import { loginUser } from "./state/reducers/user";
 
 type ProtectedRoutePropsType = {
   // Should be able to take all components, so any is probably acceptable here?

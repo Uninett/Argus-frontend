@@ -11,7 +11,7 @@ import auth from "../auth";
 import { AppContext } from "../state/contexts";
 import { useAlerts } from "../components/alertsnackbar";
 
-import { setHasConnectionProblems, unsetHasConnectionProblems } from "../reducers/apistate";
+import { setHasConnectionProblems, unsetHasConnectionProblems } from "../state/reducers/apistate";
 
 export const ApiInterceptor = ({ children }: { children?: React.ReactNode }) => {
   const history = useHistory();
