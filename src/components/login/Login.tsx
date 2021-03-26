@@ -16,7 +16,7 @@ import auth from "../../auth";
 import { BACKEND_URL } from "../../config";
 
 // Contexts/Hooks
-import { useUser } from "../../api/actions";
+import { useUser } from "../../state/hooks";
 
 // Components
 import OutlinedTextField from "../../components/textfields/OutlinedTextField";
