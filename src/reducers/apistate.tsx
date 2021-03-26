@@ -30,7 +30,7 @@ export const apiStateReducer = (state: ApiState, action: ApiStateActions): ApiSt
     case ApiStateType.SET_AUTO_UPDATE_METHOD:
       return {
         ...state,
-        autoUpdateMethod: "realtime",
+        autoUpdateMethod: action.payload,
       };
     case ApiStateType.SET_HAS_CONNECTION_PROBLEMS:
       return {
