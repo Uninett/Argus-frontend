@@ -16,7 +16,7 @@ import {
   deleteFilter as deleteFilterAction,
   modifyFilter as modifyFilterAction,
   loadAllFilters as loadAllFiltersAction,
-} from "../reducers/filter";
+} from "../state/reducers/filter";
 
 import { IncidentsFilter } from "../components/incidenttable/FilteredIncidentTable";
 import { Tag } from "../components/tagselector";

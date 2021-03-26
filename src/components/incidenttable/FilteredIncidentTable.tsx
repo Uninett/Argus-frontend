@@ -242,7 +242,7 @@ const FilteredIncidentTable = () => {
       }, 1000 * DEFAULT_AUTO_REFRESH_INTERVAL);
       return () => clearInterval(interval);
     }
-  }, [refresh, incidentsFilter]);
+  }, [refresh, autoUpdateMethod]);
 
   const autoUpdateTextOpts: Record<AutoUpdateMethod, string> = {
     never: "not updating automatically",
@@ -250,7 +250,7 @@ const FilteredIncidentTable = () => {
     interval: `updating every ${DEFAULT_AUTO_REFRESH_INTERVAL}`,
   };
 
-  const autoUpdateText = autoUpdateTextOpts[autoUpdateMethod];
+  const autoUpdateText = autoUpdateTextOpts[autoUpdateMethod as AutoUpdateMethod];
 
   return (
     <div>

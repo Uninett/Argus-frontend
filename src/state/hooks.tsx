@@ -7,9 +7,9 @@ import {
   setAutoUpdateMethod,
   setHasConnectionProblems,
   unsetHasConnectionProblems,
-} from "../reducers/apistate";
+} from "../state/reducers/apistate";
 
-import { UserStateType, loginUser, loginTokenUser, logoutUser } from "../reducers/user";
+import { UserStateType, loginUser, loginTokenUser, logoutUser } from "../state/reducers/user";
 
 import { AppContext } from "../state/contexts";
 
