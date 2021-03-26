@@ -10,7 +10,7 @@ import { DEFAULT_AUTO_REFRESH_INTERVAL } from "../../config";
 import api, { Incident, IncidentsFilterOptions, CursorPaginationResponse } from "../../api";
 
 // Utils
-import { saveToLocalStorage, fromLocalStorageOrDefault } from "../../utils";
+import { formatTimestamp, saveToLocalStorage, fromLocalStorageOrDefault } from "../../utils";
 
 import { PAGINATION_CURSOR_PAGE_SIZE } from "../../localstorageconsts";
 
@@ -261,7 +261,8 @@ const FilteredIncidentTable = () => {
         />
       </FilteredIncidentsProvider>
       <p>
-        Last refreshed {lastRefresh === undefined ? "never" : lastRefresh.time.toLocaleTimeString()}, {autoUpdateText}
+        Last refreshed {lastRefresh === undefined ? "never" : formatTimestamp(lastRefresh.time, { withSeconds: true })}{" "}
+        {autoUpdateText}
       </p>
     </div>
   );
