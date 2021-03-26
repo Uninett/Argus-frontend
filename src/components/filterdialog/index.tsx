@@ -16,7 +16,7 @@ import Modal from "../modal/Modal";
 import { makeConfirmationButton } from "../../components/buttons/ConfirmationButton";
 
 // Api
-import { Filter } from "../../api";
+import type { Filter } from "../../api/types.d";
 
 // Contexts/hooks
 import { useFilters } from "../../api/actions";

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 // Api
-import { Incident } from "../../api";
+import type { Incident } from "../../api/types.d";
 import { RealtimeService, RealtimeServiceState, RealtimeServiceConfig } from "../../services/RealtimeService";
 
 // Contexts/Hooks

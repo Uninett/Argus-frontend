@@ -1,6 +1,6 @@
 import { createContext } from "react";
 
-import { Filter, SourceSystem } from "../../api";
+import type { Filter, SourceSystem } from "../../api/types.d";
 
 export type FiltersContextType = {
   loadingPreview: number | boolean; // pk

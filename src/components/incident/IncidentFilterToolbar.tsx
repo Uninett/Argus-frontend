@@ -35,7 +35,8 @@ import FilterDialog from "../../components/filterdialog";
 import Modal from "../modal/Modal";
 
 // Api
-import api, { Filter, IncidentMetadata, SourceSystem } from "../../api";
+import type { Filter, IncidentMetadata, SourceSystem } from "../../api/types.d";
+import api from "../../api";
 
 // Config
 import { ENABLE_WEBSOCKETS_SUPPORT } from "../../config";

@@ -1,7 +1,5 @@
 import React from "react";
 
-import { TimeRecurrenceDay } from "../../api";
-
 import { makeConfirmationButton } from "../buttons/ConfirmationButton";
 import { WHITE } from "../../colorscheme";
 import { Theme, createStyles, makeStyles } from "@material-ui/core/styles";
@@ -14,6 +12,9 @@ import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import RemoveIcon from "@material-ui/icons/Remove";
+
+// Api
+import type { TimeRecurrenceDay } from "../../api/types.d";
 
 export type TimeslotRecurrenceDay = {
   pk: TimeRecurrenceDay;

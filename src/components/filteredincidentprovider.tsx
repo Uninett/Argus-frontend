@@ -1,7 +1,7 @@
 import React, { useContext, useMemo } from "react";
 
 // Api
-import { Incident, IncidentTag } from "../api";
+import type { Incident, IncidentTag } from "../api/types.d";
 
 // Utils
 import { groupBy } from "../utils";

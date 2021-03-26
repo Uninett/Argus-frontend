@@ -20,6 +20,9 @@ import { Skeleton } from "@material-ui/lab";
 
 import classNames from "classnames";
 
+// Api
+import type { Incident } from "../../api/types.d";
+
 import {
   useStateWithDynamicDefault,
   toMap,
@@ -29,7 +32,6 @@ import {
   copyTextToClipboard,
 } from "../../utils";
 
-import { Incident } from "../../api";
 import { useStyles } from "../incident/styles";
 import { AckedItem, OpenItem } from "../incident/Chips";
 import IncidentDetails from "../incident/IncidentDetails";

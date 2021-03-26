@@ -4,7 +4,8 @@ import { Route, Redirect } from "react-router-dom";
 import { Cookies } from "react-cookie";
 
 // Api
-import api, { User } from "./api";
+import type { User } from "./api/types.d";
+import api from "./api";
 import auth from "./auth";
 
 // Contexts/Hooks

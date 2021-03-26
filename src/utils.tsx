@@ -4,7 +4,8 @@ import format from "date-fns/format";
 import formatDistance from "date-fns/formatDistance";
 
 // Api
-import api, { Incident, User, Token } from "./api";
+import type { Incident, User, Token } from "./api/types.d";
+import api from "./api";
 import auth from "./auth";
 
 // Config

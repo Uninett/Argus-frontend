@@ -5,8 +5,8 @@ import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
 
 import ActionDialog from "../../components/actiondialog/ActionDialog";
-import api, {
-  defaultErrorHandler,
+
+import type {
   NotificationProfile,
   NotificationProfilePK,
   NotificationProfileKeyed,
@@ -16,7 +16,11 @@ import api, {
   TimeslotPK,
   MediaAlternative,
   PhoneNumber,
-} from "../../api";
+} from "../../api/types.d";
+
+import api from "../../api";
+import { defaultErrorHandler } from "../../api/utils";
+
 import { createUsePromise, useApiFilters } from "../../api/hooks";
 import { toMap, pkGetter, removeUndefined } from "../../utils";
 
