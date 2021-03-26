@@ -47,12 +47,30 @@ export interface Timeslot {
   time_recurrences: TimeRecurrence[];
 }
 
+// FilterContent is the "new" way of storing filters
+// using predefied fields, instead of storing a json
+// blob of whatever contents (FilterString).
+export type FilterContent = {
+  // TODO
+  // sourceSystemIds: number[];
+  // tags: string[];
+
+  open?: boolean;
+  acked?: boolean;
+  stateful?: boolean;
+};
+
 export type FilterPK = number; // WIP: fix this
 export interface Filter {
   pk: FilterPK;
   name: string;
-  sourceSystemIds: number[];
-  tags: string[];
+
+  // TODO: Remove these two fields
+  // when "filter" gets used instead.
+  sourceSystemIds: number[]; // TO_BE_REMOVED
+  tags: string[]; // TO_BE_REMOVED
+
+  filter: FilterContent;
 }
 
 export interface FilterString {
@@ -164,26 +182,26 @@ export type EventBody = {
   description: string;
 };
 
-export type EventWithoutDescriptionBody = {
-  type: EventType;
-};
+export type EventWithoutDescriptionBody = Omit<EventBody, "description">;
 
 export type IncidentTicketUrlBody = {
   ticket_url: string;
 };
 
+// TODO: Replace use of IncidentMetadata with /sources/
 export interface IncidentMetadata {
   sourceSystems: SourceSystem[];
 }
 
 // Internally used in components, but placed
 // here because it is so widespreadly used
-export type IncidentsFilterOptions = {
-  acked?: boolean;
-  open?: boolean;
-  stateful?: boolean;
+export type IncidentsFilterOptions = FilterContent & {
+  // acked?: boolean;
+  // open?: boolean;
+  // stateful?: boolean;
+
   sourceSystemIds?: number[] | string[];
-  sourceSystemNames?: string[];
+  // sourceSystemNames?: string[];
   tags?: string[];
 
   filter?: Filter["pk"];
@@ -198,6 +216,7 @@ export type DeleteNotificationProfileRequest = Pick<NotificationProfileRequest, 
 export type FilterRequest = {
   name: string;
   filter_string: string;
+  filter: FilterContent;
 };
 
 export type FilterSuccessResponse = FilterRequest & { pk: number };
@@ -243,3 +262,9 @@ export type CursorPaginationResponse<T> = {
   previous: string | null;
   results: T[];
 };
+
+/*
+ * Internal types
+ */
+
+export type AutoUpdateMethod = "never" | "realtime" | "interval";

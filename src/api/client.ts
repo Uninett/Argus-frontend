@@ -484,12 +484,15 @@ class ApiClient {
       (resps: FilterSuccessResponse[]): Filter[] =>
         resps.map(
           (resp: FilterSuccessResponse): Filter => {
+            // NOTE: When the new "filter" field is used we don't need this
+            // anymore:
             const definition: FilterString = JSON.parse(resp.filter_string);
 
             return {
               pk: resp.pk,
               name: resp.name,
               ...definition,
+              filter: resp.filter,
             };
           },
         ),
@@ -504,6 +507,7 @@ class ApiClient {
         // This is really ugly
         // eslint-disable-next-line
         filter_string: JSON.stringify(definition) as string,
+        filter: {},
       }),
       defaultResolver,
       (error) => new Error(`Failed to create notification filter ${name}: ${error}`),
@@ -517,6 +521,7 @@ class ApiClient {
         // This is really ugly
         // eslint-disable-next-line
         filter_string: JSON.stringify(definition) as string,
+        filter: {},
       }),
       defaultResolver,
       (error) => new Error(`Failed to update notification filter ${pk}: ${error}`),

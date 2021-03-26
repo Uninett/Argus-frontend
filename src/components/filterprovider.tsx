@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer, useContext, createContext } from "react";
 
-import { IncidentsFilter, AutoUpdate } from "../components/incidenttable/FilteredIncidentTable";
-import type { Filter } from "../api/types.d";
+import { IncidentsFilter } from "../components/incidenttable/FilteredIncidentTable";
+import type { Filter, AutoUpdateMethod } from "../api/types.d";
 import { Tag, originalToTag } from "../components/tagselector";
 
 // Store
@@ -20,11 +20,11 @@ export type SelectedFilterStateType = {
   sourcesById: number[];
 
   showAcked: boolean;
-  autoUpdate: AutoUpdate;
+  autoUpdate: AutoUpdateMethod;
   show: "open" | "closed" | "both";
 
   // The resulting incidents filter
-  filter: IncidentsFilter;
+  incidentsFilter: IncidentsFilter;
 };
 
 export type SelectedFilterProperties = Partial<Omit<SelectedFilterStateType, "existingFilter" | "filter">>;
@@ -36,11 +36,10 @@ const initialSelectedFilter: SelectedFilterStateType = {
   sourcesById: [],
 
   showAcked: false,
-  // TODO: this should not be here...
-  autoUpdate: "realtime",
+  autoUpdate: "realtime", // TODO: this should not be here...
   show: "open",
 
-  filter: {
+  incidentsFilter: {
     showAcked: false,
     show: "open",
     tags: [],
@@ -83,27 +82,29 @@ export const selectedFilterReducer = (
       const { showAcked, autoUpdate, show } = { ...state, ...selected };
 
       let unset = false;
-      if (selected.tags && !arrayEquals(selected.tags, state.filter.tags)) {
+      if (selected.tags && !arrayEquals(selected.tags, state.incidentsFilter.tags)) {
         unset = true;
       }
       if (
         selected.sourcesById &&
-        ((state.filter.sourcesById && !arrayEquals(selected.sourcesById, state.filter.sourcesById)) ||
-          !state.filter.sourcesById)
+        ((state.incidentsFilter.sourcesById && !arrayEquals(selected.sourcesById, state.incidentsFilter.sourcesById)) ||
+          !state.incidentsFilter.sourcesById)
       ) {
         unset = true;
       }
 
-      const tags: Tag[] = selected.tags ? selected.tags : state.filter.tags;
-      const sourcesById: number[] | undefined = selected.sourcesById ? selected.sourcesById : state.filter.sourcesById;
+      const tags: Tag[] = selected.tags ? selected.tags : state.incidentsFilter.tags;
+      const sourcesById: number[] | undefined = selected.sourcesById
+        ? selected.sourcesById
+        : state.incidentsFilter.sourcesById;
       const updated = { tags, sourcesById, showAcked, autoUpdate, show };
 
-      const filter: IncidentsFilter = {
+      const incidentsFilter: IncidentsFilter = {
         sources: undefined,
         ...updated,
       };
 
-      const nextState = { ...state, ...selected, filter };
+      const nextState = { ...state, ...selected, incidentsFilter };
       if (unset) {
         return { ...nextState, existingFilter: undefined };
       }
@@ -113,8 +114,8 @@ export const selectedFilterReducer = (
     case SelectedFilterType.UnsetExistingFilter: {
       const { showAcked, autoUpdate, show } = state;
       const updated = { tags: [], sourcesById: [], showAcked, autoUpdate, show };
-      const filter: IncidentsFilter = { ...updated, sources: undefined };
-      return { ...state, ...updated, existingFilter: undefined, filter };
+      const incidentsFilter: IncidentsFilter = { ...updated, sources: undefined };
+      return { ...state, ...updated, existingFilter: undefined, incidentsFilter };
     }
 
     case SelectedFilterType.SetExistingFilter: {
@@ -122,7 +123,7 @@ export const selectedFilterReducer = (
       const { showAcked, autoUpdate, show } = state;
       const updated = { tags: [], sourcesById: [], showAcked, autoUpdate, show };
 
-      const filter: IncidentsFilter = {
+      const incidentsFilter: IncidentsFilter = {
         sources: undefined,
         ...updated,
         tags: existingFilter.tags.map(originalToTag),
@@ -133,7 +134,7 @@ export const selectedFilterReducer = (
         ...state,
         ...updated,
         existingFilter,
-        filter,
+        incidentsFilter,
       };
     }
     default:

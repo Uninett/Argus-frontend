@@ -7,7 +7,7 @@ import TablePagination from "@material-ui/core/TablePagination";
 import { DEFAULT_AUTO_REFRESH_INTERVAL } from "../../config";
 
 // Api
-import type { Incident, IncidentsFilterOptions, CursorPaginationResponse } from "../../api/types.d";
+import type { Incident, IncidentsFilterOptions, CursorPaginationResponse, AutoUpdateMethod } from "../../api/types.d";
 import api from "../../api";
 
 // Utils
@@ -52,15 +52,13 @@ const DEFAULT_VIRT_CURSOR = {
   totalElements: 0,
 };
 
-export type AutoUpdate = "never" | "realtime" | "interval";
-
 export type IncidentsFilter = {
   tags: Tag[];
   sources: "AllSources" | string[] | undefined;
   sourcesById: number[] | undefined;
   show: "open" | "closed" | "both";
   showAcked: boolean;
-  autoUpdate: AutoUpdate;
+  autoUpdate: AutoUpdateMethod;
 };
 
 type FilteredIncidentsTablePropsType = {};
@@ -71,7 +69,7 @@ const FilteredIncidentTable = () => {
 
   // Get the incidents and seleceted filter from context
   const [{ incidents }, { loadAllIncidents }] = useIncidentsContext();
-  const [{ filter }] = useSelectedFilter();
+  const [{ incidentsFilter }] = useSelectedFilter();
 
   // Keep track of the pagination cursor
   const [paginationCursor, setPaginationCursor] = useState<PaginationCursor>(
@@ -101,15 +99,15 @@ const FilteredIncidentTable = () => {
     };
 
     const filterOptions: IncidentsFilterOptions = {
-      open: showToOpenMap[filter.show as "open" | "closed" | "both"],
+      open: showToOpenMap[incidentsFilter.show as "open" | "closed" | "both"],
 
       // The frontend is only conserned if acked incidents should be
       // displayed, not that ONLY acked incidents should be displayed.
       // Only filter on the acked property when
-      acked: filter.showAcked === true ? undefined : false,
-      tags: filter.tags.map((tag: Tag) => tag.original),
+      acked: incidentsFilter.showAcked === true ? undefined : false,
+      tags: incidentsFilter.tags.map((tag: Tag) => tag.original),
       // sourceSystemNames: sources === "AllSources" ? undefined : sources,
-      sourceSystemIds: filter.sourcesById,
+      sourceSystemIds: incidentsFilter.sourcesById,
     };
 
     setIsLoading(true);
@@ -119,11 +117,11 @@ const FilteredIncidentTable = () => {
         loadAllIncidents(response.results);
         const { previous, next } = response;
         setCursors({ previous, next });
-        setLastRefresh({ time: new Date(), filter });
+        setLastRefresh({ time: new Date(), filter: incidentsFilter });
         setIsLoading(false);
         return response;
       });
-  }, [filter, paginationCursor, loadAllIncidents]);
+  }, [incidentsFilter, paginationCursor, loadAllIncidents]);
 
   useEffect(() => {
     refresh();
@@ -222,34 +220,34 @@ const FilteredIncidentTable = () => {
   useEffect(() => {
     setVirtCursor(DEFAULT_VIRT_CURSOR);
     setPaginationCursor((old: PaginationCursor) => ({ ...DEFAULT_PAGINATION_CURSOR, pageSize: old.pageSize }));
-  }, [filter]);
+  }, [incidentsFilter]);
 
   const filterMatcher = useMemo(() => {
-    const { showAcked, show, tags, sourcesById } = filter;
+    const { showAcked, show, tags, sourcesById } = incidentsFilter;
     const incidentMatchesFilter = (incident: Incident): boolean => {
       return matchesFilter(incident, { showAcked, show, tags, sourcesById });
     };
     return incidentMatchesFilter;
-  }, [filter]);
+  }, [incidentsFilter]);
 
   useEffect(() => {
     // refresh incidents from backend at a set interval if we
     // are utilizing the interval auto-update strategy
-    if (filter.autoUpdate === "interval") {
+    if (incidentsFilter.autoUpdate === "interval") {
       const interval = setInterval(() => {
         refresh();
       }, 1000 * DEFAULT_AUTO_REFRESH_INTERVAL);
       return () => clearInterval(interval);
     }
-  }, [refresh, filter]);
+  }, [refresh, incidentsFilter]);
 
-  const autoUpdateTextOpts: Record<AutoUpdate, string> = {
+  const autoUpdateTextOpts: Record<AutoUpdateMethod, string> = {
     never: "not updating automatically",
     realtime: "updating in real time",
     interval: `updating every ${DEFAULT_AUTO_REFRESH_INTERVAL}`,
   };
 
-  const autoUpdateText = autoUpdateTextOpts[filter.autoUpdate];
+  const autoUpdateText = autoUpdateTextOpts[incidentsFilter.autoUpdate];
 
   return (
     <div>
