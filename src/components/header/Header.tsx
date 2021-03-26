@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 
 import { Link, useHistory, withRouter } from "react-router-dom";
 
@@ -18,8 +18,7 @@ import Skeleton from "@material-ui/lab/Skeleton";
 import auth from "../../auth";
 
 // Contexts/Hooks
-import { AppContext } from "../../contexts";
-import { logoutUser } from "../../reducers/user";
+import { useApiState, useUser } from "../../api/actions";
 
 // Components
 import Menu from "../../components/menu";
@@ -146,10 +145,8 @@ const Header: React.FC<HeaderPropsType> = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const isMenuOpen = Boolean(anchorEl);
 
-  const {
-    state: { user, apiState },
-    dispatch,
-  } = useContext(AppContext);
+  const [apiState] = useApiState();
+  const [user, { logout }] = useUser();
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -162,7 +159,7 @@ const Header: React.FC<HeaderPropsType> = () => {
   const handleLogout = () => {
     handleMenuClose();
     auth.logout(() => {
-      dispatch(logoutUser());
+      logout();
       history.push("/login");
     });
   };
@@ -214,7 +211,7 @@ const Header: React.FC<HeaderPropsType> = () => {
         <AppBar className={classNames(style.root, style.rootNetworkError)} position="relative">
           <div className={style.errorContainer}>
             <Typography className={style.errorTypography}>
-              Problems connecting to server... Please try again.
+              Problems connecting to server... Check your connection.
             </Typography>
           </div>
         </AppBar>

@@ -16,8 +16,7 @@ import auth from "../../auth";
 import { BACKEND_URL } from "../../config";
 
 // Contexts/Hooks
-import { AppContext } from "../../contexts";
-import { loginUser } from "../../reducers/user";
+import { useUser } from "../../api/actions";
 
 // Components
 import OutlinedTextField from "../../components/textfields/OutlinedTextField";
@@ -90,7 +89,8 @@ const LoginForm: React.FC<{}> = () => {
   const style = useStyles();
   const history = useHistory();
 
-  const { dispatch } = useContext(AppContext);
+  // const { dispatch } = useContext(AppContext);
+  const [, { login }] = useUser();
 
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -108,7 +108,7 @@ const LoginForm: React.FC<{}> = () => {
             .authGetCurrentUser()
             .then((user: User) => {
               console.debug("[userpass-auth] logged in as user", user);
-              dispatch(loginUser(user));
+              login(user);
               history.push("/");
             })
             .catch((error) => {
