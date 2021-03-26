@@ -13,7 +13,7 @@ import LinkSharpIcon from "@material-ui/icons/LinkSharp";
 import Typography from "@material-ui/core/Typography";
 
 // Api
-import { Incident, AcknowledgementBody } from "../../api";
+import type { Incident, AcknowledgementBody } from "../../api/types.d";
 
 // Contexts/Hooks
 import { useIncidentsContext } from "../../components/incidentsprovider";

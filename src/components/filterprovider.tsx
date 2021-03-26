@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer, useContext, createContext } from "react";
 
 import { IncidentsFilter, AutoUpdate } from "../components/incidenttable/FilteredIncidentTable";
-import { Filter } from "../api";
+import type { Filter } from "../api/types.d";
 import { Tag, originalToTag } from "../components/tagselector";
 
 // Store

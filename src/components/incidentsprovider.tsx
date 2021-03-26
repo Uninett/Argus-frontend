@@ -1,6 +1,7 @@
 import React, { useReducer, useCallback, useContext, createContext } from "react";
 
-import { Incident } from "../api";
+// Api
+import type { Incident } from "../api/types.d";
 
 // Store
 import { ActionMap } from "../reducers/common";

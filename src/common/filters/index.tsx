@@ -1,4 +1,4 @@
-import { FilterString } from "../../api";
+import type { FilterString } from "../../api/types.d";
 
 export type NameAndPK = { pk: string | number; name: string };
 

@@ -3,7 +3,8 @@ import React, { useEffect, useContext } from "react";
 import { useHistory } from "react-router-dom";
 
 // Api
-import api, { ApiEvent } from "../api";
+import { ApiEvent } from "../api/types.d";
+import api from "../api";
 import auth from "../auth";
 
 // Contexts/Hooks

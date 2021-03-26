@@ -8,7 +8,8 @@ import { TextFieldProps } from "@material-ui/core/TextField";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 
 // Api
-import api, { Token, User } from "../../api";
+import type { Token, User } from "../../api/types.d";
+import api from "../../api";
 import auth from "../../auth";
 
 // Config

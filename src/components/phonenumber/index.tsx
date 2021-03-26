@@ -9,7 +9,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 
 import Spinning from "../spinning";
 
-import { PhoneNumberPK } from "../../api";
+import type { PhoneNumberPK } from "../../api/types.d";
 import { useStateWithDynamicDefault } from "../../utils";
 import { makeConfirmationButton } from "../buttons/ConfirmationButton";
 
