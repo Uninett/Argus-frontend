@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
@@ -17,8 +17,8 @@ export const originalToTag = (str: string): Tag => {
 };
 
 export type TagSelectorPropsType = {
-  tags: Tag[];
-  onSelectionChange: (tags: Tag[]) => void;
+  tags: string[];
+  onSelectionChange: (tags: string[]) => void;
   selected: string[];
   allSelected?: boolean;
   disabled?: boolean;
@@ -32,6 +32,19 @@ export const TagSelector: React.FC<TagSelectorPropsType> = ({
   disabled,
   className,
 }: TagSelectorPropsType) => {
+  const { keys, values } = useMemo(() => {
+    const keys: { [key: string]: boolean } = {};
+    const values: { [key: string]: boolean } = {};
+
+    tags.forEach((original: string) => {
+      const typed = originalToTag(original);
+      keys[typed.key] = true;
+      values[typed.value] = true;
+    });
+
+    return { keys: Object.keys(keys), values: Object.values(values) };
+  }, [tags]);
+
   const [value, setValue] = useState<string>("");
   // const [selectValue, setSelectValue] = useState<string[]>([]);
 
@@ -54,7 +67,7 @@ export const TagSelector: React.FC<TagSelectorPropsType> = ({
         }
       });
 
-    if (updatedInputValue) onSelectionChange(newValue.map(originalToTag));
+    if (updatedInputValue) onSelectionChange(newValue);
   };
 
   // useEffect(() => {
@@ -68,7 +81,7 @@ export const TagSelector: React.FC<TagSelectorPropsType> = ({
       size="small"
       id="filter-select-tags"
       disableClearable
-      options={tags.map((tag: Tag) => tag.key)}
+      options={keys}
       disabled={disabled}
       onChange={(e: unknown, changeValue, reason: string) => {
         switch (reason) {
@@ -77,7 +90,7 @@ export const TagSelector: React.FC<TagSelectorPropsType> = ({
             break;
 
           default:
-            onSelectionChange(changeValue.map(originalToTag));
+            onSelectionChange(changeValue);
             break;
         }
       }}

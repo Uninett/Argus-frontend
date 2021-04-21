@@ -1,7 +1,7 @@
 import React, { useContext, useMemo } from "react";
 
 // Api
-import type { Incident, IncidentTag } from "../api/types.d";
+import type { Filter, Incident, IncidentTag } from "../api/types.d";
 
 // Utils
 import { groupBy } from "../utils";
@@ -10,14 +10,16 @@ import { groupBy } from "../utils";
 import { IncidentsStateType, IncidentsContext, createIncidentsIndex } from "../components/incidentsprovider";
 
 // Components
-import { Tag } from "../components/tagselector";
+import { Tag, originalToTag } from "../components/tagselector";
 
 // for all different tags "keys", THERE HAS TO BE ONE tag with
 // matching value in incident.tags
-export const matchesOnTags = (incident: Incident, tags: Tag[]): boolean => {
-  if (tags.length === 0) {
+export const matchesOnTags = (incident: Incident, tagStrings: string[]): boolean => {
+  if (tagStrings.length === 0) {
     return true;
   }
+
+  const tags = tagStrings.map((original: string) => originalToTag(original));
 
   const incidentTagsSet = new Set(incident.tags.map((it: IncidentTag) => it.tag));
   const tagsGroupedByKey: Map<string, Set<Tag>> = groupBy(tags, (tag: Tag) => tag.key);
@@ -35,26 +37,17 @@ export const matchesOnSources = (incident: Incident, sources: number[] | undefin
   return sources.some((source: number) => incident.source.pk === source);
 };
 
-export const matchesShow = (incident: Incident, show: "open" | "closed" | "both"): boolean => {
-  if (show === "both") return true;
-  const openState = show === "open";
-  return incident.open === openState;
-  // return incident.open ? show === "open" : show === "closed";
+export const matchesShow = (incident: Incident, open?: boolean): boolean => {
+  if (open === undefined) return true;
+  return incident.open === open;
 };
 
-export const matchesAcked = (incident: Incident, showAcked: boolean): boolean => {
-  if (showAcked) return true;
-  return !incident.acked;
+export const matchesAcked = (incident: Incident, acked?: boolean): boolean => {
+  if (acked === undefined) return true;
+  return incident.acked === acked;
 };
 
-interface FilterProps {
-  show: "open" | "closed" | "both";
-  showAcked: boolean;
-  tags: Tag[];
-  sourcesById: number[] | undefined;
-}
-
-export const matchesFilter = (incident: Incident, filter: FilterProps): boolean => {
+export const matchesFilter = (incident: Incident, filter: Omit<Filter, "pk" | "name">): boolean => {
   /*
       // Useful for debugging
       const matches = [
@@ -73,10 +66,10 @@ export const matchesFilter = (incident: Incident, filter: FilterProps): boolean 
    */
 
   return (
-    matchesShow(incident, filter.show) &&
-    matchesAcked(incident, filter.showAcked) &&
+    matchesShow(incident, filter.filter.open) &&
+    matchesAcked(incident, filter.filter.acked) &&
     matchesOnTags(incident, filter.tags) &&
-    matchesOnSources(incident, filter.sourcesById)
+    matchesOnSources(incident, filter.sourceSystemIds)
   );
 };
 

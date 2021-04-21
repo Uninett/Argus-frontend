@@ -8,8 +8,8 @@ import {
   TimeslotPK,
   Timeslot,
   TimeRecurrence,
-  FilterPK,
   Filter,
+  FilterPK,
   FilterString,
   MediaAlternative,
   PhoneNumberPK,
@@ -374,30 +374,31 @@ class ApiClient {
   }
 
   public getPaginatedIncidentsFiltered(
-    filter: IncidentsFilterOptions,
+    filter: Omit<Filter, "pk" | "name">,
     cursor: string | null,
     pageSize?: number,
   ): Promise<CursorPaginationResponse<Incident>> {
-    const buildIncidentsQuery = (filter: IncidentsFilterOptions, pageSize?: number) => {
+    const buildIncidentsQuery = (filter: Omit<Filter, "pk" | "name">, pageSize?: number) => {
       const params = [];
-      if (filter.acked !== undefined) {
-        params.push(`acked=${filter.acked}`);
+      if (filter.filter.acked !== undefined) {
+        params.push(`acked=${filter.filter.acked}`);
       }
-      if (filter.open !== undefined) {
-        params.push(`open=${filter.open}`);
+      if (filter.filter.open !== undefined) {
+        params.push(`open=${filter.filter.open}`);
       }
-      if (filter.stateful !== undefined) {
-        params.push(`stateful=${filter.stateful}`);
+      if (filter.filter.stateful !== undefined) {
+        params.push(`stateful=${filter.filter.stateful}`);
       }
       if (filter.sourceSystemIds !== undefined) {
         params.push(`source__id__in=${filter.sourceSystemIds.join(",")}`);
       }
-      if (filter.sourceSystemNames !== undefined) {
-        params.push(`source__name__in=${filter.sourceSystemNames.join(",")}`);
-      }
-      if (filter.tags !== undefined) {
-        params.push(`tags=${filter.tags.join(",")}`);
-      }
+      // if (filter.sourceSystemNames !== undefined) {
+      //   params.push(`source__name__in=${filter.sourceSystemNames.join(",")}`);
+      // }
+      console.log("filter tags:", filter.tags);
+      // if (filter.tags !== undefined) {
+      //   params.push(`tags=${filter.tags.join(",")}`);
+      // }
       if (pageSize !== undefined) {
         params.push(`page_size=${pageSize}`);
       }
@@ -433,7 +434,7 @@ class ApiClient {
 
   // NOTE: This won't actually get all incidents anymore because of the pagination
   // TODO: Remove all use of this method.
-  public getAllIncidentsFiltered(filter: IncidentsFilterOptions): Promise<Incident[]> {
+  public getAllIncidentsFiltered(filter: Omit<Filter, "pk" | "name">): Promise<Incident[]> {
     return this.getPaginatedIncidentsFiltered(filter, null).then(paginationResponseResolver);
   }
 
@@ -488,10 +489,13 @@ class ApiClient {
             // anymore:
             const definition: FilterString = JSON.parse(resp.filter_string);
 
+            console.log("got all filters", resp);
+
             return {
               pk: resp.pk,
               name: resp.name,
-              ...definition,
+              tags: definition.tags,
+              sourceSystemIds: definition.sourceSystemIds,
               filter: resp.filter,
             };
           },
@@ -500,31 +504,44 @@ class ApiClient {
     );
   }
 
-  public postFilter(name: string, definition: FilterString): Promise<FilterSuccessResponse> {
+  public postFilter(filter: Omit<Filter, "pk">): Promise<FilterSuccessResponse> {
+    const definition: FilterString = {
+      sourceSystemIds: filter.sourceSystemIds,
+      tags: filter.tags,
+    };
+
+    const filterString = JSON.stringify(definition) as string;
+
     return this.resolveOrReject(
       this.authPost<FilterSuccessResponse, FilterRequest>(`/api/v1/notificationprofiles/filters/`, {
-        name,
-        // This is really ugly
-        // eslint-disable-next-line
-        filter_string: JSON.stringify(definition) as string,
-        filter: {},
+        name: filter.name,
+        filter: filter.filter,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        filter_string: filterString,
       }),
       defaultResolver,
-      (error) => new Error(`Failed to create notification filter ${name}: ${error}`),
+      (error) => new Error(`Failed to create notification filter ${filter.name}: ${error}`),
     );
   }
 
-  public putFilter(pk: number, name: string, definition: FilterString): Promise<FilterSuccessResponse> {
+  public putFilter(filter: Filter): Promise<FilterSuccessResponse> {
+    const definition: FilterString = {
+      sourceSystemIds: filter.sourceSystemIds,
+      tags: filter.tags,
+    };
+
+    const filterString = JSON.stringify(definition) as string;
+
     return this.resolveOrReject(
-      this.authPut<FilterSuccessResponse, FilterRequest>(`/api/v1/notificationprofiles/filters/${pk}/`, {
-        name,
-        // This is really ugly
-        // eslint-disable-next-line
-        filter_string: JSON.stringify(definition) as string,
-        filter: {},
+      this.authPut<FilterSuccessResponse, FilterRequest>(`/api/v1/notificationprofiles/filters/${filter.pk}/`, {
+        name: filter.name,
+        filter: filter.filter,
+
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        filter_string: filterString,
       }),
       defaultResolver,
-      (error) => new Error(`Failed to update notification filter ${pk}: ${error}`),
+      (error) => new Error(`Failed to update notification filter ${filter.pk}: ${error}`),
     );
   }
 

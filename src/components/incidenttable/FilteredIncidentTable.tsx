@@ -7,7 +7,14 @@ import TablePagination from "@material-ui/core/TablePagination";
 import { DEFAULT_AUTO_REFRESH_INTERVAL } from "../../config";
 
 // Api
-import type { Incident, IncidentsFilterOptions, CursorPaginationResponse, AutoUpdateMethod } from "../../api/types.d";
+import type {
+  Filter,
+  Incident,
+  IncidentsFilterOptions,
+  CursorPaginationResponse,
+  AutoUpdateMethod,
+  FilterContent,
+} from "../../api/types.d";
 import api from "../../api";
 
 // Utils
@@ -53,20 +60,23 @@ const DEFAULT_VIRT_CURSOR = {
   totalElements: 0,
 };
 
-export type IncidentsFilter = {
+type IncidentsFilter = {
   tags: Tag[];
   sources: "AllSources" | string[] | undefined;
   sourcesById: number[] | undefined;
-  show: "open" | "closed" | "both";
-  showAcked: boolean;
-  // autoUpdate: AutoUpdateMethod;
+  // show: "open" | "closed" | "both";
+  // showAcked: boolean;
+
+  filter: FilterContent;
 };
 
 type FilteredIncidentsTablePropsType = {};
 
 const FilteredIncidentTable = () => {
   // Keep track of last time a refresh of data was done in order to update on interval.
-  const [lastRefresh, setLastRefresh] = useState<{ time: Date; filter: IncidentsFilter } | undefined>(undefined);
+  const [lastRefresh, setLastRefresh] = useState<{ time: Date; filter: Omit<Filter, "pk" | "name"> } | undefined>(
+    undefined,
+  );
 
   // Get the incidents and seleceted filter from context
   const [{ incidents }, { loadAllIncidents }] = useIncidentsContext();
@@ -95,27 +105,17 @@ const FilteredIncidentTable = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const refresh = useCallback(() => {
-    const showToOpenMap: Record<IncidentsFilter["show"], boolean | undefined> = {
-      open: true,
-      closed: false,
-      both: undefined,
-    };
+    const filter: Omit<Filter, "pk" | "name"> = {
+      filter: incidentsFilter.filter,
 
-    const filterOptions: IncidentsFilterOptions = {
-      open: showToOpenMap[incidentsFilter.show as "open" | "closed" | "both"],
-
-      // The frontend is only conserned if acked incidents should be
-      // displayed, not that ONLY acked incidents should be displayed.
-      // Only filter on the acked property when
-      acked: incidentsFilter.showAcked === true ? undefined : false,
-      tags: incidentsFilter.tags.map((tag: Tag) => tag.original),
+      tags: incidentsFilter.tags,
       // sourceSystemNames: sources === "AllSources" ? undefined : sources,
-      sourceSystemIds: incidentsFilter.sourcesById,
+      sourceSystemIds: incidentsFilter.sourceSystemIds,
     };
 
     setIsLoading(true);
     api
-      .getPaginatedIncidentsFiltered(filterOptions, paginationCursor.current, paginationCursor.pageSize)
+      .getPaginatedIncidentsFiltered(filter, paginationCursor.current, paginationCursor.pageSize)
       .then((response: CursorPaginationResponse<Incident>) => {
         loadAllIncidents(response.results);
         const { previous, next } = response;
@@ -226,9 +226,9 @@ const FilteredIncidentTable = () => {
   }, [incidentsFilter]);
 
   const filterMatcher = useMemo(() => {
-    const { showAcked, show, tags, sourcesById } = incidentsFilter;
+    const { filter, tags, sourceSystemIds } = incidentsFilter;
     const incidentMatchesFilter = (incident: Incident): boolean => {
-      return matchesFilter(incident, { showAcked, show, tags, sourcesById });
+      return matchesFilter(incident, { filter, tags, sourceSystemIds });
     };
     return incidentMatchesFilter;
   }, [incidentsFilter]);

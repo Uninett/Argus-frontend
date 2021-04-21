@@ -79,8 +79,8 @@ export interface FilterString {
 
   // not supported by backend yet, not sure if it
   // should either. Does it even make sense?
-  show_acked?: boolean;
-  show?: "open" | "closed" | "both";
+  // show_acked?: boolean;
+  // show?: "open" | "closed" | "both";
 }
 
 export type MediaAlternative = "EM" | "SM";
@@ -195,7 +195,7 @@ export interface IncidentMetadata {
 
 // Internally used in components, but placed
 // here because it is so widespreadly used
-export type IncidentsFilterOptions = FilterContent & {
+export type IncidentsFilterOptions = {
   // acked?: boolean;
   // open?: boolean;
   // stateful?: boolean;
@@ -204,7 +204,8 @@ export type IncidentsFilterOptions = FilterContent & {
   // sourceSystemNames?: string[];
   tags?: string[];
 
-  filter?: Filter["pk"];
+  filterPk?: Filter["pk"];
+  filter: FilterContent;
   // NOT COMPLETE
 };
 
