@@ -3,6 +3,10 @@ import React from "react";
 import { Route, Switch } from "react-router-dom";
 import { ProtectedRoute } from "./protected.route";
 
+// CSS
+import "./variables.css";
+import "./colorscheme.css";
+
 // Views
 import IncidentDetailsView from "./views/incident/IncidentDetailView";
 import IncidentView from "./views/incident/IncidentView";
