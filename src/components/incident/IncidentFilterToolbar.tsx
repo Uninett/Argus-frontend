@@ -472,7 +472,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
 
         <ToolbarItem name="Acked">
           <ButtonGroupSwitch
-            selected={optionalOr(selectedFilter?.incidentsFilter.filter.acked, null)}
+            selected={optionalOr(selectedFilter?.incidentsFilter?.filter?.acked, null)}
             options={[true, false, null]}
             getLabel={(open: boolean | null) =>
               ({ true: "Acked", false: "Unacked", null: "Both" }[optionalBoolToKey(open)])
