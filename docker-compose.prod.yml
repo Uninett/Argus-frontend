@@ -1,0 +1,48 @@
+version: '3.5'
+services:
+  frontend:
+    build: 
+      context: .
+      dockerfile: Dockerfile.prod
+    environment:
+      - CI=true
+    ports:
+       - "8080:80"
+
+  api:
+    build:
+      context: docker/api
+      args:
+        BRANCH: master
+
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - TIME_ZONE=Europe/Oslo
+      - DJANGO_SETTINGS_MODULE=argus.site.settings.dockerdev
+      - DATABASE_URL=postgresql://argus:HahF9araeKoo@postgres/argus
+      - ARGUS_FRONTEND_URL=http://localhost:8080
+      - ARGUS_REDIS_SERVER=redis
+
+
+  postgres:
+    image: "postgres:12"
+    volumes:
+      - postgres:/var/lib/postgresql/data:Z
+    restart: always
+    environment:
+      - POSTGRES_USER=argus
+      - POSTGRES_PASSWORD=HahF9araeKoo
+      - POSTGRES_DB=argus
+
+
+  redis:
+    image: "redis:latest"
+
+
+volumes:
+  postgres:
+    driver: local
