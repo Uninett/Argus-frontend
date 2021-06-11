@@ -508,7 +508,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
         <ToolbarItem name="Tags" className={classNames(style.medium)}>
           <TagSelector
             disabled={disabled}
-            tags={selectedFilter.incidentsFilter?.tags}
+            tags={selectedFilter.incidentsFilter?.tags || []}
             onSelectionChange={(tags: string[]) => setSelectedFilter({ tags })}
             selected={selectedFilter.incidentsFilter?.tags}
           />
