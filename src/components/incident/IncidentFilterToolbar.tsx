@@ -132,7 +132,7 @@ export function ButtonGroupSwitch<T>({
       </Tooltip>
     );
   return (
-    <ButtonGroup variant="contained" color="default" aria-label="text primary button group">
+    <ButtonGroup data-testid="open-state-switch" variant="contained" color="default" aria-label="text primary button group">
       {options.map((option: T, index: number) => {
         return tooltipWrap(
           index,
@@ -461,7 +461,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
   );
 
   return (
-    <div className={style.root}>
+    <div className={style.root} data-testid="incidents-toolbar">
       <Toolbar className={style.toolbarContainer}>
         <ToolbarItem name="Open State">
           <ButtonGroupSwitch
