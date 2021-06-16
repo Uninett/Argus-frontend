@@ -37,19 +37,6 @@ describe('Incident Toolbar test suite', () => {
     const openStateSwitch = screen.getByTitle('Open state switch');
     expect(openStateSwitch).toBeInTheDocument();
 
-    // Open State Switch buttons
-    const openStateButton = screen.getByTitle('Only open incidents');
-    expect(openStateButton).toBeInTheDocument();
-    expect(openStateButton).toBeVisible();
-
-    const closedStateButton = screen.getByTitle('Only closed incidents');
-    expect(closedStateButton).toBeInTheDocument();
-    expect(closedStateButton).toBeVisible();
-
-    const bothOpenStatesButton = screen.getByTitle('Both open and closed incidents');
-    expect(bothOpenStatesButton).toBeInTheDocument();
-    expect(bothOpenStatesButton).toBeVisible();
-
     const ackedStateSwitch = screen.getByTitle('Acked state switch');
     expect(ackedStateSwitch).toBeInTheDocument();
 
@@ -110,13 +97,57 @@ describe('Open State Switch test suite', () => {
   })
 
   test('open state switch is rendered', () => {
-    const openStateSwitch = screen.getByTestId('open-state-switch');
+    const openStateSwitch = screen.getByTitle('Open state switch');
     expect(openStateSwitch).toBeInTheDocument();
   });
 
   test('open state switch is visible', () => {
-    const openStateSwitch = screen.getByTestId('open-state-switch');
+    const openStateSwitch = screen.getByTitle('Open state switch');
     expect(openStateSwitch).toBeVisible();
+  });
+
+  test('open state switch buttons render correctly', () => {
+    const openStateSwitch = screen.getByTitle('Open state switch');
+    const openStateButtons: HTMLCollectionOf<HTMLButtonElement> = openStateSwitch.getElementsByTagName('button');
+
+    // Provided options render
+    const openStateButton = screen.getByTitle('Only open incidents');
+    expect(openStateButtons).toContain(openStateButton);
+    expect(openStateButton).toBeInTheDocument();
+    expect(openStateButton).toBeVisible();
+    expect(openStateButton.querySelector('.MuiButton-label')?.textContent).toBe('Open');
+
+    const closedStateButton = screen.getByTitle('Only closed incidents');
+    expect(openStateButtons).toContain(closedStateButton);
+    expect(closedStateButton).toBeInTheDocument();
+    expect(closedStateButton).toBeVisible();
+    expect(closedStateButton.querySelector('.MuiButton-label')?.textContent).toBe('Closed');
+
+    const bothOpenStatesButton = screen.getByTitle('Both open and closed incidents');
+    expect(openStateButtons).toContain(bothOpenStatesButton);
+    expect(bothOpenStatesButton).toBeInTheDocument();
+    expect(bothOpenStatesButton).toBeVisible();
+    expect(bothOpenStatesButton.querySelector('.MuiButton-label')?.textContent).toBe('Both');
+
+    // No other options render
+    expect(openStateButtons.length).toBe(3);
+  });
+
+  test('open state switch buttons have correct initial conditions', () => {
+    const openStateButton = screen.getByTitle('Only open incidents');
+    const closedStateButton = screen.getByTitle('Only closed incidents');
+    const bothOpenStatesButton = screen.getByTitle('Both open and closed incidents');
+
+    // All buttons are enabled
+    expect(openStateButton).toBeEnabled();
+    expect(closedStateButton).toBeEnabled();
+    expect(bothOpenStatesButton).toBeEnabled();
+
+    // Only open button is selected by default
+    expect(openStateButton).toHaveClass('MuiButton-containedPrimary');
+    expect(closedStateButton).not.toHaveClass('MuiButton-containedPrimary');
+    expect(bothOpenStatesButton).not.toHaveClass('MuiButton-containedPrimary');
+
   });
 });
 
