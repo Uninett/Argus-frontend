@@ -132,7 +132,7 @@ export function ButtonGroupSwitch<T>({
       </Tooltip>
     );
   return (
-    <ButtonGroup data-testid="open-state-switch" variant="contained" color="default" aria-label="text primary button group">
+    <ButtonGroup variant="contained" color="default" aria-label="text primary button group">
       {options.map((option: T, index: number) => {
         return tooltipWrap(
           index,
@@ -185,7 +185,7 @@ export const DropdownToolbar: React.FC<DropdownToolbarPropsType> = ({
   if (!open) return null;
 
   return (
-    <div className={classNames(style.dropdownContainer, className)}>
+    <div id="more-settings-dropdown" className={classNames(style.dropdownContainer, className)}>
       <Toolbar className={style.toolbarContainer}>{children}</Toolbar>
     </div>
   );
