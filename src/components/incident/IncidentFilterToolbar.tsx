@@ -155,12 +155,13 @@ type ToolbarItemPropsType = {
   name: string;
   children: React.ReactNode;
   className?: string;
+  title: string;
 };
 
-export const ToolbarItem: React.FC<ToolbarItemPropsType> = ({ name, children, className }: ToolbarItemPropsType) => {
+export const ToolbarItem: React.FC<ToolbarItemPropsType> = ({ name, children, className, title }: ToolbarItemPropsType) => {
   const style = useStyles();
   return (
-    <div className={classNames(style.itemContainer, className)}>
+    <div title={title} className={classNames(style.itemContainer, className)}>
       <Typography>{name}</Typography>
       {children}
     </div>
@@ -439,7 +440,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
   const useExistingFilter = false;
 
   const autoUpdateToolbarItem = (
-    <ToolbarItem name="Auto Update">
+    <ToolbarItem title="Auto update switch" name="Auto Update">
       <ButtonGroupSwitch
         disabled={useExistingFilter}
         selected={selectedFilter.filter.autoUpdate}
@@ -463,7 +464,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
   return (
     <div className={style.root} data-testid="incidents-toolbar">
       <Toolbar className={style.toolbarContainer}>
-        <ToolbarItem name="Open State">
+        <ToolbarItem title="Open state switch" name="Open State">
           <ButtonGroupSwitch
             selected={useExistingFilter ? "open" : selectedFilter.filter.show}
             options={["open", "closed", "both"]}
@@ -480,7 +481,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
           />
         </ToolbarItem>
 
-        <ToolbarItem name="Acked">
+        <ToolbarItem title="Acked state switch" name="Acked">
           <ButtonGroupSwitch
             selected={useExistingFilter ? true : selectedFilter.filter.showAcked}
             options={[false, true]}
@@ -491,7 +492,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
           />
         </ToolbarItem>
 
-        <ToolbarItem name="Sources" className={classNames(style.medium)}>
+        <ToolbarItem title="Source selector" name="Sources" className={classNames(style.medium)}>
           <SourceSelector
             disabled={disabled}
             sources={knownSources}
@@ -505,7 +506,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
           />
         </ToolbarItem>
 
-        <ToolbarItem name="Tags" className={classNames(style.medium)}>
+        <ToolbarItem title="Tags selector" name="Tags" className={classNames(style.medium)}>
           <TagSelector
             disabled={disabled}
             tags={[]}
@@ -516,7 +517,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
           />
         </ToolbarItem>
 
-        <ToolbarItem name="Filter" className={classNames(style.medium)}>
+        <ToolbarItem title="Filter dropdown" name="Filter" className={classNames(style.medium)}>
           <FiltersDropdownToolbarItem />
         </ToolbarItem>
         <MoreSettingsToolbarItem

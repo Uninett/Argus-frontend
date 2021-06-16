@@ -34,6 +34,9 @@ describe('Incident Toolbar test suite', () => {
     const incidentsToolbarElement = screen.getByTestId('incidents-toolbar');
     expect(incidentsToolbarElement).toBeInTheDocument();
 
+    const openStateSwitch = screen.getByTitle('Open state switch');
+    expect(openStateSwitch).toBeInTheDocument();
+
     // Open State Switch buttons
     const openStateButton = screen.getByTitle('Only open incidents');
     expect(openStateButton).toBeInTheDocument();
@@ -47,6 +50,9 @@ describe('Incident Toolbar test suite', () => {
     expect(bothOpenStatesButton).toBeInTheDocument();
     expect(bothOpenStatesButton).toBeVisible();
 
+    const ackedStateSwitch = screen.getByTitle('Acked state switch');
+    expect(ackedStateSwitch).toBeInTheDocument();
+
     // Acked Switch buttons
     const unackedStateButton = screen.getByTitle('Only unacked incidents');
     expect(unackedStateButton).toBeInTheDocument();
@@ -56,17 +62,29 @@ describe('Incident Toolbar test suite', () => {
     expect(bothAckedStatesButton).toBeInTheDocument();
     expect(bothAckedStatesButton).toBeVisible();
 
-    const sourceSelector = incidentToolbar.querySelector('#filter-select-source');
+    const sourceSelector = screen.getByTitle('Source selector');
     expect(sourceSelector).toBeInTheDocument();
     expect(sourceSelector).toBeVisible();
 
-    const tagSelector = incidentToolbar.querySelector('#filter-select-tags');
-    expect(tagSelector).toBeInTheDocument();
-    expect(tagSelector).toBeVisible();
+    const sourceSelectorInput = incidentToolbar.querySelector('#filter-select-source');
+    expect(sourceSelectorInput).toBeInTheDocument();
+    expect(sourceSelectorInput).toBeVisible();
 
-    const filtersDropdown = incidentToolbar.querySelector('#filter-select');
-    expect(filtersDropdown).toBeInTheDocument();
-    expect(filtersDropdown).toBeVisible();
+    const tagsSelector = screen.getByTitle('Tags selector');
+    expect(tagsSelector).toBeInTheDocument();
+    expect(tagsSelector).toBeVisible();
+
+    const tagSelectorInput = incidentToolbar.querySelector('#filter-select-tags');
+    expect(tagSelectorInput).toBeInTheDocument();
+    expect(tagSelectorInput).toBeVisible();
+
+    const filterDropdown = screen.getByTitle('Filter dropdown');
+    expect(filterDropdown).toBeInTheDocument();
+    expect(filterDropdown).toBeVisible();
+
+    const filtersDropdownInput = incidentToolbar.querySelector('#filter-select');
+    expect(filtersDropdownInput).toBeInTheDocument();
+    expect(filtersDropdownInput).toBeVisible();
 
     const moreSettingsItem = screen.getByTitle('Additional settings');
     expect(moreSettingsItem).toBeInTheDocument();
