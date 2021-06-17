@@ -1,20 +1,17 @@
-import { render, screen } from "@testing-library/react";
-import { IncidentFilterToolbar, ButtonGroupSwitch } from './IncidentFilterToolbar';
+import { ButtonGroupSwitch, IncidentFilterToolbar } from "./IncidentFilterToolbar";
 import React from "react";
-import { Token, User } from "../../api";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import "@testing-library/jest-dom/extend-expect";
+import MockAdapter from "axios-mock-adapter";
+import api, { ApiClient, IncidentMetadata, SourceSystem } from "../../api";
+import Auth from '../../auth';
+import SelectedFilterProvider from "../filterprovider";
+import { IncidentsFilter } from "../incidenttable/FilteredIncidentTable";
 
-// const testUser: User = {
-//   username: 'testUser',
-//   first_name: 'FTest',
-//   last_name: 'LTest',
-//   email: 'test@test.test'
-// };
-//
-// const testToken: Token = "testToken";
-//
-// const authServiceMock = {
-//
-// }
+const apiMock = new MockAdapter(api.api);
+
+jest.mock('../filterprovider.tsx')
 
 describe('Incident Toolbar test suite', () => {
 
@@ -30,7 +27,7 @@ describe('Incident Toolbar test suite', () => {
     jest.clearAllMocks();
   })
 
-  test('incidents toolbar is rendered correctly', () => {
+  test('all incidents toolbar components are rendered', () => {
     const incidentsToolbarElement = screen.getByTestId('incidents-toolbar');
     expect(incidentsToolbarElement).toBeInTheDocument();
 
@@ -80,30 +77,22 @@ describe('Incident Toolbar test suite', () => {
     const dropdownToolbar = incidentToolbar.querySelector('#more-settings-dropdown');
     expect(dropdownToolbar).not.toBeInTheDocument();
   });
-});
 
-describe('Open State Switch test suite', () => {
+  test('open state switch buttons have correct initial conditions', () => {
+    const openStateButton = screen.getByTitle('Only open incidents');
+    const closedStateButton = screen.getByTitle('Only closed incidents');
+    const bothOpenStatesButton = screen.getByTitle('Both open and closed incidents');
 
-  let incidentToolbar: HTMLElement;
+    // All buttons are enabled
+    expect(openStateButton).toBeEnabled();
+    expect(closedStateButton).toBeEnabled();
+    expect(bothOpenStatesButton).toBeEnabled();
 
-  beforeEach(() => {
-    incidentToolbar = render(<IncidentFilterToolbar />).container;
-  });
+    // Only open button is selected by default
+    expect(openStateButton).toHaveClass('MuiButton-containedPrimary');
+    expect(closedStateButton).not.toHaveClass('MuiButton-containedPrimary');
+    expect(bothOpenStatesButton).not.toHaveClass('MuiButton-containedPrimary');
 
-  afterEach(() => {
-    document.body.removeChild(incidentToolbar);
-    incidentToolbar.remove();
-    jest.clearAllMocks();
-  })
-
-  test('open state switch is rendered', () => {
-    const openStateSwitch = screen.getByTitle('Open state switch');
-    expect(openStateSwitch).toBeInTheDocument();
-  });
-
-  test('open state switch is visible', () => {
-    const openStateSwitch = screen.getByTitle('Open state switch');
-    expect(openStateSwitch).toBeVisible();
   });
 
   test('open state switch buttons render correctly', () => {
@@ -132,22 +121,101 @@ describe('Open State Switch test suite', () => {
     // No other options render
     expect(openStateButtons.length).toBe(3);
   });
+});
 
-  test('open state switch buttons have correct initial conditions', () => {
-    const openStateButton = screen.getByTitle('Only open incidents');
-    const closedStateButton = screen.getByTitle('Only closed incidents');
-    const bothOpenStatesButton = screen.getByTitle('Both open and closed incidents');
+describe('Open State Switch test suite', () => {
 
-    // All buttons are enabled
-    expect(openStateButton).toBeEnabled();
-    expect(closedStateButton).toBeEnabled();
-    expect(bothOpenStatesButton).toBeEnabled();
+  let incidentToolbar: HTMLElement;
+  const sourceSystemMock: SourceSystem = {
+    pk: 0,
+    name: 'testSourceSystem',
+    type: 'testSourceSystemType'
+  };
+  const incidentMetadataMock: IncidentMetadata = {
+    sourceSystems: [sourceSystemMock]
+  };
 
-    // Only open button is selected by default
-    expect(openStateButton).toHaveClass('MuiButton-containedPrimary');
-    expect(closedStateButton).not.toHaveClass('MuiButton-containedPrimary');
-    expect(bothOpenStatesButton).not.toHaveClass('MuiButton-containedPrimary');
+  const authTokenSpy = jest.spyOn(Auth, 'token');
+  const authIsAuthenticatedSpy = jest.spyOn(Auth, 'isAuthenticated');
 
+  let openStateSwitch: HTMLElement;
+
+  const onSelectMock = jest.fn();
+
+  let incidentsFilterMock: IncidentsFilter;
+
+  const useSelectedFilterMock = jest.fn();
+
+  beforeEach(() => {
+    //
+    // // @ts-ignore
+    // authTokenSpy.mockResolvedValueOnce('testToken');
+    // // @ts-ignore
+    // authIsAuthenticatedSpy.mockResolvedValueOnce(true);
+    //
+    // apiMock
+    //   .onGet("/api/v1/incidents/metadata/")
+    //   .reply(200, incidentMetadataMock);
+    //
+    // incidentToolbar = render(<IncidentFilterToolbar />).container;
+
+    openStateSwitch = render(
+      <ButtonGroupSwitch
+      selected={"open"}
+      options={["open", "closed", "both"]}
+      getLabel={(show: "open" | "closed" | "both") => ({ open: "Open", closed: "Closed", both: "Both" }[show])}
+      getColor={(selected: boolean) => (selected ? "primary" : "default")}
+      getTooltip={(show: "open" | "closed" | "both") =>
+        ({
+          open: "Only open incidents",
+          closed: "Only closed incidents",
+          both: "Both open and closed incidents ",
+        }[show])
+      }
+      onSelect={onSelectMock as any}
+      />).container;
+  });
+
+  afterEach(() => {
+    document.body.removeChild(openStateSwitch);
+    openStateSwitch.remove();
+    jest.clearAllMocks();
+  })
+
+  // FUNCTIONAL TESTS
+  test('click selects unselected option', async () => {
+    const closedStateBtn = screen.getByTitle('Only closed incidents');
+    // let openStateButtons: HTMLCollectionOf<HTMLButtonElement> = openStateSwitch.getElementsByTagName('button');
+    // //
+    // expect(openStateButtons.length).toBe(3); // todo remove because redundant?
+
+    // let selectedBtn = openStateButtons[1]; // button to be newly selected
+    // let prevSelectedBtn = openStateButtons[0]; // button that is currently selected
+
+    // Check pre-click conditions
+    // expect(openStateButtons[1]).not.toHaveClass('MuiButton-containedPrimary'); // not yet selected
+    // expect(openStateButtons[0]).toHaveClass('MuiButton-containedPrimary'); // currently selected
+
+    userEvent.click(closedStateBtn);
+    expect(onSelectMock).toBeCalledWith("closed");
+
+    // let notSelectedBtn = await screen.findByTitle('Only open incidents')
+
+    // const unselectedBtn = await screen.findByTitle('Only open incidents');
+
+    // const selectedBtn = await screen.findByTitle('Only closed incidents');
+
+    // await waitForElementToBeRemoved(() => {
+    //   screen.getByTitle('Open state switch');
+    // });
+
+    // // Selects a new option
+    // expect(openStateButtons[1]).toHaveClass('MuiButton-containedPrimary'); // click triggered select
+    //
+    // // Unselects previously selected option
+    // expect(openStateButtons[0]).not.toHaveClass('MuiButton-containedPrimary'); // click triggered unselect
+    //
+    // await screen.findByTitle('Open state switch');
   });
 });
 
