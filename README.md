@@ -1,4 +1,7 @@
 # Argus - Frontend
+![build](https://github.com/Uninett/Argus-frontend/workflows/Node.js%20CI/badge.svg)
+[![codecov](https://codecov.io/gh/Uninett/Argus-frontend/branch/master/graph/badge.svg)](https://codecov.io/gh/Uninett/Argus-frontend)
+
 
 The Argus-frontend provides a graphical web interface to use with Argus. It has been built using React with TypeScript.
 The backend can be found at https://github.com/Uninett/Argus.

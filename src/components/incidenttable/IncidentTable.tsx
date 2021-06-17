@@ -39,8 +39,8 @@ import Modal from "../../components/modal/Modal";
 import IncidentTableToolbar from "../../components/incidenttable/IncidentTableToolbar";
 
 // Contexts/Hooks
-import { useIncidentsContext } from "../../components/incidentsprovider";
-import { useAlerts } from "../../components/alertsnackbar";
+import { useIncidentsContext } from "../incidentsprovider";
+import { useAlerts } from "../alertsnackbar";
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -468,6 +468,7 @@ export const MinimalIncidentTable = ({
         dialogProps={{ maxWidth: "lg", fullWidth: true }}
       />
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [detailPk, displayAlert]);
 
   return (
