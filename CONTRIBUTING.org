@@ -1,0 +1,77 @@
+* CONTRIBUTING
+
+** About Argus-Frontend
+Argus-frontend is built using TypeScript with React and the material ui
+component library/framework.
+
+It started off with only manually created components with a mix of different
+styles. Over the last year this has been mostly converted into material ui
+based components, although some old components still exist.
+
+We use hooks for lots of different things. Custom React Hooks are used
+to manage state, fetch from API etc.
+
+*** Realtime
+One of the complicating factors of this codebase is that we
+support realtime updates using websockets. We don't use
+a library to manage reconnecting, switching to HTTP, etc.
+so we have custom code to manage those situations.
+
+
+*** Most important source code structure
+#+BEGIN_SRC
+src/components:
+All reusable components should be here.
+They should be in seperate directories using index.ts
+
+src/api:
+All API code is here. This includes things like
+REST API requests, type definitions etc..
+#+END_SRC
+
+
+*** App state
+State management is done by using react contexts and useReducer.
+Custom code was written to support typing with useReducer, and
+the prefered way to access state is to use custom hooks dedicated
+to that. These hooks are often written in the provider code.
+
+
+** Development setup
+*** Pre-requisitees
+- Yarn/Npm
+- NodeJS
+
+*** Installing dependencies
+#+BEGIN_SRC
+npm install
+#+END_SRC
+
+*** Running the project locally (without websockets)
+#+BEGIN_SRC sh
+REACT_APP_ENABLE_WEBSOCKETS_SUPPORT=false REACT_APP_DEFAULT_AUTO_REFRESH_INTERVAL=30 REACT_APP_BACKEND_WS_URL="ws://localhost:8000/ws" REACT_APP_BACKEND_URL="http://localhost:8000" yarn start
+#+END_SRC
+
+*** Running the project locally with websockets enabled
+To run the project locally it's recommended to create a script containing
+the following:
+
+#+BEGIN_SRC sh
+REACT_APP_ENABLE_WEBSOCKETS_SUPPORT=true REACT_APP_DEFAULT_AUTO_REFRESH_INTERVAL=30 REACT_APP_BACKEND_WS_URL="ws://localhost:8000/ws" REACT_APP_BACKEND_URL="http://localhost:8000" yarn start
+#+END_SRC
+
+Note that passing configuration options using the ~REACT_APP~ prefix will
+only work when in development mode - not when building.
+
+*** More advanced configration : config.tsx
+To do other changes to the configuration you should modify the
+~src/config.tsx~ file.
+
+** Run linter/prettier
+Before committing and pushing your changes you should make sure
+to run ~yarn format~ and ~yarn lint~. The first command will run prettier on
+your changes. The second will run the eslint javascript linter.
+
+
+*** Using docker
+See README.md
