@@ -32,6 +32,7 @@ const IncidentView: React.FC<IncidentViewPropsType> = () => {
     loadAllFilters()
       // .then(() => displayAlert("Loaded filters", "success"))
       .catch((error) => displayAlert(`Failed to fetch filters: ${error}`, "error"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

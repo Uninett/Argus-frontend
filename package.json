@@ -38,7 +38,7 @@
     "debug": "react-scripts start",
     "build": "react-scripts build",
     "lint": "eslint src --ext .ts,.tsx,.js",
-    "test": "react-scripts test",
+    "test": "react-scripts test --env=jest-environment-jsdom-sixteen",
     "format": "prettier --write src",
     "eject": "react-scripts eject"
   },
@@ -58,12 +58,17 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^5.14.1",
+    "@testing-library/react": "^11.2.7",
+    "@testing-library/user-event": "^13.1.9",
     "@types/node": "^14.0.13",
     "@typescript-eslint/eslint-plugin": "*",
     "@typescript-eslint/parser": "*",
+    "axios-mock-adapter": "^1.19.0",
     "eslint-config-prettier": "*",
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react-hooks": "*",
+    "jest-environment-jsdom-sixteen": "^2.0.0",
     "prettier": "*"
   }
 }
