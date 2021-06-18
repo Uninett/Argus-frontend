@@ -24,6 +24,7 @@ export const SourceSelector: React.FC<SourceSelectorPropsType> = ({
 
   return (
     <Autocomplete
+      data-testid="autocomplete"
       freeSolo
       multiple
       size="small"
