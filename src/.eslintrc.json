@@ -5,7 +5,10 @@
     "useJSXTextNode": true
   },
   "extends": [
-    "plugin:prettier/recommended"
+    "plugin:@typescript-eslint/recommended",
+    "prettier",
+    "prettier/@typescript-eslint",
+    "plugin:react/recommended"
   ],
   "plugins": ["@typescript-eslint", "react-hooks"],
   "rules": {

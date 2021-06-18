@@ -3,15 +3,7 @@ import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom/extend-expect";
-import MockAdapter from "axios-mock-adapter";
-import api, { ApiClient, IncidentMetadata, SourceSystem } from "../../api";
-import Auth from '../../auth';
-import SelectedFilterProvider from "../filterprovider";
-import { IncidentsFilter } from "../incidenttable/FilteredIncidentTable";
-
-const apiMock = new MockAdapter(api.api);
-
-jest.mock('../filterprovider.tsx')
+import SourceSelector from "../sourceselector";
 
 describe('Incident Toolbar test suite', () => {
 
@@ -33,26 +25,15 @@ describe('Incident Toolbar test suite', () => {
 
     const openStateSwitch = screen.getByTitle('Open state switch');
     expect(openStateSwitch).toBeInTheDocument();
+    expect(openStateSwitch).toBeVisible();
 
     const ackedStateSwitch = screen.getByTitle('Acked state switch');
     expect(ackedStateSwitch).toBeInTheDocument();
-
-    // Acked Switch buttons
-    const unackedStateButton = screen.getByTitle('Only unacked incidents');
-    expect(unackedStateButton).toBeInTheDocument();
-    expect(unackedStateButton).toBeVisible();
-
-    const bothAckedStatesButton = screen.getByTitle('Unacked and acked incidents');
-    expect(bothAckedStatesButton).toBeInTheDocument();
-    expect(bothAckedStatesButton).toBeVisible();
+    expect(ackedStateSwitch).toBeVisible();
 
     const sourceSelector = screen.getByTitle('Source selector');
     expect(sourceSelector).toBeInTheDocument();
     expect(sourceSelector).toBeVisible();
-
-    const sourceSelectorInput = incidentToolbar.querySelector('#filter-select-source');
-    expect(sourceSelectorInput).toBeInTheDocument();
-    expect(sourceSelectorInput).toBeVisible();
 
     const tagsSelector = screen.getByTitle('Tags selector');
     expect(tagsSelector).toBeInTheDocument();
@@ -97,68 +78,113 @@ describe('Incident Toolbar test suite', () => {
 
   test('open state switch buttons render correctly', () => {
     const openStateSwitch = screen.getByTitle('Open state switch');
-    const openStateButtons: HTMLCollectionOf<HTMLButtonElement> = openStateSwitch.getElementsByTagName('button');
+    const openStateButtons: HTMLCollectionOf<HTMLButtonElement> =
+      openStateSwitch.getElementsByTagName('button');
 
     // Provided options render
     const openStateButton = screen.getByTitle('Only open incidents');
     expect(openStateButtons).toContain(openStateButton);
     expect(openStateButton).toBeInTheDocument();
     expect(openStateButton).toBeVisible();
-    expect(openStateButton.querySelector('.MuiButton-label')?.textContent).toBe('Open');
+    expect(openStateButton
+      .querySelector('.MuiButton-label')?.textContent).toBe('Open');
 
     const closedStateButton = screen.getByTitle('Only closed incidents');
     expect(openStateButtons).toContain(closedStateButton);
     expect(closedStateButton).toBeInTheDocument();
     expect(closedStateButton).toBeVisible();
-    expect(closedStateButton.querySelector('.MuiButton-label')?.textContent).toBe('Closed');
+    expect(closedStateButton
+      .querySelector('.MuiButton-label')?.textContent).toBe('Closed');
 
     const bothOpenStatesButton = screen.getByTitle('Both open and closed incidents');
     expect(openStateButtons).toContain(bothOpenStatesButton);
     expect(bothOpenStatesButton).toBeInTheDocument();
     expect(bothOpenStatesButton).toBeVisible();
-    expect(bothOpenStatesButton.querySelector('.MuiButton-label')?.textContent).toBe('Both');
+    expect(bothOpenStatesButton
+      .querySelector('.MuiButton-label')?.textContent).toBe('Both');
 
     // No other options render
     expect(openStateButtons.length).toBe(3);
   });
+
+  test('acked state switch buttons have correct initial conditions', () => {
+    const unackedStateButton = screen.getByTitle('Only unacked incidents');
+    const bothAckedStatesButton = screen.getByTitle('Unacked and acked incidents');
+
+    // All buttons are enabled
+    expect(unackedStateButton).toBeEnabled();
+    expect(bothAckedStatesButton).toBeEnabled();
+
+    // Only unacked button is selected by default
+    expect(unackedStateButton).toHaveClass('MuiButton-containedPrimary');
+    expect(bothAckedStatesButton).not.toHaveClass('MuiButton-containedPrimary');
+  });
+
+  test('acked state switch buttons render correctly', () => {
+    const ackedStateSwitch = screen.getByTitle('Acked state switch');
+    const ackedStateButtons: HTMLCollectionOf<HTMLButtonElement> =
+      ackedStateSwitch.getElementsByTagName('button');
+
+    // Provided options render
+    const unackedStateButton = screen.getByTitle('Only unacked incidents');
+    expect(ackedStateButtons).toContain(unackedStateButton);
+    expect(unackedStateButton).toBeInTheDocument();
+    expect(unackedStateButton).toBeVisible();
+    expect(unackedStateButton
+      .querySelector('.MuiButton-label')?.textContent).toBe('Unacked');
+
+    const bothAckedStatesButton = screen.getByTitle('Unacked and acked incidents');
+    expect(ackedStateButtons).toContain(bothAckedStatesButton);
+    expect(bothAckedStatesButton).toBeInTheDocument();
+    expect(bothAckedStatesButton).toBeVisible();
+    expect(bothAckedStatesButton
+      .querySelector('.MuiButton-label')?.textContent).toBe('Both');
+
+    // No other options render
+    expect(ackedStateButtons.length).toBe(2);
+  });
+
+  test('source selector has correct initial conditions', () => {
+    const sourceSelector = screen.getByTitle('Source selector');
+    const sourceSelectorForm = sourceSelector.querySelector('[role="combobox"]');
+
+    expect(sourceSelectorForm).toBeInTheDocument();
+    expect(sourceSelectorForm).toBeVisible();
+    expect(sourceSelectorForm).toBeEnabled();
+
+    // Check whether no source is selected by default
+    expect(sourceSelectorForm).not.toBeChecked();
+  });
+
+  test('source selector renders correctly', () => {
+    const sourceSelector = screen.getByTitle('Source selector');
+
+    const sourceSelectorName = sourceSelector.querySelector('.MuiTypography-root');
+    expect(sourceSelectorName).toBeInTheDocument();
+    expect(sourceSelectorName).toBeVisible();
+    expect(sourceSelectorName?.textContent).toBe('Sources');
+
+    const sourceSelectorInput = sourceSelector.querySelector('#filter-select-source');
+    expect(sourceSelectorInput).toBeInTheDocument();
+    expect(sourceSelectorInput).toBeVisible();
+    expect(sourceSelectorInput).toHaveAttribute('placeholder', 'Source name');
+
+    const sourceSelectorHelperText = sourceSelector.querySelector('#filter-select-source-helper-text');
+    expect(sourceSelectorHelperText).toBeInTheDocument();
+    expect(sourceSelectorHelperText).toBeVisible();
+    expect(sourceSelectorHelperText?.textContent).toBe('Press enter to add new source');
+
+    const sourceSelectorPopup = sourceSelector.querySelector('#filter-select-source-popup');
+    expect(sourceSelectorPopup).not.toBeInTheDocument();
+  });
 });
 
-describe('Open State Switch test suite', () => {
-
-  let incidentToolbar: HTMLElement;
-  const sourceSystemMock: SourceSystem = {
-    pk: 0,
-    name: 'testSourceSystem',
-    type: 'testSourceSystemType'
-  };
-  const incidentMetadataMock: IncidentMetadata = {
-    sourceSystems: [sourceSystemMock]
-  };
-
-  const authTokenSpy = jest.spyOn(Auth, 'token');
-  const authIsAuthenticatedSpy = jest.spyOn(Auth, 'isAuthenticated');
-
+describe('Open State Switch functional test suite', () => {
   let openStateSwitch: HTMLElement;
 
   const onSelectMock = jest.fn();
 
-  let incidentsFilterMock: IncidentsFilter;
-
-  const useSelectedFilterMock = jest.fn();
-
   beforeEach(() => {
-    //
-    // // @ts-ignore
-    // authTokenSpy.mockResolvedValueOnce('testToken');
-    // // @ts-ignore
-    // authIsAuthenticatedSpy.mockResolvedValueOnce(true);
-    //
-    // apiMock
-    //   .onGet("/api/v1/incidents/metadata/")
-    //   .reply(200, incidentMetadataMock);
-    //
-    // incidentToolbar = render(<IncidentFilterToolbar />).container;
-
     openStateSwitch = render(
       <ButtonGroupSwitch
       selected={"open"}
@@ -182,44 +208,88 @@ describe('Open State Switch test suite', () => {
     jest.clearAllMocks();
   })
 
-  // FUNCTIONAL TESTS
-  test('click selects unselected option', async () => {
+  test('click selects unselected option', () => {
     const closedStateBtn = screen.getByTitle('Only closed incidents');
-    // let openStateButtons: HTMLCollectionOf<HTMLButtonElement> = openStateSwitch.getElementsByTagName('button');
-    // //
-    // expect(openStateButtons.length).toBe(3); // todo remove because redundant?
-
-    // let selectedBtn = openStateButtons[1]; // button to be newly selected
-    // let prevSelectedBtn = openStateButtons[0]; // button that is currently selected
-
-    // Check pre-click conditions
-    // expect(openStateButtons[1]).not.toHaveClass('MuiButton-containedPrimary'); // not yet selected
-    // expect(openStateButtons[0]).toHaveClass('MuiButton-containedPrimary'); // currently selected
-
     userEvent.click(closedStateBtn);
     expect(onSelectMock).toBeCalledWith("closed");
-
-    // let notSelectedBtn = await screen.findByTitle('Only open incidents')
-
-    // const unselectedBtn = await screen.findByTitle('Only open incidents');
-
-    // const selectedBtn = await screen.findByTitle('Only closed incidents');
-
-    // await waitForElementToBeRemoved(() => {
-    //   screen.getByTitle('Open state switch');
-    // });
-
-    // // Selects a new option
-    // expect(openStateButtons[1]).toHaveClass('MuiButton-containedPrimary'); // click triggered select
-    //
-    // // Unselects previously selected option
-    // expect(openStateButtons[0]).not.toHaveClass('MuiButton-containedPrimary'); // click triggered unselect
-    //
-    // await screen.findByTitle('Open state switch');
   });
 });
 
-test('setup test', () => {
+describe('Acked State Switch functional test suite', () => {
+  let ackedStateSwitch: HTMLElement;
+
+  const onAckedChangeMock = jest.fn();
+
+  beforeEach(() => {
+    ackedStateSwitch = render(
+      <ButtonGroupSwitch
+        selected={false}
+        options={[false, true]}
+        getLabel={(showAcked: boolean) => (showAcked ? "Both" : "Unacked")}
+        getColor={(selected: boolean) => (selected ? "primary" : "default")}
+        getTooltip={(showAcked: boolean) =>
+          (showAcked ? "Unacked and acked incidents" : "Only unacked incidents")
+        }
+        onSelect={onAckedChangeMock as any}
+      />).container;
+  });
+
+  afterEach(() => {
+    document.body.removeChild(ackedStateSwitch);
+    ackedStateSwitch.remove();
+    jest.clearAllMocks();
+  })
+
+  test('click selects unselected option', () => {
+    const bothAckedStatesButton = screen.getByTitle('Unacked and acked incidents');
+    userEvent.click(bothAckedStatesButton);
+    expect(onAckedChangeMock).toBeCalledWith(true);
+  });
+});
+
+describe('Sources Selector functional test suite', () => {
+  let sourcesSelector: HTMLElement;
+
+  const knownSourcesMock = new Map([
+    ["testSource1", 0],
+    ["testSource2", 1]
+  ]);
+
+  const setSelectedFilterMock = jest.fn();
+  // const findSourceIdMock = (name: string) => {
+  //   return knownSourcesMock.get(name);
+  // };
+  const findSourceIdMock = jest.fn();
+
+  const onSelectionChangeMock = (sources: string[]) => {
+    findSourceIdMock();
+    setSelectedFilterMock();
+  };
+
+  beforeEach(() => {
+    sourcesSelector = render(
+      <SourceSelector
+        sources={[ ...knownSourcesMock.keys() ]} // array of values
+        onSelectionChange={onSelectionChangeMock}
+        defaultSelected={[]}
+      />).container;
+  });
+
+  afterEach(() => {
+    document.body.removeChild(sourcesSelector);
+    sourcesSelector.remove();
+    jest.clearAllMocks();
+  })
+
+  test('click opens popup with correct known sources', async () => {
+    const sourcesSelectorInput = sourcesSelector.querySelector('#filter-select-source');
+    userEvent.click(sourcesSelectorInput as HTMLElement);
+    const sourcesSelectorPopup = await waitFor(() => {
+      sourcesSelector.querySelector('#filter-select-source-popup');
+    });
+    expect(sourcesSelectorPopup).toBeInTheDocument();
+  });
+
 
 });
 
