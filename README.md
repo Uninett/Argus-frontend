@@ -123,6 +123,20 @@ Your Argus frontend should now be served on `http://localhost:8080`, while your 
 
 The default setup will install the latest version of the Argus API server from the master branch. If you need to customize which tag or branch to install, you can change the `BRANCH` argument in `docker-compose.yml` (or preferably implement your own `docker-compose.override.yml`).
 
+## Running tests
+
+Given that Argus-frontend is installed and configured as described above, the following command can be used to run all the tests:
+
+    npm test
+
+To run test files individually the following command can be used:
+
+    npm test -- nameOfTestFile
+
+To run a single test and skip all the others, the following command can be used:
+
+    npm test -- -t "testName"
+
 ## Coding guidelines
 
 ### Code structure
