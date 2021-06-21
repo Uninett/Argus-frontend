@@ -179,6 +179,8 @@ export const TimeslotRecurrenceComponent: React.FC<TimeslotRecurrenceComponentPr
             label="All day"
           />
           <TimePicker
+            //TODO: make id unique
+            id={"start-time-picker-" + id}
             className={style.timePicker}
             disabled={allDay || disabled}
             margin="normal"
@@ -196,6 +198,8 @@ export const TimeslotRecurrenceComponent: React.FC<TimeslotRecurrenceComponentPr
             }}
           />
           <TimePicker
+            //TODO: make id unique
+            id={"end-time-picker-" + id}
             className={style.timePicker}
             disabled={allDay || disabled}
             margin="normal"
