@@ -4,6 +4,7 @@ import { fireEvent, render, screen, waitFor, waitForElementToBeRemoved, within }
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom/extend-expect";
 import SourceSelector from "../sourceselector";
+import TagSelector, { Tag } from "../tagselector";
 
 describe('Incident Toolbar test suite', () => {
 
@@ -176,6 +177,31 @@ describe('Incident Toolbar test suite', () => {
 
     const sourceSelectorPopup = sourceSelector.querySelector('#filter-select-source-popup');
     expect(sourceSelectorPopup).not.toBeInTheDocument();
+  });
+
+  test('tags selector renders correctly', () => {
+    const tagsSelector = screen.getByTitle('Tags selector');
+
+    const tagsSelectorForm = tagsSelector.querySelector('[role="combobox"]');
+
+    expect(tagsSelectorForm).toBeInTheDocument();
+    expect(tagsSelectorForm).toBeVisible();
+    expect(tagsSelectorForm).toBeEnabled();
+
+    const tagsSelectorName = tagsSelector.querySelector('.MuiTypography-root');
+    expect(tagsSelectorName).toBeInTheDocument();
+    expect(tagsSelectorName).toBeVisible();
+    expect(tagsSelectorName?.textContent).toBe('Tags');
+
+    const tagsSelectorInput = tagsSelector.querySelector('#filter-select-tags');
+    expect(tagsSelectorInput).toBeInTheDocument();
+    expect(tagsSelectorInput).toBeVisible();
+    expect(tagsSelectorInput).toHaveAttribute('placeholder', 'key=value');
+
+    const tagsSelectorHelperText = tagsSelector.querySelector('#filter-select-tags-helper-text');
+    expect(tagsSelectorHelperText).toBeInTheDocument();
+    expect(tagsSelectorHelperText).toBeVisible();
+    expect(tagsSelectorHelperText?.textContent).toBe('Press enter to add new tag');
   });
 });
 
@@ -350,6 +376,98 @@ describe('Sources Selector functional test suite', () => {
 
     // Selected option chip should now disappear from the document
     expect(selectedOptionChip).not.toBeInTheDocument();
+  });
+});
+
+describe('Tags Selector functional test suite', () => {
+  let tagsSelector: HTMLElement;
+
+  let tagsMock: Tag[] = [
+    {key: "tag1", value: "value1", original: "tag1=value1"},
+    {key: "tag2", value: "value2", original: "tag2=value2"}
+  ];
+
+  let selectedFilterMock: string[];
+  const setSelectedFilterMock = jest.fn();
+  const onSelectionChangeMock = jest.fn(() => setSelectedFilterMock);
+
+  beforeEach(() => {
+    tagsSelector = render(
+      <TagSelector
+        tags={[]}
+        onSelectionChange={onSelectionChangeMock}
+        selected={selectedFilterMock}
+      />).container;
+  });
+
+  afterEach(() => {
+    document.body.removeChild(tagsSelector);
+    tagsSelector.remove();
+    jest.clearAllMocks();
+  })
+
+  test('type + enter correctly adds tag to the filter', () => {
+    // Placeholder text is the only option to search after
+    const tagsSelectorInput = within(tagsSelector).getByPlaceholderText('key=value');
+
+    // Simulate tag addition
+    userEvent.type(tagsSelectorInput, 'typedKey=typedValue{enter}');
+
+    // Newly added tag chip should now appear in the document
+    // Check whether newly added tag displays correctly in the input field
+    const addedTagChip = within(tagsSelector).getByRole('button');
+    expect(addedTagChip).toBeInTheDocument();
+    expect(addedTagChip).toHaveTextContent('typedKey=typedValue');
+    expect(addedTagChip.querySelector('svg'))
+      .toBeInTheDocument(); // 'remove'-icon
+
+    // Check whether selected tags list is updated with correct value
+    expect(onSelectionChangeMock).toBeCalledWith([
+      { key: "typedKey",
+        original: "typedKey=typedValue",
+        value: "typedValue"
+      }]);
+    expect(onSelectionChangeMock.mock.calls.length).toBe(1);
+  });
+
+  test('click on remove-icon correctly removes the tag',  () => {
+    tagsSelector = render(
+      <TagSelector
+        tags={tagsMock}
+        onSelectionChange={onSelectionChangeMock}
+        selected={tagsMock.map((tag: Tag) => tag.original)}
+      />).container;
+
+    // Placeholder text is the only option to search after
+    const tagsSelectorInput = within(tagsSelector).getByPlaceholderText('key=value');
+    expect(tagsSelectorInput).toBeInTheDocument();
+
+    const selectedTags = within(tagsSelector).getAllByRole('button');
+    expect(selectedTags.length).toBe(2); // tagsMock has size 2
+
+    // Tag 1
+    const tag1Chip = selectedTags[0];
+    expect(tag1Chip).toBeInTheDocument();
+    expect(tag1Chip).toHaveTextContent('tag1=value1');
+    const tag1RemoveIcon = tag1Chip.querySelector('svg');
+    expect(tag1RemoveIcon).toBeInTheDocument();
+
+    // Tag 2
+    const tag2Chip = selectedTags[1];
+    expect(tag2Chip).toBeInTheDocument();
+    expect(tag2Chip).toHaveTextContent('tag2=value2');
+    expect(tag2Chip.querySelector('svg')).toBeInTheDocument(); // remove icon
+
+    // Remove tag 1
+    userEvent.click(tag1RemoveIcon as Element);
+
+    // Tag 1 is removed, tag 2 remains
+    expect(onSelectionChangeMock).toBeCalledWith([
+      { key: "tag2",
+        original: "tag2=value2",
+        value: "value2"
+      }]);
+    expect(onSelectionChangeMock.mock.calls.length).toBe(1);
   });
 });
 
