@@ -517,7 +517,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
           />
         </ToolbarItem>
 
-        <ToolbarItem title="Filter dropdown" name="Filter" className={classNames(style.medium)}>
+        <ToolbarItem title="Filter selector" name="Filter" className={classNames(style.medium)}>
           <FiltersDropdownToolbarItem />
         </ToolbarItem>
         <MoreSettingsToolbarItem

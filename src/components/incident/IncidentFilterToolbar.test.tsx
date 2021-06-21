@@ -1,6 +1,6 @@
 import { ButtonGroupSwitch, IncidentFilterToolbar } from "./IncidentFilterToolbar";
 import React from "react";
-import { fireEvent, render, screen, waitFor, waitForElementToBeRemoved, within } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom/extend-expect";
 import SourceSelector from "../sourceselector";
@@ -44,7 +44,7 @@ describe('Incident Toolbar test suite', () => {
     expect(tagSelectorInput).toBeInTheDocument();
     expect(tagSelectorInput).toBeVisible();
 
-    const filterDropdown = screen.getByTitle('Filter dropdown');
+    const filterDropdown = screen.getByTitle('Filter selector');
     expect(filterDropdown).toBeInTheDocument();
     expect(filterDropdown).toBeVisible();
 
@@ -183,7 +183,6 @@ describe('Incident Toolbar test suite', () => {
     const tagsSelector = screen.getByTitle('Tags selector');
 
     const tagsSelectorForm = tagsSelector.querySelector('[role="combobox"]');
-
     expect(tagsSelectorForm).toBeInTheDocument();
     expect(tagsSelectorForm).toBeVisible();
     expect(tagsSelectorForm).toBeEnabled();
@@ -202,6 +201,34 @@ describe('Incident Toolbar test suite', () => {
     expect(tagsSelectorHelperText).toBeInTheDocument();
     expect(tagsSelectorHelperText).toBeVisible();
     expect(tagsSelectorHelperText?.textContent).toBe('Press enter to add new tag');
+  });
+
+  test('filter selector renders correctly', () => {
+    const filterSelector = screen.getByTitle('Filter selector');
+
+    const filterSelectorName = filterSelector.querySelector('.MuiTypography-root');
+    expect(filterSelectorName).toBeInTheDocument();
+    expect(filterSelectorName).toBeVisible();
+    expect(filterSelectorName?.textContent).toBe('Filter');
+
+    const filterSelectorInput = filterSelector.querySelector('#filter-select');
+    expect(filterSelectorInput).toBeInTheDocument();
+    expect(filterSelectorInput).toBeVisible();
+
+    const createFilterBtn = screen.getByTitle('Create filter');
+    expect(createFilterBtn).toBeInTheDocument();
+    expect(createFilterBtn).toBeVisible();
+
+    const updateFilterBtn = screen.getByTitle('Save to filter');
+    expect(updateFilterBtn).toBeInTheDocument();
+    expect(updateFilterBtn).toBeVisible();
+
+    const manageFiltersBtn = screen.getByTitle('Manage filters');
+    expect(manageFiltersBtn).toBeInTheDocument();
+    expect(manageFiltersBtn).toBeVisible();
+
+    const sourceSelectorPopup = filterSelector.querySelector('#filter-select-popup');
+    expect(sourceSelectorPopup).not.toBeInTheDocument();
   });
 });
 
@@ -470,4 +497,3 @@ describe('Tags Selector functional test suite', () => {
     expect(onSelectionChangeMock.mock.calls.length).toBe(1);
   });
 });
-
