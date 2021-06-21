@@ -1,6 +1,6 @@
 import { ButtonGroupSwitch, IncidentFilterToolbar } from "./IncidentFilterToolbar";
 import React from "react";
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, waitForElementToBeRemoved, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom/extend-expect";
 import SourceSelector from "../sourceselector";
@@ -262,11 +262,11 @@ describe('Sources Selector functional test suite', () => {
   // };
   const findSourceIdMock = jest.fn();
 
-  // const onSelectionChangeMock = jest.fn(() => {
-  //   findSourceIdMock();
-  //   setSelectedFilterMock();
-  // });
-  const onSelectionChangeMock = jest.fn();
+  const onSelectionChangeMock = jest.fn(() => {
+    findSourceIdMock();
+    setSelectedFilterMock();
+  });
+  // const onSelectionChangeMock = jest.fn();
 
   beforeEach(() => {
     sourcesSelector = render(
@@ -283,15 +283,13 @@ describe('Sources Selector functional test suite', () => {
     jest.clearAllMocks();
   })
 
-  test('click opens popup with correct known sources to select from', async () => {
+  test('click opens popup with correct known sources to select from', () => {
     const sourcesSelectorInput = within(sourcesSelector).getByPlaceholderText('Source name');
 
     userEvent.click(sourcesSelectorInput as HTMLElement);
 
-    // Wait until popup appears in the document
-    const sourcesSelectorPopup = await waitFor(() => {
-      return screen.getByRole('listbox');
-    });
+    // Popup should now appear in the document
+    const sourcesSelectorPopup = screen.getByRole('listbox');
     expect(sourcesSelectorPopup).toBeInTheDocument();
 
     const autocompleteOptions = within(sourcesSelectorPopup).getAllByRole('option');
@@ -299,15 +297,13 @@ describe('Sources Selector functional test suite', () => {
     expect(autocompleteOptions[1]).toHaveTextContent('testSource2');
   });
 
-  test('click on popup option correctly selects the option', async () => {
+  test('click on popup option correctly selects the option', () => {
     // Placeholder text is the only option to search after
     const sourcesSelectorInput = within(sourcesSelector).getByPlaceholderText('Source name');
     userEvent.click(sourcesSelectorInput);
 
-    // Wait until popup appears in the document
-    await waitFor(() => {
-      expect(screen.getByRole('listbox')).toBeInTheDocument();
-    });
+    // Popup should now appear in the document
+    expect(screen.getByRole('listbox')).toBeInTheDocument();
 
     const firstOption = screen.getByText('testSource1');
     expect(firstOption).toBeInTheDocument();
@@ -316,19 +312,44 @@ describe('Sources Selector functional test suite', () => {
 
     userEvent.click(firstOption); // selects the given option
 
+    // Selected option chip should now appear in the document
     // Check whether selected option displays correctly in the input field
-    const selectedOptionChip = await waitFor(() => {
-      return within(sourcesSelector).getByRole('button');
-    })
+    const selectedOptionChip = within(sourcesSelector).getByRole('button');
     expect(selectedOptionChip).toBeInTheDocument();
     expect(selectedOptionChip).toHaveTextContent('testSource1');
-    expect(selectedOptionChip.querySelector('svg')).toBeInTheDocument();
+    expect(selectedOptionChip.querySelector('svg'))
+      .toBeInTheDocument(); // 'remove'-icon
 
     // Check whether selected sources list is updated with correct value
     expect(onSelectionChangeMock).toBeCalledWith(["testSource1"]);
     expect(onSelectionChangeMock.mock.calls.length).toBe(1);
     // // Check whether selected source index is returned correctly
     // expect(findSourceIdMock.mock.results[0].value).toBe(0);
+  });
+
+  test('click on remove-icon correctly deselects the option', () => {
+    sourcesSelector = render(
+      <SourceSelector
+        sources={[ ...knownSourcesMock.keys() ]} // array of values
+        onSelectionChange={onSelectionChangeMock}
+        defaultSelected={["testSource1"]}
+      />).container;
+
+    // Placeholder text is the only option to search after
+    const sourcesSelectorInput = within(sourcesSelector).getByPlaceholderText('Source name');
+    expect(sourcesSelectorInput).toBeInTheDocument();
+
+    const selectedOptionChip = within(sourcesSelector).getByRole('button');
+    expect(selectedOptionChip).toBeInTheDocument();
+    expect(selectedOptionChip).toHaveTextContent('testSource1');
+
+    const removeIcon = selectedOptionChip.querySelector('svg');
+    expect(removeIcon).toBeInTheDocument();
+
+    userEvent.click(removeIcon as Element);
+
+    // Selected option chip should now disappear from the document
+    expect(selectedOptionChip).not.toBeInTheDocument();
   });
 });
 
