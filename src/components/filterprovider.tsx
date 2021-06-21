@@ -1,7 +1,6 @@
 import React, { useEffect, useReducer, useContext, createContext } from "react";
 
-import type { Filter, FilterContent } from "../api/types.d";
-import { Tag } from "../components/tagselector";
+import type { Filter, FilterContent } from "../api/types";
 
 // Store
 import { ActionMap } from "../state/reducers/common";
@@ -206,9 +205,19 @@ export const SelectedFilterContext = createContext<{
 });
 
 export const SelectedFilterProvider = ({ children }: { children?: React.ReactNode }) => {
+  // Function is used to validate the selected filter from LocalStorage. If the filter doesn't match the specified format, the default selected filter will be used instead.
+  const validateSelectedFilter = (selectedFilter: SelectedFilterStateType) => {
+    return !(
+      !selectedFilter.filterContent ||
+      !selectedFilter.incidentsFilter ||
+      !selectedFilter.sourceSystemIds ||
+      !selectedFilter.tags
+    );
+  };
+
   const [state, dispatch] = useReducer(
     selectedFilterReducer,
-    fromLocalStorageOrDefault<SelectedFilterStateType>(SELECTED_FILTER, initialSelectedFilter),
+    fromLocalStorageOrDefault<SelectedFilterStateType>(SELECTED_FILTER, initialSelectedFilter, validateSelectedFilter),
   );
 
   useEffect(() => {
