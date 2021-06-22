@@ -2,7 +2,6 @@ import { ButtonGroupSwitch, IncidentFilterToolbar } from "./IncidentFilterToolba
 import React from "react";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import "@testing-library/jest-dom/extend-expect";
 import SourceSelector from "../sourceselector";
 import TagSelector, { Tag } from "../tagselector";
 
