@@ -148,7 +148,7 @@ export const TimeslotRecurrenceComponent: React.FC<TimeslotRecurrenceComponentPr
           size="small"
           className={style.dangerousButton}
           startIcon={<DeleteIcon />}
-          onClick={() => handleRemoveRecurrence()}
+          onClick={handleRemoveRecurrence}
           disabled={disabled}
         >
           Remove
