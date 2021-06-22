@@ -26,11 +26,7 @@ describe("Render LoginForm", () => {
 
   it("renders the Password input field", () => {
     render(<LoginForm />);
-
-    // Checking label text since password field doesn't have a role
-    const password = screen.getAllByText(/password/i);
-    expect(password[0]).toBeInTheDocument();
-    expect(password[1]).toBeInTheDocument();
+    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
   });
 
   it("renders the Login button", () => {
@@ -38,9 +34,32 @@ describe("Render LoginForm", () => {
     expect(screen.getByRole("button")).toBeInTheDocument();
   });
 
-  it("renders the Link to Feide", () => {
+  it("renders the Link to Feide login", () => {
     render(<LoginForm />);
     expect(screen.getByRole("link")).toBeInTheDocument();
+  });
+});
+
+describe("Functionality of Components", () => {
+  it("updates username input field when user is typing", async () => {
+    render(<LoginForm />);
+
+    await userEvent.type(screen.getByRole("textbox"), "user1");
+
+    expect(screen.getByDisplayValue("user1")).toBeInTheDocument();
+  });
+
+  it("updates password input field when user is typing", async () => {
+    render(<LoginForm />);
+
+    await userEvent.type(screen.getByLabelText(/password/i), "password1");
+
+    expect(screen.getByDisplayValue("password1")).toBeInTheDocument();
+  });
+
+  it("will redirect to Feide login when link is clicked", () => {
+    render(<LoginForm />);
+    expect(screen.getByRole("link")).toHaveAttribute("href", "/oidc/login/dataporten_feide/");
   });
 });
 
@@ -52,6 +71,7 @@ describe("Functionality of LoginForm", () => {
 
     await userEvent.click(screen.getByRole("button"));
     const message = await screen.findByText(/wrong username or password/i);
+
     expect(message).toBeInTheDocument();
   });
 
@@ -62,6 +82,7 @@ describe("Functionality of LoginForm", () => {
 
     await userEvent.click(screen.getByRole("button"));
     const message = await screen.findByText(/wrong username or password/i);
+
     expect(message).toBeInTheDocument();
   });
 

@@ -130,6 +130,7 @@ const LoginForm: React.FC<{}> = () => {
           <Logo className={style.logo} />
         </div>
         <WhiteOutlinedTextField
+          id="username-input"
           error={loginFailed}
           className={style.loginItem}
           variant="outlined"
@@ -141,6 +142,7 @@ const LoginForm: React.FC<{}> = () => {
           }}
         />
         <WhiteOutlinedTextField
+          id="password-input"
           error={loginFailed}
           helperText={loginFailed && "Wrong username or password"}
           className={style.loginItem}
