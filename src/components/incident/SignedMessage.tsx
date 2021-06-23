@@ -3,8 +3,6 @@ import React from "react";
 import ListItemText from "@material-ui/core/ListItemText";
 import Grid from "@material-ui/core/Grid";
 
-import classNames from "classnames";
-
 // Api
 import type { Timestamp } from "../../api/types.d";
 

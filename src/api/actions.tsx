@@ -17,7 +17,6 @@ import {
   loadAllFilters as loadAllFiltersAction,
 } from "../state/reducers/filter";
 
-import { Tag } from "../components/tagselector";
 import { IncidentsStateType, useIncidentsContext } from "../components/incidentsprovider";
 
 import { AppContext } from "../state/contexts";

@@ -28,7 +28,7 @@ import SaveAltIcon from "@material-ui/icons/SaveAlt";
 import SettingsIcon from "@material-ui/icons/Settings";
 
 // Components
-import TagSelector, { Tag } from "../../components/tagselector";
+import TagSelector from "../../components/tagselector";
 import SourceSelector from "../../components/sourceselector";
 import FilterDialog from "../../components/filterdialog";
 import Modal from "../modal/Modal";

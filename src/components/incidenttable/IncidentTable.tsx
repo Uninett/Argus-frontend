@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 
 import { Link } from "react-router-dom";
 
@@ -23,14 +23,7 @@ import classNames from "classnames";
 // Api
 import type { Incident } from "../../api/types.d";
 
-import {
-  useStateWithDynamicDefault,
-  toMap,
-  pkGetter,
-  truncateMultilineString,
-  formatTimestamp,
-  copyTextToClipboard,
-} from "../../utils";
+import { formatTimestamp, copyTextToClipboard } from "../../utils";
 
 import { useStyles } from "../incident/styles";
 import { AckedItem, OpenItem } from "../incident/Chips";

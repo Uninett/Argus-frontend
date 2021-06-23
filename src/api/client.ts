@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig, AxiosResponse, AxiosInstance, AxiosError } from "axios";
+import axios, { AxiosRequestConfig, AxiosResponse, AxiosInstance } from "axios";
 
 import {
   Token,
@@ -25,7 +25,6 @@ import {
   EventWithoutDescriptionBody,
   IncidentTicketUrlBody,
   IncidentMetadata,
-  IncidentsFilterOptions,
   NotificationProfileRequest,
   NotificationProfileSuccessResponse,
   GetNotificationProfileRequest,

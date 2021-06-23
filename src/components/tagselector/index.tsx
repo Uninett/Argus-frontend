@@ -32,7 +32,7 @@ export const TagSelector: React.FC<TagSelectorPropsType> = ({
   disabled,
   className,
 }: TagSelectorPropsType) => {
-  const { keys, values } = useMemo(() => {
+  const { keys } = useMemo(() => {
     const keys: { [key: string]: boolean } = {};
     const values: { [key: string]: boolean } = {};
 

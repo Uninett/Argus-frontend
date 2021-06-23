@@ -7,14 +7,7 @@ import TablePagination from "@material-ui/core/TablePagination";
 import { DEFAULT_AUTO_REFRESH_INTERVAL } from "../../config";
 
 // Api
-import type {
-  Filter,
-  Incident,
-  IncidentsFilterOptions,
-  CursorPaginationResponse,
-  AutoUpdateMethod,
-  FilterContent,
-} from "../../api/types.d";
+import type { Filter, Incident, CursorPaginationResponse, AutoUpdateMethod, FilterContent } from "../../api/types.d";
 import api from "../../api";
 
 // Utils
