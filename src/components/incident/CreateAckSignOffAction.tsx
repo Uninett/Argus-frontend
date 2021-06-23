@@ -7,7 +7,7 @@ import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/picker
 import DateFnsUtils from "@date-io/date-fns";
 
 // Api
-import { AcknowledgementBody } from "../../api";
+import type { AcknowledgementBody } from "../../api/types.d";
 
 // Components
 import SignOffAction, { SignOffActionPropsType } from "./SignOffAction";

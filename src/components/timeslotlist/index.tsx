@@ -7,7 +7,9 @@ import Typography from "@material-ui/core/Typography";
 import TimeslotComponent from "../timeslot";
 import { toMap } from "../../utils";
 
-import api, { defaultErrorHandler, TimeslotPK, Timeslot, TimeRecurrence } from "../../api";
+import type { TimeslotPK, Timeslot, TimeRecurrence } from "../../api/types.d";
+import api from "../../api";
+import { defaultErrorHandler } from "../../api/utils";
 import { useApiTimeslots } from "../../api/hooks";
 
 import { useAlertSnackbar, UseAlertSnackbarResultType } from "../../components/alertsnackbar";

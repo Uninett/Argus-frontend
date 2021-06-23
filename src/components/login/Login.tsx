@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 
 import { useHistory } from "react-router-dom";
 
@@ -8,15 +8,15 @@ import { TextFieldProps } from "@material-ui/core/TextField";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 
 // Api
-import api, { Token, User } from "../../api";
+import type { Token, User } from "../../api/types.d";
+import api from "../../api";
 import auth from "../../auth";
 
 // Config
 import { BACKEND_URL } from "../../config";
 
 // Contexts/Hooks
-import { AppContext } from "../../contexts";
-import { loginUser } from "../../reducers/user";
+import { useUser } from "../../state/hooks";
 
 // Components
 import OutlinedTextField from "../../components/textfields/OutlinedTextField";
@@ -89,7 +89,8 @@ const LoginForm: React.FC<{}> = () => {
   const style = useStyles();
   const history = useHistory();
 
-  const { dispatch } = useContext(AppContext);
+  // const { dispatch } = useContext(AppContext);
+  const [, { login }] = useUser();
 
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -107,7 +108,7 @@ const LoginForm: React.FC<{}> = () => {
             .authGetCurrentUser()
             .then((user: User) => {
               console.debug("[userpass-auth] logged in as user", user);
-              dispatch(loginUser(user));
+              login(user);
               history.push("/");
             })
             .catch((error) => {

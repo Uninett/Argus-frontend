@@ -1,11 +1,11 @@
-import { FilterDefinition } from "../../api";
+import type { FilterString } from "../../api/types.d";
 
 export type NameAndPK = { pk: string | number; name: string };
 
 export type Metadata = { label: string; value: string | number };
 export const defaultResponse = [{ label: "none", value: "none" }];
 
-export const defaultFilter: FilterDefinition = {
+export const defaultFilter: FilterString = {
   sourceSystemIds: [],
   tags: [],
 };

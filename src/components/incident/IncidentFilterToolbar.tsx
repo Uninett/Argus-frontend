@@ -28,26 +28,27 @@ import SaveAltIcon from "@material-ui/icons/SaveAlt";
 import SettingsIcon from "@material-ui/icons/Settings";
 
 // Components
-import { AutoUpdate } from "../../components/incidenttable/FilteredIncidentTable";
-import TagSelector, { Tag } from "../../components/tagselector";
+import TagSelector from "../../components/tagselector";
 import SourceSelector from "../../components/sourceselector";
 import FilterDialog from "../../components/filterdialog";
 import Modal from "../modal/Modal";
 
 // Api
-import api, { Filter, IncidentMetadata, SourceSystem } from "../../api";
+import type { AutoUpdateMethod, Filter, IncidentMetadata, SourceSystem } from "../../api/types.d";
+import api from "../../api";
 
 // Config
 import { ENABLE_WEBSOCKETS_SUPPORT } from "../../config";
 
 // Utils
-import { saveToLocalStorage, fromLocalStorageOrDefault } from "../../utils";
+import { saveToLocalStorage, fromLocalStorageOrDefault, optionalBoolToKey, optionalOr } from "../../utils";
 import { DROPDOWN_TOOLBAR } from "../../localstorageconsts";
 
 // Contexts/hooks
 import { useAlerts } from "../../components/alertsnackbar";
 import { useFilters } from "../../api/actions";
 import { useSelectedFilter } from "../../components/filterprovider";
+import { useApiState } from "../../state/hooks";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -114,7 +115,7 @@ type ButtonGroupSwitchPropsType<T> = {
   disabled?: boolean;
 };
 
-export function ButtonGroupSwitch<T>({
+function ButtonGroupSwitch<T>({
   selected,
   options,
   getLabel,
@@ -218,9 +219,8 @@ export const FiltersDropdownToolbarItem = ({ className }: FiltersDropdownToolbar
 
   const onCreateFilter = () => {
     const newFilter: Omit<Filter, "pk"> = {
+      ...selectedFilter.incidentsFilter,
       name: newFilterName,
-      tags: selectedFilter.filter.tags.map((tag: Tag) => tag.original),
-      sourceSystemIds: selectedFilter.filter.sourcesById || [],
     };
     createFilter(newFilter)
       .then((filter: Filter) => {
@@ -234,12 +234,11 @@ export const FiltersDropdownToolbarItem = ({ className }: FiltersDropdownToolbar
   const onUpdateFilter = () => {
     if (!saveToFilter) return;
     const { pk, name } = saveToFilter;
-    const { tags, sourcesById } = selectedFilter.filter;
+    const filter = selectedFilter.incidentsFilter;
     const modified: Filter = {
+      ...filter,
       pk,
       name,
-      tags: tags.map((tag: Tag) => tag.original),
-      sourceSystemIds: sourcesById || [],
     };
     modifyFilter(modified)
       .then(() => {
@@ -389,6 +388,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
 }: IncidentFilterToolbarPropsType) => {
   const style = useStyles();
   const [selectedFilter, { setSelectedFilter }] = useSelectedFilter();
+  const [{ autoUpdateMethod }, { setAutoUpdateMethod }] = useApiState();
 
   const [dropdownToolbarOpen, setDropdownToolbarOpen] = useState<boolean>(
     // Load from localstorage if possible
@@ -420,19 +420,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
     });
   }, []);
 
-  const onShowChange = (show: "open" | "closed" | "both") => {
-    setSelectedFilter({ show });
-  };
-
-  const onShowAchedChange = (showAcked: boolean) => {
-    setSelectedFilter({ showAcked });
-  };
-
-  const onAutoUpdateChange = (autoUpdate: AutoUpdate) => {
-    setSelectedFilter({ autoUpdate });
-  };
-
-  const autoUpdateOptions: AutoUpdate[] = ENABLE_WEBSOCKETS_SUPPORT
+  const autoUpdateOptions: AutoUpdateMethod[] = ENABLE_WEBSOCKETS_SUPPORT
     ? ["never", "realtime", "interval"]
     : ["never", "interval"];
 
@@ -442,19 +430,19 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
     <ToolbarItem name="Auto Update">
       <ButtonGroupSwitch
         disabled={useExistingFilter}
-        selected={selectedFilter.filter.autoUpdate}
+        selected={autoUpdateMethod}
         options={autoUpdateOptions}
-        getLabel={(autoUpdate: AutoUpdate) =>
+        getLabel={(autoUpdate: AutoUpdateMethod) =>
           ({ never: "Never", realtime: "Realtime", interval: "Interval" }[autoUpdate])
         }
-        getTooltip={(autoUpdate: AutoUpdate) =>
+        getTooltip={(autoUpdate: AutoUpdateMethod) =>
           ({ never: "Never update", realtime: "Update in realtime", interval: "Update on a predefined interval" }[
             autoUpdate
           ])
         }
         getColor={(selected: boolean) => (selected ? "primary" : "default")}
-        onSelect={(autoUpdate: AutoUpdate) =>
-          (autoUpdate === "realtime" ? ENABLE_WEBSOCKETS_SUPPORT : true) && onAutoUpdateChange(autoUpdate)
+        onSelect={(autoUpdate: AutoUpdateMethod) =>
+          (autoUpdate === "realtime" ? ENABLE_WEBSOCKETS_SUPPORT : true) && setAutoUpdateMethod(autoUpdate)
         }
       />
     </ToolbarItem>
@@ -465,29 +453,39 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
       <Toolbar className={style.toolbarContainer}>
         <ToolbarItem name="Open State">
           <ButtonGroupSwitch
-            selected={useExistingFilter ? "open" : selectedFilter.filter.show}
-            options={["open", "closed", "both"]}
-            getLabel={(show: "open" | "closed" | "both") => ({ open: "Open", closed: "Closed", both: "Both" }[show])}
-            getColor={(selected: boolean) => (selected ? "primary" : "default")}
-            getTooltip={(show: "open" | "closed" | "both") =>
-              ({
-                open: "Only open incidents",
-                closed: "Only closed incidents",
-                both: "Both open and closed incidents ",
-              }[show])
+            selected={optionalOr(selectedFilter?.incidentsFilter?.filter?.open, null)}
+            options={[true, false, null]}
+            getLabel={(open: boolean | null) =>
+              ({ true: "Open", false: "Closed", null: "Both" }[optionalBoolToKey(open)])
             }
-            onSelect={(show: "open" | "closed" | "both") => onShowChange(show)}
+            getColor={(selected: boolean) => (selected ? "primary" : "default")}
+            getTooltip={(option: boolean | null) =>
+              ({
+                true: "Only open incidents",
+                false: "Only closed incidents",
+                null: "Both open and closed incidents ",
+              }[optionalBoolToKey(option)])
+            }
+            onSelect={(open: boolean | null) => setSelectedFilter({ filterContent: { open } })}
           />
         </ToolbarItem>
 
         <ToolbarItem name="Acked">
           <ButtonGroupSwitch
-            selected={useExistingFilter ? true : selectedFilter.filter.showAcked}
-            options={[false, true]}
-            getLabel={(showAcked: boolean) => (showAcked ? "Both" : "Unacked")}
-            getColor={(selected: boolean) => (selected ? "primary" : "default")}
-            getTooltip={(showAcked: boolean) => (showAcked ? "Unacked and acked incidents" : "Only unacked incidents")}
-            onSelect={(showAcked: boolean) => onShowAchedChange(showAcked)}
+            selected={optionalOr(selectedFilter?.incidentsFilter?.filter?.acked, null)}
+            options={[true, false, null]}
+            getLabel={(open: boolean | null) =>
+              ({ true: "Acked", false: "Unacked", null: "Both" }[optionalBoolToKey(open)])
+            }
+            getColor={(selected: boolean | null) => (selected ? "primary" : "default")}
+            getTooltip={(option: boolean | null) =>
+              ({
+                true: "Only acked incidents",
+                false: "Only unacked incidents",
+                null: "Both acked and unacked incidents ",
+              }[optionalBoolToKey(option)])
+            }
+            onSelect={(acked?: boolean | null) => setSelectedFilter({ filterContent: { acked } })}
           />
         </ToolbarItem>
 
@@ -499,20 +497,20 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
               const findSourceId = (name: string) => {
                 return sourceIdByName[name];
               };
-              setSelectedFilter({ sourcesById: sources.map(findSourceId) });
+              setSelectedFilter({ sourceSystemIds: sources.map(findSourceId) });
             }}
-            defaultSelected={(selectedFilter.filter?.sourcesById || []).map((source: number) => sourceNameById[source])}
+            defaultSelected={(selectedFilter.incidentsFilter?.sourceSystemIds || []).map(
+              (source: number) => sourceNameById[source],
+            )}
           />
         </ToolbarItem>
 
         <ToolbarItem name="Tags" className={classNames(style.medium)}>
           <TagSelector
             disabled={disabled}
-            tags={[]}
-            onSelectionChange={(tags: Tag[]) => {
-              setSelectedFilter({ tags });
-            }}
-            selected={selectedFilter.filter.tags.map((tag: Tag) => tag.original)}
+            tags={selectedFilter.incidentsFilter?.tags || []}
+            onSelectionChange={(tags: string[]) => setSelectedFilter({ tags })}
+            selected={selectedFilter.incidentsFilter?.tags}
           />
         </ToolbarItem>
 

@@ -7,7 +7,8 @@ import TablePagination from "@material-ui/core/TablePagination";
 import { DEFAULT_AUTO_REFRESH_INTERVAL } from "../../config";
 
 // Api
-import api, { Incident, IncidentsFilterOptions, CursorPaginationResponse } from "../../api";
+import type { Filter, Incident, CursorPaginationResponse, AutoUpdateMethod, FilterContent } from "../../api/types.d";
+import api from "../../api";
 
 // Utils
 import { formatTimestamp, saveToLocalStorage, fromLocalStorageOrDefault } from "../../utils";
@@ -17,6 +18,7 @@ import { PAGINATION_CURSOR_PAGE_SIZE } from "../../localstorageconsts";
 // Contexts/Hooks
 import { useIncidentsContext } from "../../components/incidentsprovider";
 import { useSelectedFilter } from "../../components/filterprovider";
+import { useApiState } from "../../state/hooks";
 
 // Providers
 import FilteredIncidentsProvider, { matchesFilter } from "../../components/filteredincidentprovider";
@@ -51,26 +53,29 @@ const DEFAULT_VIRT_CURSOR = {
   totalElements: 0,
 };
 
-export type AutoUpdate = "never" | "realtime" | "interval";
-
-export type IncidentsFilter = {
+type IncidentsFilter = {
   tags: Tag[];
   sources: "AllSources" | string[] | undefined;
   sourcesById: number[] | undefined;
-  show: "open" | "closed" | "both";
-  showAcked: boolean;
-  autoUpdate: AutoUpdate;
+  // show: "open" | "closed" | "both";
+  // showAcked: boolean;
+
+  filter: FilterContent;
 };
 
 type FilteredIncidentsTablePropsType = {};
 
 const FilteredIncidentTable = () => {
   // Keep track of last time a refresh of data was done in order to update on interval.
-  const [lastRefresh, setLastRefresh] = useState<{ time: Date; filter: IncidentsFilter } | undefined>(undefined);
+  const [lastRefresh, setLastRefresh] = useState<{ time: Date; filter: Omit<Filter, "pk" | "name"> } | undefined>(
+    undefined,
+  );
 
   // Get the incidents and seleceted filter from context
   const [{ incidents }, { loadAllIncidents }] = useIncidentsContext();
-  const [{ filter }] = useSelectedFilter();
+  const [{ incidentsFilter }] = useSelectedFilter();
+
+  const [{ autoUpdateMethod }] = useApiState();
 
   // Keep track of the pagination cursor
   const [paginationCursor, setPaginationCursor] = useState<PaginationCursor>(
@@ -93,36 +98,26 @@ const FilteredIncidentTable = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const refresh = useCallback(() => {
-    const showToOpenMap: Record<IncidentsFilter["show"], boolean | undefined> = {
-      open: true,
-      closed: false,
-      both: undefined,
-    };
+    const filter: Omit<Filter, "pk" | "name"> = {
+      filter: incidentsFilter.filter,
 
-    const filterOptions: IncidentsFilterOptions = {
-      open: showToOpenMap[filter.show as "open" | "closed" | "both"],
-
-      // The frontend is only conserned if acked incidents should be
-      // displayed, not that ONLY acked incidents should be displayed.
-      // Only filter on the acked property when
-      acked: filter.showAcked === true ? undefined : false,
-      tags: filter.tags.map((tag: Tag) => tag.original),
+      tags: incidentsFilter.tags,
       // sourceSystemNames: sources === "AllSources" ? undefined : sources,
-      sourceSystemIds: filter.sourcesById,
+      sourceSystemIds: incidentsFilter.sourceSystemIds,
     };
 
     setIsLoading(true);
     api
-      .getPaginatedIncidentsFiltered(filterOptions, paginationCursor.current, paginationCursor.pageSize)
+      .getPaginatedIncidentsFiltered(filter, paginationCursor.current, paginationCursor.pageSize)
       .then((response: CursorPaginationResponse<Incident>) => {
         loadAllIncidents(response.results);
         const { previous, next } = response;
         setCursors({ previous, next });
-        setLastRefresh({ time: new Date(), filter });
+        setLastRefresh({ time: new Date(), filter: incidentsFilter });
         setIsLoading(false);
         return response;
       });
-  }, [filter, paginationCursor, loadAllIncidents]);
+  }, [incidentsFilter, paginationCursor, loadAllIncidents]);
 
   useEffect(() => {
     refresh();
@@ -221,34 +216,34 @@ const FilteredIncidentTable = () => {
   useEffect(() => {
     setVirtCursor(DEFAULT_VIRT_CURSOR);
     setPaginationCursor((old: PaginationCursor) => ({ ...DEFAULT_PAGINATION_CURSOR, pageSize: old.pageSize }));
-  }, [filter]);
+  }, [incidentsFilter]);
 
   const filterMatcher = useMemo(() => {
-    const { showAcked, show, tags, sourcesById } = filter;
+    const { filter, tags, sourceSystemIds } = incidentsFilter;
     const incidentMatchesFilter = (incident: Incident): boolean => {
-      return matchesFilter(incident, { showAcked, show, tags, sourcesById });
+      return matchesFilter(incident, { filter, tags, sourceSystemIds });
     };
     return incidentMatchesFilter;
-  }, [filter]);
+  }, [incidentsFilter]);
 
   useEffect(() => {
     // refresh incidents from backend at a set interval if we
     // are utilizing the interval auto-update strategy
-    if (filter.autoUpdate === "interval") {
+    if (autoUpdateMethod === "interval") {
       const interval = setInterval(() => {
         refresh();
       }, 1000 * DEFAULT_AUTO_REFRESH_INTERVAL);
       return () => clearInterval(interval);
     }
-  }, [refresh, filter]);
+  }, [refresh, autoUpdateMethod]);
 
-  const autoUpdateTextOpts: Record<AutoUpdate, string> = {
+  const autoUpdateTextOpts: Record<AutoUpdateMethod, string> = {
     never: "not updating automatically",
     realtime: "updating in real time",
     interval: `updating every ${DEFAULT_AUTO_REFRESH_INTERVAL}`,
   };
 
-  const autoUpdateText = autoUpdateTextOpts[filter.autoUpdate];
+  const autoUpdateText = autoUpdateTextOpts[autoUpdateMethod as AutoUpdateMethod];
 
   return (
     <div>

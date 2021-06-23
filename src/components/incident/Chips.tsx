@@ -1,6 +1,6 @@
 import React from "react";
 import Chip from "@material-ui/core/Chip";
-import { Timestamp } from "../../api";
+import type { Timestamp } from "../../api/types.d";
 
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import { WHITE } from "../../colorscheme";

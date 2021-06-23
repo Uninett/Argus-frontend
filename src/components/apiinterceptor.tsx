@@ -3,14 +3,15 @@ import React, { useEffect, useContext } from "react";
 import { useHistory } from "react-router-dom";
 
 // Api
-import api, { ApiEvent } from "../api";
+import { ApiEvent } from "../api/types.d";
+import api from "../api";
 import auth from "../auth";
 
 // Contexts/Hooks
-import { AppContext } from "../contexts";
+import { AppContext } from "../state/contexts";
 import { useAlerts } from "../components/alertsnackbar";
 
-import { setHasConnectionProblems, unsetHasConnectionProblems } from "../reducers/apistate";
+import { setHasConnectionProblems, unsetHasConnectionProblems } from "../state/reducers/apistate";
 
 export const ApiInterceptor = ({ children }: { children?: React.ReactNode }) => {
   const history = useHistory();
