@@ -328,3 +328,71 @@ describe("DaySelector tests", () => {
     expect(onSelectionChange).toHaveBeenCalledWith([2, 3]);
   });
 });
+
+describe("TimeslotComponent tests", () => {
+  const recurrences: TimeRecurrence[] = [EXAMPLE_TIMESLOT_RECURRENCE_1];
+  const onSave = jest.fn();
+  const onDelete = jest.fn();
+
+  it("renders new timeslot correctly", () => {
+    render(<TimeslotComponent recurrences={recurrences} unsavedChanges={true} onSave={onSave} onDelete={onDelete} />);
+
+    const timeslotName = screen.getByRole("textbox", { name: "" });
+    expect(timeslotName).toBeInTheDocument();
+    expect(timeslotName).toHaveValue("");
+
+    const buttonGroup = screen.getByRole("group");
+    expect(buttonGroup).toBeInTheDocument();
+
+    const createButton = screen.getByRole("button", { name: /create/i });
+    expect(createButton).toBeInTheDocument();
+    expect(createButton).toBeEnabled();
+
+    const deleteButton = screen.getByRole("button", { name: /delete/i });
+    expect(deleteButton).toBeInTheDocument();
+    expect(deleteButton).toBeDisabled();
+
+    const addRecurrenceButton = screen.getByRole("button", { name: /add recurrence/i });
+    expect(addRecurrenceButton).toBeInTheDocument();
+    expect(addRecurrenceButton).toBeEnabled();
+
+    const removeRecurrenceButton = screen.getByRole("button", { name: /remove/i });
+    expect(removeRecurrenceButton).toBeInTheDocument();
+  });
+
+  it("renders already existing timeslot correctly", () => {
+    render(
+      <TimeslotComponent
+        pk={1}
+        name={"Test"}
+        recurrences={recurrences}
+        exists
+        unsavedChanges={false}
+        onSave={onSave}
+        onDelete={onDelete}
+      />,
+    );
+
+    const timeslotName = screen.getByRole("textbox", { name: "" });
+    expect(timeslotName).toBeInTheDocument();
+    expect(timeslotName).toHaveValue("Test");
+
+    const buttonGroup = screen.getByRole("group");
+    expect(buttonGroup).toBeInTheDocument();
+
+    const createButton = screen.getByRole("button", { name: /save/i });
+    expect(createButton).toBeInTheDocument();
+    expect(createButton).toBeDisabled();
+
+    const deleteButton = screen.getByRole("button", { name: /delete/i });
+    expect(deleteButton).toBeInTheDocument();
+    expect(deleteButton).toBeEnabled();
+
+    const addRecurrenceButton = screen.getByRole("button", { name: /add recurrence/i });
+    expect(addRecurrenceButton).toBeInTheDocument();
+    expect(addRecurrenceButton).toBeEnabled();
+
+    const removeRecurrenceButton = screen.getByRole("button", { name: /remove/i });
+    expect(removeRecurrenceButton).toBeInTheDocument();
+  });
+});
