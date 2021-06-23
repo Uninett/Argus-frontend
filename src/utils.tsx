@@ -4,7 +4,8 @@ import format from "date-fns/format";
 import formatDistance from "date-fns/formatDistance";
 
 // Api
-import api, { Incident, User, Token } from "./api";
+import type { Incident, User, Token } from "./api/types.d";
+import api from "./api";
 import auth from "./auth";
 
 // Config
@@ -229,4 +230,30 @@ export function fromLocalStorageOrDefault<T>(key: string, defaultData: T, valida
   }
 
   return value;
+}
+
+export function optionalBoolToKey(value: boolean | null): "true" | "false" | "null" {
+  switch (value) {
+    case true:
+      return "true";
+    case false:
+      return "false";
+    default:
+    case null:
+      return "null";
+  }
+}
+
+export function undefinedToNull<T>(value: T | undefined): T | null {
+  switch (value) {
+    case undefined:
+      return null;
+    default:
+      return value;
+  }
+}
+
+export function optionalOr<T>(value: T | null | undefined, or: T): T {
+    if (value === undefined || value === null) return or;
+    return value
 }

@@ -6,7 +6,9 @@ import Typography from "@material-ui/core/Typography";
 
 import PhoneNumberComponent from "../phonenumber/index";
 
-import api, { defaultErrorHandler, PhoneNumber, PhoneNumberPK } from "../../api";
+import type { PhoneNumber, PhoneNumberPK } from "../../api/types.d";
+import api from "../../api";
+import { defaultErrorHandler } from "../../api/utils";
 import { useApiPhoneNumbers } from "../../api/hooks";
 
 import { useAlertSnackbar, UseAlertSnackbarResultType } from "../../components/alertsnackbar";

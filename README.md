@@ -1,4 +1,7 @@
 # Argus - Frontend
+![build](https://github.com/Uninett/Argus-frontend/workflows/Node.js%20CI/badge.svg)
+[![codecov](https://codecov.io/gh/Uninett/Argus-frontend/branch/master/graph/badge.svg)](https://codecov.io/gh/Uninett/Argus-frontend)
+
 
 The Argus-frontend provides a graphical web interface to use with Argus. It has been built using React with TypeScript.
 The backend can be found at https://github.com/Uninett/Argus.
@@ -119,6 +122,20 @@ This repository contains a `docker-compose.yml` definition to run all the backen
 Your Argus frontend should now be served on `http://localhost:8080`, while your Argus API server should be served on `http://localhost:8000`. As with running `npm` locally, the website should automatically reload as you edit the code.
 
 The default setup will install the latest version of the Argus API server from the master branch. If you need to customize which tag or branch to install, you can change the `BRANCH` argument in `docker-compose.yml` (or preferably implement your own `docker-compose.override.yml`).
+
+## Running tests
+
+Given that Argus-frontend is installed and configured as described above, the following command can be used to run all the tests:
+
+    npm test
+
+To run test files individually the following command can be used:
+
+    npm test -- nameOfTestFile
+
+To run a single test and skip all the others, the following command can be used:
+
+    npm test -- -t "testName"
 
 ## Coding guidelines
 

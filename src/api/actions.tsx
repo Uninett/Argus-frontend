@@ -1,35 +1,30 @@
 import React, { useCallback, useContext } from "react";
-import api, {
+import type {
   Filter,
   FilterSuccessResponse,
   Incident,
-  IncidentsFilterOptions,
   Event,
   AcknowledgementBody,
   Acknowledgement,
-} from "../api";
-import { InitialStateType, ActionsType } from "../contexts";
+} from "../api/types.d";
+
+import api from "../api";
+import type { InitialStateType, ActionsType } from "../state/contexts";
 import {
   createFilter as createFilterAction,
   deleteFilter as deleteFilterAction,
   modifyFilter as modifyFilterAction,
   loadAllFilters as loadAllFiltersAction,
-} from "../reducers/filter";
+} from "../state/reducers/filter";
 
-import { IncidentsFilter } from "../components/incidenttable/FilteredIncidentTable";
-import { Tag } from "../components/tagselector";
 import { IncidentsStateType, useIncidentsContext } from "../components/incidentsprovider";
 
-import { AppContext } from "../contexts";
+import { AppContext } from "../state/contexts";
 
 type Dispatch = React.Dispatch<ActionsType>;
 
 export const createFilter = (dispatch: Dispatch, filter: Omit<Filter, "pk">): Promise<Filter> => {
-  const definition = {
-    sourceSystemIds: filter.sourceSystemIds,
-    tags: filter.tags,
-  };
-  return api.postFilter(filter.name, definition).then((response: FilterSuccessResponse) => {
+  return api.postFilter(filter).then((response: FilterSuccessResponse) => {
     const { name, pk } = response;
     const newFilter = { ...filter, name, pk };
     dispatch(createFilterAction(newFilter));
@@ -44,11 +39,7 @@ export const deleteFilter = (dispatch: Dispatch, pk: Filter["pk"]): Promise<void
 };
 
 export const modifyFilter = (dispatch: Dispatch, filter: Filter): Promise<Filter> => {
-  const definition = {
-    sourceSystemIds: filter.sourceSystemIds,
-    tags: filter.tags,
-  };
-  return api.putFilter(filter.pk, filter.name, definition).then(() => {
+  return api.putFilter(filter).then(() => {
     dispatch(modifyFilterAction(filter));
     return filter;
   });
@@ -85,18 +76,18 @@ export function useFilters(): [InitialStateType["filters"], UseFiltersActionType
   ];
 }
 
-const filterToQueryFilter = (filter: Omit<IncidentsFilter, "sources">): IncidentsFilterOptions => {
-  return {
-    acked: filter.showAcked ? undefined : false,
-    open: filter.show === "both" ? undefined : filter.show === "open",
-    // stateful:
-    sourceSystemIds: filter.sourcesById,
-    tags: filter.tags.map((tag: Tag) => tag.original),
-  };
-};
+// const filterToQueryFilter = (filter: Omit<Filter, "pk">): Filter => {
+//   return {
+//     acked: filter.showAcked ? undefined : false,
+//     open: filter.show === "both" ? undefined : filter.show === "open",
+//     // stateful:
+//     sourceSystemIds: filter.sourcesById,
+//     tags: filter.tags.map((tag: Tag) => tag.original),
+//   };
+// };
 
 export type UseIncidentsActionType = {
-  loadIncidentsFiltered: (filter: Omit<IncidentsFilter, "sources">) => Promise<Incident[]>;
+  loadIncidentsFiltered: (filter: Omit<Filter, "pk" | "name">) => Promise<Incident[]>;
   closeIncident: (pk: Incident["pk"], description?: string) => Promise<Event>;
   reopenIncident: (pk: Incident["pk"], description?: string) => Promise<Event>;
   acknowledgeIncident: (pk: Incident["pk"], ackBody: AcknowledgementBody) => Promise<Acknowledgement>;
@@ -106,8 +97,8 @@ export const useIncidents = (): [IncidentsStateType, UseIncidentsActionType] => 
   const [state, { loadAllIncidents, closeIncident, reopenIncident, acknowledgeIncident }] = useIncidentsContext();
 
   const loadIncidentsFiltered = useCallback(
-    (filter: Omit<IncidentsFilter, "sources">) => {
-      return api.getAllIncidentsFiltered(filterToQueryFilter(filter)).then((incidents: Incident[]) => {
+    (filter: Omit<Filter, "pk" | "name">) => {
+      return api.getAllIncidentsFiltered(filter).then((incidents: Incident[]) => {
         loadAllIncidents(incidents);
         return incidents;
       });

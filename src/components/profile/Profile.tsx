@@ -7,7 +7,7 @@ import Spinning from "../spinning";
 import { makeConfirmationButton } from "../buttons/ConfirmationButton";
 
 import "./Profile.css";
-import {
+import type {
   NotificationProfile,
   NotificationProfilePK,
   NotificationProfileKeyed,
@@ -17,7 +17,7 @@ import {
   TimeslotPK,
   MediaAlternative,
   PhoneNumber,
-} from "../../api";
+} from "../../api/types.d";
 import { useStateWithDynamicDefault, pkGetter, toMap } from "../../utils";
 import Selector from "../selector";
 

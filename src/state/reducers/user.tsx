@@ -1,4 +1,4 @@
-import { User, Token } from "../api";
+import type { User, Token } from "../../api/types.d";
 import { ActionMap, makeAction, makeActionWithoutPayload } from "./common";
 
 // For making it easier for components that need a default display name

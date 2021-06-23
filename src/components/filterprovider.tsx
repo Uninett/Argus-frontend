@@ -1,11 +1,9 @@
 import React, { useEffect, useReducer, useContext, createContext } from "react";
 
-import { IncidentsFilter, AutoUpdate } from "../components/incidenttable/FilteredIncidentTable";
-import { Filter } from "../api";
-import { Tag, originalToTag } from "../components/tagselector";
+import type { Filter, FilterContent } from "../api/types";
 
 // Store
-import { ActionMap } from "../reducers/common";
+import { ActionMap } from "../state/reducers/common";
 import { SELECTED_FILTER } from "../localstorageconsts";
 
 // Utils
@@ -16,44 +14,94 @@ export type SelectedFilterStateType = {
   existingFilter: Filter | undefined;
 
   // Additional settings that the user has set
-  tags: Tag[];
-  sourcesById: number[];
+  // tags: Tag[];
+  tags: string[];
+  sourceSystemIds: number[];
 
-  showAcked: boolean;
-  autoUpdate: AutoUpdate;
-  show: "open" | "closed" | "both";
+  filterContent: FilterContent;
+
+  // showAcked: boolean;
+  // autoUpdate: AutoUpdateMethod;
+  // show: "open" | "closed" | "both";
 
   // The resulting incidents filter
-  filter: IncidentsFilter;
+  incidentsFilter: Omit<Filter, "pk" | "name">;
 };
-
-export type SelectedFilterProperties = Partial<Omit<SelectedFilterStateType, "existingFilter" | "filter">>;
 
 const initialSelectedFilter: SelectedFilterStateType = {
   existingFilter: undefined,
 
   tags: [],
-  sourcesById: [],
+  sourceSystemIds: [],
 
-  showAcked: false,
-  // TODO: this should not be here...
-  autoUpdate: "realtime",
-  show: "open",
+  // showAcked: false,
+  // autoUpdate: "realtime", // TODO: this should not be here...
+  // show: "open",
+  filterContent: {
+    open: true,
+    acked: false,
+    stateful: undefined,
+  },
 
-  filter: {
-    showAcked: false,
-    show: "open",
+  incidentsFilter: {
+    filter: {
+      acked: false,
+      open: true,
+      stateful: undefined,
+    },
     tags: [],
-    sourcesById: undefined,
-    sources: "AllSources",
-    autoUpdate: "realtime",
+    sourceSystemIds: [],
+    // sources: "AllSources",
+    // autoUpdate: "realtime",
   },
 };
+
+/*
+ * Useful to know about SetExistingFilter:
+ * - To be able to differentiate between setting a value to undefined,
+ *   for example setting { acked: undefined } such that the we don't filter on
+ *   acked, and NOT modifying the value, for example when we pass { open: true },
+ *   we don't want the acked filter to be unset. Therefore we use null when
+ *   we want to set it to undefined, so that we can use the ... notation.
+ */
+
+type NullableAndOptional<T> = { [P in keyof T]: T[P] | null | undefined };
+
+export type SelectedFilterProperties = Partial<
+  Omit<SelectedFilterStateType, "existingFilter" | "filter" | "filterContent"> & {
+    filterContent: NullableAndOptional<FilterContent>;
+  }
+>;
+
+// type NullableSelectedFilterProperties = Partial<
+//   Exclude<SelectedFilterProperties, "filterContent"> & {
+//     filterContent?: NullableAndOptional<FilterContent>;
+//   }
+// >;
 
 enum SelectedFilterType {
   SetExistingFilter = "SET_EXISTING_FILTER",
   UnsetExistingFilter = "UNSET_EXISTING_FILTER",
   SetSelectedFilter = "SET_SELECTED_FILTER",
+}
+
+function oldOrNew<K>(oldObject: K | undefined, newObject: K | undefined | null): K | undefined {
+  if (newObject === null) {
+    return undefined;
+  } else if (newObject === undefined) {
+    return oldObject;
+  } else {
+    return newObject;
+  }
+}
+
+function mergedFilterContent(state: FilterContent, selected: SelectedFilterProperties["filterContent"]): FilterContent {
+  const nextState: FilterContent = { ...state };
+  nextState.acked = oldOrNew(state.acked, selected?.acked);
+  nextState.open = oldOrNew(state.open, selected?.open);
+  nextState.stateful = oldOrNew(state.stateful, selected?.stateful);
+  // console.log("state", state, "selected", selected, "next", nextState);
+  return nextState;
 }
 
 export type SelectedFilterPayload = {
@@ -80,30 +128,39 @@ export const selectedFilterReducer = (
   switch (action.type) {
     case SelectedFilterType.SetSelectedFilter: {
       const selected = action.payload;
-      const { showAcked, autoUpdate, show } = { ...state, ...selected };
+      // const { filterContent } = { ...state, ...selected };
 
-      let unset = false;
-      if (selected.tags && !arrayEquals(selected.tags, state.filter.tags)) {
-        unset = true;
-      }
+      let unset = false; // did we do changes so that we need to change the existingFilter to undefined?
+      const filterContent: FilterContent = mergedFilterContent(state.filterContent, selected.filterContent);
+
       if (
-        selected.sourcesById &&
-        ((state.filter.sourcesById && !arrayEquals(selected.sourcesById, state.filter.sourcesById)) ||
-          !state.filter.sourcesById)
+        filterContent.acked !== state.filterContent.acked ||
+        filterContent.open !== state.filterContent.open ||
+        filterContent.stateful !== state.filterContent.stateful
+      ) {
+        unset = true;
+      } else if (selected.tags && !arrayEquals(selected.tags, state.incidentsFilter.tags)) {
+        unset = true;
+      } else if (
+        selected.sourceSystemIds &&
+        ((state.incidentsFilter.sourceSystemIds &&
+          !arrayEquals(selected.sourceSystemIds, state.incidentsFilter.sourceSystemIds)) ||
+          !state.incidentsFilter.sourceSystemIds)
       ) {
         unset = true;
       }
 
-      const tags: Tag[] = selected.tags ? selected.tags : state.filter.tags;
-      const sourcesById: number[] | undefined = selected.sourcesById ? selected.sourcesById : state.filter.sourcesById;
-      const updated = { tags, sourcesById, showAcked, autoUpdate, show };
+      const tags: string[] = selected.tags ? selected.tags : state.incidentsFilter.tags;
+      const sourceSystemIds: number[] | undefined = selected.sourceSystemIds
+        ? selected.sourceSystemIds
+        : state.incidentsFilter.sourceSystemIds;
 
-      const filter: IncidentsFilter = {
-        sources: undefined,
-        ...updated,
-      };
+      const updated: Omit<Filter, "pk" | "name"> = { tags, sourceSystemIds, filter: filterContent };
 
-      const nextState = { ...state, ...selected, filter };
+      const nextState = { ...state, ...selected, tags, sourceSystemIds, filterContent, incidentsFilter: updated };
+
+      // console.log("NEXT STATE", nextState);
+
       if (unset) {
         return { ...nextState, existingFilter: undefined };
       }
@@ -111,29 +168,27 @@ export const selectedFilterReducer = (
     }
 
     case SelectedFilterType.UnsetExistingFilter: {
-      const { showAcked, autoUpdate, show } = state;
-      const updated = { tags: [], sourcesById: [], showAcked, autoUpdate, show };
-      const filter: IncidentsFilter = { ...updated, sources: undefined };
-      return { ...state, ...updated, existingFilter: undefined, filter };
+      const { filterContent } = state;
+      const updated = { tags: [], sourceSystemIds: [], filterContent };
+      const incidentsFilter: Omit<Filter, "pk" | "name"> = { ...updated, sourceSystemIds: [], filter: filterContent };
+      return { ...state, ...updated, existingFilter: undefined, incidentsFilter };
     }
 
     case SelectedFilterType.SetExistingFilter: {
       const existingFilter = action.payload;
-      const { showAcked, autoUpdate, show } = state;
-      const updated = { tags: [], sourcesById: [], showAcked, autoUpdate, show };
-
-      const filter: IncidentsFilter = {
-        sources: undefined,
-        ...updated,
-        tags: existingFilter.tags.map(originalToTag),
-        sourcesById: existingFilter.sourceSystemIds,
+      const incidentsFilter: Omit<Filter, "pk" | "name"> = {
+        tags: existingFilter.tags,
+        sourceSystemIds: existingFilter.sourceSystemIds,
+        filter: existingFilter.filter,
       };
+
+      // console.log("setting existing", incidentsFilter);
 
       return {
         ...state,
-        ...updated,
+        filterContent: existingFilter.filter,
         existingFilter,
-        filter,
+        incidentsFilter,
       };
     }
     default:
@@ -150,9 +205,19 @@ export const SelectedFilterContext = createContext<{
 });
 
 export const SelectedFilterProvider = ({ children }: { children?: React.ReactNode }) => {
+  // Function is used to validate the selected filter from LocalStorage. If the filter doesn't match the specified format, the default selected filter will be used instead.
+  const validateSelectedFilter = (selectedFilter: SelectedFilterStateType) => {
+    return !(
+      !selectedFilter.filterContent ||
+      !selectedFilter.incidentsFilter ||
+      !selectedFilter.sourceSystemIds ||
+      !selectedFilter.tags
+    );
+  };
+
   const [state, dispatch] = useReducer(
     selectedFilterReducer,
-    fromLocalStorageOrDefault<SelectedFilterStateType>(SELECTED_FILTER, initialSelectedFilter),
+    fromLocalStorageOrDefault<SelectedFilterStateType>(SELECTED_FILTER, initialSelectedFilter, validateSelectedFilter),
   );
 
   useEffect(() => {

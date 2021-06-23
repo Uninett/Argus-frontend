@@ -1,8 +1,7 @@
 import { useState, useEffect, Dispatch, SetStateAction } from "react";
-import { Incident, PhoneNumber, PhoneNumberPK } from ".";
-// TODO: fix this
-import { incidentWithFormattedTimestamp, IncidentWithFormattedTimestamp } from "../utils";
-import {
+
+import type { Incident, PhoneNumber, PhoneNumberPK } from "./types.d";
+import type {
   Acknowledgement,
   ApiErrorType,
   CursorPaginationResponse,
@@ -13,7 +12,10 @@ import {
   NotificationProfilePK,
   Timeslot,
   TimeslotPK,
-} from "../api";
+} from "../api/types.d";
+
+// TODO: fix this
+import { incidentWithFormattedTimestamp, IncidentWithFormattedTimestamp } from "../utils";
 import { toMap, pkGetter } from "../utils";
 
 type UsePromiseReturnType<R> = {

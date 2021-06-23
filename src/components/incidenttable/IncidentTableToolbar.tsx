@@ -13,7 +13,7 @@ import LinkSharpIcon from "@material-ui/icons/LinkSharp";
 import Typography from "@material-ui/core/Typography";
 
 // Api
-import { Incident, AcknowledgementBody } from "../../api";
+import type { Incident, AcknowledgementBody } from "../../api/types.d";
 
 // Contexts/Hooks
 import { useIncidentsContext } from "../../components/incidentsprovider";
@@ -60,7 +60,7 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
 
   // XXX: In the future there should be better seperation of components, and this
   // shouldn't be needed here. Now it's used to clear selection when the filter changes.
-  const [{ filter: selectedFilter }] = useSelectedFilter();
+  const [{ incidentsFilter: selectedFilter }] = useSelectedFilter();
 
   const allState: "mixed" | "open" | "closed" = useMemo(() => {
     const pks: Incident["pk"][] = [...selectedIncidents.keys()];

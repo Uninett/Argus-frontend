@@ -4,12 +4,13 @@ import { Route, Redirect } from "react-router-dom";
 import { Cookies } from "react-cookie";
 
 // Api
-import api, { User } from "./api";
+import type { User } from "./api/types.d";
+import api from "./api";
 import auth from "./auth";
 
 // Contexts/Hooks
-import { AppContext } from "./contexts";
-import { loginUser } from "./reducers/user";
+import { AppContext } from "./state/contexts";
+import { loginUser } from "./state/reducers/user";
 
 type ProtectedRoutePropsType = {
   // Should be able to take all components, so any is probably acceptable here?
