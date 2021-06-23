@@ -8,7 +8,8 @@ import { Router } from "react-router-dom";
 import { createMemoryHistory } from "history";
 
 import TimeslotComponent, { TimeslotRecurrenceComponent, DaySelector } from "./index";
-import api, { TimeRecurrence } from "../../api";
+import api, { TimeRecurrence, TimeRecurrenceDay } from "../../api";
+import { Day } from "@material-ui/pickers";
 
 const EXAMPLE_TIMESLOT_RECURRENCE_1: TimeRecurrence = {
   // eslint-disable-next-line
@@ -26,7 +27,7 @@ const EXAMPLE_TIMESLOT_RECURRENCE_2: TimeRecurrence = {
   days: [5, 6, 7],
 };
 
-describe("TimeslotRecurrenceComponent", () => {
+describe("TimeslotRecurrenceComponent tests", () => {
   const onChange = jest.fn();
   const onRemove = jest.fn();
 
@@ -238,5 +239,92 @@ describe("TimeslotRecurrenceComponent", () => {
 
     expect(onChange).toHaveBeenCalledTimes(1);
     expect(onChange).toHaveBeenLastCalledWith(1, { ...EXAMPLE_TIMESLOT_RECURRENCE_1, days: [1, 2, 4, 5] });
+  });
+});
+
+describe("DaySelector tests", () => {
+  const selectedDays: TimeRecurrenceDay[] = [1, 2, 3];
+  const onSelectionChange = jest.fn();
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("renders the component correctly", () => {
+    render(<DaySelector selectedDays={selectedDays} onSelectionChange={onSelectionChange} />);
+    const daySelector = screen.getByRole("button");
+
+    expect(daySelector).toBeInTheDocument();
+    expect(daySelector).not.toHaveAttribute("aria-disabled", "true");
+
+    expect(screen.getByText(/monday/i)).toBeInTheDocument();
+    expect(screen.getByText(/tuesday/i)).toBeInTheDocument();
+    expect(screen.getByText(/wednesday/i)).toBeInTheDocument();
+    expect(screen.queryByText(/thursday/i)).toBeNull();
+    expect(screen.queryByText(/friday/i)).toBeNull();
+    expect(screen.queryByText(/satursday/i)).toBeNull();
+    expect(screen.queryByText(/sunday/i)).toBeNull();
+  });
+
+  it("renders the component as disabled", () => {
+    render(<DaySelector selectedDays={selectedDays} onSelectionChange={onSelectionChange} disabled />);
+    const daySelector = screen.getByRole("button");
+
+    expect(daySelector).toBeInTheDocument();
+    expect(daySelector).toHaveAttribute("aria-disabled", "true");
+  });
+
+  it("shows dropdown menu when component is clicked", () => {
+    render(<DaySelector selectedDays={selectedDays} onSelectionChange={onSelectionChange} />);
+    userEvent.click(screen.getByRole("button"));
+
+    expect(screen.getByRole("presentation")).toBeInTheDocument();
+    expect(screen.getByRole("listbox")).toBeInTheDocument();
+
+    const mondayOption = screen.getByRole("option", { name: /monday/i });
+    expect(mondayOption).toBeInTheDocument();
+    expect(mondayOption).toHaveAttribute("aria-selected", "true");
+
+    const tuesdayOption = screen.getByRole("option", { name: /tuesday/i });
+    expect(tuesdayOption).toBeInTheDocument();
+    expect(tuesdayOption).toHaveAttribute("aria-selected", "true");
+
+    const wednesdayOption = screen.getByRole("option", { name: /wednesday/i });
+    expect(wednesdayOption).toBeInTheDocument();
+    expect(wednesdayOption).toHaveAttribute("aria-selected", "true");
+
+    const thursdayOption = screen.getByRole("option", { name: /thursday/i });
+    expect(thursdayOption).toBeInTheDocument();
+    expect(thursdayOption).not.toHaveAttribute("aria-selected", "true");
+
+    const fridayOption = screen.getByRole("option", { name: /friday/i });
+    expect(fridayOption).toBeInTheDocument();
+    expect(fridayOption).not.toHaveAttribute("aria-selected", "true");
+
+    const saturdayOption = screen.getByRole("option", { name: /saturday/i });
+    expect(saturdayOption).toBeInTheDocument();
+    expect(saturdayOption).not.toHaveAttribute("aria-selected", "true");
+
+    const sundayOption = screen.getByRole("option", { name: /sunday/i });
+    expect(sundayOption).toBeInTheDocument();
+    expect(sundayOption).not.toHaveAttribute("aria-selected", "true");
+  });
+
+  it("calls function onSelectionChange() when day gets selected", () => {
+    render(<DaySelector selectedDays={selectedDays} onSelectionChange={onSelectionChange} />);
+    userEvent.click(screen.getByRole("button"));
+    userEvent.click(screen.getByRole("option", { name: /friday/i }));
+
+    expect(onSelectionChange).toHaveBeenCalledTimes(1);
+    expect(onSelectionChange).toHaveBeenCalledWith([1, 2, 3, 5]);
+  });
+
+  it("calls function onSelectionChange() when day gets removed", () => {
+    render(<DaySelector selectedDays={selectedDays} onSelectionChange={onSelectionChange} />);
+    userEvent.click(screen.getByRole("button"));
+    userEvent.click(screen.getByRole("option", { name: /monday/i }));
+
+    expect(onSelectionChange).toHaveBeenCalledTimes(1);
+    expect(onSelectionChange).toHaveBeenCalledWith([2, 3]);
   });
 });
