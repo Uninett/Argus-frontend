@@ -115,7 +115,7 @@ type ButtonGroupSwitchPropsType<T> = {
   disabled?: boolean;
 };
 
-function ButtonGroupSwitch<T>({
+export function ButtonGroupSwitch<T>({
   selected,
   options,
   getLabel,

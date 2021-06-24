@@ -1,9 +1,11 @@
+/**  * @jest-environment jsdom-sixteen  */
+
 import { ButtonGroupSwitch, IncidentFilterToolbar } from "./IncidentFilterToolbar";
 import React from "react";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import SourceSelector from "../sourceselector";
-import TagSelector, { Tag } from "../tagselector";
+import TagSelector from "../tagselector";
 
 describe('Incident Toolbar test suite', () => {
 
@@ -108,14 +110,17 @@ describe('Incident Toolbar test suite', () => {
   });
 
   test('acked state switch buttons have correct initial conditions', () => {
+    const ackedStateButton = screen.getByTitle('Only acked incidents');
     const unackedStateButton = screen.getByTitle('Only unacked incidents');
-    const bothAckedStatesButton = screen.getByTitle('Unacked and acked incidents');
+    const bothAckedStatesButton = screen.getByTitle('Both acked and unacked incidents');
 
     // All buttons are enabled
+    expect(ackedStateButton).toBeEnabled();
     expect(unackedStateButton).toBeEnabled();
     expect(bothAckedStatesButton).toBeEnabled();
 
     // Only unacked button is selected by default
+    expect(ackedStateButton).not.toHaveClass('MuiButton-containedPrimary');
     expect(unackedStateButton).toHaveClass('MuiButton-containedPrimary');
     expect(bothAckedStatesButton).not.toHaveClass('MuiButton-containedPrimary');
   });
@@ -126,6 +131,13 @@ describe('Incident Toolbar test suite', () => {
       ackedStateSwitch.getElementsByTagName('button');
 
     // Provided options render
+    const ackedStateButton = screen.getByTitle('Only acked incidents');
+    expect(ackedStateButtons).toContain(ackedStateButton);
+    expect(ackedStateButton).toBeInTheDocument();
+    expect(ackedStateButton).toBeVisible();
+    expect(ackedStateButton
+      .querySelector('.MuiButton-label')?.textContent).toBe('Acked');
+
     const unackedStateButton = screen.getByTitle('Only unacked incidents');
     expect(ackedStateButtons).toContain(unackedStateButton);
     expect(unackedStateButton).toBeInTheDocument();
@@ -133,7 +145,7 @@ describe('Incident Toolbar test suite', () => {
     expect(unackedStateButton
       .querySelector('.MuiButton-label')?.textContent).toBe('Unacked');
 
-    const bothAckedStatesButton = screen.getByTitle('Unacked and acked incidents');
+    const bothAckedStatesButton = screen.getByTitle('Both acked and unacked incidents');
     expect(ackedStateButtons).toContain(bothAckedStatesButton);
     expect(bothAckedStatesButton).toBeInTheDocument();
     expect(bothAckedStatesButton).toBeVisible();
@@ -141,7 +153,7 @@ describe('Incident Toolbar test suite', () => {
       .querySelector('.MuiButton-label')?.textContent).toBe('Both');
 
     // No other options render
-    expect(ackedStateButtons.length).toBe(2);
+    expect(ackedStateButtons.length).toBe(3);
   });
 
   test('source selector has correct initial conditions', () => {
@@ -270,19 +282,23 @@ describe('Open State Switch functional test suite', () => {
 describe('Acked State Switch functional test suite', () => {
   let ackedStateSwitch: HTMLElement;
 
-  const onAckedChangeMock = jest.fn();
+  const setSelectedFilterMock = jest.fn();
 
   beforeEach(() => {
     ackedStateSwitch = render(
       <ButtonGroupSwitch
-        selected={false}
-        options={[false, true]}
-        getLabel={(showAcked: boolean) => (showAcked ? "Both" : "Unacked")}
+        selected={"unacked"}
+        options={["acked", "unacked", "both"]}
+        getLabel={(show: "acked" | "unacked" | "both") => ({ acked: "Acked", unacked: "Unacked", both: "Both" }[show])}
         getColor={(selected: boolean) => (selected ? "primary" : "default")}
-        getTooltip={(showAcked: boolean) =>
-          (showAcked ? "Unacked and acked incidents" : "Only unacked incidents")
+        getTooltip={(show: "acked" | "unacked" | "both") =>
+          ({
+            acked: "Only acked incidents",
+            unacked: "Only unacked incidents",
+            both: "Both acked and unacked incidents",
+          }[show])
         }
-        onSelect={onAckedChangeMock as any}
+        onSelect={setSelectedFilterMock}
       />).container;
   });
 
@@ -292,10 +308,11 @@ describe('Acked State Switch functional test suite', () => {
     jest.clearAllMocks();
   })
 
-  test('click selects unselected option', () => {
-    const bothAckedStatesButton = screen.getByTitle('Unacked and acked incidents');
+  test('click selects previously not selected option', () => {
+    const bothAckedStatesButton = screen.getByTitle('Both acked and unacked incidents');
     userEvent.click(bothAckedStatesButton);
-    expect(onAckedChangeMock).toBeCalledWith(true);
+
+    expect(setSelectedFilterMock).toBeCalledWith("both");
   });
 });
 
@@ -307,18 +324,7 @@ describe('Sources Selector functional test suite', () => {
     ["testSource2", 1]
   ]);
 
-  const setSelectedFilterMock = jest.fn();
-
-  // const findSourceIdMock = (name: string) => {
-  //   return knownSourcesMock.get(name);
-  // };
-  const findSourceIdMock = jest.fn();
-
-  const onSelectionChangeMock = jest.fn(() => {
-    findSourceIdMock();
-    setSelectedFilterMock();
-  });
-  // const onSelectionChangeMock = jest.fn();
+  const onSelectionChangeMock = jest.fn();
 
   beforeEach(() => {
     sourcesSelector = render(
@@ -375,8 +381,6 @@ describe('Sources Selector functional test suite', () => {
     // Check whether selected sources list is updated with correct value
     expect(onSelectionChangeMock).toBeCalledWith(["testSource1"]);
     expect(onSelectionChangeMock.mock.calls.length).toBe(1);
-    // // Check whether selected source index is returned correctly
-    // expect(findSourceIdMock.mock.results[0].value).toBe(0);
   });
 
   test('click on remove-icon correctly deselects the option', () => {
@@ -408,9 +412,9 @@ describe('Sources Selector functional test suite', () => {
 describe('Tags Selector functional test suite', () => {
   let tagsSelector: HTMLElement;
 
-  let tagsMock: Tag[] = [
-    {key: "tag1", value: "value1", original: "tag1=value1"},
-    {key: "tag2", value: "value2", original: "tag2=value2"}
+  let tagsMock: string[] = [
+    "tag1=value1",
+    "tag2=value2"
   ];
 
   let selectedFilterMock: string[];
@@ -434,7 +438,7 @@ describe('Tags Selector functional test suite', () => {
 
   test('type + enter correctly adds tag to the filter', () => {
     // Placeholder text is the only option to search after
-    const tagsSelectorInput = within(tagsSelector).getByPlaceholderText('key=value');
+    const tagsSelectorInput = screen.getByPlaceholderText('key=value');
 
     // Simulate tag addition
     userEvent.type(tagsSelectorInput, 'typedKey=typedValue{enter}');
@@ -448,11 +452,7 @@ describe('Tags Selector functional test suite', () => {
       .toBeInTheDocument(); // 'remove'-icon
 
     // Check whether selected tags list is updated with correct value
-    expect(onSelectionChangeMock).toBeCalledWith([
-      { key: "typedKey",
-        original: "typedKey=typedValue",
-        value: "typedValue"
-      }]);
+    expect(onSelectionChangeMock).toBeCalledWith(["typedKey=typedValue"]);
     expect(onSelectionChangeMock.mock.calls.length).toBe(1);
   });
 
@@ -461,7 +461,7 @@ describe('Tags Selector functional test suite', () => {
       <TagSelector
         tags={tagsMock}
         onSelectionChange={onSelectionChangeMock}
-        selected={tagsMock.map((tag: Tag) => tag.original)}
+        selected={tagsMock}
       />).container;
 
     // Placeholder text is the only option to search after
@@ -488,11 +488,7 @@ describe('Tags Selector functional test suite', () => {
     userEvent.click(tag1RemoveIcon as Element);
 
     // Tag 1 is removed, tag 2 remains
-    expect(onSelectionChangeMock).toBeCalledWith([
-      { key: "tag2",
-        original: "tag2=value2",
-        value: "value2"
-      }]);
+    expect(onSelectionChangeMock).toBeCalledWith(["tag2=value2"]);
     expect(onSelectionChangeMock.mock.calls.length).toBe(1);
   });
 });
