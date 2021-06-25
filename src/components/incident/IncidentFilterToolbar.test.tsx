@@ -1,17 +1,20 @@
 /**  * @jest-environment jsdom-sixteen  */
 
-import { ButtonGroupSwitch, IncidentFilterToolbar } from "./IncidentFilterToolbar";
 import React from "react";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+
+import { ButtonGroupSwitch, IncidentFilterToolbar } from "./IncidentFilterToolbar";
 import SourceSelector from "../sourceselector";
 import TagSelector from "../tagselector";
+import ApiClient from '../../api/client'
 
 describe('Incident Toolbar test suite', () => {
 
   let incidentToolbar: HTMLElement;
 
   beforeEach(() => {
+    jest.spyOn(ApiClient, 'getAllIncidentsMetadata').mockResolvedValue({sourceSystems: []});
     incidentToolbar = render(<IncidentFilterToolbar />).container;
   });
 
