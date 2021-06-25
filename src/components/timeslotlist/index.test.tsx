@@ -38,7 +38,7 @@ const timeslot: Timeslot = {
 };
 
 describe("TimeslotList tests", () => {
-  beforeEach(() => {
+  beforeAll(() => {
     auth.login("token");
   });
 
@@ -150,9 +150,37 @@ describe("TimeslotList tests", () => {
     expect(within(existingTimeslotDaySelector).queryByText(/sunday/i)).toBeInTheDocument();
   });
 
-  /*it("creates a new timeslot successfully", () => {});
+  it("creates a new timeslot successfully", async () => {
+    apiMock
+      .onGet("/api/v1/notificationprofiles/timeslots/")
+      .reply(200, [timeslot])
+      .onPost("/api/v1/notificationprofiles/timeslots/")
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      .reply(200, { pk: 2, name: "Timeslot Test 2", time_recurrences: recurrences });
 
-  it("fails to create new timeslot when timeslot with same name already exists", () => {});
+    render(<TimeslotList />);
+
+    const newTimeslot = screen.getByRole("form", { name: /new timeslot/i });
+    userEvent.type(within(newTimeslot).getByLabelText(/timeslot name/i), "Timeslot Test 2");
+    userEvent.type(
+      within(newTimeslot).getByRole("textbox", { name: /start time picker/i }),
+      "{selectall}{backspace}12:30",
+    );
+    userEvent.type(
+      within(newTimeslot).getByRole("textbox", { name: /end time picker/i }),
+      "{selectall}{backspace}14:30",
+    );
+
+    userEvent.click(within(newTimeslot).getByRole("button", { name: /days/i }));
+    userEvent.click(screen.getByRole("option", { name: /friday/i }));
+    userEvent.click(within(newTimeslot).getByRole("button", { name: /create/i, hidden: true }));
+
+    const newTimeslot2 = await screen.findByRole("form", { name: /timeslot test 2/i });
+    console.log(apiMock.history.post[0].data);
+    expect(newTimeslot2).toBeInTheDocument();
+  });
+
+  /*it("fails to create new timeslot when timeslot with same name already exists", () => {});
 
   it("adds a new recurrence to a timeslot successfully", () => {});
 
