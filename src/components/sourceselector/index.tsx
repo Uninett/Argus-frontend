@@ -24,10 +24,11 @@ export const SourceSelector: React.FC<SourceSelectorPropsType> = ({
 
   return (
     <Autocomplete
+      data-testid="autocomplete"
       freeSolo
       multiple
       size="small"
-      id="filter-select-tags"
+      id="filter-select-source"
       disableClearable
       options={sources}
       disabled={disabled}
