@@ -119,6 +119,10 @@ export interface NotificationProfile {
  * Incidents
  */
 
+export type SeverityLevelNumber = 1 | 2 | 3 | 4 | 5;
+
+export type SeverityLevelName = "Critical" | "High" | "Moderate" | "Low" | "Information";
+
 export interface SourceSystem {
   pk: number;
   name: string;
@@ -141,6 +145,7 @@ export interface Incident {
   ticket_url: string;
   open: boolean;
   acked: boolean;
+  level: SeverityLevelNumber;
 
   source: SourceSystem;
   source_incident_id: string;

@@ -1,4 +1,4 @@
-import type { TimeRecurrenceDay, TimeRecurrenceDayName } from "./types.d";
+import type { SeverityLevelName, SeverityLevelNumber, TimeRecurrenceDay, TimeRecurrenceDayName } from "./types.d";
 
 export const TIME_RECURRENCE_DAY_IN_ORDER: TimeRecurrenceDay[] = [1, 2, 3, 4, 5, 6, 7];
 
@@ -20,4 +20,12 @@ export const TimeRecurrenceNameDayMap: Record<TimeRecurrenceDayName, TimeRecurre
   Friday: 5,
   Saturday: 6,
   Sunday: 7,
+};
+
+export const SeverityLevelNumberNameMap: Record<SeverityLevelNumber, SeverityLevelName> = {
+  1: "Critical",
+  2: "High",
+  3: "Moderate",
+  4: "Low",
+  5: "Information",
 };

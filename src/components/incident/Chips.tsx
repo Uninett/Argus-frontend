@@ -1,9 +1,10 @@
 import React from "react";
 import Chip from "@material-ui/core/Chip";
-import type { Timestamp } from "../../api/types.d";
+import type { SeverityLevelNumber, Timestamp } from "../../api/types.d";
 
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import { WHITE } from "../../colorscheme";
+import { SeverityLevelNumberNameMap } from "../../api/consts";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -28,6 +29,26 @@ const useStyles = makeStyles((theme: Theme) =>
       color: WHITE,
     },
     ticketed: {
+      background: theme.palette.success.main,
+      color: WHITE,
+    },
+    severityLevel1: {
+      background: theme.palette.warning.main,
+      color: WHITE,
+    },
+    severityLevel2: {
+      background: theme.palette.error.main,
+      color: WHITE,
+    },
+    severityLevel3: {
+      background: theme.palette.secondary.main,
+      color: WHITE,
+    },
+    severityLevel4: {
+      background: theme.palette.success.light,
+      color: WHITE,
+    },
+    severityLevel5: {
       background: theme.palette.success.main,
       color: WHITE,
     },
@@ -112,6 +133,37 @@ export const TicketItem: React.FC<TicketItemPropsType> = ({ ticketUrl, small }: 
       className={ticketUrl ? classes.ticketed : classes.notticketed}
       label={ticketUrl ? `Ticket ${ticketUrl}` : "No ticket"}
       {...chipProps}
+    />
+  );
+};
+
+export type LevelItemPropsType = {
+  level: SeverityLevelNumber;
+  small?: boolean;
+};
+
+export const LevelItem: React.FC<LevelItemPropsType> = ({ level, small }: LevelItemPropsType) => {
+  const classes = useStyles();
+
+  let itemStyle;
+  if (level === 1) {
+    itemStyle = classes.severityLevel1;
+  } else if (level === 2) {
+    itemStyle = classes.severityLevel2;
+  } else if (level === 3) {
+    itemStyle = classes.severityLevel3;
+  } else if (level === 4) {
+    itemStyle = classes.severityLevel4;
+  } else {
+    itemStyle = classes.severityLevel5;
+  }
+
+  return (
+    <Chip
+      size={(small && "small") || undefined}
+      variant="outlined"
+      className={itemStyle}
+      label={`${level} - ${SeverityLevelNumberNameMap[level]}`}
     />
   );
 };

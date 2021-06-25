@@ -26,7 +26,7 @@ import type { Incident } from "../../api/types.d";
 import { formatTimestamp, copyTextToClipboard } from "../../utils";
 
 import { useStyles } from "../incident/styles";
-import { AckedItem, OpenItem } from "../incident/Chips";
+import { AckedItem, LevelItem, OpenItem } from "../incident/Chips";
 import IncidentDetails from "../incident/IncidentDetails";
 
 import Modal from "../../components/modal/Modal";
@@ -147,6 +147,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
               {multiSelect && <TableCell></TableCell>}
               <TableCell>Timestamp</TableCell>
               <TableCell>Status</TableCell>
+              <TableCell>Severity level</TableCell>
               <TableCell>Source</TableCell>
               <TableCell>Description</TableCell>
               <TableCell>Actions</TableCell>
@@ -154,7 +155,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
           </TableHead>
           <TableBody>
             {(isLoading &&
-              [0, 1, 2, 3, 4, 5, 6].map((key: number) => {
+              [0, 1, 2, 3, 4, 5, 6, 7].map((key: number) => {
                 return (
                   <TableRow
                     hover
@@ -175,6 +176,9 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                       <Skeleton>
                         <AckedItem small acked />
                       </Skeleton>
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton />
                     </TableCell>
                     <TableCell>
                       <Skeleton />
@@ -224,6 +228,9 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                         <OpenItem small open={incident.open} />
                         {/* <TicketItem small ticketUrl={incident.ticket_url} /> */}
                         <AckedItem small acked={incident.acked} />
+                      </ClickableCell>
+                      <ClickableCell>
+                        <LevelItem small level={incident.level} />
                       </ClickableCell>
                       <ClickableCell>{incident.source.name}</ClickableCell>
                       <ClickableCell>{incident.description}</ClickableCell>
