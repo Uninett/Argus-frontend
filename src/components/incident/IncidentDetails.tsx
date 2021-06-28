@@ -3,7 +3,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import "react-table/react-table.css";
 
 import Button from "@material-ui/core/Button";
-import EditIcon from "@material-ui/icons/Edit";
+import SaveIcon from "@material-ui/icons/Save";
 import Grid from "@material-ui/core/Grid";
 
 import List from "@material-ui/core/List";
@@ -28,7 +28,7 @@ import CenterContainer from "../../components/centercontainer";
 import api from "../../api";
 
 import {
-    Event,
+  Event,
   EventType,
   Incident,
   IncidentTag,
@@ -42,10 +42,10 @@ import { useStyles } from "./styles";
 import ManualClose from "./ManualCloseSignOffAction";
 import CreateAck from "./CreateAckSignOffAction";
 
-import { AckedItem, OpenItem, TicketItem } from "../incident/Chips";
+import { AckedItem, OpenItem, TicketItem } from "./Chips";
 
 // Contexts/Hooks
-import { useAlerts } from "../../components/alertsnackbar";
+import { useAlerts } from "../alertsnackbar";
 import { useApiIncidentAcks, useApiIncidentEvents } from "../../api/hooks";
 
 type IncidentDetailsListItemPropsType = {
@@ -165,20 +165,13 @@ const TicketModifiableField: React.FC<TicketModifiableFieldPropsType> = ({
         <TextField
           label="Ticket"
           defaultValue={url || ""}
-          InputProps={{
-            readOnly: !changeUrl,
-          }}
           onChange={handleChange}
           error={error}
           helperText={error && "Invalid URL"}
         />
-        {(!changeUrl && (
-          <Button endIcon={<EditIcon />} onClick={() => setChangeUrl(true)}>
-            Edit
-          </Button>
-        )) || (
-          <Button className={classes.safeButton} onClick={() => handleSave()} disabled={error}>
-            Set ticket URL
+        {changeUrl && (
+          <Button className={classes.safeButton} endIcon={<SaveIcon />} onClick={handleSave}>
+            Save
           </Button>
         )}
       </Grid>
