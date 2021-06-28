@@ -28,7 +28,7 @@ import CenterContainer from "../../components/centercontainer";
 import api from "../../api";
 
 import {
-    Event,
+  Event,
   EventType,
   Incident,
   IncidentTag,
@@ -42,7 +42,7 @@ import { useStyles } from "./styles";
 import ManualClose from "./ManualCloseSignOffAction";
 import CreateAck from "./CreateAckSignOffAction";
 
-import { AckedItem, OpenItem, TicketItem } from "../incident/Chips";
+import { AckedItem, LevelItem, OpenItem, TicketItem } from "../incident/Chips";
 
 // Contexts/Hooks
 import { useAlerts } from "../../components/alertsnackbar";
@@ -339,6 +339,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                   Status
                 </Typography>
                 <CenterContainer>
+                  <LevelItem level={incident.level} />
                   <OpenItem open={incident.open} />
                   <AckedItem acked={incident.acked} expiration={ackExpiryDate} />
                   <TicketItem ticketUrl={incident.ticket_url} />
