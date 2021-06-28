@@ -3,7 +3,7 @@ import Chip from "@material-ui/core/Chip";
 import type { SeverityLevelNumber, Timestamp } from "../../api/types.d";
 
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-import { WHITE } from "../../colorscheme";
+import { WHITE, YELLOW, ORANGE } from "../../colorscheme";
 import { SeverityLevelNumberNameMap } from "../../api/consts";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme: Theme) =>
       color: WHITE,
     },
     severityLevel2: {
-      background: theme.palette.error.main,
+      background: ORANGE,
       color: WHITE,
     },
     severityLevel3: {
@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme: Theme) =>
       color: WHITE,
     },
     severityLevel4: {
-      background: theme.palette.success.light,
+      background: YELLOW,
       color: WHITE,
     },
     severityLevel5: {
