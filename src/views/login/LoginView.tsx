@@ -1,4 +1,5 @@
 import React from "react";
+import { Helmet } from "react-helmet";
 
 import "./LoginView.css";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
@@ -40,6 +41,9 @@ export const LoginView: React.FC<LoginViewPropsType> = () => {
 
   return (
     <div className={isMobile ? style.mobileRoot : style.root}>
+      <Helmet>
+        <title>Argus | Login</title>
+      </Helmet>
       <div className={style.formContainer}>
         <LoginForm />
       </div>
