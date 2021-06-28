@@ -25,6 +25,7 @@ import { useStyles } from "../incident/styles";
 import CreateAck from "../incident/CreateAckSignOffAction";
 import ManualClose from "../incident/ManualCloseSignOffAction";
 import OutlinedButton from "../buttons/OutlinedButton";
+import AddTicketUrl from "../incident/AddTicketUrlSignOffAction";
 
 const useToolbarStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -55,7 +56,7 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
   const classes = useToolbarStyles();
   const rootClasses = useStyles();
 
-  const [, { closeIncident, reopenIncident, acknowledgeIncident }] = useIncidents();
+  const [, { closeIncident, reopenIncident, acknowledgeIncident, addTicketUrl }] = useIncidents();
   const [, { incidentByPk }] = useIncidentsContext();
 
   // XXX: In the future there should be better seperation of components, and this
@@ -121,6 +122,19 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
               </Tooltip>
             )
           }
+          <AddTicketUrl
+            onAddTicketUrl={(url: string) => {
+              const pks: Incident["pk"][] = [...selectedIncidents.values()];
+              pks.forEach((pk: Incident["pk"]) => {
+                addTicketUrl(pk, url);
+              });
+            }}
+            signOffActionProps={{
+              ButtonComponent: OutlinedButton,
+              buttonProps: { className: undefined, size: "small" },
+            }}
+          />
+
           <CreateAck
             onSubmitAck={(ackBody: AcknowledgementBody) => {
               console.log("acknowledegment of all incidents", selectedIncidents);
