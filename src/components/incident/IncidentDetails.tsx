@@ -338,12 +338,18 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                 <Typography color="textSecondary" gutterBottom>
                   Status
                 </Typography>
-                <CenterContainer>
-                  <LevelItem level={incident.level} />
-                  <OpenItem open={incident.open} />
-                  <AckedItem acked={incident.acked} expiration={ackExpiryDate} />
-                  <TicketItem ticketUrl={incident.ticket_url} />
-                </CenterContainer>
+                <Grid container spacing={1} direction="column">
+                  <Grid item>
+                    <LevelItem level={incident.level} />
+                  </Grid>
+                  <Grid item>
+                    <OpenItem open={incident.open} />
+                    <AckedItem acked={incident.acked} expiration={ackExpiryDate} />
+                  </Grid>
+                  <Grid item>
+                    <TicketItem ticketUrl={incident.ticket_url} />
+                  </Grid>
+                </Grid>
               </CardContent>
             </Card>
           </Grid>
