@@ -40,7 +40,7 @@ export const IncidentDetailsView: React.FC<IncidentDetailsViewPropsType> = () =>
 
   return (
     <>
-      <IncidentDetails incident={incident} onIncidentChange={(incident: Incident) => setIncident(incident)} />
+      <IncidentDetails showTitle incident={incident} onIncidentChange={(incident: Incident) => setIncident(incident)} />
     </>
   );
 };

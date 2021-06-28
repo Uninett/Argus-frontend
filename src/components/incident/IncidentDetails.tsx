@@ -28,7 +28,7 @@ import CenterContainer from "../../components/centercontainer";
 import api from "../../api";
 
 import {
-    Event,
+  Event,
   EventType,
   Incident,
   IncidentTag,
@@ -232,11 +232,13 @@ const AckListItem: React.FC<AckListItemPropsType> = ({ ack }: AckListItemPropsTy
 type IncidentDetailsPropsType = {
   incident: Incident;
   onIncidentChange: (incident: Incident) => void;
+  showTitle?: boolean;
 };
 
 const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
   incident,
   onIncidentChange,
+  showTitle,
 }: IncidentDetailsPropsType) => {
   const classes = useStyles();
   const displayAlert = useAlerts();
@@ -330,6 +332,14 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
 
   return (
     <div className={classes.root}>
+      {showTitle && (
+        <Typography
+          style={{ marginBottom: "1.5rem" }}
+          align="center"
+          gutterBottom
+          variant="h5"
+        >{`${incident.pk}: ${incident.description}`}</Typography>
+      )}
       <Grid container spacing={3} className={classes.grid}>
         <Grid container item spacing={2} md alignItems="stretch" direction="column">
           <Grid item>
