@@ -126,7 +126,8 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
               console.log("acknowledegment of all incidents", selectedIncidents);
               const pks: Incident["pk"][] = [...selectedIncidents.values()];
               pks.forEach((pk: Incident["pk"]) => {
-                acknowledgeIncident(pk, ackBody);
+                acknowledgeIncident(pk, ackBody)
+                  .then(onClearSelection).catch();
               });
             }}
             signOffActionProps={{
@@ -143,14 +144,16 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
                 console.log("closing of all incidents", selectedIncidents);
                 const pks: Incident["pk"][] = [...selectedIncidents.values()];
                 pks.forEach((pk: Incident["pk"]) => {
-                  closeIncident(pk, msg);
+                  closeIncident(pk, msg)
+                    .then(onClearSelection).catch();
                 });
               }}
               onManualOpen={() => {
                 console.log("reopening of all incidents", selectedIncidents);
                 const pks: Incident["pk"][] = [...selectedIncidents.values()];
                 pks.forEach((pk: Incident["pk"]) => {
-                  reopenIncident(pk);
+                  reopenIncident(pk)
+                    .then(onClearSelection).catch();
                 });
               }}
               reopenButtonText="Re-open selected"
