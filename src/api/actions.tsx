@@ -5,7 +5,7 @@ import type {
   Incident,
   Event,
   AcknowledgementBody,
-  Acknowledgement,
+  Acknowledgement, IncidentTicketUrlBody,
 } from "../api/types.d";
 
 import api from "../api";
@@ -91,10 +91,11 @@ export type UseIncidentsActionType = {
   closeIncident: (pk: Incident["pk"], description?: string) => Promise<Event>;
   reopenIncident: (pk: Incident["pk"], description?: string) => Promise<Event>;
   acknowledgeIncident: (pk: Incident["pk"], ackBody: AcknowledgementBody) => Promise<Acknowledgement>;
+  addTicketUrl: (pk: Incident["pk"], description: string) => Promise<IncidentTicketUrlBody>;
 };
 
 export const useIncidents = (): [IncidentsStateType, UseIncidentsActionType] => {
-  const [state, { loadAllIncidents, closeIncident, reopenIncident, acknowledgeIncident }] = useIncidentsContext();
+  const [state, { loadAllIncidents, closeIncident, reopenIncident, acknowledgeIncident, addTicketUrl }] = useIncidentsContext();
 
   const loadIncidentsFiltered = useCallback(
     (filter: Omit<Filter, "pk" | "name">) => {
@@ -133,6 +134,15 @@ export const useIncidents = (): [IncidentsStateType, UseIncidentsActionType] => 
     [acknowledgeIncident],
   );
 
+  const addTicketUrlCallback = useCallback(
+    (pk: Incident["pk"], ticketUrl: string) =>
+      api.patchIncidentTicketUrl(pk, ticketUrl).then((response: IncidentTicketUrlBody) => {
+        addTicketUrl(pk, ticketUrl);
+        return response;
+      }),
+    [addTicketUrl],
+  );
+
   return [
     state,
     {
@@ -140,6 +150,7 @@ export const useIncidents = (): [IncidentsStateType, UseIncidentsActionType] => 
       closeIncident: closeIncidentCallback,
       reopenIncident: reopenIncidentCallback,
       acknowledgeIncident: acknowledgeIncidentCallback,
+      addTicketUrl: addTicketUrlCallback,
     },
   ];
 };

@@ -81,8 +81,8 @@ const SignOffAction: React.FC<SignOffActionPropsType> = ({
           <TextField
             autoFocus
             margin="dense"
-            id="messsage"
-            label="Messsage"
+            id="message"
+            label="Message"
             type="text"
             fullWidth
             value={message || ""}
