@@ -137,7 +137,7 @@ export const useIncidents = (): [IncidentsStateType, UseIncidentsActionType] => 
   const addTicketUrlCallback = useCallback(
     (pk: Incident["pk"], ticketUrl: string) =>
       api.patchIncidentTicketUrl(pk, ticketUrl).then((response: IncidentTicketUrlBody) => {
-        addTicketUrl(pk);
+        addTicketUrl(pk, ticketUrl);
         return response;
       }),
     [addTicketUrl],

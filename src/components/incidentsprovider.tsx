@@ -179,12 +179,12 @@ export const reopenIncident = (state: IncidentsStateType, dispatch: Dispatch, pk
   modifyIncident(dispatch, { ...incident, open: true });
 };
 
-export const addTicket = (state: IncidentsStateType, dispatch: Dispatch, pk: Incident["pk"]) => {
+export const addTicket = (state: IncidentsStateType, dispatch: Dispatch, pk: Incident["pk"], ticketUrl: string) => {
   const incident: Incident | undefined = findIncidentByPk(state, pk);
   if (!incident) {
     throw new Error(`Unable to add ticket to incident with pk: ${pk}, couldn't find incident`);
   }
-  modifyIncident(dispatch, { ...incident });
+  modifyIncident(dispatch, { ...incident, ticket_url: ticketUrl });
 };
 
 // Context
@@ -213,7 +213,7 @@ export type IncidentsActionsType = {
   closeIncident: (pk: Incident["pk"]) => void;
   reopenIncident: (pk: Incident["pk"]) => void;
   acknowledgeIncident: (pk: Incident["pk"]) => void;
-  addTicketUrl: (pk: Incident["pk"]) => void;
+  addTicketUrl: (pk: Incident["pk"], ticketUrl: string) => void;
 
   dispatch: Dispatch;
 };
@@ -243,7 +243,7 @@ export const useIncidentsContext = (): [IncidentsStateType, IncidentsActionsType
     dispatch,
   ]);
 
-  const addTicketCallback = useCallback((pk: Incident["pk"]) => addTicket(state, dispatch, pk), [
+  const addTicketCallback = useCallback((pk: Incident["pk"], ticketUrl: string) => addTicket(state, dispatch, pk, ticketUrl), [
     state,
     dispatch,
   ]);
