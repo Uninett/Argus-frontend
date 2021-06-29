@@ -4,8 +4,6 @@ import React from "react";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import MockAdapter from "axios-mock-adapter";
-import { Router } from "react-router-dom";
-import { createMemoryHistory } from "history";
 
 import api, { TimeRecurrence, Timeslot } from "../../api";
 import TimeslotList from "./index";
@@ -37,12 +35,16 @@ const timeslot: Timeslot = {
   time_recurrences: recurrences,
 };
 
-describe("TimeslotList tests", () => {
-  beforeAll(() => {
-    auth.login("token");
-  });
+beforeAll(() => {
+  auth.login("token");
+});
 
-  it("renders the TimeslotList correctly", async () => {
+afterAll(() => {
+  auth.logout();
+});
+
+describe("TimeslotList: Initial render", () => {
+  it("renders the timeslot page correctly", async () => {
     apiMock.onGet("/api/v1/notificationprofiles/timeslots/").reply(200, [timeslot]);
     render(<TimeslotList />);
 
@@ -58,7 +60,7 @@ describe("TimeslotList tests", () => {
 
     const newTimeslotCreateButton = within(newTimeslot).getByRole("button", { name: /create/i });
     expect(newTimeslotCreateButton).toBeInTheDocument();
-    expect(newTimeslotCreateButton).toBeEnabled();
+    expect(newTimeslotCreateButton).toBeEnabled(); // TODO: should button be disabled before a name is specified?
 
     const newTimeslotDeleteButton = within(newTimeslot).getByRole("button", { name: /delete/i });
     expect(newTimeslotDeleteButton).toBeInTheDocument();
@@ -149,8 +151,10 @@ describe("TimeslotList tests", () => {
     expect(within(existingTimeslotDaySelector).getByText(/saturday/i)).toBeInTheDocument();
     expect(within(existingTimeslotDaySelector).queryByText(/sunday/i)).toBeInTheDocument();
   });
+});
 
-  it("creates a new timeslot successfully", async () => {
+describe("TimeslotList: Create new timeslot", () => {
+  it("creates new timeslot successfully", async () => {
     apiMock
       .onGet("/api/v1/notificationprofiles/timeslots/")
       .reply(200, [timeslot])
@@ -176,13 +180,26 @@ describe("TimeslotList tests", () => {
     userEvent.click(within(newTimeslot).getByRole("button", { name: /create/i, hidden: true }));
 
     const newTimeslot2 = await screen.findByRole("form", { name: /timeslot test 2/i });
-    console.log(apiMock.history.post[0].data);
     expect(newTimeslot2).toBeInTheDocument();
+
+    // TODO: check that registered values are correct?
   });
 
-  /*it("fails to create new timeslot when timeslot with same name already exists", () => {});
+  it("fails to create new timeslot when name already exists", () => {});
+});
 
-  it("adds a new recurrence to a timeslot successfully", () => {});
+describe("TimeslotList: Update existing timeslot", () => {
+  it("updates existing timeslot successfully", () => {});
 
-  it("deletes a timeslot successfully", () => {});*/
+  it("fails to update existing timeslot when end time is invalid", () => {});
+});
+
+describe("TimeslotList: Delete existing timeslot", () => {
+  it("deletes existing timeslot successfully", () => {});
+});
+
+describe("TimeslotList: Add/remove recurrences", () => {
+  it("adds new recurrence to existing timeslot successfully", () => {});
+
+  it("removes an existing recurrence from an existing timeslot successfully", () => {});
 });
