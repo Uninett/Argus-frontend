@@ -14,6 +14,7 @@ import { useAlerts } from "../../components/alertsnackbar";
 import { useApiState } from "../../state/hooks";
 import SelectedFilterProvider from "../../components/filterprovider"; // TODO: move
 import IncidentsProvider from "../../components/incidentsprovider"; // TODO: move
+import { Helmet } from "react-helmet";
 
 const IncidentComponent = ({ autoUpdateMethod }: { autoUpdateMethod: AutoUpdateMethod }) => {
   return autoUpdateMethod === "realtime" ? (
@@ -39,6 +40,9 @@ const IncidentView: React.FC<IncidentViewPropsType> = () => {
 
   return (
     <div>
+      <Helmet>
+        <title>Argus | Incidents</title>
+      </Helmet>
       <SelectedFilterProvider>
         <IncidentsProvider>
           <IncidentFilterToolbar />

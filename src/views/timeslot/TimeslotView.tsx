@@ -4,6 +4,7 @@ import { withRouter } from "react-router-dom";
 import TimeslotList from "../../components/timeslotlist";
 
 import { createStyles, makeStyles } from "@material-ui/core/styles";
+import { Helmet } from "react-helmet";
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -19,6 +20,9 @@ const TimeslotView: React.FC = () => {
   const style = useStyles();
   return (
     <div className={style.root}>
+      <Helmet>
+        <title>Argus | Timeslots</title>
+      </Helmet>
       <TimeslotList />
     </div>
   );

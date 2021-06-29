@@ -5,10 +5,14 @@ import Typography from "@material-ui/core/Typography";
 import { withRouter } from "react-router-dom";
 
 import PhoneNumberList from "../../components/phonenumberlist";
+import { Helmet } from "react-helmet";
 
 const SettingsView: React.FC = () => {
   return (
     <div>
+      <Helmet>
+        <title>Argus | Settings</title>
+      </Helmet>
       <h1>Settings</h1>
       <Grid container direction="column" justify="space-evenly" alignItems="center">
         <Typography variant="h5">Phone numbers</Typography>

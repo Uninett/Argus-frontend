@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Helmet } from "react-helmet";
 
 import { useParams } from "react-router-dom";
 
@@ -40,7 +41,10 @@ export const IncidentDetailsView: React.FC<IncidentDetailsViewPropsType> = () =>
 
   return (
     <>
-      <IncidentDetails incident={incident} onIncidentChange={(incident: Incident) => setIncident(incident)} />
+      <Helmet>
+        <title>Argus | {incident.description}</title>
+      </Helmet>
+      <IncidentDetails showTitle incident={incident} onIncidentChange={(incident: Incident) => setIncident(incident)} />
     </>
   );
 };
