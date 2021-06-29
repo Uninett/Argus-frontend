@@ -179,22 +179,87 @@ describe("TimeslotList: Create new timeslot", () => {
     userEvent.click(screen.getByRole("option", { name: /friday/i }));
     userEvent.click(within(newTimeslot).getByRole("button", { name: /create/i, hidden: true }));
 
+    const successMessage = await screen.findByText(/created new timeslot/i);
+    expect(successMessage).toBeInTheDocument();
+
     const newTimeslot2 = await screen.findByRole("form", { name: /timeslot test 2/i });
     expect(newTimeslot2).toBeInTheDocument();
 
     // TODO: check that registered values are correct?
   });
 
-  it("fails to create new timeslot when name already exists", () => {});
+  it("fails to create new timeslot when name already exists", async () => {
+    apiMock
+      .onGet("/api/v1/notificationprofiles/timeslots/")
+      .reply(200, [timeslot])
+      .onPost("/api/v1/notificationprofiles/timeslots/")
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      .reply(400);
+
+    render(<TimeslotList />);
+
+    const newTimeslot = screen.getByRole("form", { name: /new timeslot/i });
+    userEvent.type(within(newTimeslot).getByLabelText(/timeslot name/i), timeslot.name);
+    userEvent.click(within(newTimeslot).getByRole("button", { name: /create/i, hidden: true }));
+
+    const errorMessage = await screen.findByText(/failed to post notificationprofile timeslot/i);
+    expect(errorMessage).toBeInTheDocument();
+
+    const timeslots = await screen.findAllByRole("form");
+    expect(timeslots).toHaveLength(2);
+  });
 });
 
 describe("TimeslotList: Update existing timeslot", () => {
-  it("updates existing timeslot successfully", () => {});
+  it("updates existing timeslot successfully", async () => {
+    apiMock
+      .onGet("/api/v1/notificationprofiles/timeslots/")
+      .reply(200, [timeslot])
+      .onPut("/api/v1/notificationprofiles/timeslots/1/")
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      .reply(200, { pk: 1, name: timeslot.name, time_recurrences: recurrences });
 
-  it("fails to update existing timeslot when end time is invalid", () => {});
+    render(<TimeslotList />);
+
+    const newTimeslot = await screen.findByRole("form", { name: timeslot.name });
+
+    const input = within(newTimeslot).getByLabelText(/timeslot name/i);
+    expect(input).toBeInTheDocument();
+    userEvent.type(input, "{selectall}{backspace}Timeslot Test 2");
+    userEvent.type(
+      within(newTimeslot).getByRole("textbox", { name: /start time picker/i }),
+      "{selectall}{backspace}12:30",
+    );
+    userEvent.type(
+      within(newTimeslot).getByRole("textbox", { name: /end time picker/i }),
+      "{selectall}{backspace}14:30",
+    );
+
+    userEvent.click(within(newTimeslot).getByRole("button", { name: /days/i }));
+    userEvent.click(screen.getByRole("option", { name: /friday/i }));
+
+    const saveButton = within(newTimeslot).getByRole("button", { name: /save/i, hidden: true });
+    expect(saveButton).toBeInTheDocument();
+    expect(saveButton).toBeEnabled();
+
+    userEvent.click(saveButton);
+
+    //const errorMessage = await screen.findByText(/failed to put notificationprofile timeslot/);
+    //expect(errorMessage).toBeInTheDocument();
+
+    const successMessage = await screen.findByText(/updated timeslot/i);
+    expect(successMessage).toBeInTheDocument();
+
+    /*const newTimeslot2 = await screen.findByRole("form", { name: /timeslot test 2/i });
+    expect(newTimeslot2).toBeInTheDocument();*/
+
+    // TODO: check that registered values are correct?
+  });
+
+  //it("fails to update existing timeslot when end time is invalid", () => {});
 });
 
-describe("TimeslotList: Delete existing timeslot", () => {
+/*describe("TimeslotList: Delete existing timeslot", () => {
   it("deletes existing timeslot successfully", () => {});
 });
 
@@ -202,4 +267,4 @@ describe("TimeslotList: Add/remove recurrences", () => {
   it("adds new recurrence to existing timeslot successfully", () => {});
 
   it("removes an existing recurrence from an existing timeslot successfully", () => {});
-});
+});*/
