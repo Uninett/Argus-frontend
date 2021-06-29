@@ -126,7 +126,8 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
             onAddTicketUrl={(url: string) => {
               const pks: Incident["pk"][] = [...selectedIncidents.values()];
               pks.forEach((pk: Incident["pk"]) => {
-                addTicketUrl(pk, url);
+                addTicketUrl(pk, url)
+                  .then(onClearSelection).catch();
               });
             }}
             signOffActionProps={{
