@@ -208,7 +208,16 @@ export const FiltersDropdownToolbarItem = ({ className }: FiltersDropdownToolbar
   const [createDialogOpen, setCreateDialogOpen] = useState<boolean>(false);
   const [saveToDialogOpen, setSaveToDialogOpen] = useState<boolean>(false);
   const [newFilterName, setNewFilterName] = useState<string>("");
+  const [newFilterError, setNewFilterError] = useState<boolean>(false);
   const [saveToFilter, setSaveToFilter] = useState<Filter | undefined>(undefined);
+
+  useEffect(() => {
+    // before create dialog unmount
+    return () => {
+      setNewFilterError(false);
+      setNewFilterName("");
+    }
+  }, [createDialogOpen])
 
   const onCreateFilterClick = () => {
     setCreateDialogOpen(true);
@@ -219,18 +228,26 @@ export const FiltersDropdownToolbarItem = ({ className }: FiltersDropdownToolbar
   };
 
   const onCreateFilter = () => {
-    const newFilter: Omit<Filter, "pk"> = {
-      ...selectedFilter.incidentsFilter,
-      name: newFilterName,
-    };
-    createFilter(newFilter)
-      .then((filter: Filter) => {
-        setExistingFilter(filter);
-        setCreateDialogOpen(false);
-        displayAlert(`Created filter: ${filter.pk}`, "success");
-      })
-      .catch((error) => displayAlert(`Failed to create filter: ${error}`, "error"));
+    if (validateNewFilterName(newFilterName)) {
+      const newFilter: Omit<Filter, "pk"> = {
+        ...selectedFilter.incidentsFilter,
+        name: newFilterName,
+      };
+      createFilter(newFilter)
+        .then((filter: Filter) => {
+          setExistingFilter(filter);
+          setCreateDialogOpen(false);
+          displayAlert(`Created filter: ${filter.pk}`, "success");
+        })
+        .catch((error) => displayAlert(`Failed to create filter: ${error}`, "error"));
+    } else {
+      setNewFilterError(true);
+    }
   };
+
+  const validateNewFilterName = (newName: string): Boolean => {
+    return Boolean(newName) && newName !== "";
+  }
 
   const onUpdateFilter = () => {
     if (!saveToFilter) return;
@@ -311,7 +328,10 @@ export const FiltersDropdownToolbarItem = ({ className }: FiltersDropdownToolbar
         onClose={() => setCreateDialogOpen(false)}
         content={
           <TextField
+            required
             autoFocus
+            error={newFilterError}
+            helperText={newFilterError ? "Filter name is required" : null}
             value={newFilterName}
             onChange={(event) => setNewFilterName(event.target.value)}
             label="Filter name"
