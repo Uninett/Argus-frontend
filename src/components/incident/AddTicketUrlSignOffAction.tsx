@@ -24,7 +24,7 @@ const AddTicketUrl: React.FC<AddTicketUrlPropsType> = ({
       dialogCancelText="Cancel"
       dialogButtonText="Add ticket"
       title="Add ticket url"
-      question="Are you sure you want to add ticket url?"
+      question="Are you sure you want to add a ticket url?"
       onSubmit={handleSubmit}
       {...signOffActionProps}
     />
