@@ -257,3 +257,7 @@ export function optionalOr<T>(value: T | null | undefined, or: T): T {
     if (value === undefined || value === null) return or;
     return value
 }
+
+export function validateStringInput(value: string): Boolean {
+  return Boolean(value) && value !== "";
+}

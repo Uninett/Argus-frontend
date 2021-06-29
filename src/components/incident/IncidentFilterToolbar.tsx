@@ -41,7 +41,13 @@ import api from "../../api";
 import { ENABLE_WEBSOCKETS_SUPPORT } from "../../config";
 
 // Utils
-import { saveToLocalStorage, fromLocalStorageOrDefault, optionalBoolToKey, optionalOr } from "../../utils";
+import {
+  saveToLocalStorage,
+  fromLocalStorageOrDefault,
+  optionalBoolToKey,
+  optionalOr,
+  validateStringInput,
+} from "../../utils";
 import { DROPDOWN_TOOLBAR } from "../../localstorageconsts";
 
 // Contexts/hooks
@@ -228,7 +234,7 @@ export const FiltersDropdownToolbarItem = ({ className }: FiltersDropdownToolbar
   };
 
   const onCreateFilter = () => {
-    if (validateNewFilterName(newFilterName)) {
+    if (validateStringInput(newFilterName)) {
       const newFilter: Omit<Filter, "pk"> = {
         ...selectedFilter.incidentsFilter,
         name: newFilterName,
@@ -244,10 +250,6 @@ export const FiltersDropdownToolbarItem = ({ className }: FiltersDropdownToolbar
       setNewFilterError(true);
     }
   };
-
-  const validateNewFilterName = (newName: string): Boolean => {
-    return Boolean(newName) && newName !== "";
-  }
 
   const onUpdateFilter = () => {
     if (!saveToFilter) return;
