@@ -98,14 +98,10 @@ type TagChipPropsType = {
 };
 
 const isValidUrl = (url: string) => {
-  // Pavlo's answer at
-  // https://stackoverflow.com/questions/5717093/check-if-a-javascript-string-is-a-url
-  try {
-    new URL(url);
-  } catch (_) {
-    return false;
-  }
-  return true;
+  let pattern = new RegExp(
+    "^(http(s)?:\\/\\/)+[\\w\\-\\._~:\\/?#[\\]@!\\$&'\\(\\)\\*\\+,;=.]+$",
+    'i');
+  return Boolean(pattern.test(url));
 };
 
 const hyperlinkIfAbsoluteUrl = (url: string, title?: string) => {
@@ -145,6 +141,7 @@ const TicketModifiableField: React.FC<TicketModifiableFieldPropsType> = ({
 
   const [changeUrl, setChangeUrl] = useState<boolean>(false);
   const [url, setUrl] = useStateWithDynamicDefault<string | undefined>(urlProp);
+  const [invalidAbsoluteUrl, setInvalidAbsoluteUrl] = useState<boolean>(false);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUrl(event.target.value);
@@ -153,11 +150,15 @@ const TicketModifiableField: React.FC<TicketModifiableFieldPropsType> = ({
 
   const handleSave = () => {
     // If url is empty string ("") store it as undefined.
-    if (url !== undefined && changeUrl) saveChange(url || undefined);
-    setChangeUrl(false);
-  };
+    if (url && changeUrl && !isValidUrl(url)) {
+      setInvalidAbsoluteUrl(true);
+    } else if (changeUrl) {
+      saveChange(url || undefined);
+      setInvalidAbsoluteUrl(false);
+      setChangeUrl(false);
+    }
 
-  const error = useMemo(() => !(url || !isValidUrl(url || "")), [url]);
+  };
 
   return (
     <ListItem>
@@ -166,8 +167,8 @@ const TicketModifiableField: React.FC<TicketModifiableFieldPropsType> = ({
           label="Ticket"
           defaultValue={url || ""}
           onChange={handleChange}
-          error={error}
-          helperText={error && "Invalid URL"}
+          error={invalidAbsoluteUrl}
+          helperText={invalidAbsoluteUrl && "Invalid absolute URL"}
         />
         {changeUrl && (
           <Button className={classes.safeButton} endIcon={<SaveIcon />} onClick={handleSave}>
