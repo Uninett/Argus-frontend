@@ -60,7 +60,7 @@ const SignOffAction: React.FC<SignOffActionPropsType> = ({
       setInputError(false);
       setMessage("");
     }
-  }, [])
+  }, [open])
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -108,6 +108,8 @@ const SignOffAction: React.FC<SignOffActionPropsType> = ({
             fullWidth
             value={message || ""}
             onChange={handleMessageChange}
+            error={inputError}
+            helperText={inputError ? "Required" : null}
           />
           {children}
         </DialogContent>
