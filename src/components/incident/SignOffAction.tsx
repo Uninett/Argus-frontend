@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import Button, { ButtonProps } from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
@@ -11,6 +11,7 @@ import TextField from "@material-ui/core/TextField";
 import { makeConfirmationButton } from "../../components/buttons/ConfirmationButton";
 
 import { useStyles } from "./styles";
+import { validateStringInput } from "../../utils";
 
 export type SignOffActionPropsType = {
   dialogTitle: string;
@@ -18,6 +19,8 @@ export type SignOffActionPropsType = {
   dialogCancelText: string;
   dialogSubmitText: string;
   dialogButtonText: string;
+  dialogInputLabel: string;
+  isDialogInputRequired: boolean;
   title: string;
   question: string;
   confirmName?: string;
@@ -34,6 +37,8 @@ const SignOffAction: React.FC<SignOffActionPropsType> = ({
   dialogCancelText,
   dialogSubmitText,
   dialogButtonText,
+  dialogInputLabel,
+  isDialogInputRequired,
   title,
   question,
   confirmName,
@@ -46,16 +51,31 @@ const SignOffAction: React.FC<SignOffActionPropsType> = ({
   const classes = useStyles();
 
   const [open, setOpen] = useState<boolean>(false);
-  const [message, setMessage] = useState<string | undefined>(undefined);
+  const [message, setMessage] = useState<string>("");
+  const [inputError, setInputError] = useState<boolean>(false);
+
+  useEffect(() => {
+    // before unmount
+    return () => {
+      setInputError(false);
+      setMessage("");
+    }
+  }, [])
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   const onConfirm = () => {
-    if (message) {
+    if (isDialogInputRequired && !validateStringInput(message)) {
+      setInputError(true);
+    } else if (validateStringInput(message)) {
       onSubmit(message);
       setOpen(false);
-      setMessage(undefined);
+      setMessage("");
+    } else {
+      onSubmit("");
+      setOpen(false);
+      setMessage("");
     }
   };
 
@@ -79,10 +99,11 @@ const SignOffAction: React.FC<SignOffActionPropsType> = ({
         <DialogContent>
           <DialogContentText>{dialogContentText}</DialogContentText>
           <TextField
+            required={isDialogInputRequired}
             autoFocus
             margin="dense"
             id="message"
-            label="Message"
+            label={dialogInputLabel}
             type="text"
             fullWidth
             value={message || ""}
