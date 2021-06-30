@@ -1,7 +1,7 @@
 /**  * @jest-environment jsdom-sixteen  */
 
 import React from "react";
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import TableToolbar from "../IncidentTableToolbar";
@@ -97,5 +97,25 @@ describe('Add Ticket URL functional test suite', () => {
     userEvent.click(dialogSubmitBtn);
 
     expect(patchIncidentTicketUrlSpy).toBeCalledWith(1000, 'http://testUrl.no');
+  });
+
+  test('invalid absolute url adds no ticket and displays a helper text', () => {
+    patchIncidentTicketUrlSpy.mockResolvedValueOnce({ticket_url: 'testTicketUrl'});
+
+    const addTicketBtn = screen.getByRole('button', {name: /add ticket/i});
+    userEvent.click(addTicketBtn);
+
+    const addTicketDialog = screen.getByRole('dialog')
+    expect(addTicketDialog).toBeInTheDocument();
+
+    const dialogInputField = within(addTicketDialog).getByRole('textbox', {name: /valid ticket url/i});
+    userEvent.type(dialogInputField, 'testUrl.no');
+    expect(dialogInputField).toHaveValue('testUrl.no');
+
+    const dialogSubmitBtn = within(addTicketDialog).getByRole('button', {name: /submit/i});
+    userEvent.click(dialogSubmitBtn);
+
+    expect(patchIncidentTicketUrlSpy).toBeCalledTimes(0);
+    expect(within(addTicketDialog).getByText('Must be an absolute URL')).toBeInTheDocument();
   });
 });
