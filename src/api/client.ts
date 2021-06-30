@@ -44,6 +44,7 @@ import auth from "../auth";
 import { ErrorType, debuglog } from "../utils";
 
 import { BACKEND_URL } from "../config";
+import { getErrorCause } from "./utils";
 
 function defaultResolver<T, P = T>(data: T): T {
   return data;
@@ -179,7 +180,7 @@ class ApiClient {
     return this.resolveOrReject(
       this.authGet<User, {}>("/api/v1/auth/user/"),
       defaultResolver,
-      (error) => new Error(`Failed to get current user: ${error}`),
+      (error) => new Error(`Failed to get current user: ${getErrorCause(error)}`),
     );
   }
 
@@ -187,7 +188,7 @@ class ApiClient {
     return this.resolveOrReject(
       this.authGet<User, {}>(`/api/v1/auth/users/${userPK}/`),
       defaultResolver,
-      (error) => new Error(`Failed to get user: ${error}`),
+      (error) => new Error(`Failed to get user: ${getErrorCause(error)}`),
     );
   }
 
@@ -196,7 +197,7 @@ class ApiClient {
     return this.resolveOrReject(
       this.authGet<PhoneNumber[], never>(`/api/v1/auth/phone-number/`),
       defaultResolver,
-      (error) => new Error(`Failed to get phone numbers: ${error}`),
+      (error) => new Error(`Failed to get phone numbers: ${getErrorCause(error)}`),
     );
   }
 
@@ -207,7 +208,7 @@ class ApiClient {
         phone_number: phoneNumber,
       }),
       defaultResolver,
-      (error) => new Error(`Failed to put phone number: ${error}`),
+      (error) => new Error(`Failed to put phone number: ${getErrorCause(error)}`),
     );
   }
 
@@ -218,7 +219,7 @@ class ApiClient {
         phone_number: phoneNumber,
       }),
       defaultResolver,
-      (error) => new Error(`Failed to create phone number ${phoneNumber}: ${error}`),
+      (error) => new Error(`Failed to create phone number ${phoneNumber}: ${getErrorCause(error)}`),
     );
   }
 
@@ -226,7 +227,7 @@ class ApiClient {
     return this.resolveOrReject(
       this.authDelete<never, never>(`/api/v1/auth/phone-number/${pk}/`),
       defaultResolver,
-      (error) => new Error(`Failed to delete phone number ${pk}: ${error}`),
+      (error) => new Error(`Failed to delete phone number ${pk}: ${getErrorCause(error)}`),
     );
   }
 
@@ -235,7 +236,7 @@ class ApiClient {
     return this.resolveOrReject(
       this.authGet<NotificationProfile, GetNotificationProfileRequest>(`/api/v1/notificationprofile/${timeslot}/`),
       defaultResolver,
-      (error) => new Error(`Failed to get notification profile: ${error}`),
+      (error) => new Error(`Failed to get notification profile: ${getErrorCause(error)}`),
     );
   }
 
@@ -243,7 +244,7 @@ class ApiClient {
     return this.resolveOrReject(
       this.authGet<NotificationProfile[], GetNotificationProfileRequest>(`/api/v1/notificationprofiles/`),
       defaultResolver,
-      (error) => new Error(`Failed to get notification profiles: ${error}`),
+      (error) => new Error(`Failed to get notification profiles: ${getErrorCause(error)}`),
     );
   }
 
@@ -268,7 +269,7 @@ class ApiClient {
         },
       ),
       defaultResolver,
-      (error) => new Error(`Failed to update notification profile ${timeslot}: ${error}`),
+      (error) => new Error(`Failed to update notification profile ${timeslot}: ${getErrorCause(error)}`),
     );
   }
 
@@ -291,7 +292,7 @@ class ApiClient {
         phone_number: phone_number || null,
       }),
       defaultResolver,
-      (error) => new Error(`Failed to create notification profile ${timeslot}: ${error}`),
+      (error) => new Error(`Failed to create notification profile ${timeslot}: ${getErrorCause(error)}`),
     );
   }
 
@@ -303,7 +304,7 @@ class ApiClient {
         return Promise.resolve(true);
       })
       .catch((error) => {
-        return Promise.reject(new Error(`Failed to delete notification profile ${profile}: ${error}`));
+        return Promise.reject(new Error(`Failed to delete notification profile ${profile}: ${getErrorCause(error)}`));
       });
   }
 
@@ -325,7 +326,9 @@ class ApiClient {
     return this.resolveOrReject(
       this.authPost<Event, EventWithoutDescriptionBody>(`/api/v1/incidents/${pk}/events/`, { type: EventType.REOPEN }),
       defaultResolver,
-      (error) => new Error(`Failed to post incident reopen event: ${error}`),
+      (error) => {
+        throw new Error(`Failed to post incident reopen event: ${getErrorCause(error)}`)
+      },
     );
   }
 
@@ -333,7 +336,7 @@ class ApiClient {
     return this.resolveOrReject(
       this.authGet<Acknowledgement[], never>(`/api/v1/incidents/${pk}/acks/`),
       defaultResolver,
-      (error) => new Error(`Failed to get incident acks: ${error}`),
+      (error) => new Error(`Failed to get incident acks: ${getErrorCause(error)}`),
     );
   }
 
@@ -341,7 +344,7 @@ class ApiClient {
     return this.resolveOrReject(
       this.authGet<Event[], never>(`/api/v1/incidents/${pk}/events/`),
       defaultResolver,
-      (error) => new Error(`Failed to get incident events: ${error}`),
+      (error) => new Error(`Failed to get incident events: ${getErrorCause(error)}`),
     );
   }
 
@@ -357,7 +360,7 @@ class ApiClient {
           : { type: EventType.CLOSE },
       ),
       defaultResolver,
-      (error) => new Error(`Failed to post incident close event: ${error}`),
+      (error) => new Error(`Failed to post incident close event: ${getErrorCause(error)}`),
     );
   }
 
@@ -368,7 +371,7 @@ class ApiClient {
         ticket_url: ticketUrl,
       }),
       defaultResolver,
-      (error) => new Error(`Failed to put incident ticket url: ${error}`),
+      (error) => new Error(`Failed to put incident ticket url: ${getErrorCause(error)}`),
     );
   }
 
@@ -412,13 +415,13 @@ class ApiClient {
       return this.resolveOrReject(
         this.authGet<CursorPaginationResponse<Incident>, never>(`/api/v1/incidents/${queryString}`),
         defaultResolver,
-        (error) => new Error(`Failed to get incidents: ${error}`),
+        (error) => new Error(`Failed to get incidents: ${getErrorCause(error)}`),
       );
     } else {
       return this.resolveOrReject(
         this.authGet<CursorPaginationResponse<Incident>, never>(cursor),
         defaultResolver,
-        (error) => new Error(`Failed to get incidents: ${error}`),
+        (error) => new Error(`Failed to get incidents: ${getErrorCause(error)}`),
       );
     }
   }
@@ -427,7 +430,7 @@ class ApiClient {
     return this.resolveOrReject(
       this.authGet<Incident, never>(`/api/v1/incidents/${pk}/`),
       defaultResolver,
-      (error) => new Error(`Failed to get incident with pk=${pk}: ${error}`),
+      (error) => new Error(`Failed to get incident with pk=${pk}: ${getErrorCause(error)}`),
     );
   }
 
@@ -441,7 +444,7 @@ class ApiClient {
     return this.resolveOrReject(
       this.authGet<CursorPaginationResponse<Incident>, never>(`/api/v1/incidents/`),
       paginationResponseResolver,
-      (error) => new Error(`Failed to get incidents: ${error}`),
+      (error) => new Error(`Failed to get incidents: ${getErrorCause(error)}`),
     );
   }
 
@@ -449,7 +452,7 @@ class ApiClient {
     return this.resolveOrReject(
       this.authGet<CursorPaginationResponse<Incident>, never>(`/api/v1/incidents/open/`),
       paginationResponseResolver,
-      (error) => new Error(`Failed to get incidents: ${error}`),
+      (error) => new Error(`Failed to get incidents: ${getErrorCause(error)}`),
     );
   }
 
@@ -457,7 +460,7 @@ class ApiClient {
     return this.resolveOrReject(
       this.authGet<CursorPaginationResponse<Incident>, never>(`/api/v1/incidents/open+unacked/`),
       paginationResponseResolver,
-      (error) => new Error(`Failed to get incidents: ${error}`),
+      (error) => new Error(`Failed to get incidents: ${getErrorCause(error)}`),
     );
   }
 
@@ -465,7 +468,7 @@ class ApiClient {
     return this.resolveOrReject(
       this.authGet<IncidentMetadata, never>(`/api/v1/incidents/metadata/`),
       defaultResolver,
-      (error) => new Error(`Failed to get incidents metadata: ${error}`),
+      (error) => new Error(`Failed to get incidents metadata: ${getErrorCause(error)}`),
     );
   }
 
@@ -473,7 +476,7 @@ class ApiClient {
     return this.resolveOrReject(
       this.authPost<Incident[], FilterString>(`/api/v1/notificationprofiles/filterpreview/`, filterDefinition),
       defaultResolver,
-      (error) => new Error(`Failed to get filtered incidents: ${error}`),
+      (error) => new Error(`Failed to get filtered incidents: ${getErrorCause(error)}`),
     );
   }
 
@@ -499,7 +502,7 @@ class ApiClient {
             };
           },
         ),
-      (error) => new Error(`Failed to get notificationprofile filters: ${error}`),
+      (error) => new Error(`Failed to get notificationprofile filters: ${getErrorCause(error)}`),
     );
   }
 
@@ -519,7 +522,7 @@ class ApiClient {
         filter_string: filterString,
       }),
       defaultResolver,
-      (error) => new Error(`Failed to create notification filter ${filter.name}: ${error}`),
+      (error) => new Error(`Failed to create notification filter ${filter.name}: ${getErrorCause(error)}`),
     );
   }
 
@@ -540,7 +543,7 @@ class ApiClient {
         filter_string: filterString,
       }),
       defaultResolver,
-      (error) => new Error(`Failed to update notification filter ${filter.pk}: ${error}`),
+      (error) => new Error(`Failed to update notification filter ${filter.pk}: ${getErrorCause(error)}`),
     );
   }
 
@@ -548,7 +551,7 @@ class ApiClient {
     return this.resolveOrReject(
       this.authDelete<never, never>(`/api/v1/notificationprofiles/filters/${pk}/`),
       defaultResolver,
-      (error) => new Error(`Failed to delete notification filter ${pk}: ${error}`),
+      (error) => new Error(`Failed to delete notification filter ${pk}: ${getErrorCause(error)}`),
     );
   }
 
@@ -557,7 +560,7 @@ class ApiClient {
     return this.resolveOrReject(
       this.authGet<Timeslot[], never>(`/api/v1/notificationprofiles/timeslots/`),
       defaultResolver,
-      (error) => new Error(`Failed to get notificationprofile timeslots: ${error}`),
+      (error) => new Error(`Failed to get notificationprofile timeslots: ${getErrorCause(error)}`),
     );
   }
 
@@ -565,7 +568,7 @@ class ApiClient {
     return this.resolveOrReject(
       this.authDelete<boolean, never>(`/api/v1/notificationprofiles/timeslots/${timeslotPK}/`),
       () => true,
-      (error) => new Error(`Failed to delete notificationprofile timeslots: ${error}`),
+      (error) => new Error(`Failed to delete notificationprofile timeslots: ${getErrorCause(error)}`),
     );
   }
 
@@ -577,7 +580,7 @@ class ApiClient {
         time_recurrences: timeRecurrences,
       }),
       defaultResolver,
-      (error) => new Error(`Failed to put notificationprofile timeslot: ${error}`),
+      (error) => new Error(`Failed to put notificationprofile timeslot: ${getErrorCause(error)}`),
     );
   }
 
@@ -589,7 +592,7 @@ class ApiClient {
         time_recurrences: timeRecurrences,
       }),
       defaultResolver,
-      (error) => new Error(`Failed to post notificationprofile timeslot: ${error}`),
+      (error) => new Error(`Failed to post notificationprofile timeslot: ${getErrorCause(error)}`),
     );
   }
 
@@ -598,7 +601,7 @@ class ApiClient {
     return this.resolveOrReject(
       this.authPost<Acknowledgement, AcknowledgementBody>(`/api/v1/incidents/${incidentPK}/acks/`, ack),
       defaultResolver,
-      (error) => new Error(`Failed to post incident ack: ${error}`),
+      (error) => new Error(`Failed to post incident ack: ${getErrorCause(error)}`),
     );
   }
 
