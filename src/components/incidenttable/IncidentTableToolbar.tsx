@@ -19,6 +19,7 @@ import type { Incident, AcknowledgementBody } from "../../api/types.d";
 import { useIncidentsContext } from "../../components/incidentsprovider";
 import { useSelectedFilter } from "../../components/filterprovider";
 import { useIncidents } from "../../api/actions";
+import { useAlerts } from "../alertsnackbar";
 
 // Components
 import { useStyles } from "../incident/styles";
@@ -55,6 +56,7 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
 }: TableToolbarPropsType) => {
   const classes = useToolbarStyles();
   const rootClasses = useStyles();
+  const displayAlert = useAlerts();
 
   const [, { closeIncident, reopenIncident, acknowledgeIncident, addTicketUrl }] = useIncidents();
   const [, { incidentByPk }] = useIncidentsContext();
@@ -127,7 +129,11 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
               const pks: Incident["pk"][] = [...selectedIncidents.values()];
               pks.forEach((pk: Incident["pk"]) => {
                 addTicketUrl(pk, url)
-                  .then(onClearSelection).catch();
+                  .then(() => {
+                    onClearSelection();
+                    displayAlert(`Updated ticket URL`, "success");
+                  })
+                  .catch((error) => displayAlert(`Failed to update ticket URL - ${error}`, "error"));
               });
             }}
             signOffActionProps={{
@@ -142,7 +148,11 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
               const pks: Incident["pk"][] = [...selectedIncidents.values()];
               pks.forEach((pk: Incident["pk"]) => {
                 acknowledgeIncident(pk, ackBody)
-                  .then(onClearSelection).catch();
+                  .then(() => {
+                    onClearSelection();
+                    displayAlert(`Submitted acknowledgment(s)`, "success");
+                  })
+                  .catch((error) => displayAlert(`Failed to submit acknowledgments(s) - ${error}`, "error"));
               });
             }}
             signOffActionProps={{
@@ -160,7 +170,11 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
                 const pks: Incident["pk"][] = [...selectedIncidents.values()];
                 pks.forEach((pk: Incident["pk"]) => {
                   closeIncident(pk, msg)
-                    .then(onClearSelection).catch();
+                    .then(() => {
+                      onClearSelection();
+                      displayAlert(`Closed incident(s)`, "success");
+                    })
+                    .catch((error) => displayAlert(`Failed to close incident(s) - ${error}`, "error"));
                 });
               }}
               onManualOpen={() => {
@@ -168,7 +182,14 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
                 const pks: Incident["pk"][] = [...selectedIncidents.values()];
                 pks.forEach((pk: Incident["pk"]) => {
                   reopenIncident(pk)
-                    .then(onClearSelection).catch();
+                    .then(() => {
+                      onClearSelection();
+                      displayAlert(`Reopened incident(s)`, "success");
+                    })
+                    .catch((error) => {
+                      console.log(error);
+                      displayAlert(`Failed to reopen incident(s) - ${error}`, "error")
+                    });
                 });
               }}
               reopenButtonText="Re-open selected"
