@@ -2,6 +2,7 @@ import { useState, useEffect, Dispatch, SetStateAction } from "react";
 
 import format from "date-fns/format";
 import formatDistance from "date-fns/formatDistance";
+import moment from "moment";
 
 // Api
 import type { Incident, User, Token } from "./api/types.d";
@@ -150,8 +151,7 @@ export function dateFromTimeOfDayString(timeOfDay: string): Date {
 }
 
 export function timeOfDayFromDate(date: Date): string {
-  const [hours, minutes, seconds] = [date.getHours(), date.getMinutes(), date.getSeconds()];
-  return `${hours}:${minutes}:${seconds}`;
+  return moment(date).format("HH:mm:ss");
 }
 
 export type FormatTimestampOptions = Partial<{
