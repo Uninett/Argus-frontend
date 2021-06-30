@@ -12,6 +12,7 @@ import { makeConfirmationButton } from "../../components/buttons/ConfirmationBut
 
 import { useStyles } from "./styles";
 import { validateStringInput, validateUrlInput } from "../../utils";
+import { Alert } from "@material-ui/lab";
 
 export type SignOffActionPropsType = {
   dialogTitle: string;
@@ -22,6 +23,7 @@ export type SignOffActionPropsType = {
   dialogInputLabel: string;
   isDialogInputRequired: boolean;
   dialogInputType: string;
+  dialogHelperText?: string;
   title: string;
   question: string;
   confirmName?: string;
@@ -41,6 +43,7 @@ const SignOffAction: React.FC<SignOffActionPropsType> = ({
   dialogInputLabel,
   isDialogInputRequired,
   dialogInputType,
+  dialogHelperText,
   title,
   question,
   confirmName,
@@ -73,7 +76,7 @@ const SignOffAction: React.FC<SignOffActionPropsType> = ({
     if (isDialogInputRequired && !validateStringInput(message)) {
       setInputError(true);
       setErrorHelperText("Required");
-    } else if (dialogInputType === "url" && !validateUrlInput(message)) {
+    } else if (dialogInputType === "url" && message && !validateUrlInput(message)) {
       setInputError(true);
       setErrorHelperText("Must be an absolute URL")
     } else if (validateStringInput(message)) {
@@ -124,6 +127,7 @@ const SignOffAction: React.FC<SignOffActionPropsType> = ({
             error={inputError}
             helperText={inputError ? errorHelperText : null}
           />
+          {dialogHelperText && <DialogContentText><Alert severity="info">{dialogHelperText}</Alert></DialogContentText>}
           {children}
         </DialogContent>
         <DialogActions>
