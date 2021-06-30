@@ -127,7 +127,7 @@ const SignOffAction: React.FC<SignOffActionPropsType> = ({
             error={inputError}
             helperText={inputError ? errorHelperText : null}
           />
-          {dialogHelperText && <DialogContentText><Alert severity="info">{dialogHelperText}</Alert></DialogContentText>}
+          {dialogHelperText && <DialogContent><Alert severity="info">{dialogHelperText}</Alert></DialogContent>}
           {children}
         </DialogContent>
         <DialogActions>

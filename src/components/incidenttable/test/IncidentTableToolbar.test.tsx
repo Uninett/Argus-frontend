@@ -89,13 +89,13 @@ describe('Add Ticket URL functional test suite', () => {
     const addTicketDialog = screen.getByRole('dialog')
     expect(addTicketDialog).toBeInTheDocument();
 
-    const dialogInputField = within(addTicketDialog).getByRole('textbox', {name: /message/i});
-    userEvent.type(dialogInputField, 'testUrl');
-    expect(dialogInputField).toHaveValue('testUrl');
+    const dialogInputField = within(addTicketDialog).getByRole('textbox', {name: /valid ticket url/i});
+    userEvent.type(dialogInputField, 'http://testUrl.no');
+    expect(dialogInputField).toHaveValue('http://testUrl.no');
 
     const dialogSubmitBtn = within(addTicketDialog).getByRole('button', {name: /submit/i});
     userEvent.click(dialogSubmitBtn);
 
-    expect(patchIncidentTicketUrlSpy).toBeCalledWith(1000, 'testUrl');
+    expect(patchIncidentTicketUrlSpy).toBeCalledWith(1000, 'http://testUrl.no');
   });
 });
