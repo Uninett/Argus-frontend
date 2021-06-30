@@ -11,7 +11,7 @@ import TextField from "@material-ui/core/TextField";
 import { makeConfirmationButton } from "../../components/buttons/ConfirmationButton";
 
 import { useStyles } from "./styles";
-import { validateStringInput } from "../../utils";
+import { validateStringInput, validateUrlInput } from "../../utils";
 
 export type SignOffActionPropsType = {
   dialogTitle: string;
@@ -21,6 +21,7 @@ export type SignOffActionPropsType = {
   dialogButtonText: string;
   dialogInputLabel: string;
   isDialogInputRequired: boolean;
+  dialogInputType: string;
   title: string;
   question: string;
   confirmName?: string;
@@ -39,6 +40,7 @@ const SignOffAction: React.FC<SignOffActionPropsType> = ({
   dialogButtonText,
   dialogInputLabel,
   isDialogInputRequired,
+  dialogInputType,
   title,
   question,
   confirmName,
@@ -53,12 +55,14 @@ const SignOffAction: React.FC<SignOffActionPropsType> = ({
   const [open, setOpen] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
   const [inputError, setInputError] = useState<boolean>(false);
+  const [errorHelperText, setErrorHelperText] = useState<string>("Required");
 
   useEffect(() => {
     // before unmount
     return () => {
       setInputError(false);
       setMessage("");
+      setErrorHelperText("Required");
     }
   }, [open])
 
@@ -68,6 +72,10 @@ const SignOffAction: React.FC<SignOffActionPropsType> = ({
   const onConfirm = () => {
     if (isDialogInputRequired && !validateStringInput(message)) {
       setInputError(true);
+      setErrorHelperText("Required");
+    } else if (dialogInputType === "url" && !validateUrlInput(message)) {
+      setInputError(true);
+      setErrorHelperText("Must be an absolute URL")
     } else if (validateStringInput(message)) {
       onSubmit(message);
       setOpen(false);
@@ -104,12 +112,17 @@ const SignOffAction: React.FC<SignOffActionPropsType> = ({
             margin="dense"
             id="message"
             label={dialogInputLabel}
-            type="text"
+            type={dialogInputType}
+            inputProps={
+              dialogInputType === "url" ?
+                { pattern: "^(http(s)?:\\/\\/)+[\\w\\-\\._~:\\/?#[\\]@!\\$&'\\(\\)\\*\\+,;=.]+$" } :
+                {}
+            }
             fullWidth
             value={message || ""}
             onChange={handleMessageChange}
             error={inputError}
-            helperText={inputError ? "Required" : null}
+            helperText={inputError ? errorHelperText : null}
           />
           {children}
         </DialogContent>

@@ -44,6 +44,7 @@ const CreateAck: React.FC<CreateAckPropsType> = ({ onSubmitAck, signOffActionPro
       dialogButtonText="Create acknowledegment"
       dialogInputLabel="Acknowledgment message"
       isDialogInputRequired={false}
+      dialogInputType="text"
       title="Submit acknowledment"
       question="Are you sure you want to acknowledge this incident?"
       onSubmit={handleSubmit}

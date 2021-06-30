@@ -25,6 +25,7 @@ const AddTicketUrl: React.FC<AddTicketUrlPropsType> = ({
       dialogButtonText="Add ticket"
       dialogInputLabel="Valid ticket URL"
       isDialogInputRequired={true}
+      dialogInputType="url"
       title="Add ticket url"
       question="Are you sure you want to add a ticket url?"
       onSubmit={handleSubmit}

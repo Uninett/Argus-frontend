@@ -42,6 +42,7 @@ const ManualClose: React.FC<ManualClosePropsType> = ({
         dialogButtonText={closeButtonText}
         dialogInputLabel="Closing message"
         isDialogInputRequired={false}
+        dialogInputType="text"
         title="Manually close incident"
         question="Are you sure you want to close this incident?"
         onSubmit={onManualClose}

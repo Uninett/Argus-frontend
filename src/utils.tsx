@@ -261,3 +261,10 @@ export function optionalOr<T>(value: T | null | undefined, or: T): T {
 export function validateStringInput(value: string): Boolean {
   return Boolean(value) && value !== "";
 }
+
+export function validateUrlInput(value: string): Boolean {
+  let pattern = new RegExp(
+    "^(http(s)?:\\/\\/)+[\\w\\-\\._~:\\/?#[\\]@!\\$&'\\(\\)\\*\\+,;=.]+$",
+    'i');
+  return Boolean(pattern.test(value));
+}
