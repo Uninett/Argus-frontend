@@ -160,24 +160,24 @@ describe("TimeslotList: Create new timeslot", () => {
       .reply(200, [timeslot])
       .onPost("/api/v1/notificationprofiles/timeslots/")
       // eslint-disable-next-line @typescript-eslint/camelcase
-      .reply(200, { pk: 2, name: "Timeslot Test 2", time_recurrences: recurrences });
+      .reply(201, { pk: 2, name: "Timeslot Test 2", time_recurrences: recurrences });
 
     render(<TimeslotList />);
 
-    const newTimeslot = screen.getByRole("form", { name: /new timeslot/i });
-    userEvent.type(within(newTimeslot).getByLabelText(/timeslot name/i), "Timeslot Test 2");
+    const createTimeslot = screen.getByRole("form", { name: /new timeslot/i });
+    userEvent.type(within(createTimeslot).getByLabelText(/timeslot name/i), "Timeslot Test 2");
     userEvent.type(
-      within(newTimeslot).getByRole("textbox", { name: /start time picker/i }),
+      within(createTimeslot).getByRole("textbox", { name: /start time picker/i }),
       "{selectall}{backspace}12:30",
     );
     userEvent.type(
-      within(newTimeslot).getByRole("textbox", { name: /end time picker/i }),
+      within(createTimeslot).getByRole("textbox", { name: /end time picker/i }),
       "{selectall}{backspace}14:30",
     );
 
-    userEvent.click(within(newTimeslot).getByRole("button", { name: /days/i }));
+    userEvent.click(within(createTimeslot).getByRole("button", { name: /days/i }));
     userEvent.click(screen.getByRole("option", { name: /friday/i }));
-    userEvent.click(within(newTimeslot).getByRole("button", { name: /create/i, hidden: true }));
+    userEvent.click(within(createTimeslot).getByRole("button", { name: /create/i, hidden: true }));
 
     const successMessage = await screen.findByText(/created new timeslot/i);
     expect(successMessage).toBeInTheDocument();
@@ -198,9 +198,9 @@ describe("TimeslotList: Create new timeslot", () => {
 
     render(<TimeslotList />);
 
-    const newTimeslot = screen.getByRole("form", { name: /new timeslot/i });
-    userEvent.type(within(newTimeslot).getByLabelText(/timeslot name/i), timeslot.name);
-    userEvent.click(within(newTimeslot).getByRole("button", { name: /create/i, hidden: true }));
+    const createTimeslot = screen.getByRole("form", { name: /new timeslot/i });
+    userEvent.type(within(createTimeslot).getByLabelText(/timeslot name/i), timeslot.name);
+    userEvent.click(within(createTimeslot).getByRole("button", { name: /create/i, hidden: true }));
 
     const errorMessage = await screen.findByText(/failed to post notificationprofile timeslot/i);
     expect(errorMessage).toBeInTheDocument();
@@ -217,54 +217,150 @@ describe("TimeslotList: Update existing timeslot", () => {
       .reply(200, [timeslot])
       .onPut("/api/v1/notificationprofiles/timeslots/1/")
       // eslint-disable-next-line @typescript-eslint/camelcase
-      .reply(200, { pk: 1, name: timeslot.name, time_recurrences: recurrences });
+      .reply(200, { pk: 1, name: "Timeslot Test 2", time_recurrences: recurrences });
 
     render(<TimeslotList />);
 
-    const newTimeslot = await screen.findByRole("form", { name: timeslot.name });
+    const existingTimeslot = await screen.findByRole("form", { name: timeslot.name });
 
-    const input = within(newTimeslot).getByLabelText(/timeslot name/i);
-    expect(input).toBeInTheDocument();
-    userEvent.type(input, "{selectall}{backspace}Timeslot Test 2");
-    userEvent.type(
-      within(newTimeslot).getByRole("textbox", { name: /start time picker/i }),
-      "{selectall}{backspace}12:30",
-    );
-    userEvent.type(
-      within(newTimeslot).getByRole("textbox", { name: /end time picker/i }),
-      "{selectall}{backspace}14:30",
-    );
+    const nameInput = within(existingTimeslot).getByLabelText(/timeslot name/i);
+    userEvent.type(nameInput, "{selectall}{backspace}Timeslot Test 2");
 
-    userEvent.click(within(newTimeslot).getByRole("button", { name: /days/i }));
-    userEvent.click(screen.getByRole("option", { name: /friday/i }));
+    const startTimePicker = within(existingTimeslot).getByRole("textbox", { name: /start time picker/i });
+    userEvent.type(startTimePicker, "{selectall}{backspace}12:30");
 
-    const saveButton = within(newTimeslot).getByRole("button", { name: /save/i, hidden: true });
-    expect(saveButton).toBeInTheDocument();
-    expect(saveButton).toBeEnabled();
+    const endTimePicker = within(existingTimeslot).getByRole("textbox", { name: /end time picker/i });
+    userEvent.type(endTimePicker, "{selectall}{backspace}14:30");
 
+    const daySelector = within(existingTimeslot).getByRole("button", { name: /days/i });
+    userEvent.click(daySelector);
+
+    const fridayOption = screen.getByRole("option", { name: /friday/i });
+    userEvent.click(fridayOption);
+
+    const saveButton = within(existingTimeslot).getByRole("button", { name: /save/i, hidden: true });
     userEvent.click(saveButton);
-
-    //const errorMessage = await screen.findByText(/failed to put notificationprofile timeslot/);
-    //expect(errorMessage).toBeInTheDocument();
 
     const successMessage = await screen.findByText(/updated timeslot/i);
     expect(successMessage).toBeInTheDocument();
 
-    /*const newTimeslot2 = await screen.findByRole("form", { name: /timeslot test 2/i });
-    expect(newTimeslot2).toBeInTheDocument();*/
+    const newTimeslot2 = await screen.findByRole("form", { name: /timeslot test 2/i });
+    expect(newTimeslot2).toBeInTheDocument();
 
     // TODO: check that registered values are correct?
-  });
+  }, 10000);
 
-  //it("fails to update existing timeslot when end time is invalid", () => {});
+  it("fails to update existing timeslot when end time is invalid", async () => {
+    apiMock
+      .onGet("/api/v1/notificationprofiles/timeslots/")
+      .reply(200, [timeslot])
+      .onPut("/api/v1/notificationprofiles/timeslots/1/")
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      .reply(400);
+
+    render(<TimeslotList />);
+
+    const existingTimeslot = await screen.findByRole("form", { name: timeslot.name });
+    const endTimePicker = within(existingTimeslot).getByRole("textbox", { name: /end time picker/i });
+    userEvent.type(endTimePicker, "{selectall}{backspace}08:00");
+
+    const saveButton = within(existingTimeslot).getByRole("button", { name: /save/i });
+    userEvent.click(saveButton);
+
+    const errorMessage = await screen.findByText(/failed to put notificationprofile timeslot/i);
+    expect(errorMessage).toBeInTheDocument();
+
+    // TODO: check that value was not updated
+  });
 });
 
-/*describe("TimeslotList: Delete existing timeslot", () => {
-  it("deletes existing timeslot successfully", () => {});
+describe("TimeslotList: Delete existing timeslot", () => {
+  it("deletes existing timeslot successfully", async () => {
+    apiMock
+      .onGet("/api/v1/notificationprofiles/timeslots/")
+      .reply(200, [timeslot])
+      .onDelete("/api/v1/notificationprofiles/timeslots/1/")
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      .reply(204);
+
+    render(<TimeslotList />);
+
+    const existingTimeslot = await screen.findByRole("form", { name: timeslot.name });
+    const deleteButton = within(existingTimeslot).getByRole("button", { name: /delete/i });
+    userEvent.click(deleteButton);
+
+    const successMessage = await screen.findByText(/deleted timeslot/i);
+    expect(successMessage).toBeInTheDocument();
+
+    const deletedTimeslot = screen.queryByRole("form", { name: timeslot.name });
+    expect(deletedTimeslot).toBeNull();
+  }, 10000);
 });
 
 describe("TimeslotList: Add/remove recurrences", () => {
-  it("adds new recurrence to existing timeslot successfully", () => {});
+  it("adds new recurrence to existing timeslot successfully", async () => {
+    apiMock
+      .onGet("/api/v1/notificationprofiles/timeslots/")
+      .reply(200, [timeslot])
+      .onPut("/api/v1/notificationprofiles/timeslots/1/")
+      .reply(200, {
+        pk: 1,
+        name: "Timeslot Test",
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        time_recurrences: [...recurrences, EXAMPLE_TIMESLOT_RECURRENCE_2],
+      });
 
-  it("removes an existing recurrence from an existing timeslot successfully", () => {});
-});*/
+    render(<TimeslotList />);
+
+    const existingTimeslot = await screen.findByRole("form", { name: timeslot.name });
+
+    const addRecurrenceButton = within(existingTimeslot).getByRole("button", { name: /add recurrence/i });
+    userEvent.click(addRecurrenceButton);
+
+    // TODO: check that new recurrence is rendered before saving
+
+    const saveButton = within(existingTimeslot).getByRole("button", { name: /save/i });
+    userEvent.click(saveButton);
+
+    const successMessage = await screen.findByText(/updated timeslot/i);
+    expect(successMessage).toBeInTheDocument();
+
+    const updatedTimeslot = await screen.findByRole("form", { name: timeslot.name });
+    const removeButtons = within(updatedTimeslot).getAllByRole("button", { name: /remove/i });
+    expect(removeButtons).toHaveLength(2);
+    expect(removeButtons[1]).toBeInTheDocument();
+    expect(removeButtons[0]).toBeInTheDocument();
+  }, 100000);
+
+  it("removes an existing recurrence from an existing timeslot successfully", async () => {
+    apiMock
+      .onGet("/api/v1/notificationprofiles/timeslots/")
+      .reply(200, [timeslot])
+      .onPut("/api/v1/notificationprofiles/timeslots/1/")
+      .reply(200, {
+        pk: 1,
+        name: "Timeslot Test",
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        time_recurrences: [],
+      });
+
+    render(<TimeslotList />);
+
+    const existingTimeslot = await screen.findByRole("form", { name: timeslot.name });
+
+    const removeRecurrenceButton = within(existingTimeslot).getByRole("button", { name: /remove/i });
+    userEvent.click(removeRecurrenceButton);
+
+    // TODO: check that recurrence is removed before saving
+
+    const saveButton = within(existingTimeslot).getByRole("button", { name: /save/i });
+    userEvent.click(saveButton);
+
+    const successMessage = await screen.findByText(/updated timeslot/i);
+    expect(successMessage).toBeInTheDocument();
+
+    const updatedTimeslot = await screen.findByRole("form", { name: timeslot.name });
+    const removeRecurrenceButton2 = within(updatedTimeslot).queryByRole("button", { name: /remove/i });
+    expect(removeRecurrenceButton2).toBeNull();
+  }, 100000);
+});
