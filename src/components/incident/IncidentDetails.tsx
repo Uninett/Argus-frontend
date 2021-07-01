@@ -47,6 +47,7 @@ import { AckedItem, OpenItem, TicketItem } from "./Chips";
 // Contexts/Hooks
 import { useAlerts } from "../alertsnackbar";
 import { useApiIncidentAcks, useApiIncidentEvents } from "../../api/hooks";
+import { Alert } from "@material-ui/lab";
 
 type IncidentDetailsListItemPropsType = {
   title: string;
@@ -174,6 +175,9 @@ const TicketModifiableField: React.FC<TicketModifiableFieldPropsType> = ({
           <Button className={classes.safeButton} endIcon={<SaveIcon />} onClick={handleSave}>
             Save
           </Button>
+        )}
+        {changeUrl && (
+          <Alert severity="info">Leave this field empty in order to remove ticket urls from the selected incidents</Alert>
         )}
       </Grid>
     </ListItem>
