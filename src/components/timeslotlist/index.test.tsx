@@ -5,7 +5,9 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import MockAdapter from "axios-mock-adapter";
 
-import api, { TimeRecurrence, TimeRecurrenceDay, TimeRecurrenceDayNameMap, Timeslot } from "../../api";
+import api from "../../api";
+import { TimeRecurrence, TimeRecurrenceDay, Timeslot } from "../../api/types.d";
+import { TimeRecurrenceDayNameMap } from "../../api/consts";
 import TimeslotList from "./index";
 import auth from "../../auth";
 
@@ -310,7 +312,7 @@ describe("TimeslotList: Update existing timeslot", () => {
 
     const newTimeslot2 = await screen.findByRole("form", { name: /timeslot test 2/i });
     expect(newTimeslot2).toBeInTheDocument();
-  });
+  }, 10000);
 
   it("fails to update existing timeslot when end time is invalid", async () => {
     const newEndTime = "08:00:00";
@@ -404,7 +406,7 @@ describe("TimeslotList: Add/remove recurrences", () => {
     expect(removeButtons).toHaveLength(2);
     expect(removeButtons[1]).toBeInTheDocument();
     expect(removeButtons[0]).toBeInTheDocument();
-  });
+  }, 10000);
 
   it("removes an existing recurrence from an existing timeslot successfully", async () => {
     // Mock api put request with expected request body

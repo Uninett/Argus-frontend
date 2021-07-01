@@ -5,7 +5,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import TimeslotComponent, { TimeslotRecurrenceComponent, DaySelector } from "./index";
-import { TimeRecurrence, TimeRecurrenceDay } from "../../api";
+import { TimeRecurrence, TimeRecurrenceDay } from "../../api/types.d";
 
 const EXAMPLE_TIMESLOT_RECURRENCE_1: TimeRecurrence = {
   // eslint-disable-next-line
