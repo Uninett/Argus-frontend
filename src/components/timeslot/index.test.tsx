@@ -1,15 +1,11 @@
 /**  * @jest-environment jsdom-sixteen  */
 
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import MockAdapter from "axios-mock-adapter";
-import { Router } from "react-router-dom";
-import { createMemoryHistory } from "history";
 
 import TimeslotComponent, { TimeslotRecurrenceComponent, DaySelector } from "./index";
-import api, { TimeRecurrence, TimeRecurrenceDay } from "../../api";
-import { Day } from "@material-ui/pickers";
+import { TimeRecurrence, TimeRecurrenceDay } from "../../api";
 
 const EXAMPLE_TIMESLOT_RECURRENCE_1: TimeRecurrence = {
   // eslint-disable-next-line
@@ -200,7 +196,7 @@ describe("TimeslotRecurrenceComponent tests", () => {
 
     expect(startTimeInput).toHaveValue("20:00");
     expect(onChange).toHaveBeenCalledTimes(5);
-    expect(onChange).toHaveBeenLastCalledWith(1, { ...EXAMPLE_TIMESLOT_RECURRENCE_1, start: "20:0:0" });
+    expect(onChange).toHaveBeenLastCalledWith(1, { ...EXAMPLE_TIMESLOT_RECURRENCE_1, start: "20:00:00" });
   });
 
   it("calls function onChange() with the right parameters when user types end time", () => {
@@ -218,7 +214,7 @@ describe("TimeslotRecurrenceComponent tests", () => {
 
     expect(endTimeInput).toHaveValue("22:00");
     expect(onChange).toHaveBeenCalledTimes(5);
-    expect(onChange).toHaveBeenLastCalledWith(1, { ...EXAMPLE_TIMESLOT_RECURRENCE_1, end: "22:0:0" });
+    expect(onChange).toHaveBeenLastCalledWith(1, { ...EXAMPLE_TIMESLOT_RECURRENCE_1, end: "22:00:00" });
   });
 
   it("calls function onChange() with the right parameters when day selector is changed", () => {
@@ -337,7 +333,7 @@ describe("TimeslotComponent tests", () => {
   it("renders new timeslot correctly", () => {
     render(<TimeslotComponent recurrences={recurrences} unsavedChanges={true} onSave={onSave} onDelete={onDelete} />);
 
-    const timeslotName = screen.getByRole("textbox", { name: "" });
+    const timeslotName = screen.getByRole("textbox", { name: /timeslot name/i });
     expect(timeslotName).toBeInTheDocument();
     expect(timeslotName).toHaveValue("");
 
@@ -373,7 +369,7 @@ describe("TimeslotComponent tests", () => {
       />,
     );
 
-    const timeslotName = screen.getByRole("textbox", { name: "" });
+    const timeslotName = screen.getByRole("textbox", { name: /timeslot name/i });
     expect(timeslotName).toBeInTheDocument();
     expect(timeslotName).toHaveValue("Test");
 

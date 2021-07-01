@@ -310,7 +310,7 @@ describe("TimeslotList: Update existing timeslot", () => {
 
     const newTimeslot2 = await screen.findByRole("form", { name: /timeslot test 2/i });
     expect(newTimeslot2).toBeInTheDocument();
-  }, 10000);
+  });
 
   it("fails to update existing timeslot when end time is invalid", async () => {
     const newEndTime = "08:00:00";
@@ -369,7 +369,7 @@ describe("TimeslotList: Delete existing timeslot", () => {
 
     const deletedTimeslot = screen.queryByRole("form", { name: EXISTING_TIMESLOT.name });
     expect(deletedTimeslot).toBeNull();
-  }, 10000);
+  });
 });
 
 describe("TimeslotList: Add/remove recurrences", () => {
@@ -404,7 +404,7 @@ describe("TimeslotList: Add/remove recurrences", () => {
     expect(removeButtons).toHaveLength(2);
     expect(removeButtons[1]).toBeInTheDocument();
     expect(removeButtons[0]).toBeInTheDocument();
-  }, 100000);
+  });
 
   it("removes an existing recurrence from an existing timeslot successfully", async () => {
     // Mock api put request with expected request body
@@ -437,5 +437,5 @@ describe("TimeslotList: Add/remove recurrences", () => {
     const updatedTimeslot = await screen.findByRole("form", { name: EXISTING_TIMESLOT.name });
     const removeRecurrenceButton2 = within(updatedTimeslot).queryByRole("button", { name: /remove/i });
     expect(removeRecurrenceButton2).toBeNull();
-  }, 100000);
+  });
 });
