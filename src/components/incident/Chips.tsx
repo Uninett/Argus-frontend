@@ -4,7 +4,7 @@ import type { SeverityLevelNumber, Timestamp } from "../../api/types.d";
 
 import clsx from "clsx";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-import { WHITE, YELLOW, ORANGE } from "../../colorscheme";
+import { RED, ORANGE, YELLOW, WHITE } from "../../colorscheme";
 import { SeverityLevelNumberNameMap } from "../../api/consts";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -38,11 +38,11 @@ const useStyles = makeStyles((theme: Theme) =>
       color: WHITE,
     },
     severityLevel2: {
-      background: ORANGE,
+      background: RED,
       color: WHITE,
     },
     severityLevel3: {
-      background: theme.palette.secondary.main,
+      background: ORANGE,
       color: WHITE,
     },
     severityLevel4: {
