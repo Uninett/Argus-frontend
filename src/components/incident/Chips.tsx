@@ -176,7 +176,11 @@ export const LevelItem: React.FC<LevelItemPropsType> = ({ level, small }: LevelI
       size={(small && "small") || undefined}
       variant="outlined"
       className={className}
-      label={small ? SeverityLevelNumberNameMap[level] : `Severity level: ${SeverityLevelNumberNameMap[level]}`}
+      label={
+        small
+          ? `${level} - ${SeverityLevelNumberNameMap[level]}`
+          : `Severity level: ${level} - ${SeverityLevelNumberNameMap[level]}`
+      }
     />
   );
 };
