@@ -116,11 +116,6 @@ const SignOffAction: React.FC<SignOffActionPropsType> = ({
             id="message"
             label={dialogInputLabel}
             type={dialogInputType}
-            inputProps={
-              dialogInputType === "url" ?
-                { pattern: "^(http(s)?:\\/\\/)+[\\w\\-\\._~:\\/?#[\\]@!\\$&'\\(\\)\\*\\+,;=.]+$" } :
-                {}
-            }
             fullWidth
             value={message || ""}
             onChange={handleMessageChange}

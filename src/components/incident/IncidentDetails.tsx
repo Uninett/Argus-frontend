@@ -99,10 +99,14 @@ type TagChipPropsType = {
 };
 
 const isValidUrl = (url: string) => {
-  let pattern = new RegExp(
-    "^(http(s)?:\\/\\/)+[\\w\\-\\._~:\\/?#[\\]@!\\$&'\\(\\)\\*\\+,;=.]+$",
-    'i');
-  return Boolean(pattern.test(url));
+  // Pavlo's answer at
+  // https://stackoverflow.com/questions/5717093/check-if-a-javascript-string-is-a-url
+  try {
+    new URL(url);
+  } catch (_) {
+    return false;
+  }
+  return true;
 };
 
 const hyperlinkIfAbsoluteUrl = (url: string, title?: string) => {

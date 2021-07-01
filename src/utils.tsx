@@ -263,8 +263,12 @@ export function validateStringInput(value: string): Boolean {
 }
 
 export function validateUrlInput(value: string): Boolean {
-  let pattern = new RegExp(
-    "^(http(s)?:\\/\\/)+[\\w\\-\\._~:\\/?#[\\]@!\\$&'\\(\\)\\*\\+,;=.]+$",
-    'i');
-  return Boolean(pattern.test(value));
+  // Pavlo's answer at
+  // https://stackoverflow.com/questions/5717093/check-if-a-javascript-string-is-a-url
+  try {
+    new URL(value);
+  } catch (_) {
+    return false;
+  }
+  return true;
 }
