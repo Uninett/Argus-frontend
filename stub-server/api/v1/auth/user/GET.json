@@ -1,0 +1,13 @@
+{
+  "username": "johndoe",
+  "first_name": "John",
+  "last_name": "Doe",
+  "email": "johndoe@example.com",
+  "phone_numbers": [
+    {
+      "pk": 0,
+      "user": 0,
+      "phone_number": "12345678"
+    }
+  ]
+}
