@@ -1,0 +1,184 @@
+{
+  "Aknowledgment": [],
+  "GetAuthToken": [
+    {
+      "id": 0,
+      "token": "demoToken1234567890"
+    }
+  ],
+  "AuthToken": [
+    {
+      "id": 0,
+      "username": "johndoe",
+      "password": "demoPassword",
+      "token": "demoToken1234567890"
+    },
+    {
+      "username": "johndoe",
+      "password": "demoPassword",
+      "id": 1
+    },
+    {
+      "username": "johndoe",
+      "password": "demoPassword",
+      "id": 2
+    },
+    {
+      "username": "johndoe",
+      "password": "demoPassword",
+      "id": 3
+    },
+    {
+      "username": "johndoe",
+      "password": "demoPassword",
+      "id": 4
+    },
+    {
+      "username": "johndoe",
+      "password": "demoPassword",
+      "id": 5
+    },
+    {
+      "id": 6
+    },
+    {
+      "id": 7
+    },
+    {
+      "id": 8
+    },
+    {
+      "id": 9
+    }
+  ],
+  "BasicUser": [],
+  "DaysEnum": [],
+  "Event": [],
+  "Filter": [],
+  "FilterBlob": [],
+  "FilterPreview": [],
+  "Incident": [],
+  "IncidentPureDeserializer": [],
+  "IncidentSerializerV1": [],
+  "IncidentTagRelation": [],
+  "IncidentTicketUrl": [],
+  "LevelEnum": [],
+  "MediaEnum": [],
+  "Metadata": [],
+  "PaginatedIncidentSerializerV1List": [],
+  "PatchedFilter": [],
+  "PatchedIncidentPureDeserializer": [],
+  "PatchedPhoneNumber": [],
+  "PatchedRequestNotificationProfile": [],
+  "PatchedSourceSystem": [],
+  "PatchedTimeslot": [],
+  "PhoneNumber": [],
+  "RequestNotificationProfile": [],
+  "SourceSystem": [
+    {
+      "pk": 0,
+      "name": "Argus",
+      "type": {
+        "name": "Incident Aggregator"
+      },
+      "user": 0,
+      "base_url": "http://argus.no"
+    }
+  ],
+  "SourceSystemType": [],
+  "Tag": [],
+  "TimeRecurrence": [],
+  "Timeslot": [],
+  "TypeEnum": [],
+  "User": [],
+  "Username": [],
+  "incidents": [
+    {
+      "pk": 0,
+      "start_time": "2021-07-01T12:52:10.227Z",
+      "end_time": "2021-07-01T12:52:10.227Z",
+      "source": {
+        "pk": 0,
+        "name": "Argus",
+        "type": {
+          "name": "Incident Aggregator"
+        },
+        "user": 0,
+        "base_url": "http://argus.no"
+      },
+      "source_incident_id": "324",
+      "details_url": "",
+      "description": "",
+      "level": 1,
+      "ticket_url": ""
+    }
+  ],
+  "notificationprofiles": [
+    {
+      "pk": "0",
+      "timeslot": {
+        "pk": 0,
+        "name": "Mondays",
+        "time_recurrences": [
+          {
+            "days": [
+              1
+            ],
+            "start": "08:00:00.000Z",
+            "end": "16:00:00.000Z"
+          }
+        ]
+      },
+      "filters": [
+        {
+          "pk": 0,
+          "name": "All",
+          "filter_string": "All",
+          "filter": {
+            "sourceSystemIds": [
+              0
+            ],
+            "tags": [],
+            "open": null,
+            "acked": null,
+            "stateful": true,
+            "maxlevel": 5
+          }
+        }
+      ],
+      "media": [
+        "EM",
+        "SM"
+      ],
+      "phone_number": {
+        "pk": 0,
+        "user": 0,
+        "phone_number": "12345678"
+      },
+      "active": true
+    }
+  ],
+  "phone-number": [
+    {
+      "pk": 0,
+      "user": 0,
+      "phone_number": "12345678"
+    }
+  ],
+  "users": [
+    {
+      "id": 0,
+      "username": "johndoe",
+      "first_name": "John",
+      "last_name": "Doe",
+      "email": "johndoe@example.com",
+      "phone_numbers": [
+        {
+          "pk": 0,
+          "user": 0,
+          "phone_number": "12345678"
+        }
+      ]
+    }
+  ]
+}
