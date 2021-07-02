@@ -412,7 +412,6 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
   const [knownSources, setKnownSources] = useState<string[]>([]);
   const [sourceIdByName, setSourceIdByName] = useState<{ [name: string]: number }>({});
   const [sourceNameById, setSourceNameById] = useState<{ [id: number]: string }>({});
-  const [maxSeverityLevel, setMaxSeverityLevel] = useState<{ level: SeverityLevelNumber }>({ level: 5 });
 
   useEffect(() => {
     // TODO: This could be stored in the global state as well,
@@ -529,10 +528,12 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
             <Select
               variant="outlined"
               id="demo-simple-select-outlined"
-              value={maxSeverityLevel.level}
+              value={
+                selectedFilter?.incidentsFilter?.filter?.maxLevel ? selectedFilter.incidentsFilter.filter.maxLevel : 5
+              }
               onChange={(event: ChangeEvent<{ name?: string; value: unknown }>) => {
-                const level = event.target.value as SeverityLevelNumber;
-                setMaxSeverityLevel({ level: level });
+                const maxLevel = event.target.value as SeverityLevelNumber;
+                setSelectedFilter({ filterContent: { maxLevel } });
               }}
             >
               {SEVERITY_LEVELS.reverse().map((level: SeverityLevelNumber) => (

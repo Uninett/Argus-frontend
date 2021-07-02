@@ -388,6 +388,9 @@ class ApiClient {
       if (filter.filter.stateful !== undefined) {
         params.push(`stateful=${filter.filter.stateful}`);
       }
+      if (filter.filter.maxLevel !== undefined) {
+        params.push(`level__lte=${filter.filter.maxLevel}`);
+      }
       if (filter.sourceSystemIds !== undefined) {
         params.push(`source__id__in=${filter.sourceSystemIds.join(",")}`);
       }

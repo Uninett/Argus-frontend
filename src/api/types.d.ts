@@ -58,6 +58,7 @@ export type FilterContent = {
   open?: boolean;
   acked?: boolean;
   stateful?: boolean;
+  maxLevel?: SeverityLevelNumber;
 };
 
 export type FilterPK = number; // WIP: fix this
