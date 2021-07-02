@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 
 import classNames from "classnames";
 
@@ -34,7 +34,7 @@ import FilterDialog from "../../components/filterdialog";
 import Modal from "../modal/Modal";
 
 // Api
-import type { AutoUpdateMethod, Filter, IncidentMetadata, SourceSystem } from "../../api/types.d";
+import type { AutoUpdateMethod, Filter, IncidentMetadata, SeverityLevelNumber, SourceSystem } from "../../api/types.d";
 import api from "../../api";
 
 // Config
@@ -45,10 +45,11 @@ import { saveToLocalStorage, fromLocalStorageOrDefault, optionalBoolToKey, optio
 import { DROPDOWN_TOOLBAR } from "../../localstorageconsts";
 
 // Contexts/hooks
-import { useAlerts } from "../../components/alertsnackbar";
+import { useAlerts } from "../alertsnackbar";
 import { useFilters } from "../../api/actions";
-import { useSelectedFilter } from "../../components/filterprovider";
+import { useSelectedFilter } from "../filterprovider";
 import { useApiState } from "../../state/hooks";
+import { SeverityLevelNumberNameMap } from "../../api/consts";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -159,7 +160,12 @@ type ToolbarItemPropsType = {
   title: string;
 };
 
-export const ToolbarItem: React.FC<ToolbarItemPropsType> = ({ name, children, className, title }: ToolbarItemPropsType) => {
+export const ToolbarItem: React.FC<ToolbarItemPropsType> = ({
+  name,
+  children,
+  className,
+  title,
+}: ToolbarItemPropsType) => {
   const style = useStyles();
   return (
     <div title={title} className={classNames(style.itemContainer, className)}>
@@ -393,7 +399,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
 
   const [dropdownToolbarOpen, setDropdownToolbarOpen] = useState<boolean>(
     // Load from localstorage if possible
-    fromLocalStorageOrDefault(DROPDOWN_TOOLBAR, false, (value: boolean) => value === true || value === false),
+    fromLocalStorageOrDefault(DROPDOWN_TOOLBAR, false, (value: boolean) => value || !value),
   );
 
   useEffect(() => {
@@ -401,9 +407,12 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
     saveToLocalStorage(DROPDOWN_TOOLBAR, dropdownToolbarOpen);
   }, [dropdownToolbarOpen]);
 
+  const SEVERITY_LEVELS: SeverityLevelNumber[] = [1, 2, 3, 4, 5];
+
   const [knownSources, setKnownSources] = useState<string[]>([]);
   const [sourceIdByName, setSourceIdByName] = useState<{ [name: string]: number }>({});
   const [sourceNameById, setSourceNameById] = useState<{ [id: number]: string }>({});
+  const [maxSeverityLevel, setMaxSeverityLevel] = useState<{ level: SeverityLevelNumber }>({ level: 5 });
 
   useEffect(() => {
     // TODO: This could be stored in the global state as well,
@@ -513,6 +522,24 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
             onSelectionChange={(tags: string[]) => setSelectedFilter({ tags })}
             selected={selectedFilter.incidentsFilter?.tags}
           />
+        </ToolbarItem>
+
+        <ToolbarItem title="Max severity level selector" name="Max level" className={classNames(style.medium)}>
+          <FormControl size="small">
+            <Select
+              variant="outlined"
+              id="demo-simple-select-outlined"
+              value={maxSeverityLevel.level}
+              onChange={(event: ChangeEvent<{ name?: string; value: unknown }>) => {
+                const level = event.target.value as SeverityLevelNumber;
+                setMaxSeverityLevel({ level: level });
+              }}
+            >
+              {SEVERITY_LEVELS.reverse().map((level: SeverityLevelNumber) => (
+                <MenuItem key={level} value={level}>{`${level} - ${SeverityLevelNumberNameMap[level]}`}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </ToolbarItem>
 
         <ToolbarItem title="Filter selector" name="Filter" className={classNames(style.medium)}>
