@@ -388,6 +388,9 @@ class ApiClient {
       if (filter.filter.stateful !== undefined) {
         params.push(`stateful=${filter.filter.stateful}`);
       }
+      if (filter.filter.maxlevel !== undefined) {
+        params.push(`level__lte=${filter.filter.maxlevel}`);
+      }
       if (filter.sourceSystemIds !== undefined) {
         params.push(`source__id__in=${filter.sourceSystemIds.join(",")}`);
       }
@@ -490,12 +493,27 @@ class ApiClient {
 
             console.log("got all filters", resp);
 
+            // Convert null-values to undefined to make page rerender correctly on state update
+            const filter = resp.filter;
+            if (filter.acked === null) {
+              filter.acked = undefined;
+            }
+            if (filter.open === null) {
+              filter.open = undefined;
+            }
+            if (filter.stateful === null) {
+              filter.stateful = undefined;
+            }
+            if (filter.maxlevel === null) {
+              filter.maxlevel = undefined;
+            }
+
             return {
               pk: resp.pk,
               name: resp.name,
               tags: definition.tags,
               sourceSystemIds: definition.sourceSystemIds,
-              filter: resp.filter,
+              filter: filter,
             };
           },
         ),

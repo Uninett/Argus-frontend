@@ -24,3 +24,6 @@ export const MUI_THEME = createMuiTheme({
 });
 
 export const WHITE = "#FFFFFF";
+export const RED = "#dc0000";
+export const ORANGE = "#fd8c00";
+export const YELLOW = "#fdc500";

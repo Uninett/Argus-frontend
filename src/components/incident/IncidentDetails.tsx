@@ -42,7 +42,7 @@ import { useStyles } from "./styles";
 import ManualClose from "./ManualCloseSignOffAction";
 import CreateAck from "./CreateAckSignOffAction";
 
-import { AckedItem, OpenItem, TicketItem } from "./Chips";
+import { AckedItem, LevelItem, OpenItem, TicketItem } from "./Chips";
 
 // Contexts/Hooks
 import { useAlerts } from "../alertsnackbar";
@@ -341,11 +341,18 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                 <Typography color="textSecondary" gutterBottom>
                   Status
                 </Typography>
-                <CenterContainer>
-                  <OpenItem open={incident.open} />
-                  <AckedItem acked={incident.acked} expiration={ackExpiryDate} />
-                  <TicketItem ticketUrl={incident.ticket_url} />
-                </CenterContainer>
+                <Grid container spacing={1} direction="column">
+                  <Grid item>
+                    <LevelItem level={incident.level} />
+                  </Grid>
+                  <Grid item>
+                    <OpenItem open={incident.open} />
+                    <AckedItem acked={incident.acked} expiration={ackExpiryDate} />
+                  </Grid>
+                  <Grid item>
+                    <TicketItem ticketUrl={incident.ticket_url} />
+                  </Grid>
+                </Grid>
               </CardContent>
             </Card>
           </Grid>
