@@ -105,21 +105,23 @@ const DEFAULT_TIMESLOT_RECURRENCE: TimeRecurrence = {
 };
 
 export type TimeslotRecurrenceComponentPropsType = {
-  pk?: TimeslotPK;
   id: number;
   recurrence: TimeRecurrence;
   onChange: (id: number, recurrence: TimeRecurrence) => void;
   onRemove: (id: number, recurrence: TimeRecurrence) => void;
   disabled?: boolean;
+
+  // Primary key of the timeslot which the recurrence belongs to. The timeslot pk is combined with the id of the recurrence to create an unique id for sub-components.
+  timeslotPk?: TimeslotPK;
 };
 
 export const TimeslotRecurrenceComponent: React.FC<TimeslotRecurrenceComponentPropsType> = ({
-  pk,
   id,
   recurrence,
   onChange,
   onRemove,
   disabled,
+  timeslotPk,
 }: TimeslotRecurrenceComponentPropsType) => {
   const style = useStyles();
 
@@ -181,7 +183,7 @@ export const TimeslotRecurrenceComponent: React.FC<TimeslotRecurrenceComponentPr
             label="All day"
           />
           <TimePicker
-            id={pk ? `timeslot-${pk}-start-time-picker-${id}` : `start-time-picker-${id}`}
+            id={timeslotPk ? `timeslot-${timeslotPk}-start-time-picker-${id}` : `start-time-picker-${id}`}
             className={style.timePicker}
             disabled={allDay || disabled}
             margin="normal"
@@ -199,7 +201,7 @@ export const TimeslotRecurrenceComponent: React.FC<TimeslotRecurrenceComponentPr
             }}
           />
           <TimePicker
-            id={pk ? `timeslot-${pk}-end-time-picker-${id}` : `end-time-picker-${id}`}
+            id={timeslotPk ? `timeslot-${timeslotPk}-end-time-picker-${id}` : `end-time-picker-${id}`}
             className={style.timePicker}
             disabled={allDay || disabled}
             margin="normal"
@@ -397,7 +399,7 @@ const TimeslotComponent: React.FC<TimeslotPropsType> = ({
               return (
                 <Grid key={index} item lg>
                   <TimeslotRecurrenceComponent
-                    pk={pk}
+                    timeslotPk={pk}
                     id={index}
                     recurrence={recurrence}
                     onChange={(id: number, recurrence: TimeRecurrence) => {
