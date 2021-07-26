@@ -21,7 +21,7 @@ import Typography from "@material-ui/core/Typography";
 import Skeleton from "@material-ui/lab/Skeleton";
 
 import { useStateWithDynamicDefault } from "../../utils";
-import { formatDuration, formatTimestamp } from "../../utils";
+import { formatDuration, formatTimestamp, isValidUrl } from "../../utils";
 
 import CenterContainer from "../../components/centercontainer";
 
@@ -96,17 +96,6 @@ type Tag = {
 type TagChipPropsType = {
   tag: Tag;
   small?: boolean;
-};
-
-const isValidUrl = (url: string) => {
-  // Pavlo's answer at
-  // https://stackoverflow.com/questions/5717093/check-if-a-javascript-string-is-a-url
-  try {
-    new URL(url);
-  } catch (_) {
-    return false;
-  }
-  return true;
 };
 
 const hyperlinkIfAbsoluteUrl = (url: string, title?: string) => {
