@@ -23,7 +23,6 @@
     "axios": "*",
     "classnames": "2.2.6",
     "cross-env": "7.0.2",
-    "moment": "^2.29.1",
     "react": "16.13.1",
     "react-cookie": "*",
     "react-dom": "16.13.1",
