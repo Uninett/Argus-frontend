@@ -262,7 +262,7 @@ export function validateStringInput(value: string): Boolean {
   return Boolean(value) && value !== "";
 }
 
-export function validateUrlInput(value: string): Boolean {
+export function isValidUrl(value: string): Boolean {
   // Pavlo's answer at
   // https://stackoverflow.com/questions/5717093/check-if-a-javascript-string-is-a-url
   try {

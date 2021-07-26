@@ -11,7 +11,7 @@ import TextField from "@material-ui/core/TextField";
 import { makeConfirmationButton } from "../../components/buttons/ConfirmationButton";
 
 import { useStyles } from "./styles";
-import { validateStringInput, validateUrlInput } from "../../utils";
+import { validateStringInput, isValidUrl } from "../../utils";
 import { Alert } from "@material-ui/lab";
 
 export type SignOffActionPropsType = {
@@ -76,7 +76,7 @@ const SignOffAction: React.FC<SignOffActionPropsType> = ({
     if (isDialogInputRequired && !validateStringInput(message)) {
       setInputError(true);
       setErrorHelperText("Required");
-    } else if (dialogInputType === "url" && message && !validateUrlInput(message)) {
+    } else if (dialogInputType === "url" && message && !isValidUrl(message)) {
       setInputError(true);
       setErrorHelperText("Must be an absolute URL")
     } else if (validateStringInput(message)) {
