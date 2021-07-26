@@ -528,12 +528,10 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
             <Select
               variant="outlined"
               id="demo-simple-select-outlined"
-              value={
-                selectedFilter?.incidentsFilter?.filter?.maxLevel ? selectedFilter.incidentsFilter.filter.maxLevel : 5
-              }
+              value={optionalOr(selectedFilter?.incidentsFilter?.filter?.maxlevel, 5)}
               onChange={(event: ChangeEvent<{ name?: string; value: unknown }>) => {
-                const maxLevel = event.target.value as SeverityLevelNumber;
-                setSelectedFilter({ filterContent: { maxLevel } });
+                const maxlevel = event.target.value as SeverityLevelNumber;
+                setSelectedFilter({ filterContent: { maxlevel } });
               }}
             >
               {SEVERITY_LEVELS.reverse().map((level: SeverityLevelNumber) => (

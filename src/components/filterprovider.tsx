@@ -41,7 +41,7 @@ const initialSelectedFilter: SelectedFilterStateType = {
     open: true,
     acked: false,
     stateful: undefined,
-    maxLevel: 5,
+    maxlevel: 5,
   },
 
   incidentsFilter: {
@@ -49,7 +49,7 @@ const initialSelectedFilter: SelectedFilterStateType = {
       acked: false,
       open: true,
       stateful: undefined,
-      maxLevel: 5,
+      maxlevel: 5,
     },
     tags: [],
     sourceSystemIds: [],
@@ -102,7 +102,7 @@ function mergedFilterContent(state: FilterContent, selected: SelectedFilterPrope
   nextState.acked = oldOrNew(state.acked, selected?.acked);
   nextState.open = oldOrNew(state.open, selected?.open);
   nextState.stateful = oldOrNew(state.stateful, selected?.stateful);
-  nextState.maxLevel = oldOrNew(state.maxLevel, selected?.maxLevel);
+  nextState.maxlevel = oldOrNew(state.maxlevel, selected?.maxlevel);
   // console.log("state", state, "selected", selected, "next", nextState);
   return nextState;
 }
@@ -140,7 +140,7 @@ export const selectedFilterReducer = (
         filterContent.acked !== state.filterContent.acked ||
         filterContent.open !== state.filterContent.open ||
         filterContent.stateful !== state.filterContent.stateful ||
-        filterContent.maxLevel !== state.filterContent.maxLevel
+        filterContent.maxlevel !== state.filterContent.maxlevel
       ) {
         unset = true;
       } else if (selected.tags && !arrayEquals(selected.tags, state.incidentsFilter.tags)) {
