@@ -35,6 +35,7 @@ import Modal from "../modal/Modal";
 
 // Api
 import type { AutoUpdateMethod, Filter, IncidentMetadata, SeverityLevelNumber, SourceSystem } from "../../api/types.d";
+import { SeverityLevelNumberNameMap } from "../../api/consts";
 import api from "../../api";
 
 // Config
@@ -49,7 +50,6 @@ import { useAlerts } from "../alertsnackbar";
 import { useFilters } from "../../api/actions";
 import { useSelectedFilter } from "../filterprovider";
 import { useApiState } from "../../state/hooks";
-import { SeverityLevelNumberNameMap } from "../../api/consts";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -386,6 +386,32 @@ export const MoreSettingsToolbarItem: React.FC<MoreSettingsToolbarItemPropsType>
   );
 };
 
+// TODO: move this somewhere else
+type DropdownMenuPropsType<T> = {
+  selected: string | number;
+  onChange: (value: T) => void;
+  children: React.ReactNode;
+};
+
+export function DropdownMenu<T>({ selected, onChange, children }: DropdownMenuPropsType<T>) {
+  return (
+    <FormControl size="small">
+      <Select
+        style={{ backgroundColor: "#FFFFFF" }}
+        variant="outlined"
+        id="demo-simple-select-outlined"
+        value={selected}
+        onChange={(event: ChangeEvent<{ name?: string; value: unknown }>) => {
+          const value = event.target.value as T;
+          onChange(value);
+        }}
+      >
+        {children}
+      </Select>
+    </FormControl>
+  );
+}
+
 type IncidentFilterToolbarPropsType = {
   disabled?: boolean;
 };
@@ -524,21 +550,14 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
         </ToolbarItem>
 
         <ToolbarItem title="Max severity level selector" name="Max level" className={classNames(style.medium)}>
-          <FormControl size="small">
-            <Select
-              variant="outlined"
-              id="demo-simple-select-outlined"
-              value={optionalOr(selectedFilter?.incidentsFilter?.filter?.maxlevel, 5)}
-              onChange={(event: ChangeEvent<{ name?: string; value: unknown }>) => {
-                const maxlevel = event.target.value as SeverityLevelNumber;
-                setSelectedFilter({ filterContent: { maxlevel } });
-              }}
-            >
-              {SEVERITY_LEVELS.reverse().map((level: SeverityLevelNumber) => (
-                <MenuItem key={level} value={level}>{`${level} - ${SeverityLevelNumberNameMap[level]}`}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <DropdownMenu
+            selected={optionalOr(selectedFilter?.incidentsFilter?.filter?.maxlevel, 5)}
+            onChange={(maxlevel: SeverityLevelNumber) => setSelectedFilter({ filterContent: { maxlevel } })}
+          >
+            {SEVERITY_LEVELS.reverse().map((level: SeverityLevelNumber) => (
+              <MenuItem key={level} value={level}>{`${level} - ${SeverityLevelNumberNameMap[level]}`}</MenuItem>
+            ))}
+          </DropdownMenu>
         </ToolbarItem>
 
         <ToolbarItem title="Filter selector" name="Filter" className={classNames(style.medium)}>
