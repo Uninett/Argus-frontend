@@ -1,7 +1,7 @@
 /**  * @jest-environment jsdom-sixteen  */
 
 import React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
 import MockAdapter from "axios-mock-adapter";
 
 import api from "../../api";
@@ -97,23 +97,24 @@ afterAll(() => {
   auth.logout();
 });
 
-// Mocking api return values
-beforeEach(() => {
-  paginationSpy.mockResolvedValueOnce(cursorPaginationMock);
-  apiMock
-    .onGet("/api/v1/incidents/metadata/")
-    .reply(200, {sourceSystems: KNOWN_SOURCE_SYSTEMS} as IncidentMetadata)
-    .onGet("/api/v1/incidents/")
-    .reply(200, [EXISTING_INCIDENTS]);
-});
-
-afterEach(() => {
-  apiMock.reset();
-  jest.clearAllMocks();
-  jest.resetAllMocks();
-});
-
 describe('Incidents Page: initial state rendering', () => {
+
+  // Mocking api return values
+  beforeEach(() => {
+    consoleErrorsSpy.mockReset();
+    paginationSpy.mockResolvedValue(cursorPaginationMock);
+    apiMock
+      .onGet("/api/v1/incidents/metadata/")
+      .reply(200, {sourceSystems: KNOWN_SOURCE_SYSTEMS} as IncidentMetadata)
+      .onGet("/api/v1/incidents/")
+      .reply(200, [EXISTING_INCIDENTS]);
+  });
+
+  afterEach(() => {
+    apiMock.reset();
+    jest.clearAllMocks();
+    jest.resetAllMocks();
+  });
 
   it('should render without compile time errors', () => {
     render(
