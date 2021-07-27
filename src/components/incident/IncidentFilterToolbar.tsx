@@ -435,9 +435,22 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
 
   const SEVERITY_LEVELS: SeverityLevelNumber[] = [1, 2, 3, 4, 5];
 
+  // Values and text for the timeframe selector
+  const TIMEFRAME_VALUES = [0, 1, 3, 12, 24, 168, 210];
+  const TIMEFRAME_TEXT = [
+    "No timeframe",
+    "Last 60 minutes",
+    "Last 3 hours",
+    "Last 12 hours",
+    "Last 24 hours",
+    "Last 7 days",
+    "Last 30 days",
+  ];
+
   const [knownSources, setKnownSources] = useState<string[]>([]);
   const [sourceIdByName, setSourceIdByName] = useState<{ [name: string]: number }>({});
   const [sourceNameById, setSourceNameById] = useState<{ [id: number]: string }>({});
+  const [timeframe, setTimeframe] = useState<number>(0);
 
   useEffect(() => {
     // TODO: This could be stored in the global state as well,
@@ -570,6 +583,15 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
       </Toolbar>
       <DropdownToolbar open={dropdownToolbarOpen} onClose={() => setDropdownToolbarOpen(false)}>
         {autoUpdateToolbarItem}
+        <ToolbarItem title="Timeframe selector" name="Timeframe">
+          <DropdownMenu selected={timeframe} onChange={(value: number) => setTimeframe(value)}>
+            {TIMEFRAME_VALUES.map((value: number, index: number) => (
+              <MenuItem key={value} value={value}>
+                {TIMEFRAME_TEXT[index]}
+              </MenuItem>
+            ))}
+          </DropdownMenu>
+        </ToolbarItem>
       </DropdownToolbar>
     </div>
   );
