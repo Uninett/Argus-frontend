@@ -1,16 +1,22 @@
 /**  * @jest-environment jsdom-sixteen  */
 
 import React from "react";
-import { render, screen, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { render, screen, waitFor } from "@testing-library/react";
 import MockAdapter from "axios-mock-adapter";
 
 import api from "../../api";
+import client from "../../api";
 import auth from "../../auth";
-import { Filter, Incident, SourceSystem } from "../../api/types";
+import { CursorPaginationResponse, Filter, Incident, IncidentMetadata, SourceSystem } from "../../api/types";
+import IncidentView from "./IncidentView";
+import { MemoryRouter } from "react-router-dom";
 
+// Mocks of critical functions and modules
+const consoleErrorsSpy = jest.spyOn(console, 'error');
+const paginationSpy = jest.spyOn(client, 'getPaginatedIncidentsFiltered');
 const apiMock = new MockAdapter(api.api);
 
+// Mocks of initial data
 const KNOWN_SOURCE_SYSTEMS: SourceSystem[] = [
   {
     pk: 100,
@@ -75,3 +81,61 @@ const EXISTING_FILTER: Filter = {
   filter: {}
 }
 
+const cursorPaginationMock: CursorPaginationResponse<Incident> = {
+  next: null,
+  previous: null,
+  results: EXISTING_INCIDENTS
+}
+
+
+// For avoiding authentication errors
+beforeAll(() => {
+  auth.login("token");
+});
+
+afterAll(() => {
+  auth.logout();
+});
+
+// Mocking api return values
+beforeEach(() => {
+  paginationSpy.mockResolvedValueOnce(cursorPaginationMock);
+  apiMock
+    .onGet("/api/v1/incidents/metadata/")
+    .reply(200, {sourceSystems: KNOWN_SOURCE_SYSTEMS} as IncidentMetadata)
+    .onGet("/api/v1/incidents/")
+    .reply(200, [EXISTING_INCIDENTS]);
+});
+
+afterEach(() => {
+  apiMock.reset();
+  jest.clearAllMocks();
+  jest.resetAllMocks();
+});
+
+describe('Incidents Page: initial state rendering', () => {
+
+  it('should render without compile time errors', () => {
+    render(
+      <MemoryRouter>
+        <IncidentView />
+      </MemoryRouter>
+    );
+  });
+
+  it("should render without runtime errors", async () => {
+    await waitFor(() => {
+      render(
+        <MemoryRouter>
+          <IncidentView />
+        </MemoryRouter>
+      );
+    });
+
+    // Checks that React does not output error messages to the console.
+    // It is a useful assertion since absence of console errors from
+    // React equates to the absence of an error page in a dev mode,
+    // as well as a blank page in a production mode.
+    expect(consoleErrorsSpy).not.toHaveBeenCalled();
+  });
+});
