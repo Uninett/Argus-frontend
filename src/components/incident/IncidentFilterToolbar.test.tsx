@@ -4,11 +4,10 @@ import React from "react";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import { ButtonGroupSwitch, DropdownMenu, IncidentFilterToolbar } from "./IncidentFilterToolbar";
+import { ButtonGroupSwitch, IncidentFilterToolbar } from "./IncidentFilterToolbar";
 import SourceSelector from "../sourceselector";
 import TagSelector from "../tagselector";
 import ApiClient from "../../api/client";
-import { MenuItem } from "@material-ui/core";
 
 describe("Incident Toolbar test suite", () => {
   let incidentToolbar: HTMLElement;
@@ -476,60 +475,5 @@ describe("Tags Selector functional test suite", () => {
     // Tag 1 is removed, tag 2 remains
     expect(onSelectionChangeMock).toBeCalledWith(["tag2=value2"]);
     expect(onSelectionChangeMock.mock.calls.length).toBe(1);
-  });
-});
-
-// TODO: move this test and the original component somewhere else
-
-describe("DropdownMenu tests", () => {
-  const values = [1, 2, 3];
-  const text = ["Apple", "Orange", "Banana"];
-
-  const onChangeMock = jest.fn();
-
-  beforeEach(() => {
-    render(
-      <DropdownMenu selected={1} onChange={onChangeMock}>
-        {values.map((value: number, index: number) => (
-          <MenuItem key={value} value={value}>
-            {text[index]}
-          </MenuItem>
-        ))}
-      </DropdownMenu>,
-    );
-  });
-
-  it("renders the DropdownMenu with the correct selected item", () => {
-    // Renders dropdown menu with the correct selected item
-    const dropdownMenu = screen.getByRole("button", { name: /apple/i });
-    expect(dropdownMenu).toBeInTheDocument();
-  });
-
-  it("shows a list of all the items when the menu is clicked", () => {
-    const dropdownMenu = screen.getByRole("button");
-    userEvent.click(dropdownMenu);
-
-    const option1 = screen.getByRole("option", { name: /apple/i });
-    expect(option1).toBeInTheDocument();
-    expect(option1).toHaveAttribute("aria-selected", "true");
-
-    const option2 = screen.getByRole("option", { name: /orange/i });
-    expect(option2).toBeInTheDocument();
-    expect(option2).not.toHaveAttribute("aria-selected", "true");
-
-    const option3 = screen.getByRole("option", { name: /banana/i });
-    expect(option3).toBeInTheDocument();
-    expect(option3).not.toHaveAttribute("aria-selected", "true");
-  });
-
-  it("calls onChange() with the correct value when an item is clicked", () => {
-    const dropdownMenu = screen.getByRole("button");
-    userEvent.click(dropdownMenu);
-
-    const option3 = screen.getByRole("option", { name: /banana/i });
-    userEvent.click(option3);
-
-    expect(onChangeMock).toHaveBeenCalledTimes(1);
-    expect(onChangeMock).toHaveBeenCalledWith(3);
   });
 });

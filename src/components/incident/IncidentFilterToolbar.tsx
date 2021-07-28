@@ -50,6 +50,7 @@ import { useAlerts } from "../alertsnackbar";
 import { useFilters } from "../../api/actions";
 import { useSelectedFilter } from "../filterprovider";
 import { useApiState, useTimeframe } from "../../state/hooks";
+import { DropdownMenu } from "./DropdownMenu";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -386,32 +387,6 @@ export const MoreSettingsToolbarItem: React.FC<MoreSettingsToolbarItemPropsType>
   );
 };
 
-// TODO: move this somewhere else
-type DropdownMenuPropsType<T> = {
-  selected: string | number;
-  onChange: (value: T) => void;
-  children: React.ReactNode;
-};
-
-export function DropdownMenu<T>({ selected, onChange, children }: DropdownMenuPropsType<T>) {
-  return (
-    <FormControl size="small">
-      <Select
-        style={{ backgroundColor: "#FFFFFF" }}
-        variant="outlined"
-        id="demo-simple-select-outlined"
-        value={selected}
-        onChange={(event: ChangeEvent<{ name?: string; value: unknown }>) => {
-          const value = event.target.value as T;
-          onChange(value);
-        }}
-      >
-        {children}
-      </Select>
-    </FormControl>
-  );
-}
-
 type IncidentFilterToolbarPropsType = {
   disabled?: boolean;
 };
@@ -435,7 +410,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
 
   const SEVERITY_LEVELS: SeverityLevelNumber[] = [1, 2, 3, 4, 5];
 
-  // Values and text for the timeframe selector
+  // Values and text for the timeframe selector (values are timeframe length in hours)
   const TIMEFRAME_VALUES = [0, 1, 3, 12, 24, 168, 720];
   const TIMEFRAME_TEXT = [
     "No timeframe",
