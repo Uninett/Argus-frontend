@@ -58,7 +58,7 @@ const EXISTING_INCIDENTS: Incident[] = [
     end_time: '2021-08-28 08:29:06',
     stateful: true,
     details_url: '',
-    description: 'Critical test incident',
+    description: 'High severity incident',
     ticket_url: '',
     open: false,
     acked: true,
@@ -70,6 +70,25 @@ const EXISTING_INCIDENTS: Incident[] = [
     tags: [
       {added_by: 1, added_time: '2021-06-29 08:29:06', tag: 'Test tag 1'},
       {added_by: 1, added_time: '2021-06-28 08:29:06', tag: 'Test tag 2'}
+    ]
+  },
+  {
+    pk: 3000,
+    start_time: '2021-06-28 08:29:06',
+    end_time: '2021-08-28 08:29:06',
+    stateful: true,
+    details_url: '',
+    description: 'Low severity incident',
+    ticket_url: 'http://test.test',
+    open: true,
+    acked: false,
+    level: 4,
+
+    source: KNOWN_SOURCE_SYSTEMS[1],
+    source_incident_id: '3001',
+
+    tags: [
+      {added_by: 1, added_time: '2021-06-28 08:29:06', tag: 'Test tag'}
     ]
   }
 ];
@@ -142,7 +161,7 @@ describe('Incidents Page: initial state rendering', () => {
     expect(consoleErrorsSpy).not.toHaveBeenCalled();
   });
 
-  it("should render with correct initial data", async () => {
+  it("should render with correct initial data and default filter", async () => {
     const history = createMemoryHistory();
     history.push("/");
 
@@ -154,15 +173,12 @@ describe('Incidents Page: initial state rendering', () => {
       );
     });
 
-    screen.debug(document.body, 100000);
-
     // Header is rendered correctly
     expect(screen.getByRole('img', {name: /argus logo/i})).toBeInTheDocument();
     expect(screen.getByRole('link', {name: /argus logo/i})).toBeInTheDocument();
     expect(screen.getByRole('button', {name: 'Incidents'})).toBeInTheDocument();
     expect(screen.getByRole('button', {name: /timeslots/i})).toBeInTheDocument();
     expect(screen.getByRole('button', {name: /profiles/i})).toBeInTheDocument();
-    // expect(screen.getByLabelText('User')).toBeInTheDocument();
 
     // Incidents filter toolbar is present
     // Correct rendering of incidents filter toolbar is tested in its own test suite
@@ -175,6 +191,68 @@ describe('Incidents Page: initial state rendering', () => {
     const incidentsTable = screen.getByRole('table');
     expect(incidentsTable).toBeInTheDocument();
 
-    expect(within(incidentsTable).getAllByRole('row').length).toBe(2);
+    // Expect a header row, plus 2 incident rows to be rendered.
+    // Since the default filter (only open, only unacked incidents)
+    // is used for any initial render, only 2/3 of the
+    // EXISTING_INCIDENTS are expected to be rendered.
+    const tableRows = within(incidentsTable).getAllByRole('row');
+    expect(tableRows.length).toBe(3);
+
+    // Check correct rendering of header row
+    expect(within(tableRows[0]).getAllByRole('columnheader').length).toBe(7);
+
+    // Check correct rendering of row 1
+    expect(within(tableRows[1]).getAllByRole('cell').length).toBe(7);
+    expect(within(tableRows[1]).getByRole('checkbox', { checked: false }))
+      .toBeInTheDocument();
+    expect(within(tableRows[1])
+      .getByRole('cell', { name: EXISTING_INCIDENTS[0].start_time.slice(0,-3)}))
+      .toBeInTheDocument();
+    expect(within(tableRows[1])
+      .getByRole('cell', { name: /open non-acked/i}))
+      .toBeInTheDocument();
+    expect(within(tableRows[1])
+      .getByRole('cell', { name: new RegExp(EXISTING_INCIDENTS[0].level.toString())}))
+      .toBeInTheDocument();
+    expect(within(tableRows[1])
+      .getByRole('cell', { name: EXISTING_INCIDENTS[0].source.name}))
+      .toBeInTheDocument();
+    expect(within(tableRows[1])
+      .getByRole('cell', { name: EXISTING_INCIDENTS[0].description}))
+      .toBeInTheDocument();
+    expect(within(tableRows[1]).getByRole('button'))
+      .toHaveAttribute('href', `/incidents/${EXISTING_INCIDENTS[0].pk}/`);
+    EXISTING_INCIDENTS[0].ticket_url ?
+      expect(within(tableRows[1]).getByRole('link'))
+        .toHaveAttribute('href', EXISTING_INCIDENTS[0].ticket_url)
+      :
+      expect(() => within(tableRows[1]).getByRole('link')).toThrow;
+
+
+    // Check correct rendering row 2
+    expect(within(tableRows[2]).getAllByRole('cell').length).toBe(7);
+    expect(within(tableRows[2]).getByRole('checkbox', { checked: false })).toBeInTheDocument();
+    expect(within(tableRows[2])
+      .getByRole('cell', { name: EXISTING_INCIDENTS[2].start_time.slice(0,-3)}))
+      .toBeInTheDocument();
+    expect(within(tableRows[2])
+      .getByRole('cell', { name: /open non-acked/i}))
+      .toBeInTheDocument();
+    expect(within(tableRows[2])
+      .getByRole('cell', { name: new RegExp(EXISTING_INCIDENTS[2].level.toString())}))
+      .toBeInTheDocument();
+    expect(within(tableRows[2])
+      .getByRole('cell', { name: EXISTING_INCIDENTS[2].source.name}))
+      .toBeInTheDocument();
+    expect(within(tableRows[2])
+      .getByRole('cell', { name: EXISTING_INCIDENTS[2].description}))
+      .toBeInTheDocument();
+    expect(within(tableRows[2]).getByRole('button'))
+      .toHaveAttribute('href', `/incidents/${EXISTING_INCIDENTS[2].pk}/`);
+    EXISTING_INCIDENTS[2].ticket_url ?
+      expect(within(tableRows[2]).getByRole('link'))
+        .toHaveAttribute('href', EXISTING_INCIDENTS[2].ticket_url)
+      :
+      expect(within(tableRows[2]).getByRole('link')).not.toBeInTheDocument();
   });
 });
