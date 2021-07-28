@@ -21,7 +21,7 @@ import { useSelectedFilter } from "../../components/filterprovider";
 import { useApiState, useTimeframe } from "../../state/hooks";
 
 // Providers
-import FilteredIncidentsProvider, { matchesFilter } from "../../components/filteredincidentprovider";
+import FilteredIncidentsProvider, { matchesFilter, matchesTimeframe } from "../../components/filteredincidentprovider";
 
 // Components
 import { MinimalIncidentTable } from "./IncidentTable";
@@ -226,10 +226,13 @@ const FilteredIncidentTable = () => {
   const filterMatcher = useMemo(() => {
     const { filter, tags, sourceSystemIds } = incidentsFilter;
     const incidentMatchesFilter = (incident: Incident): boolean => {
-      return matchesFilter(incident, { filter, tags, sourceSystemIds });
+      return (
+        matchesFilter(incident, { filter, tags, sourceSystemIds }) &&
+        matchesTimeframe(incident, timeframe.timeframeInHours)
+      );
     };
     return incidentMatchesFilter;
-  }, [incidentsFilter]);
+  }, [incidentsFilter, timeframe]);
 
   useEffect(() => {
     // refresh incidents from backend at a set interval if we
