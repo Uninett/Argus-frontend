@@ -11,7 +11,7 @@ import type { Filter, Incident, CursorPaginationResponse, AutoUpdateMethod, Filt
 import api from "../../api";
 
 // Utils
-import { formatTimestamp, saveToLocalStorage, fromLocalStorageOrDefault } from "../../utils";
+import { formatTimestamp, saveToLocalStorage, fromLocalStorageOrDefault, addHoursToDate } from "../../utils";
 
 import { PAGINATION_CURSOR_PAGE_SIZE } from "../../localstorageconsts";
 
@@ -107,18 +107,9 @@ const FilteredIncidentTable = () => {
       sourceSystemIds: incidentsFilter.sourceSystemIds,
     };
 
-    // TODO: move this to utils and make it more general?
-    const getTimeframeStart = (hours: number) => {
-      const startDate = new Date();
-      if (hours !== 0) {
-        const dateOffset = 60 * 60 * 1000 * hours;
-        startDate.setTime(startDate.getTime() - dateOffset);
-        return startDate;
-      }
-      return undefined;
-    };
-
-    const timeframeStart = getTimeframeStart(timeframe.timeframeInHours);
+    // Find start of timeframe by removing hours from current datetime
+    let timeframeStart;
+    if (timeframe.timeframeInHours !== 0) timeframeStart = addHoursToDate(new Date(), -timeframe.timeframeInHours);
 
     setIsLoading(true);
     api
