@@ -1,7 +1,7 @@
 /**  * @jest-environment jsdom-sixteen  */
 
 import React from "react";
-import { render, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import MockAdapter from "axios-mock-adapter";
 
 import api from "../../api";
@@ -10,6 +10,8 @@ import auth from "../../auth";
 import { CursorPaginationResponse, Filter, Incident, IncidentMetadata, SourceSystem } from "../../api/types";
 import IncidentView from "./IncidentView";
 import { MemoryRouter } from "react-router-dom";
+import App from "../../App";
+import { createMemoryHistory } from "history";
 
 // Mocks of critical functions and modules
 const consoleErrorsSpy = jest.spyOn(console, 'error');
@@ -107,7 +109,7 @@ describe('Incidents Page: initial state rendering', () => {
       .onGet("/api/v1/incidents/metadata/")
       .reply(200, {sourceSystems: KNOWN_SOURCE_SYSTEMS} as IncidentMetadata)
       .onGet("/api/v1/incidents/")
-      .reply(200, [EXISTING_INCIDENTS]);
+      .reply(200, EXISTING_INCIDENTS);
   });
 
   afterEach(() => {
@@ -138,5 +140,41 @@ describe('Incidents Page: initial state rendering', () => {
     // React equates to the absence of an error page in a dev mode,
     // as well as a blank page in a production mode.
     expect(consoleErrorsSpy).not.toHaveBeenCalled();
+  });
+
+  it("should render with correct initial data", async () => {
+    const history = createMemoryHistory();
+    history.push("/");
+
+    await waitFor(() => {
+      render(
+        <MemoryRouter>
+          <App />
+        </MemoryRouter>
+      );
+    });
+
+    screen.debug(document.body, 100000);
+
+    // Header is rendered correctly
+    expect(screen.getByRole('img', {name: /argus logo/i})).toBeInTheDocument();
+    expect(screen.getByRole('link', {name: /argus logo/i})).toBeInTheDocument();
+    expect(screen.getByRole('button', {name: 'Incidents'})).toBeInTheDocument();
+    expect(screen.getByRole('button', {name: /timeslots/i})).toBeInTheDocument();
+    expect(screen.getByRole('button', {name: /profiles/i})).toBeInTheDocument();
+    // expect(screen.getByLabelText('User')).toBeInTheDocument();
+
+    // Incidents filter toolbar is present
+    // Correct rendering of incidents filter toolbar is tested in its own test suite
+    expect(screen.getByTestId('incidents-toolbar')).toBeInTheDocument();
+
+    // Additional settings button is rendered
+    expect(screen.getByTitle('Additional settings')).toBeInTheDocument();
+
+    // Incidents table is rendered correctly
+    const incidentsTable = screen.getByRole('table');
+    expect(incidentsTable).toBeInTheDocument();
+
+    expect(within(incidentsTable).getAllByRole('row').length).toBe(2);
   });
 });
