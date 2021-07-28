@@ -18,7 +18,7 @@ import { PAGINATION_CURSOR_PAGE_SIZE } from "../../localstorageconsts";
 // Contexts/Hooks
 import { useIncidentsContext } from "../../components/incidentsprovider";
 import { useSelectedFilter } from "../../components/filterprovider";
-import { useApiState } from "../../state/hooks";
+import { useApiState, useTimeframe } from "../../state/hooks";
 
 // Providers
 import FilteredIncidentsProvider, { matchesFilter } from "../../components/filteredincidentprovider";
@@ -76,6 +76,7 @@ const FilteredIncidentTable = () => {
   const [{ incidentsFilter }] = useSelectedFilter();
 
   const [{ autoUpdateMethod }] = useApiState();
+  const [timeframe] = useTimeframe();
 
   // Keep track of the pagination cursor
   const [paginationCursor, setPaginationCursor] = useState<PaginationCursor>(
@@ -106,9 +107,22 @@ const FilteredIncidentTable = () => {
       sourceSystemIds: incidentsFilter.sourceSystemIds,
     };
 
+    // TODO: move this to utils and make it more general?
+    const getTimeframeStart = (hours: number) => {
+      const startDate = new Date();
+      if (hours !== 0) {
+        const dateOffset = 60 * 60 * 1000 * hours;
+        startDate.setTime(startDate.getTime() - dateOffset);
+        return startDate;
+      }
+      return undefined;
+    };
+
+    const timeframeStart = getTimeframeStart(timeframe.timeframeInHours);
+
     setIsLoading(true);
     api
-      .getPaginatedIncidentsFiltered(filter, paginationCursor.current, paginationCursor.pageSize)
+      .getPaginatedIncidentsFiltered(filter, paginationCursor.current, paginationCursor.pageSize, timeframeStart)
       .then((response: CursorPaginationResponse<Incident>) => {
         loadAllIncidents(response.results);
         const { previous, next } = response;
@@ -117,7 +131,7 @@ const FilteredIncidentTable = () => {
         setIsLoading(false);
         return response;
       });
-  }, [incidentsFilter, paginationCursor, loadAllIncidents]);
+  }, [incidentsFilter, timeframe, paginationCursor, loadAllIncidents]);
 
   useEffect(() => {
     refresh();

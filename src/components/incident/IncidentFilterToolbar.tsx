@@ -436,7 +436,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
   const SEVERITY_LEVELS: SeverityLevelNumber[] = [1, 2, 3, 4, 5];
 
   // Values and text for the timeframe selector
-  const TIMEFRAME_VALUES = [0, 1, 3, 12, 24, 168, 210];
+  const TIMEFRAME_VALUES = [0, 1, 3, 12, 24, 168, 720];
   const TIMEFRAME_TEXT = [
     "No timeframe",
     "Last 60 minutes",
