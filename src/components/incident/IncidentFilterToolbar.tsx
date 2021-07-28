@@ -49,7 +49,7 @@ import { DROPDOWN_TOOLBAR } from "../../localstorageconsts";
 import { useAlerts } from "../alertsnackbar";
 import { useFilters } from "../../api/actions";
 import { useSelectedFilter } from "../filterprovider";
-import { useApiState } from "../../state/hooks";
+import { useApiState, useTimeframe } from "../../state/hooks";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -450,7 +450,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
   const [knownSources, setKnownSources] = useState<string[]>([]);
   const [sourceIdByName, setSourceIdByName] = useState<{ [name: string]: number }>({});
   const [sourceNameById, setSourceNameById] = useState<{ [id: number]: string }>({});
-  const [timeframe, setTimeframe] = useState<number>(0);
+  const [timeframe, { setTimeframe }] = useTimeframe();
 
   useEffect(() => {
     // TODO: This could be stored in the global state as well,
@@ -584,7 +584,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
       <DropdownToolbar open={dropdownToolbarOpen} onClose={() => setDropdownToolbarOpen(false)}>
         {autoUpdateToolbarItem}
         <ToolbarItem title="Timeframe selector" name="Timeframe">
-          <DropdownMenu selected={timeframe} onChange={(value: number) => setTimeframe(value)}>
+          <DropdownMenu selected={timeframe.timeframeInHours} onChange={(value: number) => setTimeframe(value)}>
             {TIMEFRAME_VALUES.map((value: number, index: number) => (
               <MenuItem key={value} value={value}>
                 {TIMEFRAME_TEXT[index]}
