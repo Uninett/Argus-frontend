@@ -48,7 +48,7 @@ export const matchesAcked = (incident: Incident, acked?: boolean): boolean => {
 };
 
 export const matchesMaxlevel = (incident: Incident, maxlevel?: SeverityLevelNumber): boolean => {
-  if (maxlevel == undefined) return true;
+  if (maxlevel === undefined) return true;
   return incident.level <= maxlevel;
 };
 
