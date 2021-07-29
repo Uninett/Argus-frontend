@@ -1,4 +1,6 @@
 import { ActionMap, makeAction } from "./common";
+import { fromLocalStorageOrDefault } from "../../utils";
+import { TIMEFRAME } from "../../localstorageconsts";
 
 export type TimeframeStateType = {
   timeframeInHours: number;
@@ -13,7 +15,7 @@ type TimeframePayload = {
 };
 
 export const initialTimeframeState = {
-  timeframeInHours: 0,
+  timeframeInHours: fromLocalStorageOrDefault(TIMEFRAME, 0),
 };
 
 export type TimeframeActions = ActionMap<TimeframePayload>[keyof ActionMap<TimeframePayload>];

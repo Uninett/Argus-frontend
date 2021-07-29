@@ -43,7 +43,7 @@ import { ENABLE_WEBSOCKETS_SUPPORT } from "../../config";
 
 // Utils
 import { saveToLocalStorage, fromLocalStorageOrDefault, optionalBoolToKey, optionalOr } from "../../utils";
-import { DROPDOWN_TOOLBAR } from "../../localstorageconsts";
+import { DROPDOWN_TOOLBAR, TIMEFRAME } from "../../localstorageconsts";
 
 // Contexts/hooks
 import { useAlerts } from "../alertsnackbar";
@@ -426,6 +426,11 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
   const [sourceIdByName, setSourceIdByName] = useState<{ [name: string]: number }>({});
   const [sourceNameById, setSourceNameById] = useState<{ [id: number]: string }>({});
   const [timeframe, { setTimeframe }] = useTimeframe();
+
+  useEffect(() => {
+    // Save current timeframe in localStorage
+    saveToLocalStorage(TIMEFRAME, timeframe.timeframeInHours);
+  }, [timeframe]);
 
   useEffect(() => {
     // TODO: This could be stored in the global state as well,
