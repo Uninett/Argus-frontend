@@ -41,4 +41,4 @@ export const TIMESTAMP_TIMEZONE_OFFSET_FORMAT = "xxx";
 export const TIMESTAMP_FORMAT = "{date} {time}{timezone_offset}";
 
 // Flag used to toggle whether severity levels will be shown in the frontend or not
-export const SHOW_SEVERITY_LEVELS = false;
+export const SHOW_SEVERITY_LEVELS = true;
