@@ -116,6 +116,9 @@ const FilteredIncidentTable = () => {
         setLastRefresh({ time: new Date(), filter: incidentsFilter });
         setIsLoading(false);
         return response;
+      })
+      .catch((error: Error) => {
+        console.error(`Error occured while fetching incidents: ${error}`);
       });
   }, [incidentsFilter, paginationCursor, loadAllIncidents]);
 
