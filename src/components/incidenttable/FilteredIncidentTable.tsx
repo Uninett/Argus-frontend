@@ -26,6 +26,7 @@ import FilteredIncidentsProvider, { matchesFilter } from "../../components/filte
 // Components
 import { MinimalIncidentTable } from "./IncidentTable";
 import { Tag } from "../../components/tagselector";
+import { useAlerts } from "../alertsnackbar";
 
 type PaginationCursor = {
   next: string | null;
@@ -70,6 +71,8 @@ const FilteredIncidentTable = () => {
   const [lastRefresh, setLastRefresh] = useState<{ time: Date; filter: Omit<Filter, "pk" | "name"> } | undefined>(
     undefined,
   );
+
+  const displayAlert = useAlerts();
 
   // Get the incidents and seleceted filter from context
   const [{ incidents }, { loadAllIncidents }] = useIncidentsContext();
@@ -118,9 +121,10 @@ const FilteredIncidentTable = () => {
         return response;
       })
       .catch((error: Error) => {
-        console.error(`Error occured while fetching incidents: ${error}`);
+        setIsLoading(false);
+        displayAlert(error.message, "error");
       });
-  }, [incidentsFilter, paginationCursor, loadAllIncidents]);
+  }, [incidentsFilter, paginationCursor, loadAllIncidents, displayAlert]);
 
   useEffect(() => {
     refresh();

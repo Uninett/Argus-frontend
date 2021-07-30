@@ -83,6 +83,7 @@ const RealtimeIncidentTable = () => {
       case "failed":
         displayAlert("Failed to establish realtime connection", "error");
         setIsLoadingRealtime(true);
+        setIsLoading(false);
         break;
     }
   }, [rtsState, displayAlert]);
