@@ -346,6 +346,7 @@ const TimeslotComponent: React.FC<TimeslotPropsType> = ({
                 <TextField
                   id={pk ? `timeslot-${pk}-name-input` : "new-timeslot-name-input"}
                   error={invalidTimeslotName}
+                  helperText={invalidTimeslotName ? "Required" : null}
                   required
                   label="Timeslot name"
                   variant="standard"
@@ -361,6 +362,10 @@ const TimeslotComponent: React.FC<TimeslotPropsType> = ({
                     size="small"
                     className={classes.safeButton}
                     onClick={() => {
+                      if (timeslotName === "") {
+                        setInvalidTimeslotName(true);
+                        return;
+                      }
                       setUpdateLoading(true);
                       onSave(pk, timeslotName, recurrences);
                     }}
