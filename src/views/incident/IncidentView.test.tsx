@@ -554,4 +554,104 @@ describe('Incidents Table: reflects user interactions with Incidents Filter Tool
         .not.toHaveValue(lastRefreshedVal);
     });
   });
+
+  // todo fix bug where tags containing word "tag" break the state logic
+  describe('User interacts with the Tags Selector', () => {
+
+    const TESTED_TAG = EXISTING_TAGS[0];
+
+    // Existing incidents count
+    const TESTED_TAG_COUNT =
+      EXISTING_INCIDENTS.filter(i =>
+        i.tags.includes(TESTED_TAG)).length;
+
+    beforeEach(() => {
+      // Simulate switching to showing both open and closed incidents (filter update event)
+      const bothOpenStatesBtn = screen.getByTitle('Both open and closed incidents');
+      userEvent.click(bothOpenStatesBtn);
+      // Simulate switching to showing both acked and unacked incidents (filter update event)
+      const bothAckedStatesButton = screen.getByTitle('Both acked and unacked incidents');
+      userEvent.click(bothAckedStatesButton);
+    });
+
+    it("should display no incidents", async () => {
+
+      // Check correct counts after rendering with initial conditions
+      expect(await screen.findAllByRole('row'))
+        .toHaveLength(EXISTING_INCIDENTS.length + 1); // including header row
+
+      // Simulate filtering after non-existent tag
+      const tagsSelectorInput = screen.getByPlaceholderText('key=value');
+      userEvent.type(tagsSelectorInput, 'test=notexistent{enter}');
+
+      // Wait until table rows are replaced with "No incidents" text
+      await screen.findByText(/no incidents/i);
+
+      // Expect that only header row is rendered
+      expect(screen.getAllByRole('row'))
+        .toHaveLength(1); // header row only
+    });
+
+    it("should display only incidents with a given tag", async () => {
+
+      // Check correct counts after a preceding user interaction
+      expect(await screen.findAllByRole('row'))
+        .toHaveLength(1); // header row only
+
+      // Simulate filtering after a given tag
+      const tagsSelectorInput = screen.getByPlaceholderText('key=value');
+      userEvent.clear(tagsSelectorInput);
+      userEvent.type(tagsSelectorInput, `${TESTED_TAG.tag}{enter}`);
+
+      // Wait until table rows appear
+      await screen.findAllByRole('row');
+
+      // Expect correct counts after filter update event
+      expect(screen.getAllByRole('row'))
+        .toHaveLength(TESTED_TAG_COUNT + 1); // including header row
+    });
+
+    it("should display all incidents (all tags added)", async () => {
+
+      // Check correct counts after a preceding user interaction
+      expect(await screen.findAllByRole('row'))
+        .toHaveLength(TESTED_TAG_COUNT + 1); // including header row
+
+      // Simulate filtering after all existent tags (provide all tags)
+      const tagsSelectorInput = screen.getByPlaceholderText('key=value');
+      EXISTING_TAGS.forEach(tag => {
+        userEvent.type(tagsSelectorInput, `${tag.tag}{enter}`);
+      });
+
+      // Wait until table rows appear
+      await screen.findAllByRole('row');
+
+      // Expect correct counts after filter update event
+      expect(screen.getAllByRole('row'))
+        .toHaveLength(EXISTING_INCIDENTS.length + 1); // including header row
+    });
+
+    it("should display all incidents (all tags removed)", async () => {
+
+      // Check correct counts after a preceding user interaction
+      expect(await screen.findAllByRole('row'))
+        .toHaveLength(EXISTING_INCIDENTS.length + 1); // including header row
+
+      const lastRefreshedVal = screen.getByText(/last refreshed/i).textContent;
+
+      // Simulate filtering after all existent tags (clear all tags)
+      const tagsSelectorInput = screen.getByPlaceholderText('key=value');
+      userEvent.clear(tagsSelectorInput);
+
+      // Wait until table rows appear
+      await screen.findAllByRole('row');
+
+      // Expect correct counts after filter update event
+      expect(screen.getAllByRole('row'))
+        .toHaveLength(EXISTING_INCIDENTS.length + 1); // including header row
+      // Expect a new "Last refreshed" time value
+      expect(screen.getByText(/last refreshed/i))
+        .not.toHaveValue(lastRefreshedVal);
+    });
+  });
 });
