@@ -41,7 +41,7 @@ import api from "../../api";
 import { ENABLE_WEBSOCKETS_SUPPORT } from "../../config";
 
 // Utils
-import { saveToLocalStorage, fromLocalStorageOrDefault, optionalBoolToKey, optionalOr } from "../../utils";
+import { saveToLocalStorage, fromLocalStorageOrDefault, optionalBoolToKey, optionalOr, usePrevious } from "../../utils";
 import { DROPDOWN_TOOLBAR } from "../../localstorageconsts";
 
 // Contexts/hooks
@@ -396,6 +396,8 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
   const style = useStyles();
   const [selectedFilter, { setSelectedFilter }] = useSelectedFilter();
   const [{ autoUpdateMethod }, { setAutoUpdateMethod }] = useApiState();
+  const prevAutoUpdateMethod = usePrevious(autoUpdateMethod);
+  const displayAlert = useAlerts();
 
   const [dropdownToolbarOpen, setDropdownToolbarOpen] = useState<boolean>(
     // Load from localstorage if possible
@@ -428,6 +430,13 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
       setSourceNameById(sourceNameById);
     });
   }, []);
+
+  // Display alert when Auto Update Method is updated
+  useEffect(() => {
+    if (prevAutoUpdateMethod && autoUpdateMethod !== prevAutoUpdateMethod) {
+      displayAlert(`Switching auto update method to '${autoUpdateMethod}'`, "info");
+    }
+  }, [autoUpdateMethod, prevAutoUpdateMethod, displayAlert]);
 
   const autoUpdateOptions: AutoUpdateMethod[] = ENABLE_WEBSOCKETS_SUPPORT
     ? ["never", "realtime", "interval"]
