@@ -42,7 +42,7 @@ import { ENABLE_WEBSOCKETS_SUPPORT } from "../../config";
 
 // Utils
 import { saveToLocalStorage, fromLocalStorageOrDefault, optionalBoolToKey, optionalOr, usePrevious } from "../../utils";
-import { DROPDOWN_TOOLBAR } from "../../localstorageconsts";
+import { AUTO_UPDATE_METHOD, DROPDOWN_TOOLBAR } from "../../localstorageconsts";
 
 // Contexts/hooks
 import { useAlerts } from "../alertsnackbar";
@@ -431,9 +431,10 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
     });
   }, []);
 
-  // Display alert when Auto Update Method is updated
+  // Save to local storage and display alert when Auto Update Method is updated
   useEffect(() => {
     if (prevAutoUpdateMethod && autoUpdateMethod !== prevAutoUpdateMethod) {
+      saveToLocalStorage(AUTO_UPDATE_METHOD, autoUpdateMethod);
       displayAlert(`Switching auto update method to '${autoUpdateMethod}'`, "info");
     }
   }, [autoUpdateMethod, prevAutoUpdateMethod, displayAlert]);
