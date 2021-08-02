@@ -185,12 +185,16 @@ const Header: React.FC<HeaderPropsType> = () => {
 
   // Switch to mobile view if screen width is less than 900px
   useEffect(() => {
+    let mounted = true;
+
     const setResponsiveness = () => {
-      if (window.innerWidth < 900) {
-        setMobileView(true);
-      } else {
-        setMobileView(false);
-        setShowDropdownNavbar(false);
+      if (mounted) {
+        if (window.innerWidth < 900) {
+          setMobileView(true);
+        } else {
+          setMobileView(false);
+          setShowDropdownNavbar(false);
+        }
       }
     };
 
@@ -198,6 +202,7 @@ const Header: React.FC<HeaderPropsType> = () => {
     window.addEventListener("resize", () => setResponsiveness());
 
     return () => {
+      mounted = false;
       window.removeEventListener("resize", () => setResponsiveness());
     };
   }, []);
