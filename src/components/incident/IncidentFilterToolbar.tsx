@@ -39,7 +39,7 @@ import { SeverityLevelNumberNameMap } from "../../api/consts";
 import api from "../../api";
 
 // Config
-import { ENABLE_WEBSOCKETS_SUPPORT } from "../../config";
+import { ENABLE_WEBSOCKETS_SUPPORT, SHOW_SEVERITY_LEVELS } from "../../config";
 
 // Utils
 import {
@@ -569,16 +569,18 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
           />
         </ToolbarItem>
 
-        <ToolbarItem title="Max severity level selector" name="Max level" className={classNames(style.medium)}>
-          <DropdownMenu
-            selected={optionalOr(selectedFilter?.incidentsFilter?.filter?.maxlevel, 5)}
-            onChange={(maxlevel: SeverityLevelNumber) => setSelectedFilter({ filterContent: { maxlevel } })}
-          >
-            {SEVERITY_LEVELS.reverse().map((level: SeverityLevelNumber) => (
-              <MenuItem key={level} value={level}>{`${level} - ${SeverityLevelNumberNameMap[level]}`}</MenuItem>
-            ))}
-          </DropdownMenu>
-        </ToolbarItem>
+        {SHOW_SEVERITY_LEVELS && (
+          <ToolbarItem title="Max severity level selector" name="Max level" className={classNames(style.medium)}>
+            <DropdownMenu
+              selected={optionalOr(selectedFilter?.incidentsFilter?.filter?.maxlevel, 5)}
+              onChange={(maxlevel: SeverityLevelNumber) => setSelectedFilter({ filterContent: { maxlevel } })}
+            >
+              {SEVERITY_LEVELS.reverse().map((level: SeverityLevelNumber) => (
+                <MenuItem key={level} value={level}>{`${level} - ${SeverityLevelNumberNameMap[level]}`}</MenuItem>
+              ))}
+            </DropdownMenu>
+          </ToolbarItem>
+        )}
 
         <ToolbarItem title="Filter selector" name="Filter" className={classNames(style.medium)}>
           <FiltersDropdownToolbarItem />

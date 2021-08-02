@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { Link, useHistory, withRouter } from "react-router-dom";
 
@@ -12,7 +12,12 @@ import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import Avatar from "@material-ui/core/Avatar";
 import MenuItem from "@material-ui/core/MenuItem";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
+import List from "@material-ui/core/List";
+import IconButton from "@material-ui/core/IconButton";
 import Skeleton from "@material-ui/lab/Skeleton";
+import MenuIcon from "@material-ui/icons/Menu";
 
 // Api
 import auth from "../../auth";
@@ -52,6 +57,10 @@ const useStyles = makeStyles((theme: Theme) =>
       marginLeft: theme.spacing(2),
 
       color: "white",
+      "@media (max-width: 900px)": {
+        marginRight: theme.spacing(1),
+        marginLeft: theme.spacing(1),
+      },
     },
     navItemSelected: {},
     navItemButton: {
@@ -69,6 +78,12 @@ const useStyles = makeStyles((theme: Theme) =>
         color: "black",
         backgroundColor: "white",
       },
+    },
+    navListItemText: {
+      color: "white",
+    },
+    navListItemSelected: {
+      backgroundColor: theme.palette.primary.main,
     },
     logoWrapper: {
       alignSelf: "flex-start",
@@ -103,17 +118,33 @@ type NavbarItemPropsType = {
   to: string;
   name: string;
   isRoot?: boolean;
+  isListItem?: boolean;
   className?: string;
 };
 
-const NavbarItem: React.FC<NavbarItemPropsType> = ({ to, name, isRoot, className }: NavbarItemPropsType) => {
+const NavbarItem: React.FC<NavbarItemPropsType> = ({
+  to,
+  name,
+  isRoot,
+  isListItem,
+  className,
+}: NavbarItemPropsType) => {
   const style = useStyles();
 
   const isSelected = () => {
     return window.location.pathname === to || (isRoot && window.location.pathname === "/");
   };
 
-  return (
+  return isListItem ? (
+    <ListItem
+      button
+      to={to}
+      component={Link}
+      className={isSelected() ? classNames(style.navListItemSelected, className) : className}
+    >
+      <ListItemText primary={name} className={style.navListItemText} />
+    </ListItem>
+  ) : (
     <div
       className={
         isSelected()
@@ -148,6 +179,34 @@ const Header: React.FC<HeaderPropsType> = () => {
   const [apiState] = useApiState();
   const [user, { logout }] = useUser();
 
+  // State storing the current viewport (mobile/desktop) and whether the dropdown navbar should be visible or not
+  const [mobileView, setMobileView] = React.useState<boolean>(false);
+  const [showDropdownNavbar, setShowDropdownNavbar] = React.useState<boolean>(false);
+
+  // Switch to mobile view if screen width is less than 900px
+  useEffect(() => {
+    let mounted = true;
+
+    const setResponsiveness = () => {
+      if (mounted) {
+        if (window.innerWidth < 900) {
+          setMobileView(true);
+        } else {
+          setMobileView(false);
+          setShowDropdownNavbar(false);
+        }
+      }
+    };
+
+    setResponsiveness();
+    window.addEventListener("resize", () => setResponsiveness());
+
+    return () => {
+      mounted = false;
+      window.removeEventListener("resize", () => setResponsiveness());
+    };
+  }, []);
+
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -174,38 +233,89 @@ const Header: React.FC<HeaderPropsType> = () => {
     </Menu>
   );
 
+  const displayDesktop = () => {
+    return (
+      <Toolbar className={classNames(style.navWrapper)} disableGutters>
+        <Link className={classNames(style.navItem, style.logoWrapper)} to="/incidents">
+          <Logo className={style.logo} />
+        </Link>
+        <NavbarItem to="/incidents" name="Incidents" isRoot />
+        <NavbarItem to="/timeslots" name="Timeslots" />
+        <NavbarItem to="/notificationprofiles" name="Profiles" />
+
+        <div className={style.grow} />
+        <div>
+          <div className={classNames(style.navItem, style.navItemSelected)} onClick={handleMenuOpen}>
+            {user.isAuthenticated ? (
+              <div className={style.avatarContainer}>
+                <Avatar>{user.displayName[0]}</Avatar>
+                <Typography>{user.displayName}</Typography>
+              </div>
+            ) : (
+              <div className={style.avatarContainer}>
+                <Skeleton variant="circle">
+                  <Avatar>User</Avatar>
+                </Skeleton>
+                <Skeleton>
+                  <Typography>User</Typography>
+                </Skeleton>
+              </div>
+            )}
+          </div>
+        </div>
+      </Toolbar>
+    );
+  };
+
+  const displayMobile = () => {
+    const onMenuClick = () => setShowDropdownNavbar(!showDropdownNavbar);
+
+    return (
+      <Toolbar className={classNames(style.navWrapper)} disableGutters>
+        <IconButton
+          {...{
+            edge: "start",
+            color: "inherit",
+            "aria-label": "menu",
+            "aria-haspopup": "true",
+            onClick: onMenuClick,
+          }}
+          className={style.navItem}
+        >
+          <MenuIcon />
+        </IconButton>
+
+        <Link className={classNames(style.navItem, style.logoWrapper)} to="/incidents">
+          <Logo className={style.logo} />
+        </Link>
+        <div className={style.grow} />
+        <div>
+          <div className={classNames(style.navItem, style.navItemSelected)} onClick={handleMenuOpen}>
+            {user.isAuthenticated ? (
+              <div className={style.avatarContainer}>
+                <Avatar>{user.displayName[0]}</Avatar>
+                <Typography>{user.displayName}</Typography>
+              </div>
+            ) : (
+              <div className={style.avatarContainer}>
+                <Skeleton variant="circle">
+                  <Avatar>User</Avatar>
+                </Skeleton>
+                <Skeleton>
+                  <Typography>User</Typography>
+                </Skeleton>
+              </div>
+            )}
+          </div>
+        </div>
+      </Toolbar>
+    );
+  };
+
   return (
     <div className={style.grow}>
       <AppBar className={classNames(style.root)} position="relative">
-        <Toolbar className={classNames(style.navWrapper)} disableGutters>
-          <Link className={classNames(style.navItem, style.logoWrapper)} to="/incidents">
-            <Logo className={style.logo} />
-          </Link>
-          <NavbarItem to="/incidents" name="Incidents" isRoot />
-          <NavbarItem to="/timeslots" name="Timeslots" />
-          <NavbarItem to="/notificationprofiles" name="Profiles" />
-
-          <div className={style.grow} />
-          <div>
-            <div className={classNames(style.navItem, style.navItemSelected)} onClick={handleMenuOpen}>
-              {user.isAuthenticated ? (
-                <div className={style.avatarContainer}>
-                  <Avatar>{user.displayName[0]}</Avatar>
-                  <Typography>{user.displayName}</Typography>
-                </div>
-              ) : (
-                <div className={style.avatarContainer}>
-                  <Skeleton variant="circle">
-                    <Avatar>User</Avatar>
-                  </Skeleton>
-                  <Skeleton>
-                    <Typography>User</Typography>
-                  </Skeleton>
-                </div>
-              )}
-            </div>
-          </div>
-        </Toolbar>
+        {mobileView ? displayMobile() : displayDesktop()}
       </AppBar>
       {apiState.hasConnectionProblems && (
         <AppBar className={classNames(style.root, style.rootNetworkError)} position="relative">
@@ -218,6 +328,16 @@ const Header: React.FC<HeaderPropsType> = () => {
       )}
 
       {renderMenu}
+
+      {showDropdownNavbar && (
+        <AppBar className={classNames(style.root)} position="relative">
+          <List>
+            <NavbarItem to="/incidents" name="Incidents" isRoot isListItem />
+            <NavbarItem to="/timeslots" name="Timeslots" isListItem />
+            <NavbarItem to="/notificationprofiles" name="Profiles" isListItem />
+          </List>
+        </AppBar>
+      )}
     </div>
   );
 };

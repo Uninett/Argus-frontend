@@ -47,6 +47,7 @@ import { AckedItem, LevelItem, OpenItem, TicketItem } from "./Chips";
 // Contexts/Hooks
 import { useAlerts } from "../alertsnackbar";
 import { useApiIncidentAcks, useApiIncidentEvents } from "../../api/hooks";
+import { SHOW_SEVERITY_LEVELS } from "../../config";
 import { Alert } from "@material-ui/lab";
 
 type IncidentDetailsListItemPropsType = {
@@ -340,9 +341,11 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                   Status
                 </Typography>
                 <Grid container spacing={1} direction="column">
-                  <Grid item>
-                    <LevelItem level={incident.level} />
-                  </Grid>
+                  {SHOW_SEVERITY_LEVELS && (
+                    <Grid item>
+                      <LevelItem level={incident.level} />
+                    </Grid>
+                  )}
                   <Grid item>
                     <OpenItem open={incident.open} />
                     <AckedItem acked={incident.acked} expiration={ackExpiryDate} />
