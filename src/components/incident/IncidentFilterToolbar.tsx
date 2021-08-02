@@ -38,7 +38,7 @@ import type { AutoUpdateMethod, Filter, IncidentMetadata, SeverityLevelNumber, S
 import api from "../../api";
 
 // Config
-import { ENABLE_WEBSOCKETS_SUPPORT } from "../../config";
+import { ENABLE_WEBSOCKETS_SUPPORT, SHOW_SEVERITY_LEVELS } from "../../config";
 
 // Utils
 import {
@@ -550,23 +550,25 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
           />
         </ToolbarItem>
 
-        <ToolbarItem title="Max severity level selector" name="Max level" className={classNames(style.medium)}>
-          <FormControl size="small">
-            <Select
-              variant="outlined"
-              id="demo-simple-select-outlined"
-              value={optionalOr(selectedFilter?.incidentsFilter?.filter?.maxlevel, 5)}
-              onChange={(event: ChangeEvent<{ name?: string; value: unknown }>) => {
-                const maxlevel = event.target.value as SeverityLevelNumber;
-                setSelectedFilter({ filterContent: { maxlevel } });
-              }}
-            >
-              {SEVERITY_LEVELS.reverse().map((level: SeverityLevelNumber) => (
-                <MenuItem key={level} value={level}>{`${level} - ${SeverityLevelNumberNameMap[level]}`}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </ToolbarItem>
+        {SHOW_SEVERITY_LEVELS && (
+          <ToolbarItem title="Max severity level selector" name="Max level" className={classNames(style.medium)}>
+            <FormControl size="small">
+              <Select
+                variant="outlined"
+                id="demo-simple-select-outlined"
+                value={optionalOr(selectedFilter?.incidentsFilter?.filter?.maxlevel, 5)}
+                onChange={(event: ChangeEvent<{ name?: string; value: unknown }>) => {
+                  const maxlevel = event.target.value as SeverityLevelNumber;
+                  setSelectedFilter({ filterContent: { maxlevel } });
+                }}
+              >
+                {SEVERITY_LEVELS.reverse().map((level: SeverityLevelNumber) => (
+                  <MenuItem key={level} value={level}>{`${level} - ${SeverityLevelNumberNameMap[level]}`}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </ToolbarItem>
+        )}
 
         <ToolbarItem title="Filter selector" name="Filter" className={classNames(style.medium)}>
           <FiltersDropdownToolbarItem />

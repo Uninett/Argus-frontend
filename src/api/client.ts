@@ -43,7 +43,7 @@ import auth from "../auth";
 
 import { ErrorType, debuglog } from "../utils";
 
-import { BACKEND_URL } from "../config";
+import { BACKEND_URL, SHOW_SEVERITY_LEVELS } from "../config";
 import { getErrorCause } from "./utils";
 
 function defaultResolver<T, P = T>(data: T): T {
@@ -391,7 +391,7 @@ class ApiClient {
       if (filter.filter.stateful !== undefined) {
         params.push(`stateful=${filter.filter.stateful}`);
       }
-      if (filter.filter.maxlevel !== undefined) {
+      if (SHOW_SEVERITY_LEVELS && filter.filter.maxlevel !== undefined) {
         params.push(`level__lte=${filter.filter.maxlevel}`);
       }
       if (filter.sourceSystemIds !== undefined) {

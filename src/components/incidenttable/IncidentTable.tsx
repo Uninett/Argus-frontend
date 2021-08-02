@@ -36,6 +36,7 @@ import IncidentTableToolbar from "../../components/incidenttable/IncidentTableTo
 // Contexts/Hooks
 import { useIncidentsContext } from "../incidentsprovider";
 import { useAlerts } from "../alertsnackbar";
+import { SHOW_SEVERITY_LEVELS } from "../../config";
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -147,7 +148,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
               {multiSelect && <TableCell></TableCell>}
               <TableCell>Timestamp</TableCell>
               <TableCell>Status</TableCell>
-              <TableCell>Severity level</TableCell>
+              {SHOW_SEVERITY_LEVELS && <TableCell>Severity level</TableCell>}
               <TableCell>Source</TableCell>
               <TableCell>Description</TableCell>
               <TableCell>Actions</TableCell>
@@ -229,9 +230,11 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                         {/* <TicketItem small ticketUrl={incident.ticket_url} /> */}
                         <AckedItem small acked={incident.acked} />
                       </ClickableCell>
-                      <ClickableCell>
-                        <LevelItem small level={incident.level} />
-                      </ClickableCell>
+                      {SHOW_SEVERITY_LEVELS && (
+                        <ClickableCell>
+                          <LevelItem small level={incident.level} />
+                        </ClickableCell>
+                      )}
                       <ClickableCell>{incident.source.name}</ClickableCell>
                       <ClickableCell>{incident.description}</ClickableCell>
                       <TableCell>
