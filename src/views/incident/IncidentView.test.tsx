@@ -455,4 +455,103 @@ describe('Incidents Table: reflects user interactions with Incidents Filter Tool
         .toBeNull();
     });
   });
+
+  describe('User interacts with the Source Selector', () => {
+
+    const TESTED_SOURCE_NAME = KNOWN_SOURCE_SYSTEMS[0].name;
+
+    // Existing incidents count
+    const TESTED_SOURCE_COUNT =
+      EXISTING_INCIDENTS.filter(i =>
+        i.source.name === TESTED_SOURCE_NAME).length;
+
+    beforeEach(() => {
+      // Simulate switching to showing both open and closed incidents (filter update event)
+      const bothOpenStatesBtn = screen.getByTitle('Both open and closed incidents');
+      userEvent.click(bothOpenStatesBtn);
+      // Simulate switching to showing both acked and unacked incidents (filter update event)
+      const bothAckedStatesButton = screen.getByTitle('Both acked and unacked incidents');
+      userEvent.click(bothAckedStatesButton);
+    });
+
+    it("should display no incidents", async () => {
+
+      // Check correct counts after rendering with initial conditions
+      expect(await screen.findAllByRole('row'))
+        .toHaveLength(EXISTING_INCIDENTS.length + 1); // including header row
+
+      // Simulate filtering after non-existent source system
+      const sourcesSelectorInput = screen.getByPlaceholderText('Source name');
+      userEvent.type(sourcesSelectorInput, 'Non-existent Source System{enter}');
+
+      // Wait until table rows are replaced with "No incidents" text
+      await screen.findByText(/no incidents/i);
+
+      // Expect that only header row is rendered
+      expect(screen.getAllByRole('row'))
+        .toHaveLength(1); // header row only
+    });
+
+    it("should display only incidents of a given source system", async () => {
+
+      // Check correct counts after a preceding user interaction
+      expect(await screen.findAllByRole('row'))
+        .toHaveLength(1); // header row only
+
+      // Simulate filtering after an existent source system
+      const sourcesSelectorInput = screen.getByPlaceholderText('Source name');
+      userEvent.type(sourcesSelectorInput, `${TESTED_SOURCE_NAME}{enter}`);
+
+      // Wait until table rows appear
+      await screen.findAllByRole('row');
+
+      // Expect correct counts after filter update event
+      expect(await screen.findAllByRole('row'))
+        .toHaveLength(TESTED_SOURCE_COUNT + 1); // including header row
+
+    });
+
+    it("should display all incidents (all source systems provided)", async () => {
+
+      // Check correct counts after a preceding user interaction
+      expect(await screen.findAllByRole('row'))
+        .toHaveLength(TESTED_SOURCE_COUNT + 1); // including header row
+
+      // Simulate filtering after all existent source systems (provide all systems)
+      const sourcesSelectorInput = screen.getByPlaceholderText('Source name');
+      KNOWN_SOURCE_SYSTEMS.forEach(source => {
+        userEvent.type(sourcesSelectorInput, `${source.name}{enter}`);
+      });
+
+      // Wait until table rows appear
+      await screen.findAllByRole('row');
+
+      // Expect correct counts after filter update event
+      expect(screen.getAllByRole('row'))
+        .toHaveLength(EXISTING_INCIDENTS.length + 1); // including header row
+    });
+
+    it("should display all incidents (all source systems removed)", async () => {
+
+      // Check correct counts after a preceding user interaction
+      expect(await screen.findAllByRole('row'))
+        .toHaveLength(EXISTING_INCIDENTS.length + 1); // including header row
+
+      const lastRefreshedVal = screen.getByText(/last refreshed/i).textContent;
+
+      // Simulate filtering after all existent source systems (clear all systems)
+      const sourcesSelectorInput = screen.getByPlaceholderText('Source name');
+      userEvent.clear(sourcesSelectorInput);
+
+      // Wait until table rows appear
+      await screen.findAllByRole('row');
+
+      // Expect correct counts after filter update event
+      expect(screen.getAllByRole('row'))
+        .toHaveLength(EXISTING_INCIDENTS.length + 1); // including header row
+      // Expect a new "Last refreshed" time value
+      expect(screen.getByText(/last refreshed/i))
+        .not.toHaveValue(lastRefreshedVal);
+    });
+  });
 });
