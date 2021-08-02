@@ -1,7 +1,7 @@
 import React, { useContext, useMemo } from "react";
 
 // Api
-import type { Filter, Incident, IncidentTag } from "../api/types.d";
+import type { Filter, Incident, IncidentTag, SeverityLevelNumber } from "../api/types.d";
 
 // Utils
 import { groupBy } from "../utils";
@@ -11,6 +11,7 @@ import { IncidentsStateType, IncidentsContext, createIncidentsIndex } from "../c
 
 // Components
 import { Tag, originalToTag } from "../components/tagselector";
+import { SHOW_SEVERITY_LEVELS } from "../config";
 
 // for all different tags "keys", THERE HAS TO BE ONE tag with
 // matching value in incident.tags
@@ -47,6 +48,11 @@ export const matchesAcked = (incident: Incident, acked?: boolean): boolean => {
   return incident.acked === acked;
 };
 
+export const matchesMaxlevel = (incident: Incident, maxlevel?: SeverityLevelNumber): boolean => {
+  if (!SHOW_SEVERITY_LEVELS || maxlevel === undefined) return true;
+  return incident.level <= maxlevel;
+};
+
 export const matchesFilter = (incident: Incident, filter: Omit<Filter, "pk" | "name">): boolean => {
   /*
       // Useful for debugging
@@ -69,7 +75,8 @@ export const matchesFilter = (incident: Incident, filter: Omit<Filter, "pk" | "n
     matchesShow(incident, filter.filter.open) &&
     matchesAcked(incident, filter.filter.acked) &&
     matchesOnTags(incident, filter.tags) &&
-    matchesOnSources(incident, filter.sourceSystemIds)
+    matchesOnSources(incident, filter.sourceSystemIds) &&
+    matchesMaxlevel(incident, filter.filter.maxlevel)
   );
 };
 

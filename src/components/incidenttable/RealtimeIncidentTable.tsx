@@ -95,9 +95,13 @@ const RealtimeIncidentTable = () => {
     // We still load incidents initially using REST, because
     // the websockets implementation in the backend is lacking
     // some features....
-    loadIncidentsFiltered(incidentsFilter).then(() => {
-      setIsLoading(false);
-    });
+    loadIncidentsFiltered(incidentsFilter)
+      .then(() => {
+        setIsLoading(false);
+      })
+      .catch((error: Error) => {
+        console.error(`Error occured while fetching incidents: ${error}`);
+      });
 
     // In order for the websockets callbacks to call the updated filter matching
     // function we need to create a new such function every time the filter changes.

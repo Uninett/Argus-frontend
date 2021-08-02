@@ -66,9 +66,14 @@ const ProfileList: React.FC = () => {
   const [phoneNumbers, setPhoneNumbers] = useState<PhoneNumber[]>([]);
 
   useEffect(() => {
-    api.getAllPhoneNumbers().then((phoneNumbers: PhoneNumber[]) => {
-      setPhoneNumbers(phoneNumbers);
-    });
+    api
+      .getAllPhoneNumbers()
+      .then((phoneNumbers: PhoneNumber[]) => {
+        setPhoneNumbers(phoneNumbers);
+      })
+      .catch((error: Error) => {
+        console.error(`Error occured while fetching phone numbers: ${error}`);
+      });
   }, []);
 
   const [action, setAction] = useState<Action>({ message: "", success: false, completed: false });
@@ -136,7 +141,7 @@ const ProfileList: React.FC = () => {
   // }, [filtersIsError, displayAlertSnackbar]);
 
   useMemo(() => {
-    if (!combinedIsError || !filtersIsError) return;
+    if (!combinedIsError && !filtersIsError) return;
     displayAlertSnackbar("Unable to get profiles and timeslots, or filters", "error");
   }, [filtersIsError, combinedIsError, displayAlertSnackbar]);
 
