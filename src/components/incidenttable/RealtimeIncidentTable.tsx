@@ -15,6 +15,7 @@ import FilteredIncidentsProvider, { matchesFilter } from "../../components/filte
 
 // Components
 import { MinimalIncidentTable } from "./IncidentTable";
+import { useApiState } from "../../state/hooks";
 
 const defaultRtsConfig = {
   onIncidentAdded: () => undefined,
@@ -30,6 +31,7 @@ const RealtimeIncidentTable = () => {
   const [{ incidentsFilter }] = useSelectedFilter();
   const [, { addIncident, modifyIncident, removeIncident }] = useIncidentsContext();
   const [, { loadIncidentsFiltered }] = useIncidents();
+  const [, { setAutoUpdateMethod }] = useApiState();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isLoadingRealtime, setIsLoadingRealtime] = useState<boolean>(true);
   const [filterMatcher, setFilterMatcher] = useState<((incident: Incident) => boolean) | undefined>(undefined);
@@ -82,10 +84,11 @@ const RealtimeIncidentTable = () => {
 
       case "failed":
         displayAlert("Failed to establish realtime connection", "error");
-        setIsLoadingRealtime(true);
+        setAutoUpdateMethod("interval");
+        setIsLoadingRealtime(false);
         break;
     }
-  }, [rtsState, displayAlert]);
+  }, [rtsState, displayAlert, setAutoUpdateMethod]);
 
   useEffect(() => {
     setIsLoading(true);
