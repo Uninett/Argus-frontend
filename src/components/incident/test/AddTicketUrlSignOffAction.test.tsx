@@ -45,7 +45,7 @@ describe('Add Ticket Dialog test suite', () => {
     expect(inputHelperText).toBeInTheDocument();
     expect(inputHelperText).toBeVisible();
 
-    const dialogInputField = within(addTicketDialog).getByRole('textbox', {name: /message/i});
+    const dialogInputField = within(addTicketDialog).getByRole('textbox', {name: /valid ticket url/i});
     expect(dialogInputField).toBeInTheDocument();
     expect(dialogInputField).toBeVisible();
 
