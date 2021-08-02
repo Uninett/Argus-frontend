@@ -41,7 +41,13 @@ import api from "../../api";
 import { ENABLE_WEBSOCKETS_SUPPORT, SHOW_SEVERITY_LEVELS } from "../../config";
 
 // Utils
-import { saveToLocalStorage, fromLocalStorageOrDefault, optionalBoolToKey, optionalOr } from "../../utils";
+import {
+  saveToLocalStorage,
+  fromLocalStorageOrDefault,
+  optionalBoolToKey,
+  optionalOr,
+  validateStringInput,
+} from "../../utils";
 import { DROPDOWN_TOOLBAR } from "../../localstorageconsts";
 
 // Contexts/hooks
@@ -214,7 +220,16 @@ export const FiltersDropdownToolbarItem = ({ className }: FiltersDropdownToolbar
   const [createDialogOpen, setCreateDialogOpen] = useState<boolean>(false);
   const [saveToDialogOpen, setSaveToDialogOpen] = useState<boolean>(false);
   const [newFilterName, setNewFilterName] = useState<string>("");
+  const [newFilterError, setNewFilterError] = useState<boolean>(false);
   const [saveToFilter, setSaveToFilter] = useState<Filter | undefined>(undefined);
+
+  useEffect(() => {
+    // before create dialog unmount
+    return () => {
+      setNewFilterError(false);
+      setNewFilterName("");
+    }
+  }, [createDialogOpen])
 
   const onCreateFilterClick = () => {
     setCreateDialogOpen(true);
@@ -225,17 +240,21 @@ export const FiltersDropdownToolbarItem = ({ className }: FiltersDropdownToolbar
   };
 
   const onCreateFilter = () => {
-    const newFilter: Omit<Filter, "pk"> = {
-      ...selectedFilter.incidentsFilter,
-      name: newFilterName,
-    };
-    createFilter(newFilter)
-      .then((filter: Filter) => {
-        setExistingFilter(filter);
-        setCreateDialogOpen(false);
-        displayAlert(`Created filter: ${filter.pk}`, "success");
-      })
-      .catch((error) => displayAlert(`Failed to create filter: ${error}`, "error"));
+    if (validateStringInput(newFilterName)) {
+      const newFilter: Omit<Filter, "pk"> = {
+        ...selectedFilter.incidentsFilter,
+        name: newFilterName,
+      };
+      createFilter(newFilter)
+        .then((filter: Filter) => {
+          setExistingFilter(filter);
+          setCreateDialogOpen(false);
+          displayAlert(`Created filter: ${filter.pk}`, "success");
+        })
+        .catch((error) => displayAlert(`Failed to create filter: ${error}`, "error"));
+    } else {
+      setNewFilterError(true);
+    }
   };
 
   const onUpdateFilter = () => {
@@ -317,7 +336,10 @@ export const FiltersDropdownToolbarItem = ({ className }: FiltersDropdownToolbar
         onClose={() => setCreateDialogOpen(false)}
         content={
           <TextField
+            required
             autoFocus
+            error={newFilterError}
+            helperText={newFilterError ? "Filter name is required" : null}
             value={newFilterName}
             onChange={(event) => setNewFilterName(event.target.value)}
             label="Filter name"
@@ -417,16 +439,21 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
     // TODO: This could be stored in the global state as well,
     // because it is useful other places, but it's unnecessary to update
     // all the time.
-    api.getAllIncidentsMetadata().then((incidentMetadata: IncidentMetadata) => {
-      setKnownSources(incidentMetadata.sourceSystems.map((source: SourceSystem) => source.name));
-      const sourceIdByName: { [name: string]: number } = {};
-      incidentMetadata.sourceSystems.forEach((source: SourceSystem) => (sourceIdByName[source.name] = source.pk));
-      setSourceIdByName(sourceIdByName);
+    api
+      .getAllIncidentsMetadata()
+      .then((incidentMetadata: IncidentMetadata) => {
+        setKnownSources(incidentMetadata.sourceSystems.map((source: SourceSystem) => source.name));
+        const sourceIdByName: { [name: string]: number } = {};
+        incidentMetadata.sourceSystems.forEach((source: SourceSystem) => (sourceIdByName[source.name] = source.pk));
+        setSourceIdByName(sourceIdByName);
 
-      const sourceNameById: { [id: number]: string } = {};
-      incidentMetadata.sourceSystems.forEach((source: SourceSystem) => (sourceNameById[source.pk] = source.name));
-      setSourceNameById(sourceNameById);
-    });
+        const sourceNameById: { [id: number]: string } = {};
+        incidentMetadata.sourceSystems.forEach((source: SourceSystem) => (sourceNameById[source.pk] = source.name));
+        setSourceNameById(sourceNameById);
+      })
+      .catch((error: Error) => {
+        console.error(`Error occured while fetching incidents metadata: ${error}`);
+      });
   }, []);
 
   const autoUpdateOptions: AutoUpdateMethod[] = ENABLE_WEBSOCKETS_SUPPORT
