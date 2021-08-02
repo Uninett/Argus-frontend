@@ -401,5 +401,58 @@ describe('Incidents Table: reflects user interactions with Incidents Filter Tool
         });
     });
   });
-  
+
+  describe('User interacts with the Acked Switch', () => {
+
+    beforeEach(() => {
+      // Simulate switching to showing open incidents only (filter update event)
+      const openStateBtn = screen.getByTitle('Only open incidents');
+      userEvent.click(openStateBtn);
+      // Simulate switching to showing unacked incidents only (filter update event)
+      const unackedStateBtn = screen.getByTitle('Only unacked incidents');
+      userEvent.click(unackedStateBtn);
+    });
+
+    it("should display no incidents", async () => {
+
+      // Check correct counts after rendering with initial conditions
+      expect(await screen.findAllByRole('cell', { name: /non-acked/i }))
+        .toHaveLength(OPEN_AND_UNACKED_COUNT);
+      expect(screen.queryByRole('cell', { name: /closed/i }))
+        .toBeNull();
+
+      // Simulate switching to showing acked incidents only (filter update event)
+      const ackedStateBtn = screen.getByTitle('Only acked incidents');
+      userEvent.click(ackedStateBtn);
+
+      // Wait until table rows are replaced with "No incidents" text
+      await screen.findByText(/no incidents/i);
+
+      // Expect that only header row is rendered
+      expect(screen.getAllByRole('row'))
+        .toHaveLength(1);
+    });
+
+    it("should display both acked and unacked incidents", async () => {
+
+      // Check correct counts after rendering with initial conditions
+      expect(await screen.findAllByRole('cell', { name: /non-acked/i }))
+        .toHaveLength(OPEN_AND_UNACKED_COUNT);
+      expect(screen.queryByRole('cell', { name: /closed/i }))
+        .toBeNull();
+
+      // Simulate switching to showing both acked and unacked incidents (filter update event)
+      const bothAckedStatesButton = screen.getByTitle('Both acked and unacked incidents');
+      userEvent.click(bothAckedStatesButton);
+
+      // Wait until table rows appear
+      await screen.findAllByRole('row');
+
+      // Expect correct counts after filter update event
+      expect(screen.getAllByRole('row'))
+        .toHaveLength(OPEN_COUNT + 1); // incidents rows plus header row
+      expect(screen.queryByRole('cell', { name: /closed/i }))
+        .toBeNull();
+    });
+  });
 });
