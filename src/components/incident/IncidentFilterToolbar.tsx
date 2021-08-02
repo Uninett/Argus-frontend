@@ -458,16 +458,21 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
     // TODO: This could be stored in the global state as well,
     // because it is useful other places, but it's unnecessary to update
     // all the time.
-    api.getAllIncidentsMetadata().then((incidentMetadata: IncidentMetadata) => {
-      setKnownSources(incidentMetadata.sourceSystems.map((source: SourceSystem) => source.name));
-      const sourceIdByName: { [name: string]: number } = {};
-      incidentMetadata.sourceSystems.forEach((source: SourceSystem) => (sourceIdByName[source.name] = source.pk));
-      setSourceIdByName(sourceIdByName);
+    api
+      .getAllIncidentsMetadata()
+      .then((incidentMetadata: IncidentMetadata) => {
+        setKnownSources(incidentMetadata.sourceSystems.map((source: SourceSystem) => source.name));
+        const sourceIdByName: { [name: string]: number } = {};
+        incidentMetadata.sourceSystems.forEach((source: SourceSystem) => (sourceIdByName[source.name] = source.pk));
+        setSourceIdByName(sourceIdByName);
 
-      const sourceNameById: { [id: number]: string } = {};
-      incidentMetadata.sourceSystems.forEach((source: SourceSystem) => (sourceNameById[source.pk] = source.name));
-      setSourceNameById(sourceNameById);
-    });
+        const sourceNameById: { [id: number]: string } = {};
+        incidentMetadata.sourceSystems.forEach((source: SourceSystem) => (sourceNameById[source.pk] = source.name));
+        setSourceNameById(sourceNameById);
+      })
+      .catch((error: Error) => {
+        console.error(`Error occured while fetching incidents metadata: ${error}`);
+      });
   }, []);
 
   const autoUpdateOptions: AutoUpdateMethod[] = ENABLE_WEBSOCKETS_SUPPORT
