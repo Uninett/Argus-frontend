@@ -655,3 +655,268 @@ describe('Incidents Table: reflects user interactions with Incidents Filter Tool
     });
   });
 });
+
+describe('Incidents Table: reflects incident modifications', () => {
+  
+  beforeEach(() => {
+    render(
+      <MemoryRouter>
+        <IncidentView />
+      </MemoryRouter>
+    );
+  });
+
+  describe('User acknowledges an incident', () => {
+
+    beforeEach(() => {
+      // Simulate switching to showing open incidents only (filter update event)
+      const openStateBtn = screen.getByTitle('Only open incidents');
+      userEvent.click(openStateBtn);
+      // Simulate switching to showing unacked incidents only (filter update event)
+      const unackedStateBtn = screen.getByTitle('Only unacked incidents');
+      userEvent.click(unackedStateBtn);
+
+      apiMock
+        .onPost('/api/v1/incidents/1000/acks/',
+          // expect.objectContaining({
+          //   event: {
+          //     description: 'Acknowledged',
+          //     timestamp: '2021-09-28 08:29:06'
+          //   },
+          //   expiration: null
+          // })
+        )
+        .reply(201, {
+          pk: 1000,
+          event: {
+            pk: 1000,
+            incident: 1000,
+            actor: {
+              pk: 1,
+              username: 'Test User'
+            },
+            timestamp: '2021-09-28 08:29:06',
+            type: {
+              value: "ACK",
+              display: "ACK"
+            },
+            description: 'Acknowledged'
+          },
+          expiration: null
+        });
+    });
+
+    it("should show 1 less incident", async () => {
+      // Check correct initial counts
+      expect(await screen.findAllByRole('row'))
+        .toHaveLength(OPEN_AND_UNACKED_COUNT + 1); // including header row
+
+      // Simulate incident ack event
+      const incidentRow = screen.getAllByRole('row')[1];
+      const incidentCheckbox = within(incidentRow).getByRole('checkbox');
+      userEvent.click(incidentCheckbox);
+      expect(incidentCheckbox).toBeChecked();
+
+      const ackBtn = screen
+        .getByRole('button', { name: 'Ack' });
+      userEvent.click(ackBtn);
+
+      await screen.findAllByRole('dialog');
+
+      const msgInput = screen.getByRole('textbox', { name: /message/i });
+      userEvent.type(msgInput, 'Acknowledged');
+      const submitBtn = screen.getByRole('button', { name: /submit/i });
+      userEvent.click(submitBtn);
+
+      // Wait until table is updated
+      await waitForElementToBeRemoved(incidentRow);
+      await screen.findAllByRole('row');
+
+      // Check that table displays 1 less incident
+      expect(screen.getAllByRole('row'))
+        .toHaveLength(OPEN_AND_UNACKED_COUNT);
+    }, 10000);
+  });
+
+  describe('User closes an incident', () => {
+
+    beforeEach(() => {
+      // Simulate switching to showing open incidents only (filter update event)
+      const openStateBtn = screen.getByTitle('Only open incidents');
+      userEvent.click(openStateBtn);
+      // Simulate switching to showing unacked incidents only (filter update event)
+      const unackedStateBtn = screen.getByTitle('Only unacked incidents');
+      userEvent.click(unackedStateBtn);
+
+      apiMock
+        .onPost('/api/v1/incidents/1000/events/',
+          expect.objectContaining({
+            type: "CLO",
+            description: "Incident is fixed"
+          })
+        )
+        .reply(201, {
+          pk: 1000,
+          incident: 1000,
+          actor: {
+            pk: 1,
+            username: 'Test User'
+          },
+          timestamp: '2021-09-28 08:29:06',
+          type: {
+            value: "CLO",
+            display: "CLO"
+          },
+          description: "Incident is fixed"
+        });
+    });
+
+    it("should show 1 less incident", async () => {
+      // Check correct initial counts
+      expect(await screen.findAllByRole('row'))
+        .toHaveLength(OPEN_AND_UNACKED_COUNT + 1); // including header row
+
+      // Simulate incident ack event
+      const incidentRow = screen.getAllByRole('row')[1];
+      const incidentCheckbox = within(incidentRow).getByRole('checkbox');
+      userEvent.click(incidentCheckbox);
+      expect(incidentCheckbox).toBeChecked();
+
+      const closeBtn = screen
+        .getByRole('button', { name: /close selected/i });
+      userEvent.click(closeBtn);
+
+      await screen.findAllByRole('dialog');
+
+      const msgInput = screen.getByRole('textbox', { name: /message/i });
+      userEvent.type(msgInput, "Incident is fixed");
+      const submitBtn = screen.getByRole('button', { name: /close now/i });
+      userEvent.click(submitBtn);
+
+      // Wait until table is updated
+      await waitForElementToBeRemoved(incidentRow);
+      await screen.findAllByRole('row');
+
+      // Check that table displays 1 less incident
+      expect(screen.getAllByRole('row'))
+        .toHaveLength(OPEN_AND_UNACKED_COUNT);
+    }, 10000);
+  });
+
+  describe('User reopens an incident', () => {
+
+    beforeEach(() => {
+      // Simulate switching to showing open incidents only (filter update event)
+      const closedStateBtn = screen.getByTitle('Only closed incidents');
+      userEvent.click(closedStateBtn);
+      // Simulate switching to showing unacked incidents only (filter update event)
+      const unackedStateBtn = screen.getByTitle('Only unacked incidents');
+      userEvent.click(unackedStateBtn);
+
+      apiMock
+        .onPost('/api/v1/incidents/4000/events/',
+          expect.objectContaining({
+            type: "REO"
+          })
+        )
+        .reply(201, {
+          pk: 4000,
+          incident: 4000,
+          actor: {
+            pk: 1,
+            username: 'Test User'
+          },
+          timestamp: '2021-09-28 08:29:06',
+          type: {
+            value: "REO",
+            display: "REO"
+          },
+          description: ""
+        });
+    });
+
+    it("should show 1 less incident", async () => {
+      // Check correct initial counts
+      expect(await screen.findAllByRole('row'))
+        .toHaveLength(CLOSED_AND_UNACKED_COUNT + 1); // including header row
+
+      // Simulate incident ack event
+      const incidentRow = screen.getAllByRole('row')[1];
+      const incidentCheckbox = within(incidentRow).getByRole('checkbox');
+      userEvent.click(incidentCheckbox);
+      expect(incidentCheckbox).toBeChecked();
+
+      const reopenBtn = screen
+        .getByRole('button', { name: /re-open selected/i });
+      userEvent.click(reopenBtn);
+
+      await screen.findAllByRole('dialog');
+
+      const submitBtn = screen.getByRole('button', { name: /yes/i });
+      userEvent.click(submitBtn);
+
+      // Wait until table is updated
+      await waitForElementToBeRemoved(incidentRow);
+      await screen.findAllByRole('row');
+
+      // Check that table displays 1 less incident
+      expect(screen.getAllByRole('row'))
+        .toHaveLength(CLOSED_AND_UNACKED_COUNT);
+    }, 10000);
+  });
+
+  describe('User adds ticket to an incident', () => {
+
+    beforeEach(() => {
+      // Simulate switching to showing both open and closed incidents (filter update event)
+      const bothOpenStatesBtn = screen.getByTitle('Both open and closed incidents');
+      userEvent.click(bothOpenStatesBtn);
+      // Simulate switching to showing both acked and unacked incidents (filter update event)
+      const bothAckedStatesButton = screen.getByTitle('Both acked and unacked incidents');
+      userEvent.click(bothAckedStatesButton);
+
+      apiMock
+        .onPut('/api/v1/incidents/1000/ticket_url/',
+          expect.objectContaining({
+            ticket_url: 'https://ticketurl.com'
+          })
+        )
+        .reply(200, {
+          ticket_url: 'https://ticketurl.com'
+        });
+    });
+
+    it("should update incident's ticket url", async () => {
+      // Check correct initial counts
+      expect(await screen.findAllByRole('row'))
+        .toHaveLength(EXISTING_INCIDENTS.length + 1); // including header row
+
+      // Simulate incident ack event
+      const incidentRow = screen.getAllByRole('row')[1];
+      const incidentCheckbox = within(incidentRow).getByRole('checkbox');
+      userEvent.click(incidentCheckbox);
+      expect(incidentCheckbox).toBeChecked();
+
+      const addTicketBtn = screen
+        .getByRole('button', { name: /add ticket/i });
+      userEvent.click(addTicketBtn);
+
+      await screen.findAllByRole('dialog');
+
+      const msgInput = screen.getByRole('textbox', { name: /message/i });
+      userEvent.type(msgInput, "https://ticketurl.com");
+      const submitBtn = screen.getByRole('button', { name: /submit/i });
+      userEvent.click(submitBtn);
+
+      // Wait until table is updated
+      await screen.findAllByRole('row');
+
+      // Check that table displays same amount of incidents
+      expect(screen.getAllByRole('row'))
+        .toHaveLength(EXISTING_INCIDENTS.length + 1);
+      // Check that the ticket link is updated
+      expect(within(incidentRow).getByRole('link'))
+        .toHaveAttribute('href', "https://ticketurl.com");
+    }, 10000);
+  });
+});
