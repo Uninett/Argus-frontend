@@ -903,7 +903,7 @@ describe('Incidents Table: reflects incident modifications', () => {
 
       await screen.findAllByRole('dialog');
 
-      const msgInput = screen.getByRole('textbox', { name: /message/i });
+      const msgInput = screen.getByRole('textbox', { name: /valid ticket url/i });
       userEvent.type(msgInput, "https://ticketurl.com");
       const submitBtn = screen.getByRole('button', { name: /submit/i });
       userEvent.click(submitBtn);
