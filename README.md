@@ -137,6 +137,26 @@ To run a single test and skip all the others, the following command can be used:
 
     npm test -- -t "testName"
 
+## Fixes for known annyonaces, Linux
+
+If you get the error message "React Native Error: ENOSPC: System limit for
+number of file watchers reached" (the ciode will still run, but tests might
+not), your version of React is probably not cleaning up it's inotify watchers properly.
+
+A temporary fix that always works is to reset the `node_modules` directory:
+
+```
+rm -rf node_modules
+npm install
+```
+
+.. but the error will eventually be back.
+
+A permanent fix for some Linuxes is to increase the value of
+`fs.inotify.max_user_watches` in `/etc/sysctl.conf`. It's a number that is
+divisible by **540** on 32bit systems and **1024** on 64bit-systems. The max is
+**524288**.
+
 ## Coding guidelines
 
 ### Code structure
