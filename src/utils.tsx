@@ -156,6 +156,12 @@ export function timeOfDayFromDate(date: Date): string {
   return format(date, "HH:mm:ss");
 }
 
+export function addHoursToDate(date: Date, hours: number) {
+  const dateOffset = 60 * 60 * 1000 * hours;
+  date.setTime(date.getTime() + dateOffset);
+  return date;
+}
+
 export type FormatTimestampOptions = Partial<{
   withSeconds: boolean;
   withTimezoneOffset: boolean;

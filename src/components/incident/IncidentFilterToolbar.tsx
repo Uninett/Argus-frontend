@@ -35,6 +35,7 @@ import Modal from "../modal/Modal";
 
 // Api
 import type { AutoUpdateMethod, Filter, IncidentMetadata, SeverityLevelNumber, SourceSystem } from "../../api/types.d";
+import { SeverityLevelNumberNameMap } from "../../api/consts";
 import api from "../../api";
 
 // Config
@@ -48,14 +49,14 @@ import {
   optionalOr,
   validateStringInput,
 } from "../../utils";
-import { DROPDOWN_TOOLBAR } from "../../localstorageconsts";
+import { DROPDOWN_TOOLBAR, TIMEFRAME } from "../../localstorageconsts";
 
 // Contexts/hooks
 import { useAlerts } from "../alertsnackbar";
 import { useFilters } from "../../api/actions";
 import { useSelectedFilter } from "../filterprovider";
-import { useApiState } from "../../state/hooks";
-import { SeverityLevelNumberNameMap } from "../../api/consts";
+import { useApiState, useTimeframe } from "../../state/hooks";
+import { DropdownMenu } from "./DropdownMenu";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -431,9 +432,27 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
 
   const SEVERITY_LEVELS: SeverityLevelNumber[] = [1, 2, 3, 4, 5];
 
+  // Values and text for the timeframe selector (values are timeframe length in hours)
+  const TIMEFRAME_VALUES = [0, 1, 3, 12, 24, 168, 720];
+  const TIMEFRAME_TEXT = [
+    "No timeframe",
+    "Last 60 minutes",
+    "Last 3 hours",
+    "Last 12 hours",
+    "Last 24 hours",
+    "Last 7 days",
+    "Last 30 days",
+  ];
+
   const [knownSources, setKnownSources] = useState<string[]>([]);
   const [sourceIdByName, setSourceIdByName] = useState<{ [name: string]: number }>({});
   const [sourceNameById, setSourceNameById] = useState<{ [id: number]: string }>({});
+  const [timeframe, { setTimeframe }] = useTimeframe();
+
+  useEffect(() => {
+    // Save current timeframe in localStorage
+    saveToLocalStorage(TIMEFRAME, timeframe.timeframeInHours);
+  }, [timeframe]);
 
   useEffect(() => {
     // TODO: This could be stored in the global state as well,
@@ -552,21 +571,14 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
 
         {SHOW_SEVERITY_LEVELS && (
           <ToolbarItem title="Max severity level selector" name="Max level" className={classNames(style.medium)}>
-            <FormControl size="small">
-              <Select
-                variant="outlined"
-                id="demo-simple-select-outlined"
-                value={optionalOr(selectedFilter?.incidentsFilter?.filter?.maxlevel, 5)}
-                onChange={(event: ChangeEvent<{ name?: string; value: unknown }>) => {
-                  const maxlevel = event.target.value as SeverityLevelNumber;
-                  setSelectedFilter({ filterContent: { maxlevel } });
-                }}
-              >
-                {SEVERITY_LEVELS.reverse().map((level: SeverityLevelNumber) => (
-                  <MenuItem key={level} value={level}>{`${level} - ${SeverityLevelNumberNameMap[level]}`}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            <DropdownMenu
+              selected={optionalOr(selectedFilter?.incidentsFilter?.filter?.maxlevel, 5)}
+              onChange={(maxlevel: SeverityLevelNumber) => setSelectedFilter({ filterContent: { maxlevel } })}
+            >
+              {SEVERITY_LEVELS.reverse().map((level: SeverityLevelNumber) => (
+                <MenuItem key={level} value={level}>{`${level} - ${SeverityLevelNumberNameMap[level]}`}</MenuItem>
+              ))}
+            </DropdownMenu>
           </ToolbarItem>
         )}
 
@@ -580,6 +592,15 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
       </Toolbar>
       <DropdownToolbar open={dropdownToolbarOpen} onClose={() => setDropdownToolbarOpen(false)}>
         {autoUpdateToolbarItem}
+        <ToolbarItem title="Timeframe selector" name="Timeframe">
+          <DropdownMenu selected={timeframe.timeframeInHours} onChange={(value: number) => setTimeframe(value)}>
+            {TIMEFRAME_VALUES.map((value: number, index: number) => (
+              <MenuItem key={value} value={value}>
+                {TIMEFRAME_TEXT[index]}
+              </MenuItem>
+            ))}
+          </DropdownMenu>
+        </ToolbarItem>
       </DropdownToolbar>
     </div>
   );

@@ -41,7 +41,7 @@ import {
 
 import auth from "../auth";
 
-import { ErrorType, debuglog } from "../utils";
+import { ErrorType, debuglog, formatTimestamp } from "../utils";
 
 import { BACKEND_URL, SHOW_SEVERITY_LEVELS } from "../config";
 import { getErrorCause } from "./utils";
@@ -379,6 +379,7 @@ class ApiClient {
     filter: Omit<Filter, "pk" | "name">,
     cursor: string | null,
     pageSize?: number,
+    timeframeStart?: Date,
   ): Promise<CursorPaginationResponse<Incident>> {
     const buildIncidentsQuery = (filter: Omit<Filter, "pk" | "name">, pageSize?: number) => {
       const params = [];
@@ -396,6 +397,9 @@ class ApiClient {
       }
       if (filter.sourceSystemIds !== undefined) {
         params.push(`source__id__in=${filter.sourceSystemIds.join(",")}`);
+      }
+      if (timeframeStart) {
+        params.push(`start_time__gte=${formatTimestamp(timeframeStart)}`);
       }
       // if (filter.sourceSystemNames !== undefined) {
       //   params.push(`source__name__in=${filter.sourceSystemNames.join(",")}`);
