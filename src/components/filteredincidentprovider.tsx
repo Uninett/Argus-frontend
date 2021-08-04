@@ -4,7 +4,7 @@ import React, { useContext, useMemo } from "react";
 import type { Filter, Incident, IncidentTag, SeverityLevelNumber } from "../api/types.d";
 
 // Utils
-import { groupBy } from "../utils";
+import { addHoursToDate, groupBy } from "../utils";
 
 // Contexts/Hooks
 import { IncidentsStateType, IncidentsContext, createIncidentsIndex } from "../components/incidentsprovider";
@@ -78,6 +78,15 @@ export const matchesFilter = (incident: Incident, filter: Omit<Filter, "pk" | "n
     matchesOnSources(incident, filter.sourceSystemIds) &&
     matchesMaxlevel(incident, filter.filter.maxlevel)
   );
+};
+
+export const matchesTimeframe = (incident: Incident, timeframeInHours: number): boolean => {
+  if (timeframeInHours !== 0) {
+    const timeframeStart = addHoursToDate(new Date(), -timeframeInHours);
+    const incidentStart = new Date(incident.start_time);
+    return incidentStart >= timeframeStart;
+  }
+  return true;
 };
 
 export const FilteredIncidentsProvider = ({

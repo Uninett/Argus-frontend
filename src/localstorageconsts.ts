@@ -5,3 +5,4 @@ export const SELECTED_FILTER = "selectedfilter";
 export const PAGINATION_CURSOR_PAGE_SIZE = "paginationcursor";
 export const DROPDOWN_TOOLBAR = "dropdowntoolbar";
 export const AUTO_UPDATE_METHOD = "autoupdatemethod";
+export const TIMEFRAME = "timeframe";
