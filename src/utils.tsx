@@ -150,8 +150,16 @@ export function dateFromTimeOfDayString(timeOfDay: string): Date {
 }
 
 export function timeOfDayFromDate(date: Date): string {
-  const [hours, minutes, seconds] = [date.getHours(), date.getMinutes(), date.getSeconds()];
-  return `${hours}:${minutes}:${seconds}`;
+  if (isNaN(date.getTime())) {
+    return "Invalid date";
+  }
+  return format(date, "HH:mm:ss");
+}
+
+export function addHoursToDate(date: Date, hours: number) {
+  const dateOffset = 60 * 60 * 1000 * hours;
+  date.setTime(date.getTime() + dateOffset);
+  return date;
 }
 
 export type FormatTimestampOptions = Partial<{
@@ -254,6 +262,21 @@ export function undefinedToNull<T>(value: T | undefined): T | null {
 }
 
 export function optionalOr<T>(value: T | null | undefined, or: T): T {
-    if (value === undefined || value === null) return or;
-    return value
+  if (value === undefined || value === null) return or;
+  return value;
+}
+
+export function validateStringInput(value: string): Boolean {
+  return Boolean(value) && value !== "";
+}
+
+export function isValidUrl(value: string): Boolean {
+  // Pavlo's answer at
+  // https://stackoverflow.com/questions/5717093/check-if-a-javascript-string-is-a-url
+  try {
+    new URL(value);
+  } catch (_) {
+    return false;
+  }
+  return true;
 }

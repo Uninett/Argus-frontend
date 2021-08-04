@@ -110,6 +110,9 @@ export type TimeslotRecurrenceComponentPropsType = {
   onChange: (id: number, recurrence: TimeRecurrence) => void;
   onRemove: (id: number, recurrence: TimeRecurrence) => void;
   disabled?: boolean;
+
+  // Primary key of the timeslot which the recurrence belongs to. The timeslot pk is combined with the id of the recurrence to create an unique id for sub-components.
+  timeslotPk?: TimeslotPK;
 };
 
 export const TimeslotRecurrenceComponent: React.FC<TimeslotRecurrenceComponentPropsType> = ({
@@ -118,6 +121,7 @@ export const TimeslotRecurrenceComponent: React.FC<TimeslotRecurrenceComponentPr
   onChange,
   onRemove,
   disabled,
+  timeslotPk,
 }: TimeslotRecurrenceComponentPropsType) => {
   const style = useStyles();
 
@@ -148,7 +152,7 @@ export const TimeslotRecurrenceComponent: React.FC<TimeslotRecurrenceComponentPr
           size="small"
           className={style.dangerousButton}
           startIcon={<DeleteIcon />}
-          onClick={() => handleRemoveRecurrence()}
+          onClick={handleRemoveRecurrence}
           disabled={disabled}
         >
           Remove
@@ -179,6 +183,7 @@ export const TimeslotRecurrenceComponent: React.FC<TimeslotRecurrenceComponentPr
             label="All day"
           />
           <TimePicker
+            id={timeslotPk ? `timeslot-${timeslotPk}-start-time-picker-${id}` : `start-time-picker-${id}`}
             className={style.timePicker}
             disabled={allDay || disabled}
             margin="normal"
@@ -196,6 +201,7 @@ export const TimeslotRecurrenceComponent: React.FC<TimeslotRecurrenceComponentPr
             }}
           />
           <TimePicker
+            id={timeslotPk ? `timeslot-${timeslotPk}-end-time-picker-${id}` : `end-time-picker-${id}`}
             className={style.timePicker}
             disabled={allDay || disabled}
             margin="normal"
@@ -328,11 +334,17 @@ const TimeslotComponent: React.FC<TimeslotPropsType> = ({
   return (
     <div key={pk} className={classes.root}>
       <Paper className={classes.paper}>
-        <form className={classes.root} noValidate autoComplete="off">
+        <form
+          className={classes.root}
+          aria-label={timeslotName ? timeslotName : "new timeslot"}
+          noValidate
+          autoComplete="off"
+        >
           <Grid container direction="column" alignItems="stretch" spacing={4}>
             <Grid item container lg direction="row" justify="space-between">
               <Grid item>
                 <TextField
+                  id={pk ? `timeslot-${pk}-name-input` : "new-timeslot-name-input"}
                   error={invalidTimeslotName}
                   required
                   label="Timeslot name"
@@ -387,6 +399,7 @@ const TimeslotComponent: React.FC<TimeslotPropsType> = ({
               return (
                 <Grid key={index} item lg>
                   <TimeslotRecurrenceComponent
+                    timeslotPk={pk}
                     id={index}
                     recurrence={recurrence}
                     onChange={(id: number, recurrence: TimeRecurrence) => {

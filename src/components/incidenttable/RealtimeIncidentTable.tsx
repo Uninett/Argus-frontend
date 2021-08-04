@@ -11,10 +11,11 @@ import { useIncidentsContext } from "../../components/incidentsprovider";
 import { useSelectedFilter } from "../../components/filterprovider";
 
 // Providers
-import FilteredIncidentsProvider, { matchesFilter } from "../../components/filteredincidentprovider";
+import FilteredIncidentsProvider, { matchesFilter, matchesTimeframe } from "../../components/filteredincidentprovider";
 
 // Components
 import { MinimalIncidentTable } from "./IncidentTable";
+import { useTimeframe } from "../../state/hooks";
 
 const defaultRtsConfig = {
   onIncidentAdded: () => undefined,
@@ -30,6 +31,7 @@ const RealtimeIncidentTable = () => {
   const [{ incidentsFilter }] = useSelectedFilter();
   const [, { addIncident, modifyIncident, removeIncident }] = useIncidentsContext();
   const [, { loadIncidentsFiltered }] = useIncidents();
+  const [timeframe] = useTimeframe();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isLoadingRealtime, setIsLoadingRealtime] = useState<boolean>(true);
   const [filterMatcher, setFilterMatcher] = useState<((incident: Incident) => boolean) | undefined>(undefined);
@@ -83,6 +85,7 @@ const RealtimeIncidentTable = () => {
       case "failed":
         displayAlert("Failed to establish realtime connection", "error");
         setIsLoadingRealtime(true);
+        setIsLoading(false);
         break;
     }
   }, [rtsState, displayAlert]);
@@ -92,17 +95,21 @@ const RealtimeIncidentTable = () => {
     // We still load incidents initially using REST, because
     // the websockets implementation in the backend is lacking
     // some features....
-    loadIncidentsFiltered(incidentsFilter).then(() => {
-      setIsLoading(false);
-    });
+    loadIncidentsFiltered(incidentsFilter)
+      .then(() => {
+        setIsLoading(false);
+      })
+      .catch((error: Error) => {
+        console.error(`Error occured while fetching incidents: ${error}`);
+      });
 
     // In order for the websockets callbacks to call the updated filter matching
     // function we need to create a new such function every time the filter changes.
     const incidentMatchesFilter = (incident: Incident): boolean => {
-      return matchesFilter(incident, incidentsFilter);
+      return matchesFilter(incident, incidentsFilter) && matchesTimeframe(incident, timeframe.timeframeInHours);
     };
     setFilterMatcher(() => incidentMatchesFilter);
-  }, [incidentsFilter, loadIncidentsFiltered]);
+  }, [incidentsFilter, loadIncidentsFiltered, timeframe]);
 
   // Effect for creating RealtimeServiceConfig
   useEffect(() => {

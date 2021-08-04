@@ -35,21 +35,28 @@ import Modal from "../modal/Modal";
 
 // Api
 import type { AutoUpdateMethod, Filter, IncidentMetadata, SeverityLevelNumber, SourceSystem } from "../../api/types.d";
+import { SeverityLevelNumberNameMap } from "../../api/consts";
 import api from "../../api";
 
 // Config
-import { ENABLE_WEBSOCKETS_SUPPORT } from "../../config";
+import { ENABLE_WEBSOCKETS_SUPPORT, SHOW_SEVERITY_LEVELS } from "../../config";
 
 // Utils
-import { saveToLocalStorage, fromLocalStorageOrDefault, optionalBoolToKey, optionalOr } from "../../utils";
-import { DROPDOWN_TOOLBAR } from "../../localstorageconsts";
+import {
+  saveToLocalStorage,
+  fromLocalStorageOrDefault,
+  optionalBoolToKey,
+  optionalOr,
+  validateStringInput,
+} from "../../utils";
+import { DROPDOWN_TOOLBAR, TIMEFRAME } from "../../localstorageconsts";
 
 // Contexts/hooks
 import { useAlerts } from "../alertsnackbar";
 import { useFilters } from "../../api/actions";
 import { useSelectedFilter } from "../filterprovider";
-import { useApiState } from "../../state/hooks";
-import { SeverityLevelNumberNameMap } from "../../api/consts";
+import { useApiState, useTimeframe } from "../../state/hooks";
+import { DropdownMenu } from "./DropdownMenu";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -214,7 +221,16 @@ export const FiltersDropdownToolbarItem = ({ className }: FiltersDropdownToolbar
   const [createDialogOpen, setCreateDialogOpen] = useState<boolean>(false);
   const [saveToDialogOpen, setSaveToDialogOpen] = useState<boolean>(false);
   const [newFilterName, setNewFilterName] = useState<string>("");
+  const [newFilterError, setNewFilterError] = useState<boolean>(false);
   const [saveToFilter, setSaveToFilter] = useState<Filter | undefined>(undefined);
+
+  useEffect(() => {
+    // before create dialog unmount
+    return () => {
+      setNewFilterError(false);
+      setNewFilterName("");
+    }
+  }, [createDialogOpen])
 
   const onCreateFilterClick = () => {
     setCreateDialogOpen(true);
@@ -225,17 +241,21 @@ export const FiltersDropdownToolbarItem = ({ className }: FiltersDropdownToolbar
   };
 
   const onCreateFilter = () => {
-    const newFilter: Omit<Filter, "pk"> = {
-      ...selectedFilter.incidentsFilter,
-      name: newFilterName,
-    };
-    createFilter(newFilter)
-      .then((filter: Filter) => {
-        setExistingFilter(filter);
-        setCreateDialogOpen(false);
-        displayAlert(`Created filter: ${filter.pk}`, "success");
-      })
-      .catch((error) => displayAlert(`Failed to create filter: ${error}`, "error"));
+    if (validateStringInput(newFilterName)) {
+      const newFilter: Omit<Filter, "pk"> = {
+        ...selectedFilter.incidentsFilter,
+        name: newFilterName,
+      };
+      createFilter(newFilter)
+        .then((filter: Filter) => {
+          setExistingFilter(filter);
+          setCreateDialogOpen(false);
+          displayAlert(`Created filter: ${filter.pk}`, "success");
+        })
+        .catch((error) => displayAlert(`Failed to create filter: ${error}`, "error"));
+    } else {
+      setNewFilterError(true);
+    }
   };
 
   const onUpdateFilter = () => {
@@ -317,7 +337,10 @@ export const FiltersDropdownToolbarItem = ({ className }: FiltersDropdownToolbar
         onClose={() => setCreateDialogOpen(false)}
         content={
           <TextField
+            required
             autoFocus
+            error={newFilterError}
+            helperText={newFilterError ? "Filter name is required" : null}
             value={newFilterName}
             onChange={(event) => setNewFilterName(event.target.value)}
             label="Filter name"
@@ -409,24 +432,47 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
 
   const SEVERITY_LEVELS: SeverityLevelNumber[] = [1, 2, 3, 4, 5];
 
+  // Values and text for the timeframe selector (values are timeframe length in hours)
+  const TIMEFRAME_VALUES = [0, 1, 3, 12, 24, 168, 720];
+  const TIMEFRAME_TEXT = [
+    "No timeframe",
+    "Last 60 minutes",
+    "Last 3 hours",
+    "Last 12 hours",
+    "Last 24 hours",
+    "Last 7 days",
+    "Last 30 days",
+  ];
+
   const [knownSources, setKnownSources] = useState<string[]>([]);
   const [sourceIdByName, setSourceIdByName] = useState<{ [name: string]: number }>({});
   const [sourceNameById, setSourceNameById] = useState<{ [id: number]: string }>({});
+  const [timeframe, { setTimeframe }] = useTimeframe();
+
+  useEffect(() => {
+    // Save current timeframe in localStorage
+    saveToLocalStorage(TIMEFRAME, timeframe.timeframeInHours);
+  }, [timeframe]);
 
   useEffect(() => {
     // TODO: This could be stored in the global state as well,
     // because it is useful other places, but it's unnecessary to update
     // all the time.
-    api.getAllIncidentsMetadata().then((incidentMetadata: IncidentMetadata) => {
-      setKnownSources(incidentMetadata.sourceSystems.map((source: SourceSystem) => source.name));
-      const sourceIdByName: { [name: string]: number } = {};
-      incidentMetadata.sourceSystems.forEach((source: SourceSystem) => (sourceIdByName[source.name] = source.pk));
-      setSourceIdByName(sourceIdByName);
+    api
+      .getAllIncidentsMetadata()
+      .then((incidentMetadata: IncidentMetadata) => {
+        setKnownSources(incidentMetadata.sourceSystems.map((source: SourceSystem) => source.name));
+        const sourceIdByName: { [name: string]: number } = {};
+        incidentMetadata.sourceSystems.forEach((source: SourceSystem) => (sourceIdByName[source.name] = source.pk));
+        setSourceIdByName(sourceIdByName);
 
-      const sourceNameById: { [id: number]: string } = {};
-      incidentMetadata.sourceSystems.forEach((source: SourceSystem) => (sourceNameById[source.pk] = source.name));
-      setSourceNameById(sourceNameById);
-    });
+        const sourceNameById: { [id: number]: string } = {};
+        incidentMetadata.sourceSystems.forEach((source: SourceSystem) => (sourceNameById[source.pk] = source.name));
+        setSourceNameById(sourceNameById);
+      })
+      .catch((error: Error) => {
+        console.error(`Error occured while fetching incidents metadata: ${error}`);
+      });
   }, []);
 
   const autoUpdateOptions: AutoUpdateMethod[] = ENABLE_WEBSOCKETS_SUPPORT
@@ -523,23 +569,18 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
           />
         </ToolbarItem>
 
-        <ToolbarItem title="Max severity level selector" name="Max level" className={classNames(style.medium)}>
-          <FormControl size="small">
-            <Select
-              variant="outlined"
-              id="demo-simple-select-outlined"
-              value={optionalOr(selectedFilter?.incidentsFilter?.filter?.maxlevel, 5)}
-              onChange={(event: ChangeEvent<{ name?: string; value: unknown }>) => {
-                const maxlevel = event.target.value as SeverityLevelNumber;
-                setSelectedFilter({ filterContent: { maxlevel } });
-              }}
+        {SHOW_SEVERITY_LEVELS && (
+          <ToolbarItem title="Max severity level selector" name="Max level" className={classNames(style.medium)}>
+            <DropdownMenu
+              selected={optionalOr(selectedFilter?.incidentsFilter?.filter?.maxlevel, 5)}
+              onChange={(maxlevel: SeverityLevelNumber) => setSelectedFilter({ filterContent: { maxlevel } })}
             >
               {SEVERITY_LEVELS.reverse().map((level: SeverityLevelNumber) => (
                 <MenuItem key={level} value={level}>{`${level} - ${SeverityLevelNumberNameMap[level]}`}</MenuItem>
               ))}
-            </Select>
-          </FormControl>
-        </ToolbarItem>
+            </DropdownMenu>
+          </ToolbarItem>
+        )}
 
         <ToolbarItem title="Filter selector" name="Filter" className={classNames(style.medium)}>
           <FiltersDropdownToolbarItem />
@@ -551,6 +592,15 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
       </Toolbar>
       <DropdownToolbar open={dropdownToolbarOpen} onClose={() => setDropdownToolbarOpen(false)}>
         {autoUpdateToolbarItem}
+        <ToolbarItem title="Timeframe selector" name="Timeframe">
+          <DropdownMenu selected={timeframe.timeframeInHours} onChange={(value: number) => setTimeframe(value)}>
+            {TIMEFRAME_VALUES.map((value: number, index: number) => (
+              <MenuItem key={value} value={value}>
+                {TIMEFRAME_TEXT[index]}
+              </MenuItem>
+            ))}
+          </DropdownMenu>
+        </ToolbarItem>
       </DropdownToolbar>
     </div>
   );

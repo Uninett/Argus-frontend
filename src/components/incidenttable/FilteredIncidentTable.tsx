@@ -11,21 +11,22 @@ import type { Filter, Incident, CursorPaginationResponse, AutoUpdateMethod, Filt
 import api from "../../api";
 
 // Utils
-import { formatTimestamp, saveToLocalStorage, fromLocalStorageOrDefault } from "../../utils";
+import { formatTimestamp, saveToLocalStorage, fromLocalStorageOrDefault, addHoursToDate } from "../../utils";
 
 import { PAGINATION_CURSOR_PAGE_SIZE } from "../../localstorageconsts";
 
 // Contexts/Hooks
 import { useIncidentsContext } from "../../components/incidentsprovider";
 import { useSelectedFilter } from "../../components/filterprovider";
-import { useApiState } from "../../state/hooks";
+import { useApiState, useTimeframe } from "../../state/hooks";
 
 // Providers
-import FilteredIncidentsProvider, { matchesFilter } from "../../components/filteredincidentprovider";
+import FilteredIncidentsProvider, { matchesFilter, matchesTimeframe } from "../../components/filteredincidentprovider";
 
 // Components
 import { MinimalIncidentTable } from "./IncidentTable";
 import { Tag } from "../../components/tagselector";
+import { useAlerts } from "../alertsnackbar";
 
 type PaginationCursor = {
   next: string | null;
@@ -71,11 +72,14 @@ const FilteredIncidentTable = () => {
     undefined,
   );
 
+  const displayAlert = useAlerts();
+
   // Get the incidents and seleceted filter from context
   const [{ incidents }, { loadAllIncidents }] = useIncidentsContext();
   const [{ incidentsFilter }] = useSelectedFilter();
 
   const [{ autoUpdateMethod }] = useApiState();
+  const [timeframe] = useTimeframe();
 
   // Keep track of the pagination cursor
   const [paginationCursor, setPaginationCursor] = useState<PaginationCursor>(
@@ -106,9 +110,13 @@ const FilteredIncidentTable = () => {
       sourceSystemIds: incidentsFilter.sourceSystemIds,
     };
 
+    // Find start of timeframe by removing hours from current datetime
+    let timeframeStart;
+    if (timeframe.timeframeInHours !== 0) timeframeStart = addHoursToDate(new Date(), -timeframe.timeframeInHours);
+
     setIsLoading(true);
     api
-      .getPaginatedIncidentsFiltered(filter, paginationCursor.current, paginationCursor.pageSize)
+      .getPaginatedIncidentsFiltered(filter, paginationCursor.current, paginationCursor.pageSize, timeframeStart)
       .then((response: CursorPaginationResponse<Incident>) => {
         loadAllIncidents(response.results);
         const { previous, next } = response;
@@ -116,8 +124,12 @@ const FilteredIncidentTable = () => {
         setLastRefresh({ time: new Date(), filter: incidentsFilter });
         setIsLoading(false);
         return response;
+      })
+      .catch((error: Error) => {
+        setIsLoading(false);
+        displayAlert(error.message, "error");
       });
-  }, [incidentsFilter, paginationCursor, loadAllIncidents]);
+  }, [incidentsFilter, timeframe, paginationCursor, loadAllIncidents, displayAlert]);
 
   useEffect(() => {
     refresh();
@@ -221,10 +233,13 @@ const FilteredIncidentTable = () => {
   const filterMatcher = useMemo(() => {
     const { filter, tags, sourceSystemIds } = incidentsFilter;
     const incidentMatchesFilter = (incident: Incident): boolean => {
-      return matchesFilter(incident, { filter, tags, sourceSystemIds });
+      return (
+        matchesFilter(incident, { filter, tags, sourceSystemIds }) &&
+        matchesTimeframe(incident, timeframe.timeframeInHours)
+      );
     };
     return incidentMatchesFilter;
-  }, [incidentsFilter]);
+  }, [incidentsFilter, timeframe]);
 
   useEffect(() => {
     // refresh incidents from backend at a set interval if we

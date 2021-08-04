@@ -12,6 +12,7 @@ import {
 import { UserStateType, loginUser, loginTokenUser, logoutUser } from "../state/reducers/user";
 
 import { AppContext } from "../state/contexts";
+import { setTimeframe, TimeframeStateType } from "./reducers/timeframe";
 
 export type UseApiStateActionType = {
   setAutoUpdateMethod: (method: AutoUpdateMethod) => void;
@@ -68,6 +69,26 @@ export const useUser = (): [UserStateType, UseUserActionType] => {
       login: loginCallback,
       logout: logoutCallback,
       loginToken: loginTokenCallback,
+    },
+  ];
+};
+
+// Time filter
+export type UseTimeframeActionType = {
+  setTimeframe: (value: number) => void;
+};
+
+export const useTimeframe = (): [TimeframeStateType, UseTimeframeActionType] => {
+  const {
+    state: { timeframe },
+    dispatch,
+  } = useContext(AppContext);
+
+  const setTimeframeCallback = useCallback((value: number) => dispatch(setTimeframe(value)), [dispatch]);
+  return [
+    timeframe,
+    {
+      setTimeframe: setTimeframeCallback,
     },
   ];
 };
