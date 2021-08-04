@@ -339,7 +339,7 @@ describe("TimeslotList: Update existing timeslot", () => {
     expect(newTimeslot2).toBeInTheDocument();
   }, 10000);
 
-  it("fails to update existing timeslot when end time is invalid", async () => {
+  it("fails to update existing timeslot when end time is before start time", async () => {
     const newEndTime = "08:00:00";
 
     // Mock api put request with expected request body
@@ -367,11 +367,29 @@ describe("TimeslotList: Update existing timeslot", () => {
     userEvent.type(endTimePicker, `{selectall}{backspace}${newEndTime.slice(0, 5)}`);
 
     const saveButton = within(existingTimeslot).getByRole("button", { name: /save/i });
-    userEvent.click(saveButton);
+    expect(saveButton).not.toBeEnabled();
 
-    // Expect error message to be shown
-    const errorMessage = await screen.findByText(/failed to put notificationprofile timeslot/i);
-    expect(errorMessage).toBeInTheDocument();
+    // Expect a helper text with correct value to appear
+    expect(within(existingTimeslot).getByText(/must be after start time/i))
+      .toBeInTheDocument();
+  });
+
+  it("fails to update existing timeslot when start time is after end time", async () => {
+    const newStartTime = "14:00:00";
+
+    // Simulate user actions to update existing timeslot with invalid start time
+
+    const existingTimeslot = await screen.findByRole("form", { name: EXISTING_TIMESLOT.name });
+
+    const endTimePicker = within(existingTimeslot).getByRole("textbox", { name: /start time picker/i });
+    userEvent.type(endTimePicker, `{selectall}{backspace}${newStartTime.slice(0, 5)}`);
+
+    const saveButton = within(existingTimeslot).getByRole("button", { name: /save/i });
+    expect(saveButton).not.toBeEnabled();
+
+    // Expect a helper text with correct value to appear
+    expect(within(existingTimeslot).getByText(/must be before end time/i))
+      .toBeInTheDocument();
   });
 
   it("fails to update existing timeslot when name is not provided", async () => {
