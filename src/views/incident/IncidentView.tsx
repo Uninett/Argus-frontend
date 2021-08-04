@@ -15,6 +15,7 @@ import { useApiState } from "../../state/hooks";
 import SelectedFilterProvider from "../../components/filterprovider"; // TODO: move
 import IncidentsProvider from "../../components/incidentsprovider"; // TODO: move
 import { Helmet } from "react-helmet";
+import {API_VERSION, FRONTEND_VERSION} from "../../config";
 
 const IncidentComponent = ({ autoUpdateMethod }: { autoUpdateMethod: AutoUpdateMethod }) => {
   return autoUpdateMethod === "realtime" ? (
@@ -49,6 +50,10 @@ const IncidentView: React.FC<IncidentViewPropsType> = () => {
           <IncidentComponent autoUpdateMethod={autoUpdateMethod} />
         </IncidentsProvider>
       </SelectedFilterProvider>
+      <p>
+        API {API_VERSION},
+        frontend v.{FRONTEND_VERSION}
+      </p>
     </div>
   );
 };
