@@ -157,6 +157,14 @@ export const TimeslotRecurrenceComponent: React.FC<TimeslotRecurrenceComponentPr
           onChange(id, { ...recurrence, start: timeOfDayFromDate(date) }, false)
           :
           onChange(id, { ...recurrence, end: timeOfDayFromDate(date) }, false)
+      } else if (isStart && isBefore(parse(recurrence.end, 'HH:mm:ss', new Date()), date)) {
+        setStartTimeError(true);
+        setStartTimeHelperText('Must be before end time');
+        onChange(id, { ...recurrence, start: timeOfDayFromDate(date) }, false);
+      } else if (isBefore(date, parse(recurrence.start, 'HH:mm:ss', new Date()))) {
+        setEndTimeError(true);
+        setEndTimeHelperText('Must be after start time');
+        onChange(id, { ...recurrence, end: timeOfDayFromDate(date) }, false);
       } else {
         isStart ? setStartTimeError(false) : setEndTimeError(false);
         isStart ?
