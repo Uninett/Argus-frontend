@@ -137,11 +137,11 @@ To run a single test and skip all the others, the following command can be used:
 
     npm test -- -t "testName"
 
-## Fixes for known annyonaces, Linux
+## Fixes for known annoyances, Linux
 
 If you get the error message "React Native Error: ENOSPC: System limit for
-number of file watchers reached" (the ciode will still run, but tests might
-not), your version of React is probably not cleaning up it's inotify watchers properly.
+number of file watchers reached" (the code will still run, but tests might
+not), your version of React is probably not cleaning up its inotify watchers properly.
 
 A temporary fix that always works is to reset the `node_modules` directory:
 
