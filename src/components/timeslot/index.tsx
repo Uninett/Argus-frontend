@@ -419,6 +419,7 @@ const TimeslotComponent: React.FC<TimeslotPropsType> = ({
                       }
                       setUpdateLoading(true);
                       onSave(pk, timeslotName, recurrences);
+                      setUpdateLoading(false);
                     }}
                     disabled={!hasChanged || invalidTimeslotName || invalidTime || updateLoading || deleteLoading}
                     startIcon={updateLoading ? <Spinning shouldSpin /> : <SaveIcon />}
@@ -434,6 +435,7 @@ const TimeslotComponent: React.FC<TimeslotPropsType> = ({
                     onClick={() => {
                       setDeleteLoading(true);
                       onDelete(pk, timeslotName);
+                      setDeleteLoading(false);
                     }}
                   >
                     Delete
