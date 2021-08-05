@@ -20,7 +20,7 @@ type ApiStatePayload = {
 };
 
 export const initialApiState: ApiState = {
-  autoUpdateMethod: "realtime",
+  autoUpdateMethod: "interval",
   hasConnectionProblems: false,
 };
 
