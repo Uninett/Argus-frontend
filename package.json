@@ -71,6 +71,7 @@
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react-hooks": "*",
     "jest-environment-jsdom-sixteen": "^2.0.0",
-    "prettier": "*"
+    "prettier": "*",
+    "semantic-release": "^17.4.4"
   }
 }
