@@ -22,7 +22,7 @@ type ApiStatePayload = {
 };
 
 export const initialApiState: ApiState = {
-  autoUpdateMethod: fromLocalStorageOrDefault(AUTO_UPDATE_METHOD, "realtime"),
+  autoUpdateMethod: fromLocalStorageOrDefault(AUTO_UPDATE_METHOD, "interval"),
   hasConnectionProblems: false,
 };
 

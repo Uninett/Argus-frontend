@@ -22,6 +22,7 @@ const incidentTagsMock: IncidentTag[] = [
 ]
 
 let incidentMock: Incident = {
+  level: 1,
   pk: 1000,
   start_time: '2021-06-28 08:29:06',
   end_time: '2021-08-28 08:29:06',
