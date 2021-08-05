@@ -1,4 +1,4 @@
-import { useState, useEffect, Dispatch, SetStateAction } from "react";
+import { useState, useEffect, Dispatch, SetStateAction, useRef } from "react";
 
 import format from "date-fns/format";
 import formatDistance from "date-fns/formatDistance";
@@ -142,6 +142,15 @@ export function useStateWithDynamicDefault<T>(defaultVal: T): [T, Dispatch<SetSt
   }, [defaultVal]);
 
   return [state, setState];
+}
+
+// From https://reactjs.org/docs/hooks-faq.html#how-to-get-the-previous-props-or-state
+export function usePrevious<T>(value: T) {
+  const ref = useRef<T>();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
 }
 
 export function dateFromTimeOfDayString(timeOfDay: string): Date {
