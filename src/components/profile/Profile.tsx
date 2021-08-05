@@ -3,6 +3,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import Button from "@material-ui/core/Button";
 import SaveIcon from "@material-ui/icons/Save";
 import DeleteIcon from "@material-ui/icons/Delete";
+import AddCircleIcon from "@material-ui/icons/AddCircle";
 import Spinning from "../spinning";
 import { makeConfirmationButton } from "../buttons/ConfirmationButton";
 
@@ -17,9 +18,54 @@ import type {
   TimeslotPK,
   MediaAlternative,
   PhoneNumber,
+  TimeRecurrence,
 } from "../../api/types.d";
 import { useStateWithDynamicDefault, pkGetter, toMap } from "../../utils";
 import Selector from "../selector";
+import { Box, Card, CardActions, createStyles, FormControlLabel, MenuItem, TextField } from "@material-ui/core";
+import CardContent from "@material-ui/core/CardContent";
+import Select from "@material-ui/core/Select";
+import { makeStyles, Theme } from "@material-ui/core/styles";
+import Typography from "@material-ui/core/Typography";
+import { Autocomplete } from "@material-ui/lab";
+import IconButton from "@material-ui/core/IconButton";
+import Grid from "@material-ui/core/Grid";
+
+const useStyles = makeStyles(() =>
+  createStyles({
+    cardActions: {
+      display: "flex",
+      flexWrap: "wrap",
+    },
+    gridItem: {
+      display: "flex",
+      flexDirection: "column",
+    },
+    itemHeader: {
+      paddingBottom: "5px",
+      fontWeight: 600,
+    },
+    phoneNumber: {
+      display: "flex",
+      alignItems: "flex-start",
+    },
+    phoneNumberSelect: {
+      flexGrow: 1,
+      marginRight: "10px",
+    },
+    buttonGroup: {
+      marginLeft: "auto",
+    },
+    deleteButton: {
+      marginLeft: "8px",
+      color: "white",
+      backgroundColor: "var(--warning)",
+    },
+    addPhoneNumberButton: {
+      padding: "4px",
+    },
+  }),
+);
 
 type ProfileProps = {
   // if not set this means that it doesn't exist in the database
@@ -367,6 +413,182 @@ const Profile: React.FC<ProfileProps> = ({
         </div>
       </div>
     </div>
+  );
+};
+
+type NotificationProfileCardPropsType = {
+  profile: NotificationProfileKeyed;
+  timeslots: Timeslot[];
+  filters: Filter[];
+  // TODO: create new type?
+  mediaOptions: { label: string; value: MediaAlternative }[];
+  phoneNumbers: PhoneNumber[];
+
+  onSave: (profile: NotificationProfileKeyed) => void;
+  onDelete: (profilePK: NotificationProfilePK) => void;
+};
+
+export const NotificationProfileCard = (/*{
+  profile,
+  timeslots,
+  filters,
+  mediaOptions,
+  phoneNumbers,
+  onSave,
+  OnDelete,
+}: NotificationProfileCardPropsType*/) => {
+  const style = useStyles();
+
+  // TODO: remove these and use props instead
+  const timeslots: Timeslot[] = [
+    // eslint-disable-next-line @typescript-eslint/camelcase
+    { pk: 1, name: "Timeslot1", time_recurrences: [] },
+    // eslint-disable-next-line @typescript-eslint/camelcase
+    { pk: 2, name: "Timeslot2", time_recurrences: [] },
+  ];
+  const filters: Filter[] = [
+    { pk: 1, name: "Filter1", sourceSystemIds: [], tags: [], filter: {} },
+    { pk: 2, name: "Filter2", sourceSystemIds: [], tags: [], filter: {} },
+  ];
+  const mediaOptions: { label: string; value: MediaAlternative }[] = [
+    { label: "Email", value: "EM" },
+    { label: "SMS", value: "SM" },
+  ];
+  const phoneNumbers: PhoneNumber[] = [
+    // eslint-disable-next-line @typescript-eslint/camelcase
+    { pk: 1, user: 1, phone_number: "12345678" },
+    // eslint-disable-next-line @typescript-eslint/camelcase
+    { pk: 2, user: 1, phone_number: "87654321" },
+  ];
+
+  //TODO: add PK?
+  const profile: NotificationProfileKeyed = {
+    timeslot: 1,
+    filters: [1],
+    media: ["EM"],
+    active: true,
+    // eslint-disable-next-line @typescript-eslint/camelcase
+    phone_number: 1,
+  };
+
+  // State
+  const [profileState, setProfileState] = useState<NotificationProfileKeyed>(profile);
+
+  // Action handlers
+  const handleTimeslotChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setProfileState({ ...profileState, timeslot: event.target.value as number });
+  };
+
+  const handleFiltersChange = (event: React.ChangeEvent<{}>, value: unknown) => {
+    setProfileState({ ...profileState, filters: (value as Filter[]).map((filter: Filter) => filter.pk) });
+  };
+
+  const handleMediaChange = (event: React.ChangeEvent<{}>, value: unknown) => {
+    setProfileState({
+      ...profileState,
+      media: (value as { label: string; value: MediaAlternative }[]).map((mediaOption) => mediaOption.value),
+    });
+  };
+
+  const handlePhoneNumberChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    // eslint-disable-next-line @typescript-eslint/camelcase
+    setProfileState({ ...profileState, phone_number: event.target.value as number });
+  };
+
+  const handleActiveChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setProfileState({ ...profileState, active: event.target.checked });
+  };
+
+  const handleSave = () => {
+    console.log(profileState);
+  };
+
+  const handleDelete = () => {
+    console.log("DELETE!");
+  };
+
+  const handleAddPhoneNumberClick = () => {
+    console.log("ADD PHONE NUMBER!");
+  };
+
+  return (
+    <Card>
+      <CardContent>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6} md={3} className={style.gridItem}>
+            <Typography className={style.itemHeader}>Timeslot</Typography>
+            <Select value={profileState.timeslot} onChange={handleTimeslotChange}>
+              {timeslots.map((timeslot: Timeslot) => (
+                <MenuItem key={timeslot.pk} value={timeslot.pk}>
+                  {timeslot.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3} className={style.gridItem}>
+            <Typography className={style.itemHeader}>Filters</Typography>
+            <Autocomplete
+              multiple
+              size="small"
+              value={filters.filter((filter: Filter) => profileState.filters.includes(filter.pk))}
+              options={filters}
+              getOptionLabel={(option) => option.name}
+              filterSelectedOptions
+              onChange={handleFiltersChange}
+              renderInput={(params) => <TextField {...params} variant="standard" placeholder="Filter Name" />}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3} className={style.gridItem}>
+            <Typography className={style.itemHeader}>Media</Typography>
+            <Autocomplete
+              multiple
+              size="small"
+              value={mediaOptions.filter((mediaOption) => profileState.media.includes(mediaOption.value))}
+              options={mediaOptions}
+              getOptionLabel={(option) => option.label}
+              filterSelectedOptions
+              onChange={handleMediaChange}
+              renderInput={(params) => <TextField {...params} variant="standard" placeholder="Filter Name" />}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3} className={style.gridItem}>
+            <Typography className={style.itemHeader}>Phone number</Typography>
+            <div className={style.phoneNumber}>
+              <Select
+                className={style.phoneNumberSelect}
+                value={profileState.phone_number}
+                onChange={handlePhoneNumberChange}
+              >
+                {phoneNumbers.map((phoneNumber: PhoneNumber) => (
+                  <MenuItem key={phoneNumber.pk} value={phoneNumber.pk}>
+                    {phoneNumber.phone_number}
+                  </MenuItem>
+                ))}
+              </Select>
+              <IconButton className={style.addPhoneNumberButton} color="primary" onClick={handleAddPhoneNumberClick}>
+                <AddCircleIcon />
+              </IconButton>
+            </div>
+          </Grid>
+        </Grid>
+      </CardContent>
+      <CardActions className={style.cardActions} disableSpacing>
+        <FormControlLabel
+          control={
+            <Checkbox checked={profileState.active} onChange={handleActiveChange} name="Active" color="primary" />
+          }
+          label="Active"
+        />
+        <div className={style.buttonGroup}>
+          <Button onClick={handleSave} variant="contained" color="primary" startIcon={<SaveIcon />}>
+            Save
+          </Button>
+          <Button className={style.deleteButton} onClick={handleDelete} variant="contained" startIcon={<DeleteIcon />}>
+            Delete
+          </Button>
+        </div>
+      </CardActions>
+    </Card>
   );
 };
 
