@@ -258,6 +258,31 @@ describe("TimeslotList: Create new timeslot", () => {
     const timeslots = await screen.findAllByRole("form");
     expect(timeslots).toHaveLength(2);
   });
+
+  it("fails to create new timeslot if name is not provided", async () => {
+    // Mock api post request with expected request body
+    apiMock
+      .onPost("/api/v1/notificationprofiles/timeslots/", expect.objectContaining({ name: EXISTING_TIMESLOT.name }))
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      .reply(400);
+
+    // Simulate user actions to create timeslot with invalid name
+
+    const createTimeslot = screen.getByRole("form", { name: /new timeslot/i });
+
+    const createButton = within(createTimeslot).getByRole("button", { name: /create/i, hidden: true });
+    userEvent.click(createButton);
+
+    // Expect error helper text to appear
+    const errorHelperText = await screen.findByText(/required/i);
+    expect(errorHelperText).toBeInTheDocument();
+
+    // Expect create button to become disabled
+    expect(createButton).not.toBeEnabled();
+
+    const timeslots = await screen.findAllByRole("form");
+    expect(timeslots).toHaveLength(2);
+  });
 });
 
 describe("TimeslotList: Update existing timeslot", () => {
@@ -314,7 +339,7 @@ describe("TimeslotList: Update existing timeslot", () => {
     expect(newTimeslot2).toBeInTheDocument();
   }, 10000);
 
-  it("fails to update existing timeslot when end time is invalid", async () => {
+  it("fails to update existing timeslot when end time is before start time", async () => {
     const newEndTime = "08:00:00";
 
     // Mock api put request with expected request body
@@ -342,11 +367,65 @@ describe("TimeslotList: Update existing timeslot", () => {
     userEvent.type(endTimePicker, `{selectall}{backspace}${newEndTime.slice(0, 5)}`);
 
     const saveButton = within(existingTimeslot).getByRole("button", { name: /save/i });
-    userEvent.click(saveButton);
+    expect(saveButton).not.toBeEnabled();
 
-    // Expect error message to be shown
-    const errorMessage = await screen.findByText(/failed to put notificationprofile timeslot/i);
-    expect(errorMessage).toBeInTheDocument();
+    // Expect a helper text with correct value to appear
+    expect(within(existingTimeslot).getByText(/must be after start time/i))
+      .toBeInTheDocument();
+  });
+
+  it("fails to update existing timeslot when start time is after end time", async () => {
+    const newStartTime = "14:00:00";
+
+    // Simulate user actions to update existing timeslot with invalid start time
+
+    const existingTimeslot = await screen.findByRole("form", { name: EXISTING_TIMESLOT.name });
+
+    const endTimePicker = within(existingTimeslot).getByRole("textbox", { name: /start time picker/i });
+    userEvent.type(endTimePicker, `{selectall}{backspace}${newStartTime.slice(0, 5)}`);
+
+    const saveButton = within(existingTimeslot).getByRole("button", { name: /save/i });
+    expect(saveButton).not.toBeEnabled();
+
+    // Expect a helper text with correct value to appear
+    expect(within(existingTimeslot).getByText(/must be before end time/i))
+      .toBeInTheDocument();
+  });
+
+  it("fails to update existing timeslot when name is not provided", async () => {
+    const newEndTime = "08:00:00";
+
+    // Mock api put request with expected request body
+    apiMock
+      .onPut(
+        `/api/v1/notificationprofiles/timeslots/${EXISTING_TIMESLOT.pk}/`,
+        expect.objectContaining({
+          name: "",
+          // eslint-disable-next-line @typescript-eslint/camelcase
+          time_recurrences: expect.arrayContaining([
+            expect.objectContaining({
+              end: NEW_RECURRENCE.end,
+            }),
+          ]),
+        }),
+      )
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      .reply(400);
+
+    // Simulate user actions to update existing timeslot with invalid end time
+
+    const existingTimeslot = await screen.findByRole("form", { name: EXISTING_TIMESLOT.name });
+
+    const endTimePicker = within(existingTimeslot).getByRole("textbox", { name: /end time picker/i });
+    userEvent.type(endTimePicker, `{selectall}{backspace}${NEW_RECURRENCE.end.slice(0, 5)}`);
+
+    const nameInput = within(existingTimeslot).getByRole("textbox", { name: /timeslot name/i });
+    userEvent.clear(nameInput);
+
+    const saveButton = within(existingTimeslot).getByRole("button", { name: /save/i });
+
+    // Expect save button to become disabled
+    expect(saveButton).not.toBeEnabled();
   });
 });
 

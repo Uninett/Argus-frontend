@@ -1,7 +1,7 @@
 /**  * @jest-environment jsdom-sixteen  */
 
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import TimeslotComponent, { TimeslotRecurrenceComponent, DaySelector } from "./index";
@@ -22,6 +22,10 @@ const EXAMPLE_TIMESLOT_RECURRENCE_2: TimeRecurrence = {
   end: "18:00:00",
   days: [5, 6, 7],
 };
+
+const recurrences: TimeRecurrence[] = [EXAMPLE_TIMESLOT_RECURRENCE_1];
+const onSave = jest.fn();
+const onDelete = jest.fn();
 
 describe("TimeslotRecurrenceComponent tests", () => {
   const onChange = jest.fn();
@@ -178,43 +182,93 @@ describe("TimeslotRecurrenceComponent tests", () => {
     fireEvent.click(screen.getByRole("checkbox"));
     expect(onChange).toHaveBeenCalledTimes(1);
     // eslint-disable-next-line @typescript-eslint/camelcase
-    expect(onChange).toHaveBeenCalledWith(1, { ...EXAMPLE_TIMESLOT_RECURRENCE_1, all_day: true, start: "", end: "" });
+    expect(onChange).toHaveBeenCalledWith(1,
+      { ...EXAMPLE_TIMESLOT_RECURRENCE_1, all_day: true, start: "", end: "" }, true);
   });
 
-  it("calls function onChange() with the right parameters when user types start time", () => {
+  it("calls function onSave() with the right parameters when user types start time", () => {
     render(
-      <TimeslotRecurrenceComponent
-        id={1}
-        recurrence={EXAMPLE_TIMESLOT_RECURRENCE_1}
-        onChange={onChange}
-        onRemove={onRemove}
+      <TimeslotComponent
+        pk={1}
+        name={"Test"}
+        recurrences={recurrences}
+        exists
+        unsavedChanges={false}
+        onSave={onSave}
+        onDelete={onDelete}
       />,
     );
 
-    const startTimeInput = screen.getByLabelText(/start time picker/i);
-    userEvent.type(startTimeInput, "{selectall}{backspace}20:00");
+    const existingTimeslot = screen.getByRole('form', { name: 'Test' });
+    const startTimeInput = within(existingTimeslot).getByLabelText(/start time picker/i);
 
-    expect(startTimeInput).toHaveValue("20:00");
-    expect(onChange).toHaveBeenCalledTimes(5);
-    expect(onChange).toHaveBeenLastCalledWith(1, { ...EXAMPLE_TIMESLOT_RECURRENCE_1, start: "20:00:00" });
+    userEvent.type(startTimeInput, "{selectall}{backspace}12:00");
+
+    expect(startTimeInput).toHaveValue("12:00");
+
+    userEvent.click(within(existingTimeslot).getByRole('button', { name: /save/i }));
+    expect(onSave).toHaveBeenCalledTimes(1);
+    expect(onSave).toHaveBeenCalledWith(
+      1, "Test", [{"all_day": false, "days": [1, 2, 3, 4, 5], "end": "16:00:00", "start": "12:00:00"}]);
   });
 
-  it("calls function onChange() with the right parameters when user types end time", () => {
+  it("calls function onSave() with the right parameters when user types end time", () => {
     render(
-      <TimeslotRecurrenceComponent
-        id={1}
-        recurrence={EXAMPLE_TIMESLOT_RECURRENCE_1}
-        onChange={onChange}
-        onRemove={onRemove}
+      <TimeslotComponent
+        pk={1}
+        name={"Test"}
+        recurrences={recurrences}
+        exists
+        unsavedChanges={false}
+        onSave={onSave}
+        onDelete={onDelete}
       />,
     );
 
-    const endTimeInput = screen.getByLabelText(/end time picker/i);
+    const existingTimeslot = screen.getByRole('form', { name: 'Test' });
+
+    const endTimeInput = within(existingTimeslot).getByLabelText(/end time picker/i);
     userEvent.type(endTimeInput, "{selectall}{backspace}22:00");
 
     expect(endTimeInput).toHaveValue("22:00");
-    expect(onChange).toHaveBeenCalledTimes(5);
-    expect(onChange).toHaveBeenLastCalledWith(1, { ...EXAMPLE_TIMESLOT_RECURRENCE_1, end: "22:00:00" });
+    userEvent.click(within(existingTimeslot).getByRole('button', { name: /save/i }));
+    expect(onSave).toHaveBeenCalledTimes(1);
+    expect(onSave).toHaveBeenCalledWith(
+      1, "Test", [{"all_day": false, "days": [1, 2, 3, 4, 5], "end": "22:00:00", "start": "10:00:00"}]);
+  });
+
+  it("disables Save-button until user types a valid end time", () => {
+    render(
+      <TimeslotComponent
+        pk={1}
+        name={"Test"}
+        recurrences={recurrences}
+        exists
+        unsavedChanges={false}
+        onSave={onSave}
+        onDelete={onDelete}
+      />,
+    );
+
+    const existingTimeslot = screen.getByRole('form', { name: 'Test' });
+    const saveBtn = within(existingTimeslot).getByRole('button', { name: /save/i });
+
+    const endTimeInput = within(existingTimeslot).getByLabelText(/end time picker/i);
+    userEvent.type(endTimeInput, "{selectall}{backspace}");
+
+    expect(endTimeInput).toHaveValue("");
+    // Expect a helper text with correct value to appear
+    expect(within(existingTimeslot).getByText(/required/i)).toBeInTheDocument();
+    expect(saveBtn).not.toBeEnabled();
+
+    // User types incomplete time value
+    userEvent.type(endTimeInput, "23");
+    expect(within(existingTimeslot).getByText(/invalid/i)).toBeInTheDocument();
+    expect(saveBtn).not.toBeEnabled();
+
+    // User types the rest of time value, making it complete and valid
+    userEvent.type(endTimeInput, "00");
+    expect(saveBtn).toBeEnabled();
   });
 
   it("calls function onChange() with the right parameters when day selector is changed", () => {
@@ -234,7 +288,8 @@ describe("TimeslotRecurrenceComponent tests", () => {
     userEvent.click(wednesdayOption);
 
     expect(onChange).toHaveBeenCalledTimes(1);
-    expect(onChange).toHaveBeenLastCalledWith(1, { ...EXAMPLE_TIMESLOT_RECURRENCE_1, days: [1, 2, 4, 5] });
+    expect(onChange).toHaveBeenLastCalledWith(1,
+      { ...EXAMPLE_TIMESLOT_RECURRENCE_1, days: [1, 2, 4, 5] }, true);
   });
 });
 
@@ -326,9 +381,6 @@ describe("DaySelector tests", () => {
 });
 
 describe("TimeslotComponent tests", () => {
-  const recurrences: TimeRecurrence[] = [EXAMPLE_TIMESLOT_RECURRENCE_1];
-  const onSave = jest.fn();
-  const onDelete = jest.fn();
 
   it("renders new timeslot correctly", () => {
     render(<TimeslotComponent recurrences={recurrences} unsavedChanges={true} onSave={onSave} onDelete={onDelete} />);
