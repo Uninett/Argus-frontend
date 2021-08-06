@@ -24,7 +24,7 @@ import { defaultErrorHandler } from "../../api/utils";
 import { createUsePromise, useApiFilters } from "../../api/hooks";
 import { toMap, pkGetter, removeUndefined } from "../../utils";
 
-import { useAlertSnackbar, UseAlertSnackbarResultType } from "../../components/alertsnackbar";
+import { useAlerts, useAlertSnackbar, UseAlertSnackbarResultType } from "../../components/alertsnackbar";
 
 interface FilterData {
   label: string;
@@ -352,6 +352,9 @@ export const NotificationProfileList = () => {
   const [profiles, setProfiles] = useState<NotificationProfileKeyed[]>([]);
   const [phoneNumbers, setPhoneNumbers] = useState<PhoneNumber[]>([]);
 
+  // Create alert instance
+  const displayAlert = useAlerts();
+
   // TODO: fetch these from backend instead when an endpoint for MediaAlternatives is created
   const mediaOptions: { label: string; value: MediaAlternative }[] = [
     {
@@ -402,11 +405,27 @@ export const NotificationProfileList = () => {
 
   // Handle user interaction
   const handleSave = (profile: NotificationProfileKeyed) => {
-    console.log("Savee");
+    api
+      .putNotificationProfile(profile.timeslot, profile.filters, profile.media, profile.active, profile.phone_number)
+      .then(() => {
+        displayAlert("Notification profile successfully updated", "success");
+      })
+      .catch((error: Error) => {
+        displayAlert(error.message, "error");
+      });
   };
 
   const handleDelete = (profile: NotificationProfileKeyed) => {
-    console.log("Delte");
+    if (profile.pk) {
+      api
+        .deleteNotificationProfile(profile.pk)
+        .then(() => {
+          displayAlert("Notification profile successfully deleted", "success");
+        })
+        .catch((error: Error) => {
+          displayAlert(error.message, "error");
+        });
+    }
   };
 
   return (
