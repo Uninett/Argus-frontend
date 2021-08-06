@@ -75,3 +75,59 @@ your changes. The second will run the eslint javascript linter.
 
 *** Using docker
 See README.md
+
+
+** Releasing changes
+
+*** Merge-Commit Message Format
+
+Applies only to merge-commits into master,
+and only for PRs that are relevant for version bump description.
+
+```
+<header>
+<BLANK LINE>
+<body> (optional)
+<BLANK LINE>
+<footer> (optional)
+```
+
+**** Commit Message Header
+```
+<type>: <short summary>
+```
+##### Type
+
+One of the following:
+
+* **feat**: New feature
+* **fix**: Bug fix
+
+
+##### Summary
+
+* use the imperative, present tense: "update" (not "updated" or "updates")
+* no dot (.) at the end
+
+**** Commit Message Body
+
+* use the imperative, present tense: "update" (not "updated" or "updates")
+* explain the motivation for the change (explain _why_ you are making the change)
+
+
+**** Commit Message Footer
+
+Contains information about breaking changes.
+
+```
+BREAKING CHANGE: <breaking change summary>
+<BLANK LINE>
+<breaking change description + migration instructions> (optional)
+```
+
+*** Commit types correlation with Semantic Versioning
+
+* fix = PATCH
+* feat = MINOR
+* BREAKING CHANGE (in commit footer) = MAJOR
+
