@@ -425,51 +425,19 @@ type NotificationProfileCardPropsType = {
   phoneNumbers: PhoneNumber[];
 
   onSave: (profile: NotificationProfileKeyed) => void;
-  onDelete: (profilePK: NotificationProfilePK) => void;
+  onDelete: (profile: NotificationProfileKeyed) => void;
 };
 
-export const NotificationProfileCard = (/*{
+export const NotificationProfileCard = ({
   profile,
   timeslots,
   filters,
   mediaOptions,
   phoneNumbers,
   onSave,
-  OnDelete,
-}: NotificationProfileCardPropsType*/) => {
+  onDelete,
+}: NotificationProfileCardPropsType) => {
   const style = useStyles();
-
-  // TODO: remove these and use props instead
-  const timeslots: Timeslot[] = [
-    // eslint-disable-next-line @typescript-eslint/camelcase
-    { pk: 1, name: "Timeslot1", time_recurrences: [] },
-    // eslint-disable-next-line @typescript-eslint/camelcase
-    { pk: 2, name: "Timeslot2", time_recurrences: [] },
-  ];
-  const filters: Filter[] = [
-    { pk: 1, name: "Filter1", sourceSystemIds: [], tags: [], filter: {} },
-    { pk: 2, name: "Filter2", sourceSystemIds: [], tags: [], filter: {} },
-  ];
-  const mediaOptions: { label: string; value: MediaAlternative }[] = [
-    { label: "Email", value: "EM" },
-    { label: "SMS", value: "SM" },
-  ];
-  const phoneNumbers: PhoneNumber[] = [
-    // eslint-disable-next-line @typescript-eslint/camelcase
-    { pk: 1, user: 1, phone_number: "12345678" },
-    // eslint-disable-next-line @typescript-eslint/camelcase
-    { pk: 2, user: 1, phone_number: "87654321" },
-  ];
-
-  //TODO: add PK?
-  const profile: NotificationProfileKeyed = {
-    timeslot: 1,
-    filters: [1],
-    media: ["EM"],
-    active: true,
-    // eslint-disable-next-line @typescript-eslint/camelcase
-    phone_number: 1,
-  };
 
   // State
   const [profileState, setProfileState] = useState<NotificationProfileKeyed>(profile);
@@ -500,11 +468,11 @@ export const NotificationProfileCard = (/*{
   };
 
   const handleSave = () => {
-    console.log(profileState);
+    onSave(profileState);
   };
 
   const handleDelete = () => {
-    console.log("DELETE!");
+    onDelete(profileState);
   };
 
   const handleAddPhoneNumberClick = () => {

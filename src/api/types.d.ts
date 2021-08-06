@@ -105,6 +105,7 @@ export interface NotificationProfileKeyed {
   media: MediaAlternative[];
   active: boolean;
   phone_number: PhoneNumber["pk"] | null;
+  pk?: NotificationProfilePK;
 }
 
 export interface NotificationProfile {

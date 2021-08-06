@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import "./ProfileList.css";
-import Profile from "../profile/Profile";
+import Profile, { NotificationProfileCard } from "../profile/Profile";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
 
@@ -342,6 +342,88 @@ const ProfileList: React.FC = () => {
         )}
       </div>
     </>
+  );
+};
+
+export const NotificationProfileList = () => {
+  // State
+  const [timeslots, setTimeslots] = useState<Timeslot[]>([]);
+  const [filters, setFilters] = useState<Filter[]>([]);
+  const [profiles, setProfiles] = useState<NotificationProfileKeyed[]>([]);
+  const [phoneNumbers, setPhoneNumbers] = useState<PhoneNumber[]>([]);
+
+  // TODO: fetch these from backend instead when an endpoint for MediaAlternatives is created
+  const mediaOptions: { label: string; value: MediaAlternative }[] = [
+    {
+      label: "Email",
+      value: "EM",
+    },
+    {
+      label: "SMS",
+      value: "SM",
+    },
+  ];
+
+  // Function for converting NotificationProfile to a keyed object (NotificationProfileKeyed)
+  const profileToKeyed = (profile: NotificationProfile): NotificationProfileKeyed => {
+    return {
+      timeslot: profile.timeslot.pk,
+      filters: profile.filters.map((filter: Filter) => filter.pk),
+      media: profile.media,
+      active: profile.active,
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      phone_number: profile.phone_number ? profile.phone_number.pk : null,
+      pk: profile.pk,
+    };
+  };
+
+  // Fetch data from API
+  useEffect(() => {
+    Promise.all([
+      api.getAllTimeslots(),
+      api.getAllFilters(),
+      api.getAllNotificationProfiles(),
+      api.getAllPhoneNumbers(),
+    ])
+      .then(([timeslotResponse, filterResponse, profileResponse, phoneNumberResponse]) => {
+        // Convert response to keyed profile
+        const keyedProfileResponse = profileResponse.map((profile) => profileToKeyed(profile));
+
+        setTimeslots(timeslotResponse);
+        setFilters(filterResponse);
+        setProfiles(keyedProfileResponse);
+        setPhoneNumbers(phoneNumberResponse);
+      })
+      .catch((error) => {
+        console.log("Error");
+        console.error(error);
+      });
+  }, []);
+
+  // Handle user interaction
+  const handleSave = (profile: NotificationProfileKeyed) => {
+    console.log("Savee");
+  };
+
+  const handleDelete = (profile: NotificationProfileKeyed) => {
+    console.log("Delte");
+  };
+
+  return (
+    <div>
+      {profiles.map((profile) => (
+        <NotificationProfileCard
+          key={profile.pk}
+          profile={profile}
+          timeslots={timeslots}
+          filters={filters}
+          mediaOptions={mediaOptions}
+          phoneNumbers={phoneNumbers}
+          onSave={handleSave}
+          onDelete={handleDelete}
+        />
+      ))}
+    </div>
   );
 };
 
