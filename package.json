@@ -1,6 +1,6 @@
 {
   "name": "Argus-frontend",
-  "version": "1.0.3",
+  "version": "1.4.0",
   "private": true,
   "dependencies": {
     "@date-io/date-fns": "v1",
