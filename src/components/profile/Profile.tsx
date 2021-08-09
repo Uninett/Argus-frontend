@@ -429,7 +429,7 @@ type NotificationProfileCardPropsType = {
   onDelete: (profile: NotificationProfileKeyed) => void;
 
   // Workaround
-  onSaveTimeslotChanged: (prevProfilePK: NotificationProfilePK, profile: NotificationProfileKeyed) => void;
+  onSaveTimeslotChanged: (profile: NotificationProfileKeyed) => void;
 };
 
 export const NotificationProfileCard = ({
@@ -481,8 +481,8 @@ export const NotificationProfileCard = ({
 
   const handleSave = () => {
     setUnsavedChanges(false);
-    if (profile.pk && profile.timeslot !== profileState.timeslot) {
-      onSaveTimeslotChanged(profile.pk, profileState);
+    if (exists && profileState.pk !== profileState.timeslot) {
+      onSaveTimeslotChanged(profileState);
     } else {
       onSave(profileState);
     }

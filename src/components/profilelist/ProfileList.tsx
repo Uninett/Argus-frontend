@@ -419,9 +419,11 @@ export const NotificationProfileList = () => {
   const handleCreate = (profile: NotificationProfileKeyed) => {
     api
       .postNotificationProfile(profile.timeslot, profile.filters, profile.media, profile.active, profile.phone_number)
-      .then(() => {
-        profiles.push(profile);
-        setProfiles(profiles);
+      .then((newProfile) => {
+        // Add the new notification profile to the list
+        const newProfileKeyed = profileToKeyed(newProfile);
+        setProfiles([...profiles, newProfileKeyed]);
+
         setCreateProfileVisible(false);
         displayAlert("Notification profile successfully created", "success");
       })
@@ -438,13 +440,19 @@ export const NotificationProfileList = () => {
   };
 
   // Workaround
-  const handleSaveTimeslotChanged = (prevProfilePK: NotificationProfilePK, profile: NotificationProfileKeyed) => {
+  const handleSaveTimeslotChanged = (profile: NotificationProfileKeyed) => {
     api
-      .deleteNotificationProfile(prevProfilePK)
+      .deleteNotificationProfile(Number(profile.pk))
       .then(() =>
         api
           .postNotificationProfile(profile.timeslot, profile.filters, profile.media, profile.active)
-          .then(() => displayAlert("Notification profile successfully updated", "success"))
+          .then((newProfile) => {
+            // Update notification profile in list
+            const newProfileKeyed = profileToKeyed(newProfile);
+            setProfiles(profiles.map((p) => (p.pk === profile.pk ? newProfileKeyed : p)));
+
+            displayAlert("Notification profile successfully updated", "success");
+          })
           .catch((error: Error) => displayAlert(error.message, "error")),
       )
       .catch((error: Error) => displayAlert(error.message, "error"));
@@ -455,6 +463,9 @@ export const NotificationProfileList = () => {
       api
         .deleteNotificationProfile(profile.pk)
         .then(() => {
+          // Remove deleted notification profile from list
+          setProfiles(profiles.filter((p) => p.pk !== profile.pk));
+
           displayAlert("Notification profile successfully deleted", "success");
         })
         .catch((error: Error) => {
