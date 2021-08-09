@@ -423,9 +423,13 @@ type NotificationProfileCardPropsType = {
   // TODO: create new type?
   mediaOptions: { label: string; value: MediaAlternative }[];
   phoneNumbers: PhoneNumber[];
+  exists: boolean;
 
   onSave: (profile: NotificationProfileKeyed) => void;
   onDelete: (profile: NotificationProfileKeyed) => void;
+
+  // Workaround
+  onSaveTimeslotChanged: (prevProfilePK: NotificationProfilePK, profile: NotificationProfileKeyed) => void;
 };
 
 export const NotificationProfileCard = ({
@@ -434,24 +438,30 @@ export const NotificationProfileCard = ({
   filters,
   mediaOptions,
   phoneNumbers,
+  exists,
   onSave,
   onDelete,
+  onSaveTimeslotChanged,
 }: NotificationProfileCardPropsType) => {
   const style = useStyles();
 
   // State
   const [profileState, setProfileState] = useState<NotificationProfileKeyed>(profile);
+  const [unsavedChanges, setUnsavedChanges] = useState<boolean>(false);
 
   // Action handlers
   const handleTimeslotChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setUnsavedChanges(true);
     setProfileState({ ...profileState, timeslot: event.target.value as number });
   };
 
   const handleFiltersChange = (event: React.ChangeEvent<{}>, value: unknown) => {
+    setUnsavedChanges(true);
     setProfileState({ ...profileState, filters: (value as Filter[]).map((filter: Filter) => filter.pk) });
   };
 
   const handleMediaChange = (event: React.ChangeEvent<{}>, value: unknown) => {
+    setUnsavedChanges(true);
     setProfileState({
       ...profileState,
       media: (value as { label: string; value: MediaAlternative }[]).map((mediaOption) => mediaOption.value),
@@ -459,16 +469,23 @@ export const NotificationProfileCard = ({
   };
 
   const handlePhoneNumberChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setUnsavedChanges(true);
     // eslint-disable-next-line @typescript-eslint/camelcase
     setProfileState({ ...profileState, phone_number: event.target.value as number });
   };
 
   const handleActiveChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUnsavedChanges(true);
     setProfileState({ ...profileState, active: event.target.checked });
   };
 
   const handleSave = () => {
-    onSave(profileState);
+    setUnsavedChanges(false);
+    if (profile.pk && profile.timeslot !== profileState.timeslot) {
+      onSaveTimeslotChanged(profile.pk, profileState);
+    } else {
+      onSave(profileState);
+    }
   };
 
   const handleDelete = () => {
@@ -548,11 +565,17 @@ export const NotificationProfileCard = ({
           label="Active"
         />
         <div className={style.buttonGroup}>
-          <Button onClick={handleSave} variant="contained" color="primary" startIcon={<SaveIcon />}>
-            Save
+          <Button
+            onClick={handleSave}
+            disabled={exists && !unsavedChanges}
+            variant="contained"
+            color="primary"
+            startIcon={<SaveIcon />}
+          >
+            {exists ? "Save" : "Create"}
           </Button>
           <Button className={style.deleteButton} onClick={handleDelete} variant="contained" startIcon={<DeleteIcon />}>
-            Delete
+            {exists ? "Delete" : "Discard"}
           </Button>
         </div>
       </CardActions>

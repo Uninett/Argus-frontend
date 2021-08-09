@@ -351,6 +351,7 @@ const ProfileList: React.FC = () => {
 export const NotificationProfileList = () => {
   // State
   const [timeslots, setTimeslots] = useState<Timeslot[]>([]);
+  const [availableTimeslots, setAvailableTimeslots] = useState<Timeslot[]>([]);
   const [filters, setFilters] = useState<Filter[]>([]);
   const [profiles, setProfiles] = useState<NotificationProfileKeyed[]>([]);
   const [phoneNumbers, setPhoneNumbers] = useState<PhoneNumber[]>([]);
@@ -397,7 +398,12 @@ export const NotificationProfileList = () => {
         // Convert response to keyed profile
         const keyedProfileResponse = profileResponse.map((profile) => profileToKeyed(profile));
 
+        const availableTimeslots = timeslotResponse.filter((timeslot) => {
+          return keyedProfileResponse.every((profile) => profile.timeslot !== timeslot.pk);
+        });
+
         setTimeslots(timeslotResponse);
+        setAvailableTimeslots(availableTimeslots);
         setFilters(filterResponse);
         setProfiles(keyedProfileResponse);
         setPhoneNumbers(phoneNumberResponse);
@@ -414,6 +420,9 @@ export const NotificationProfileList = () => {
     api
       .postNotificationProfile(profile.timeslot, profile.filters, profile.media, profile.active, profile.phone_number)
       .then(() => {
+        profiles.push(profile);
+        setProfiles(profiles);
+        setCreateProfileVisible(false);
         displayAlert("Notification profile successfully created", "success");
       })
       .catch((error: Error) => {
@@ -424,12 +433,21 @@ export const NotificationProfileList = () => {
   const handleSave = (profile: NotificationProfileKeyed) => {
     api
       .putNotificationProfile(profile.timeslot, profile.filters, profile.media, profile.active, profile.phone_number)
-      .then(() => {
-        displayAlert("Notification profile successfully updated", "success");
-      })
-      .catch((error: Error) => {
-        displayAlert(error.message, "error");
-      });
+      .then(() => displayAlert("Notification profile successfully updated", "success"))
+      .catch((error: Error) => displayAlert(error.message, "error"));
+  };
+
+  // Workaround
+  const handleSaveTimeslotChanged = (prevProfilePK: NotificationProfilePK, profile: NotificationProfileKeyed) => {
+    api
+      .deleteNotificationProfile(prevProfilePK)
+      .then(() =>
+        api
+          .postNotificationProfile(profile.timeslot, profile.filters, profile.media, profile.active)
+          .then(() => displayAlert("Notification profile successfully updated", "success"))
+          .catch((error: Error) => displayAlert(error.message, "error")),
+      )
+      .catch((error: Error) => displayAlert(error.message, "error"));
   };
 
   const handleDelete = (profile: NotificationProfileKeyed) => {
@@ -446,12 +464,20 @@ export const NotificationProfileList = () => {
   };
 
   const newProfile: NotificationProfileKeyed = {
-    timeslot: isLoading ? 0 : timeslots[0].pk,
+    timeslot: isLoading ? 0 : availableTimeslots[0].pk,
     filters: [],
     media: [],
     // eslint-disable-next-line @typescript-eslint/camelcase
     phone_number: isLoading ? 0 : phoneNumbers[0].pk,
     active: true,
+  };
+
+  const getAvailableTimeslots = (profile: NotificationProfileKeyed): Timeslot[] => {
+    const currentTimeslot = timeslots.find((timeslot) => timeslot.pk === profile.timeslot);
+    if (currentTimeslot) {
+      return [...availableTimeslots, currentTimeslot];
+    }
+    return availableTimeslots;
   };
 
   return isLoading ? (
@@ -462,23 +488,27 @@ export const NotificationProfileList = () => {
         <NotificationProfileCard
           key={profile.pk}
           profile={profile}
-          timeslots={timeslots}
+          timeslots={getAvailableTimeslots(profile)}
           filters={filters}
           mediaOptions={mediaOptions}
           phoneNumbers={phoneNumbers}
+          exists={true}
           onSave={handleSave}
           onDelete={handleDelete}
+          onSaveTimeslotChanged={handleSaveTimeslotChanged}
         />
       ))}
       {createProfileVisible ? (
         <NotificationProfileCard
           profile={newProfile}
-          timeslots={timeslots}
+          timeslots={availableTimeslots}
           filters={filters}
           mediaOptions={mediaOptions}
           phoneNumbers={phoneNumbers}
+          exists={false}
           onSave={handleCreate}
           onDelete={handleDelete}
+          onSaveTimeslotChanged={handleSaveTimeslotChanged}
         />
       ) : (
         <Button
