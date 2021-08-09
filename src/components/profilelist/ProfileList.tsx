@@ -25,6 +25,9 @@ import { createUsePromise, useApiFilters } from "../../api/hooks";
 import { toMap, pkGetter, removeUndefined } from "../../utils";
 
 import { useAlerts, useAlertSnackbar, UseAlertSnackbarResultType } from "../../components/alertsnackbar";
+import Button from "@material-ui/core/Button";
+import SaveIcon from "@material-ui/icons/Save";
+import AddCircleIcon from "@material-ui/icons/AddCircle";
 
 interface FilterData {
   label: string;
@@ -351,6 +354,8 @@ export const NotificationProfileList = () => {
   const [filters, setFilters] = useState<Filter[]>([]);
   const [profiles, setProfiles] = useState<NotificationProfileKeyed[]>([]);
   const [phoneNumbers, setPhoneNumbers] = useState<PhoneNumber[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [createProfileVisible, setCreateProfileVisible] = useState<boolean>(false);
 
   // Create alert instance
   const displayAlert = useAlerts();
@@ -396,6 +401,7 @@ export const NotificationProfileList = () => {
         setFilters(filterResponse);
         setProfiles(keyedProfileResponse);
         setPhoneNumbers(phoneNumberResponse);
+        setIsLoading(false);
       })
       .catch((error) => {
         console.log("Error");
@@ -404,6 +410,17 @@ export const NotificationProfileList = () => {
   }, []);
 
   // Handle user interaction
+  const handleCreate = (profile: NotificationProfileKeyed) => {
+    api
+      .postNotificationProfile(profile.timeslot, profile.filters, profile.media, profile.active, profile.phone_number)
+      .then(() => {
+        displayAlert("Notification profile successfully created", "success");
+      })
+      .catch((error: Error) => {
+        displayAlert(error.message, "error");
+      });
+  };
+
   const handleSave = (profile: NotificationProfileKeyed) => {
     api
       .putNotificationProfile(profile.timeslot, profile.filters, profile.media, profile.active, profile.phone_number)
@@ -428,7 +445,18 @@ export const NotificationProfileList = () => {
     }
   };
 
-  return (
+  const newProfile: NotificationProfileKeyed = {
+    timeslot: isLoading ? 0 : timeslots[0].pk,
+    filters: [],
+    media: [],
+    // eslint-disable-next-line @typescript-eslint/camelcase
+    phone_number: isLoading ? 0 : phoneNumbers[0].pk,
+    active: true,
+  };
+
+  return isLoading ? (
+    <p>Loading...</p>
+  ) : (
     <div>
       {profiles.map((profile) => (
         <NotificationProfileCard
@@ -442,6 +470,26 @@ export const NotificationProfileList = () => {
           onDelete={handleDelete}
         />
       ))}
+      {createProfileVisible ? (
+        <NotificationProfileCard
+          profile={newProfile}
+          timeslots={timeslots}
+          filters={filters}
+          mediaOptions={mediaOptions}
+          phoneNumbers={phoneNumbers}
+          onSave={handleCreate}
+          onDelete={handleDelete}
+        />
+      ) : (
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<AddCircleIcon />}
+          onClick={() => setCreateProfileVisible(true)}
+        >
+          Create new profile
+        </Button>
+      )}
     </div>
   );
 };
