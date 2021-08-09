@@ -1,0 +1,156 @@
+.root {
+    flex-grow: 1;
+}
+.grow {
+    flex-grow: 1;
+}
+.paper {
+    text-align: center;
+    width: auto;
+}
+.recurrenceContainer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    border-width: 2px;
+    border-radius: 5px;
+    border-style: solid;
+    position: relative;
+}
+.dayPickersContainer {
+   display: flex;
+   flex-direction: row;
+   flex-wrap: nowrap;
+}
+.removeWrapper {
+    right: 0;
+    left: auto;
+    position: absolute;
+}
+.recurrencePaper {
+    text-align: center;
+}
+
+@media (max-width: 800px) {
+    html {
+        font-size: 22px;
+    }
+    .recurrenceContainer {
+        flex-direction: column;
+    }
+    .dayPickersContainer {
+        flex-direction: column;
+        flex-wrap: wrap;
+    }
+    .button-group {
+        width: 100%;
+    }
+    .button-group button {
+        font-size: 0.8rem;
+        height: 3.7em;
+        width: auto;
+        flex-grow: 1;
+        padding: 1rem 2rem;
+    }
+    .dayChipsContainer {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-evenly;
+    }
+    button {
+        font-size: 0.65rem;
+        height: 2rem;
+        flex-grow: 1;
+        padding: 2rem 4rem;
+    }
+    #all-day-checkbox span {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 600px) {
+    html {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 500px) {
+    html {
+        font-size: inherit;
+    }
+    .recurrenceContainer {
+        flex-direction: column;
+        align-items: center;
+    }
+    .removeWrapper {
+        position: static;
+        width: 80%;
+        left: 0;
+        right: 0;
+        padding-right: 0 !important;
+    }
+    .removeWrapper button {
+        width: 100%;
+    }
+    .dayChipsContainer {
+        max-height: 130px;
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        align-items: center;
+        align-content: space-evenly;
+    }
+    .dayPickersContainer {
+        flex-direction: column;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    .button-group button {
+        font-size: 0.7em;
+        height: 4em;
+        /*width: auto;*/
+        flex-grow: 1;
+        padding: 1em 2em;
+    }
+    button {
+        font-size: 0.5rem;
+        height: 2rem;
+        padding: 2rem 4rem;
+    }
+}
+
+@media (max-width: 320px) {
+    html {
+        font-size: inherit;
+    }
+    .button-group button {
+        font-size: 0.55em;
+    }
+    .button-group {
+        display: flex;
+        flex-direction: column;
+        background-color: rgba(250, 250, 250, 0) !important;
+        height: auto;
+    }
+    .button-group button {
+        font-size: 0.7rem;
+        height: auto;
+        flex-grow: 1;
+        padding: 1rem 2rem;
+        margin-top: 0.1rem !important;
+        border-radius: 10px !important;
+    }
+    button {
+        font-size: 0.5rem;
+        height: 2rem;
+        padding: 2rem 4rem;
+    }
+}
+
+@media (max-width: 300px) {
+    .button-group button {
+        font-size: 0.6em;
+    }
+}

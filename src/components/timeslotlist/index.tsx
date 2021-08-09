@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 
+import './timeslotlist.css';
+
 import { Theme, createStyles, makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
@@ -19,6 +21,7 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       flexGrow: 1,
       maxWidth: "900px",
+      width: "100%",
     },
     timeslot: {
       alignItems: "center",
@@ -193,7 +196,7 @@ const TimeslotList: React.FC<TimeslotListPropsType> = () => {
   return (
     <div className={classes.root}>
       {incidentSnackbar}
-      <Grid key="new-timeslot-grid-item" item xs={12} className={classes.timeslot}>
+      <Grid key="new-timeslot-grid-item" item xs={12} className={`${classes.timeslot} new-timeslot`}>
         <Typography>Create new timeslot</Typography>
         {newTimeslotComponent}
       </Grid>
