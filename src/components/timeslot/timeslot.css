@@ -42,12 +42,17 @@
         flex-direction: column;
         flex-wrap: wrap;
     }
+    .timePickers {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
     .button-group {
         width: 100%;
     }
     .button-group button {
         font-size: 0.8rem;
-        height: 3.7em;
+        height: 2.8rem;
         width: auto;
         flex-grow: 1;
         padding: 1rem 2rem;
@@ -57,7 +62,7 @@
         flex-direction: row;
         flex-wrap: wrap;
         align-items: center;
-        justify-content: space-evenly;
+        justify-content: center;
     }
     button {
         font-size: 0.65rem;
@@ -72,7 +77,11 @@
 
 @media (max-width: 600px) {
     html {
-        font-size: 20px;
+        font-size: 17px;
+    }
+    .timePickers {
+        flex-direction: row;
+        justify-content: space-between;
     }
 }
 
@@ -107,10 +116,12 @@
         flex-wrap: wrap;
         align-items: center;
     }
+    .timePickers {
+        flex-direction: column;
+    }
     .button-group button {
-        font-size: 0.7em;
+        font-size: 0.7rem;
         height: 4em;
-        /*width: auto;*/
         flex-grow: 1;
         padding: 1em 2em;
     }
@@ -118,6 +129,14 @@
         font-size: 0.5rem;
         height: 2rem;
         padding: 2rem 4rem;
+    }
+    .paper, .recurrenceContainer {
+        padding-left: 0.6rem !important;
+        padding-right: 0.6rem !important;
+    }
+    .recurrenceGridContainer {
+        padding-left: 1.5rem !important;
+        padding-right: 1.5rem !important;
     }
 }
 
@@ -131,26 +150,46 @@
     .button-group {
         display: flex;
         flex-direction: column;
-        background-color: rgba(250, 250, 250, 0) !important;
-        height: auto;
+        box-shadow: none !important;
     }
     .button-group button {
-        font-size: 0.7rem;
-        height: auto;
+        font-size: 0.8rem;
+        height: 2.8rem;
         flex-grow: 1;
         padding: 1rem 2rem;
         margin-top: 0.1rem !important;
-        border-radius: 10px !important;
+        border-radius: 0.8rem !important;
     }
     button {
         font-size: 0.5rem;
         height: 2rem;
         padding: 2rem 4rem;
     }
+    .recurrenceContainer {
+        padding-left: 0.7rem !important;
+        padding-right: 0.7rem !important;
+    }
+    .dayPickersContainer {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    .dayChipsContainer span {
+        padding-right: 0.7rem;
+        padding-left: 0.7rem;
+    }
 }
 
 @media (max-width: 300px) {
-    .button-group button {
-        font-size: 0.6em;
+    .paper, .recurrenceContainer {
+        padding-left: 0.3rem !important;
+        padding-right: 0.3rem !important;
+    }
+    .recurrenceGridContainer {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+    .dayChipsContainer span {
+        padding-right: 0.4rem;
+        padding-left: 0.4rem;
     }
 }

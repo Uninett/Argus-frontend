@@ -207,36 +207,39 @@ export const TimeslotRecurrenceComponent: React.FC<TimeslotRecurrenceComponentPr
             }
             label="All day"
           />
-          <TimePicker
-            id={timeslotPk ? `timeslot-${timeslotPk}-start-time-picker-${id}` : `start-time-picker-${id}`}
-            className={style.timePicker}
-            disabled={allDay || disabled}
-            margin="normal"
-            label="Start time picker"
-            value={start || null}
-            required={!allDay}
-            error={startTimeError}
-            helperText={startTimeError ? startTimeHelperText : null}
-            onChange={(date: Date | null) => handleTimeChange(date, true, id, recurrence)}
-            KeyboardButtonProps={{
-              "aria-label": "change start time",
-            }}
-          />
-          <TimePicker
-            id={timeslotPk ? `timeslot-${timeslotPk}-end-time-picker-${id}` : `end-time-picker-${id}`}
-            className={style.timePicker}
-            disabled={allDay || disabled}
-            margin="normal"
-            label="End time picker"
-            value={end || null}
-            required={!allDay}
-            error={endTimeError}
-            helperText={endTimeError ? endTimeHelperText : null}
-            KeyboardButtonProps={{
-              "aria-label": "change end time",
-            }}
-            onChange={(date: Date | null) => handleTimeChange(date, false, id, recurrence)}
-          />
+          <div className="timePickers">
+            <TimePicker
+                id={timeslotPk ? `timeslot-${timeslotPk}-start-time-picker-${id}` : `start-time-picker-${id}`}
+                className={style.timePicker}
+                disabled={allDay || disabled}
+                margin="normal"
+                label="Start time picker"
+                value={start || null}
+                required={!allDay}
+                error={startTimeError}
+                helperText={startTimeError ? startTimeHelperText : null}
+                onChange={(date: Date | null) => handleTimeChange(date, true, id, recurrence)}
+                KeyboardButtonProps={{
+                  "aria-label": "change start time",
+                }}
+            />
+            <TimePicker
+                id={timeslotPk ? `timeslot-${timeslotPk}-end-time-picker-${id}` : `end-time-picker-${id}`}
+                className={style.timePicker}
+                disabled={allDay || disabled}
+                margin="normal"
+                label="End time picker"
+                value={end || null}
+                required={!allDay}
+                error={endTimeError}
+                helperText={endTimeError ? endTimeHelperText : null}
+                KeyboardButtonProps={{
+                  "aria-label": "change end time",
+                }}
+                onChange={(date: Date | null) => handleTimeChange(date, false, id, recurrence)}
+            />
+          </div>
+
           <div className="grow" />
         </MuiPickersUtilsProvider>
       </div>
@@ -435,7 +438,7 @@ const TimeslotComponent: React.FC<TimeslotPropsType> = ({
             </Grid>
             {recurrences.map((recurrence: TimeRecurrence, index: number) => {
               return (
-                <Grid key={index} item xs={12}>
+                <Grid key={index} item xs={12} className="recurrenceGridContainer">
                   <TimeslotRecurrenceComponent
                     timeslotPk={pk}
                     id={index}
