@@ -15,15 +15,22 @@ import { defaultErrorHandler } from "../../api/utils";
 import { useApiTimeslots } from "../../api/hooks";
 
 import { useAlertSnackbar, UseAlertSnackbarResultType } from "../../components/alertsnackbar";
+import {Button} from "@material-ui/core";
+import {Create, UnfoldLess} from "@material-ui/icons";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
+      display: "flex",
+      flexDirection: "column",
       flexGrow: 1,
       maxWidth: "900px",
       width: "100%",
+      justifyContent: "center",
+      alignItems: "center",
     },
     timeslot: {
+      alignSelf: "stretch",
       alignItems: "center",
       padding: theme.spacing(3),
     },
@@ -43,6 +50,8 @@ const TimeslotList: React.FC<TimeslotListPropsType> = () => {
   const [{ result: timeslotsResponse, error: timeslotsIsError }, setTimeslotsPromise] = useApiTimeslots(
     () => undefined,
   )();
+
+  const [isHiddenNewTimeslotForm, setIsHiddenNewTimeslotForm] = useState<boolean | null>(null);
 
   useEffect(() => {
     setTimeslotsPromise(api.getAllTimeslots());
@@ -196,6 +205,25 @@ const TimeslotList: React.FC<TimeslotListPropsType> = () => {
   return (
     <div className={`${classes.root} root`}>
       {incidentSnackbar}
+      <div className="new-timeslot-button" hidden>
+        <Button
+            variant="contained"
+            onClick={(event) => {
+                if (isHiddenNewTimeslotForm || isHiddenNewTimeslotForm === null) {
+                    // @ts-ignore
+                    document.querySelector(".new-timeslot").style.display = "block";
+                    setIsHiddenNewTimeslotForm(false);
+                } else {
+                    // @ts-ignore
+                    document.querySelector(".new-timeslot").style.display = "none";
+                    setIsHiddenNewTimeslotForm(true);
+                }
+            }}
+        >
+            {isHiddenNewTimeslotForm || isHiddenNewTimeslotForm === null ? <Create /> : <UnfoldLess />}
+        </Button>
+      </div>
+
       <Grid key="new-timeslot-grid-item" item xs={12} className={`${classes.timeslot} timeslot new-timeslot`}>
         <Typography>Create new timeslot</Typography>
         {newTimeslotComponent}
