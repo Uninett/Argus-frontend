@@ -496,6 +496,12 @@ export const NotificationProfileCard = ({
     console.log("ADD PHONE NUMBER!");
   };
 
+  const DeleteProfileConfirmationButton = makeConfirmationButton({
+    title: "Delete notification profile",
+    question: "Are you sure you want to delete this notification profile?",
+    onConfirm: () => onDelete(profileState),
+  });
+
   return (
     <Card>
       <CardContent>
@@ -574,9 +580,19 @@ export const NotificationProfileCard = ({
           >
             {exists ? "Save" : "Create"}
           </Button>
-          <Button className={style.deleteButton} onClick={handleDelete} variant="contained" startIcon={<DeleteIcon />}>
-            {exists ? "Delete" : "Discard"}
-          </Button>
+          {exists ? (
+            <DeleteProfileConfirmationButton
+              className={style.deleteButton}
+              variant="contained"
+              startIcon={<DeleteIcon />}
+            >
+              Delete
+            </DeleteProfileConfirmationButton>
+          ) : (
+            <Button className={style.deleteButton} onClick={handleDelete} variant="contained" startIcon={<SaveIcon />}>
+              Discard
+            </Button>
+          )}
         </div>
       </CardActions>
     </Card>

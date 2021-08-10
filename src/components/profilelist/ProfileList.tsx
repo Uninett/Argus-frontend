@@ -485,6 +485,10 @@ export const NotificationProfileList = () => {
     }
   };
 
+  const handleDiscard = () => {
+    setCreateProfileVisible(false);
+  };
+
   const newProfile: NotificationProfileKeyed = {
     timeslot: availableTimeslots.length > 0 ? availableTimeslots[0].pk : 0,
     filters: [],
@@ -549,7 +553,7 @@ export const NotificationProfileList = () => {
           phoneNumbers={phoneNumbers}
           exists={false}
           onSave={handleCreate}
-          onDelete={handleDelete}
+          onDelete={handleDiscard}
           onSaveTimeslotChanged={handleSaveTimeslotChanged}
         />
       ) : (
