@@ -28,6 +28,8 @@ import { useAlerts, useAlertSnackbar, UseAlertSnackbarResultType } from "../../c
 import Button from "@material-ui/core/Button";
 import SaveIcon from "@material-ui/icons/Save";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
+import Modal from "../modal/Modal";
+import Typography from "@material-ui/core/Typography";
 
 interface FilterData {
   label: string;
@@ -357,6 +359,7 @@ export const NotificationProfileList = () => {
   const [phoneNumbers, setPhoneNumbers] = useState<PhoneNumber[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [createProfileVisible, setCreateProfileVisible] = useState<boolean>(false);
+  const [showNoTimeslotsLeftDialog, setShowNoTimeslotsLeftDialog] = useState<boolean>(false);
 
   // Create alert instance
   const displayAlert = useAlerts();
@@ -499,6 +502,26 @@ export const NotificationProfileList = () => {
     return availableTimeslots;
   };
 
+  // Dialog shown if trying to create a new profile when all timeslots are in use
+  const noTimeslotsLeftDialog = (
+    <Modal
+      title="No available timeslots left"
+      content={
+        <Typography>
+          All timeslots are currently in use. Create a new timeslot or delete an existing notification profile if you
+          want to register a new profile.
+        </Typography>
+      }
+      actions={
+        <Button onClick={() => setShowNoTimeslotsLeftDialog(false)} color="primary" autoFocus>
+          OK
+        </Button>
+      }
+      open={showNoTimeslotsLeftDialog}
+      onClose={() => setShowNoTimeslotsLeftDialog(false)}
+    />
+  );
+
   return isLoading ? (
     <p>Loading...</p>
   ) : (
@@ -534,11 +557,14 @@ export const NotificationProfileList = () => {
           variant="contained"
           color="primary"
           startIcon={<AddCircleIcon />}
-          onClick={() => setCreateProfileVisible(true)}
+          onClick={() =>
+            availableTimeslots.length > 0 ? setCreateProfileVisible(true) : setShowNoTimeslotsLeftDialog(true)
+          }
         >
           Create new profile
         </Button>
       )}
+      {noTimeslotsLeftDialog}
     </div>
   );
 };
