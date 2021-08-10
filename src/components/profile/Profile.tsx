@@ -33,6 +33,10 @@ import Grid from "@material-ui/core/Grid";
 
 const useStyles = makeStyles(() =>
   createStyles({
+    root: {
+      marginTop: "10px",
+      marginBottom: "10px",
+    },
     cardActions: {
       display: "flex",
       flexWrap: "wrap",
@@ -505,7 +509,7 @@ export const NotificationProfileCard = ({
   });
 
   return (
-    <Card>
+    <Card className={style.root}>
       <CardContent>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3} className={style.gridItem}>
@@ -591,7 +595,12 @@ export const NotificationProfileCard = ({
               Delete
             </DeleteProfileConfirmationButton>
           ) : (
-            <Button className={style.deleteButton} onClick={handleDelete} variant="contained" startIcon={<SaveIcon />}>
+            <Button
+              className={style.deleteButton}
+              onClick={handleDelete}
+              variant="contained"
+              startIcon={<DeleteIcon />}
+            >
               Discard
             </Button>
           )}

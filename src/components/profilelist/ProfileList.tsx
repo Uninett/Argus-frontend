@@ -30,7 +30,25 @@ import SaveIcon from "@material-ui/icons/Save";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import Modal from "../modal/Modal";
 import Typography from "@material-ui/core/Typography";
-import { TextField } from "@material-ui/core";
+import { TextField, createStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+
+const useStyles = makeStyles(() =>
+  createStyles({
+    header: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+    },
+    headerText: {
+      marginTop: "10px",
+      marginBottom: "10px",
+    },
+    createProfileButton: {
+      marginLeft: "auto",
+    },
+  }),
+);
 
 interface FilterData {
   label: string;
@@ -386,6 +404,8 @@ const AddPhoneNumberDialog = ({ open, onSave, onCancel }: AddPhoneNumberDialogPr
 };
 
 export const NotificationProfileList = () => {
+  const style = useStyles();
+
   // State
   const [timeslots, setTimeslots] = useState<Timeslot[]>([]);
   const [availableTimeslots, setAvailableTimeslots] = useState<Timeslot[]>([]);
@@ -583,45 +603,60 @@ export const NotificationProfileList = () => {
     <p>Loading...</p>
   ) : (
     <div>
-      {profiles.map((profile) => (
-        <NotificationProfileCard
-          key={profile.pk}
-          profile={profile}
-          timeslots={getAvailableTimeslots(profile)}
-          filters={filters}
-          mediaOptions={mediaOptions}
-          phoneNumbers={phoneNumbers}
-          exists={true}
-          onSave={handleSave}
-          onDelete={handleDelete}
-          onAddPhoneNumber={() => setShowAddPhoneNumberDialog(true)}
-          onSaveTimeslotChanged={handleSaveTimeslotChanged}
-        />
-      ))}
       {createProfileVisible ? (
-        <NotificationProfileCard
-          profile={newProfile}
-          timeslots={availableTimeslots}
-          filters={filters}
-          mediaOptions={mediaOptions}
-          phoneNumbers={phoneNumbers}
-          exists={false}
-          onSave={handleCreate}
-          onDelete={handleDiscard}
-          onAddPhoneNumber={() => setShowAddPhoneNumberDialog(true)}
-          onSaveTimeslotChanged={handleSaveTimeslotChanged}
-        />
+        <div>
+          <div className={style.header}>
+            <Typography variant="h5" className={style.headerText}>
+              Create new profile
+            </Typography>
+          </div>
+          <NotificationProfileCard
+            profile={newProfile}
+            timeslots={availableTimeslots}
+            filters={filters}
+            mediaOptions={mediaOptions}
+            phoneNumbers={phoneNumbers}
+            exists={false}
+            onSave={handleCreate}
+            onDelete={handleDiscard}
+            onAddPhoneNumber={() => setShowAddPhoneNumberDialog(true)}
+            onSaveTimeslotChanged={handleSaveTimeslotChanged}
+          />
+        </div>
       ) : (
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<AddCircleIcon />}
-          onClick={() =>
-            availableTimeslots.length > 0 ? setCreateProfileVisible(true) : setShowNoTimeslotsLeftDialog(true)
-          }
-        >
-          Create new profile
-        </Button>
+        <div>
+          <div className={style.header}>
+            <Typography variant="h5" className={style.headerText}>
+              Notification profiles
+            </Typography>
+            <Button
+              className={style.createProfileButton}
+              variant="contained"
+              color="primary"
+              startIcon={<AddCircleIcon />}
+              onClick={() =>
+                availableTimeslots.length > 0 ? setCreateProfileVisible(true) : setShowNoTimeslotsLeftDialog(true)
+              }
+            >
+              Create new profile
+            </Button>
+          </div>
+          {profiles.map((profile) => (
+            <NotificationProfileCard
+              key={profile.pk}
+              profile={profile}
+              timeslots={getAvailableTimeslots(profile)}
+              filters={filters}
+              mediaOptions={mediaOptions}
+              phoneNumbers={phoneNumbers}
+              exists={true}
+              onSave={handleSave}
+              onDelete={handleDelete}
+              onAddPhoneNumber={() => setShowAddPhoneNumberDialog(true)}
+              onSaveTimeslotChanged={handleSaveTimeslotChanged}
+            />
+          ))}
+        </div>
       )}
       <AddPhoneNumberDialog
         open={showAddPhoneNumberDialog}
