@@ -194,15 +194,15 @@ const TimeslotList: React.FC<TimeslotListPropsType> = () => {
   );
 
   return (
-    <div className={classes.root}>
+    <div className={`${classes.root} root`}>
       {incidentSnackbar}
-      <Grid key="new-timeslot-grid-item" item xs={12} className={`${classes.timeslot} new-timeslot`}>
+      <Grid key="new-timeslot-grid-item" item xs={12} className={`${classes.timeslot} timeslot new-timeslot`}>
         <Typography>Create new timeslot</Typography>
         {newTimeslotComponent}
       </Grid>
       {[...timeslots.values()].map((timeslot: InternalTimeslot) => {
         return (
-          <Grid key={`${timeslot.pk}-${timeslot.revision}-grid-item`} item xs={12} className={classes.timeslot}>
+          <Grid key={`${timeslot.pk}-${timeslot.revision}-grid-item`} item xs={12} className={`${classes.timeslot} timeslot`}>
             <TimeslotComponent
               exists
               revision={timeslot.revision}

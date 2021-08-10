@@ -1,3 +1,16 @@
+.timeslot .paper {
+    border-top: 5px solid var(--primary-dark);
+}
+
+.new-timeslot .paper{
+    border: 1px dashed var(--primary-light);
+}
+
+.root p {
+    font-size: 20px;
+    text-transform: capitalize;
+}
+
 @media (max-width: 800px) {
     .new-timeslot {
         display: none;
