@@ -52,7 +52,7 @@
     }
     .button-group button {
         font-size: 0.8rem;
-        height: 2.8rem;
+        height: 2.5rem;
         width: auto;
         flex-grow: 1;
         padding: 1rem 2rem;
@@ -78,6 +78,9 @@
 @media (max-width: 600px) {
     html {
         font-size: 17px;
+    }
+    .button-group button {
+        height: 2.7rem;
     }
     .timePickers {
         flex-direction: row;
