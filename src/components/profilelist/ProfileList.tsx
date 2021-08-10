@@ -483,18 +483,18 @@ export const NotificationProfileList = () => {
   };
 
   const newProfile: NotificationProfileKeyed = {
-    timeslot: isLoading ? 0 : availableTimeslots[0].pk,
+    timeslot: availableTimeslots.length > 0 ? availableTimeslots[0].pk : 0,
     filters: [],
     media: [],
     // eslint-disable-next-line @typescript-eslint/camelcase
-    phone_number: isLoading ? 0 : phoneNumbers[0].pk,
+    phone_number: phoneNumbers.length > 0 ? phoneNumbers[0].pk : 0,
     active: true,
   };
 
   const getAvailableTimeslots = (profile: NotificationProfileKeyed): Timeslot[] => {
     const currentTimeslot = timeslots.find((timeslot) => timeslot.pk === profile.timeslot);
     if (currentTimeslot) {
-      return [...availableTimeslots, currentTimeslot];
+      return [currentTimeslot, ...availableTimeslots];
     }
     return availableTimeslots;
   };

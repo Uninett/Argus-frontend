@@ -502,7 +502,7 @@ export const NotificationProfileCard = ({
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3} className={style.gridItem}>
             <Typography className={style.itemHeader}>Timeslot</Typography>
-            <Select value={profileState.timeslot} onChange={handleTimeslotChange}>
+            <Select value={profileState.timeslot ? profileState.timeslot : ""} onChange={handleTimeslotChange}>
               {timeslots.map((timeslot: Timeslot) => (
                 <MenuItem key={timeslot.pk} value={timeslot.pk}>
                   {timeslot.name}
@@ -541,7 +541,7 @@ export const NotificationProfileCard = ({
             <div className={style.phoneNumber}>
               <Select
                 className={style.phoneNumberSelect}
-                value={profileState.phone_number}
+                value={profileState.phone_number ? profileState.phone_number : ""}
                 onChange={handlePhoneNumberChange}
               >
                 {phoneNumbers.map((phoneNumber: PhoneNumber) => (
