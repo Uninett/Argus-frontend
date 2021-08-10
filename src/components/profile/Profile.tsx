@@ -427,6 +427,7 @@ type NotificationProfileCardPropsType = {
 
   onSave: (profile: NotificationProfileKeyed) => void;
   onDelete: (profile: NotificationProfileKeyed) => void;
+  onAddPhoneNumber: () => void;
 
   // Workaround
   onSaveTimeslotChanged: (profile: NotificationProfileKeyed) => void;
@@ -441,6 +442,7 @@ export const NotificationProfileCard = ({
   exists,
   onSave,
   onDelete,
+  onAddPhoneNumber,
   onSaveTimeslotChanged,
 }: NotificationProfileCardPropsType) => {
   const style = useStyles();
@@ -493,7 +495,7 @@ export const NotificationProfileCard = ({
   };
 
   const handleAddPhoneNumberClick = () => {
-    console.log("ADD PHONE NUMBER!");
+    onAddPhoneNumber();
   };
 
   const DeleteProfileConfirmationButton = makeConfirmationButton({

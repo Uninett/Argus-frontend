@@ -30,6 +30,7 @@ import SaveIcon from "@material-ui/icons/Save";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import Modal from "../modal/Modal";
 import Typography from "@material-ui/core/Typography";
+import { TextField } from "@material-ui/core";
 
 interface FilterData {
   label: string;
@@ -350,6 +351,40 @@ const ProfileList: React.FC = () => {
   );
 };
 
+type AddPhoneNumberDialogPropsType = {
+  open: boolean;
+  onSave: (phoneNumber: string) => void;
+  onCancel: () => void;
+};
+
+const AddPhoneNumberDialog = ({ open, onSave, onCancel }: AddPhoneNumberDialogPropsType) => {
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
+
+  return (
+    <Modal
+      title="Add phone number"
+      content={
+        <TextField
+          value={phoneNumber}
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) => setPhoneNumber(event.target.value)}
+        />
+      }
+      actions={
+        <div>
+          <Button onClick={() => onCancel()} color="primary" autoFocus>
+            Cancel
+          </Button>
+          <Button onClick={() => onSave(phoneNumber)} color="primary" autoFocus>
+            Save
+          </Button>
+        </div>
+      }
+      open={open}
+      onClose={() => onCancel()}
+    />
+  );
+};
+
 export const NotificationProfileList = () => {
   // State
   const [timeslots, setTimeslots] = useState<Timeslot[]>([]);
@@ -360,6 +395,7 @@ export const NotificationProfileList = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [createProfileVisible, setCreateProfileVisible] = useState<boolean>(false);
   const [showNoTimeslotsLeftDialog, setShowNoTimeslotsLeftDialog] = useState<boolean>(false);
+  const [showAddPhoneNumberDialog, setShowAddPhoneNumberDialog] = useState<boolean>(false);
 
   // Create alert instance
   const displayAlert = useAlerts();
@@ -456,7 +492,13 @@ export const NotificationProfileList = () => {
       .deleteNotificationProfile(Number(profile.pk))
       .then(() =>
         api
-          .postNotificationProfile(profile.timeslot, profile.filters, profile.media, profile.active)
+          .postNotificationProfile(
+            profile.timeslot,
+            profile.filters,
+            profile.media,
+            profile.active,
+            profile.phone_number,
+          )
           .then((newProfile) => {
             // Update notification profile in list
             const newProfileKeyed = profileToKeyed(newProfile);
@@ -487,6 +529,17 @@ export const NotificationProfileList = () => {
 
   const handleDiscard = () => {
     setCreateProfileVisible(false);
+  };
+
+  const handleAddPhoneNumber = (phoneNumber: string) => {
+    api
+      .postPhoneNumber(phoneNumber)
+      .then((phoneNumber) => {
+        displayAlert("Phone number successfully added", "success");
+        setPhoneNumbers([...phoneNumbers, phoneNumber]);
+        setShowAddPhoneNumberDialog(false);
+      })
+      .catch((error: Error) => displayAlert(error.message, "error"));
   };
 
   const newProfile: NotificationProfileKeyed = {
@@ -541,6 +594,7 @@ export const NotificationProfileList = () => {
           exists={true}
           onSave={handleSave}
           onDelete={handleDelete}
+          onAddPhoneNumber={() => setShowAddPhoneNumberDialog(true)}
           onSaveTimeslotChanged={handleSaveTimeslotChanged}
         />
       ))}
@@ -554,6 +608,7 @@ export const NotificationProfileList = () => {
           exists={false}
           onSave={handleCreate}
           onDelete={handleDiscard}
+          onAddPhoneNumber={() => setShowAddPhoneNumberDialog(true)}
           onSaveTimeslotChanged={handleSaveTimeslotChanged}
         />
       ) : (
@@ -568,6 +623,11 @@ export const NotificationProfileList = () => {
           Create new profile
         </Button>
       )}
+      <AddPhoneNumberDialog
+        open={showAddPhoneNumberDialog}
+        onSave={handleAddPhoneNumber}
+        onCancel={() => setShowAddPhoneNumberDialog(false)}
+      />
       {noTimeslotsLeftDialog}
     </div>
   );
