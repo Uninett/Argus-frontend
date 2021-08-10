@@ -415,6 +415,14 @@ export const NotificationProfileList = () => {
       });
   }, []);
 
+  // Update list of available timeslots every time profiles or timeslots change
+  useEffect(() => {
+    const availableTimeslots = timeslots.filter((timeslot) =>
+      profiles.every((profile) => profile.timeslot !== timeslot.pk),
+    );
+    setAvailableTimeslots(availableTimeslots);
+  }, [profiles, timeslots]);
+
   // Handle user interaction
   const handleCreate = (profile: NotificationProfileKeyed) => {
     api
