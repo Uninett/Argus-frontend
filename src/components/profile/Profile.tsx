@@ -514,13 +514,23 @@ export const NotificationProfileCard = ({
     onConfirm: () => onDelete(profileState),
   });
 
+  const getSelectedTimeslot = (timeslot: TimeslotPK): string | number => {
+    if (timeslots.length === 0) {
+      return "";
+    }
+    if (timeslots.some((t) => t.pk === timeslot)) {
+      return timeslot;
+    }
+    return timeslots[0].pk;
+  };
+
   return (
     <Card className={style.root}>
       <CardContent>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3} className={style.gridItem}>
             <Typography className={style.itemHeader}>Timeslot</Typography>
-            <Select value={profileState.timeslot ? profileState.timeslot : ""} onChange={handleTimeslotChange}>
+            <Select value={getSelectedTimeslot(profileState.timeslot)} onChange={handleTimeslotChange}>
               {timeslots.map((timeslot: Timeslot) => (
                 <MenuItem key={timeslot.pk} value={timeslot.pk}>
                   {timeslot.name}
