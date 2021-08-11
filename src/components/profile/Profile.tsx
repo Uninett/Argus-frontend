@@ -454,6 +454,7 @@ export const NotificationProfileCard = ({
   // State
   const [profileState, setProfileState] = useState<NotificationProfileKeyed>(profile);
   const [unsavedChanges, setUnsavedChanges] = useState<boolean>(false);
+  const [filterError, setFilterError] = useState<boolean>(false);
 
   // Action handlers
   const handleTimeslotChange = (event: React.ChangeEvent<{ value: unknown }>) => {
@@ -486,11 +487,16 @@ export const NotificationProfileCard = ({
   };
 
   const handleSave = () => {
-    setUnsavedChanges(false);
-    if (exists && profileState.pk !== profileState.timeslot) {
-      onSaveTimeslotChanged(profileState);
+    if (profileState.filters.length === 0) {
+      setFilterError(true);
     } else {
-      onSave(profileState);
+      setFilterError(false);
+      setUnsavedChanges(false);
+      if (exists && profileState.pk !== profileState.timeslot) {
+        onSaveTimeslotChanged(profileState);
+      } else {
+        onSave(profileState);
+      }
     }
   };
 
@@ -532,7 +538,15 @@ export const NotificationProfileCard = ({
               getOptionLabel={(option) => option.name}
               filterSelectedOptions
               onChange={handleFiltersChange}
-              renderInput={(params) => <TextField {...params} variant="standard" placeholder="Filter Name" />}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="standard"
+                  placeholder="Filter Name"
+                  error={filterError}
+                  helperText={filterError ? "This field cannot be empty." : null}
+                />
+              )}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={3} className={style.gridItem}>
