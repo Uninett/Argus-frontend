@@ -47,6 +47,9 @@ const useStyles = makeStyles(() =>
     createProfileButton: {
       marginLeft: "auto",
     },
+    loadingText: {
+      marginTop: "30px",
+    },
   }),
 );
 
@@ -618,7 +621,9 @@ export const NotificationProfileList = () => {
   );
 
   return isLoading ? (
-    <p>Loading...</p>
+    <Typography className={style.loadingText} variant="h6" align="center">
+      Loading...
+    </Typography>
   ) : (
     <div>
       {createProfileVisible ? (
