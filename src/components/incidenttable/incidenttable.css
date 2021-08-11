@@ -76,3 +76,49 @@ div .ReactTable .rt-noData {
 .rt-body::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+@media (max-width: 960px) {
+  .incidents-table-mui-container {
+    max-height: 70vh;
+
+  }
+  .incidents-table {
+    padding: 0 0.1rem 0.1rem 0.1rem;
+    margin: 0 0.1rem 0.1rem 0.1rem;
+  }
+  .incidents-table-row {
+    border-top: 2px solid #555;
+  }
+  .table-head {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+  }
+  .incidents-table-header-row {
+    border-top: none;
+    z-index: 999;
+  }
+  .incidents-table-header-row th:nth-of-type(2n + 1){
+    background: #fffffe;
+  }
+  .incidents-table-header-row th:nth-of-type(2n){
+    background-color: #e0e0e0;
+  }
+  .incidents-table-row th, .incidents-table-row td{
+    padding: 0.3rem 0.2rem !important;
+    text-align: center;
+  }
+  .incidents-table-header-row th{
+    padding: 0.3rem 0.5rem !important;
+  }
+  .state-cell-contents {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+  }
+  .state-cell-contents > div {
+    margin: 0.1rem;
+  }
+
+}
