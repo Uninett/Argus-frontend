@@ -75,3 +75,18 @@ your changes. The second will run the eslint javascript linter.
 
 *** Using docker
 See README.md
+
+** Making a new release
+
+The release manager chooses a version number of the format major.minor.patch.
+Patch for bugfixes, minor for new features, major for very breaking changes as
+per semver 2.
+
+The version number in package.json is updated, and the commit for that update
+is tagged with an *annotated* tag with the same number, with no starting "v".
+
+(What's in the annotation is less important, the point is that git treats
+annotated tags differently from non-annotated tags, which means non-annotated
+tags can still be used for other things whenever needed.)
+
+Release early, release often.

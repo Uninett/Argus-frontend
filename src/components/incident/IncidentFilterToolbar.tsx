@@ -47,9 +47,10 @@ import {
   fromLocalStorageOrDefault,
   optionalBoolToKey,
   optionalOr,
+  usePrevious,
   validateStringInput,
 } from "../../utils";
-import { DROPDOWN_TOOLBAR, TIMEFRAME } from "../../localstorageconsts";
+import { AUTO_UPDATE_METHOD, DROPDOWN_TOOLBAR, TIMEFRAME } from "../../localstorageconsts";
 
 // Contexts/hooks
 import { useAlerts } from "../alertsnackbar";
@@ -419,6 +420,8 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
   const style = useStyles();
   const [selectedFilter, { setSelectedFilter }] = useSelectedFilter();
   const [{ autoUpdateMethod }, { setAutoUpdateMethod }] = useApiState();
+  const prevAutoUpdateMethod = usePrevious(autoUpdateMethod);
+  const displayAlert = useAlerts();
 
   const [dropdownToolbarOpen, setDropdownToolbarOpen] = useState<boolean>(
     // Load from localstorage if possible
@@ -474,6 +477,14 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
         console.error(`Error occured while fetching incidents metadata: ${error}`);
       });
   }, []);
+
+  // Save to local storage and display alert when Auto Update Method is updated
+  useEffect(() => {
+    if (prevAutoUpdateMethod && autoUpdateMethod !== prevAutoUpdateMethod) {
+      saveToLocalStorage(AUTO_UPDATE_METHOD, autoUpdateMethod);
+      displayAlert(`Switching auto update method to '${autoUpdateMethod}'`, "info");
+    }
+  }, [autoUpdateMethod, prevAutoUpdateMethod, displayAlert]);
 
   const autoUpdateOptions: AutoUpdateMethod[] = ENABLE_WEBSOCKETS_SUPPORT
     ? ["never", "realtime", "interval"]

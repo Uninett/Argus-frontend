@@ -1,6 +1,8 @@
 import { ActionMap, makeActionWithoutPayload, makeAction } from "./common";
 
 import type { AutoUpdateMethod } from "../../api/types.d";
+import { fromLocalStorageOrDefault } from "../../utils";
+import { AUTO_UPDATE_METHOD } from "../../localstorageconsts";
 
 export type ApiState = {
   autoUpdateMethod: AutoUpdateMethod;
@@ -20,7 +22,7 @@ type ApiStatePayload = {
 };
 
 export const initialApiState: ApiState = {
-  autoUpdateMethod: "realtime",
+  autoUpdateMethod: fromLocalStorageOrDefault(AUTO_UPDATE_METHOD, "interval"),
   hasConnectionProblems: false,
 };
 

@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+import './timeslot.css';
+
 import { Theme, createStyles, makeStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
 import Button from "@material-ui/core/Button";
@@ -31,46 +33,27 @@ import type { TimeslotPK, TimeRecurrence, TimeRecurrenceDay } from "../../api/ty
 import { TimeRecurrenceDayNameMap, TIME_RECURRENCE_DAY_IN_ORDER } from "../../api/consts";
 
 import { WHITE } from "../../colorscheme";
+import { isBefore, parse, isValid } from "date-fns";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {
-      flexGrow: 1,
-    },
-    grow: {
-      flexGrow: 1,
-    },
     paper: {
       padding: theme.spacing(3),
-      textAlign: "center",
       color: theme.palette.text.secondary,
       minWidth: 30,
     },
     recurrenceContainer: {
-      display: "flex",
-      flexDirection: "row",
-      flexWrap: "wrap",
       padding: theme.spacing(3),
       borderColor: theme.palette.divider,
-      borderWidth: "2px",
-      borderRadius: "5px",
-      borderStyle: "solid",
-      position: "relative",
     },
     dayPickersContainer: {
-      display: "flex",
-      flexDirection: "row",
-      flexWrap: "nowrap",
       padding: theme.spacing(3),
     },
     timePicker: {
       padding: theme.spacing(2),
     },
     removeWrapper: {
-      right: 0,
       paddingRight: theme.spacing(3),
-      left: "auto",
-      position: "absolute",
     },
     recurrencePaper: {
       padding: theme.spacing(2),
@@ -85,10 +68,6 @@ const useStyles = makeStyles((theme: Theme) =>
     safeButton: {
       background: theme.palette.primary.main,
       color: WHITE,
-    },
-    timeslot: {
-      alignItems: "center",
-      padding: theme.spacing(3),
     },
     createDeleteButtonGroup: {
       margin: theme.spacing(1),
@@ -107,7 +86,7 @@ const DEFAULT_TIMESLOT_RECURRENCE: TimeRecurrence = {
 export type TimeslotRecurrenceComponentPropsType = {
   id: number;
   recurrence: TimeRecurrence;
-  onChange: (id: number, recurrence: TimeRecurrence) => void;
+  onChange: (id: number, recurrence: TimeRecurrence, isValid: boolean) => void;
   onRemove: (id: number, recurrence: TimeRecurrence) => void;
   disabled?: boolean;
 
@@ -125,6 +104,11 @@ export const TimeslotRecurrenceComponent: React.FC<TimeslotRecurrenceComponentPr
 }: TimeslotRecurrenceComponentPropsType) => {
   const style = useStyles();
 
+  const [startTimeError, setStartTimeError] = useState<boolean>(false);
+  const [startTimeHelperText, setStartTimeHelperText] = useState<string>("Required");
+  const [endTimeError, setEndTimeError] = useState<boolean>(false);
+  const [endTimeHelperText, setEndTimeHelperText] = useState<string>("Required");
+
   const RemoveRecurrenceButton = makeConfirmationButton({
     title: `Remove recurrence ${recurrence.start}-${recurrence.end}`,
     question: "Are you sure you want to remove this recurrence?",
@@ -132,11 +116,48 @@ export const TimeslotRecurrenceComponent: React.FC<TimeslotRecurrenceComponentPr
   });
 
   const handleRemoveRecurrence = () => {
+    setStartTimeError(false);
+    setEndTimeError(false);
     onRemove(id, recurrence);
   };
 
   const handleRecurrenceDaysChange = (days: TimeRecurrenceDay[]) => {
-    onChange(id, { ...recurrence, days });
+    onChange(id, { ...recurrence, days }, !(startTimeError || endTimeError));
+  };
+
+  const handleTimeChange = (date: Date | null, isStart: boolean,
+                            id: number, recurrence: TimeRecurrence) => {
+    if (date) {
+      if (!isValid(date)) {
+        isStart ? setStartTimeError(true) : setEndTimeError(true);
+        isStart ? setStartTimeHelperText('Invalid') : setEndTimeHelperText('Invalid');
+        isStart ?
+          onChange(id, { ...recurrence, start: timeOfDayFromDate(date) }, false)
+          :
+          onChange(id, { ...recurrence, end: timeOfDayFromDate(date) }, false)
+      } else if (isStart && isBefore(parse(recurrence.end, 'HH:mm:ss', new Date()), date)) {
+        setStartTimeError(true);
+        setStartTimeHelperText('Must be before end time');
+        onChange(id, { ...recurrence, start: timeOfDayFromDate(date) }, false);
+      } else if (isBefore(date, parse(recurrence.start, 'HH:mm:ss', new Date()))) {
+        setEndTimeError(true);
+        setEndTimeHelperText('Must be after start time');
+        onChange(id, { ...recurrence, end: timeOfDayFromDate(date) }, false);
+      } else {
+        isStart ? setStartTimeError(false) : setEndTimeError(false);
+        isStart ?
+          onChange(id, { ...recurrence, start: timeOfDayFromDate(date) }, !endTimeError)
+          :
+          onChange(id, { ...recurrence, end: timeOfDayFromDate(date) }, !startTimeError)
+      }
+    } else {
+      isStart ? setStartTimeError(true) : setEndTimeError(true);
+      isStart ? setStartTimeHelperText('Required') : setEndTimeHelperText('Required');
+      isStart ?
+        onChange(id, { ...recurrence, start: "" }, false)
+        :
+        onChange(id, { ...recurrence, end: "" }, false)
+    }
   };
 
   // eslint-disable-next-line @typescript-eslint/camelcase
@@ -145,8 +166,8 @@ export const TimeslotRecurrenceComponent: React.FC<TimeslotRecurrenceComponentPr
   const end = !allDay && dateFromTimeOfDayString(recurrence.end);
 
   return (
-    <div className={style.recurrenceContainer}>
-      <div className={style.removeWrapper}>
+    <div className={`${style.recurrenceContainer} recurrenceContainer`}>
+      <div className={`${style.removeWrapper} removeWrapper`}>
         <RemoveRecurrenceButton
           variant="text"
           size="small"
@@ -158,9 +179,10 @@ export const TimeslotRecurrenceComponent: React.FC<TimeslotRecurrenceComponentPr
           Remove
         </RemoveRecurrenceButton>
       </div>
-      <div className={style.dayPickersContainer}>
+      <div className={`${style.dayPickersContainer} dayPickersContainer`}>
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
           <FormControlLabel
+              id="all-day-checkbox"
             control={
               <Checkbox
                 checked={allDay}
@@ -171,10 +193,13 @@ export const TimeslotRecurrenceComponent: React.FC<TimeslotRecurrenceComponentPr
                 }}
                 onClick={() => {
                   if (allDay) {
-                    onChange(id, { ...DEFAULT_TIMESLOT_RECURRENCE, days: recurrence.days });
+                    onChange(id, { ...DEFAULT_TIMESLOT_RECURRENCE, days: recurrence.days },  !(startTimeError || endTimeError));
                   } else {
+                    setStartTimeError(false);
+                    setEndTimeError(false);
                     // eslint-disable-next-line
-                    onChange(id, { ...recurrence, all_day: true, start: "", end: "" });
+                    onChange(id, { ...recurrence, all_day: true, start: "", end: "" },
+                      true);
                   }
                 }}
                 disabled={disabled}
@@ -182,43 +207,40 @@ export const TimeslotRecurrenceComponent: React.FC<TimeslotRecurrenceComponentPr
             }
             label="All day"
           />
-          <TimePicker
-            id={timeslotPk ? `timeslot-${timeslotPk}-start-time-picker-${id}` : `start-time-picker-${id}`}
-            className={style.timePicker}
-            disabled={allDay || disabled}
-            margin="normal"
-            label="Start time picker"
-            value={start || null}
-            onChange={(date: Date | null) => {
-              if (date) {
-                onChange(id, { ...recurrence, start: timeOfDayFromDate(date) });
-              } else {
-                onChange(id, { ...recurrence, start: "" });
-              }
-            }}
-            KeyboardButtonProps={{
-              "aria-label": "change start time",
-            }}
-          />
-          <TimePicker
-            id={timeslotPk ? `timeslot-${timeslotPk}-end-time-picker-${id}` : `end-time-picker-${id}`}
-            className={style.timePicker}
-            disabled={allDay || disabled}
-            margin="normal"
-            label="End time picker"
-            value={end || null}
-            KeyboardButtonProps={{
-              "aria-label": "change end time",
-            }}
-            onChange={(date: Date | null) => {
-              if (date) {
-                onChange(id, { ...recurrence, end: timeOfDayFromDate(date) });
-              } else {
-                onChange(id, { ...recurrence, end: "" });
-              }
-            }}
-          />
-          <div className={style.grow} />
+          <div className="timePickers">
+            <TimePicker
+                id={timeslotPk ? `timeslot-${timeslotPk}-start-time-picker-${id}` : `start-time-picker-${id}`}
+                className={style.timePicker}
+                disabled={allDay || disabled}
+                margin="normal"
+                label="Start time picker"
+                value={start || null}
+                required={!allDay}
+                error={startTimeError}
+                helperText={startTimeError ? startTimeHelperText : null}
+                onChange={(date: Date | null) => handleTimeChange(date, true, id, recurrence)}
+                KeyboardButtonProps={{
+                  "aria-label": "change start time",
+                }}
+            />
+            <TimePicker
+                id={timeslotPk ? `timeslot-${timeslotPk}-end-time-picker-${id}` : `end-time-picker-${id}`}
+                className={style.timePicker}
+                disabled={allDay || disabled}
+                margin="normal"
+                label="End time picker"
+                value={end || null}
+                required={!allDay}
+                error={endTimeError}
+                helperText={endTimeError ? endTimeHelperText : null}
+                KeyboardButtonProps={{
+                  "aria-label": "change end time",
+                }}
+                onChange={(date: Date | null) => handleTimeChange(date, false, id, recurrence)}
+            />
+          </div>
+
+          <div className="grow" />
         </MuiPickersUtilsProvider>
       </div>
       <DaySelector disabled={disabled} selectedDays={recurrence.days} onSelectionChange={handleRecurrenceDaysChange} />
@@ -254,7 +276,7 @@ export const DaySelector: React.FC<DaySelectorPropsType> = ({
         renderValue={(selected) => {
           const selectedDays = new Set<TimeRecurrenceDay>(selected as TimeRecurrenceDay[]);
           return (
-            <div>
+            <div className="dayChipsContainer">
               {TIME_RECURRENCE_DAY_IN_ORDER.filter((day) => selectedDays.has(day)).map((day: TimeRecurrenceDay) => (
                 <Chip key={day} label={TimeRecurrenceDayNameMap[day]} />
               ))}
@@ -305,6 +327,8 @@ const TimeslotComponent: React.FC<TimeslotPropsType> = ({
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [hasChanged, setHasChanged] = useStateWithDynamicDefault<boolean>(unsavedChanges);
 
+  const [invalidTime, setInvalidTime] = useState<boolean>(false);
+
   const handleAddRecurrence = () => {
     setRecurrences((prev: TimeRecurrence[]) => {
       // eslint-disable-next-line @typescript-eslint/camelcase
@@ -322,6 +346,15 @@ const TimeslotComponent: React.FC<TimeslotPropsType> = ({
     }
   };
 
+  const isValidTime = (start: string, end: string) => {
+    const startTime = parse(start, 'HH:mm:ss', new Date());
+    const endTime = parse(end, 'HH:mm:ss', new Date());
+    if (start === "" || end === "") {
+      return false;
+    }
+    return isBefore(startTime, endTime);
+  }
+
   const RemoveTimeslotButton = makeConfirmationButton({
     title: `Remove ${timeslotName}`,
     question: "Are you sure you want to remove this timeslot?",
@@ -332,39 +365,46 @@ const TimeslotComponent: React.FC<TimeslotPropsType> = ({
   });
 
   return (
-    <div key={pk} className={classes.root}>
-      <Paper className={classes.paper}>
+    <div key={pk} className="root">
+      <Paper className={`${classes.paper} paper`}>
         <form
-          className={classes.root}
+          className="root"
           aria-label={timeslotName ? timeslotName : "new timeslot"}
           noValidate
           autoComplete="off"
         >
           <Grid container direction="column" alignItems="stretch" spacing={4}>
-            <Grid item container lg direction="row" justify="space-between">
-              <Grid item>
+            <Grid item container direction="row" justify="space-between" spacing={2} id="input-buttons-container">
+              <Grid item xs={12} md={6}>
                 <TextField
                   id={pk ? `timeslot-${pk}-name-input` : "new-timeslot-name-input"}
                   error={invalidTimeslotName}
+                  helperText={invalidTimeslotName ? "Required" : null}
                   required
                   label="Timeslot name"
                   variant="standard"
                   value={timeslotName}
+                  fullWidth
                   onChange={onTimeslotNameChange}
                   disabled={updateLoading || deleteLoading}
                 />
               </Grid>
-              <Grid item>
-                <ButtonGroup variant="contained" aria-label="outlined primary button group">
+              <Grid item xs={12} md={6} >
+                <ButtonGroup variant="contained" aria-label="outlined primary button group" className="button-group">
                   <Button
                     variant="contained"
                     size="small"
                     className={classes.safeButton}
                     onClick={() => {
+                      if (timeslotName === "") {
+                        setInvalidTimeslotName(true);
+                        return;
+                      }
                       setUpdateLoading(true);
                       onSave(pk, timeslotName, recurrences);
+                      setUpdateLoading(false);
                     }}
-                    disabled={!hasChanged || invalidTimeslotName || updateLoading || deleteLoading}
+                    disabled={!hasChanged || invalidTimeslotName || invalidTime || updateLoading || deleteLoading}
                     startIcon={updateLoading ? <Spinning shouldSpin /> : <SaveIcon />}
                   >
                     {exists ? "Save" : "Create"}
@@ -378,6 +418,7 @@ const TimeslotComponent: React.FC<TimeslotPropsType> = ({
                     onClick={() => {
                       setDeleteLoading(true);
                       onDelete(pk, timeslotName);
+                      setDeleteLoading(false);
                     }}
                   >
                     Delete
@@ -397,17 +438,28 @@ const TimeslotComponent: React.FC<TimeslotPropsType> = ({
             </Grid>
             {recurrences.map((recurrence: TimeRecurrence, index: number) => {
               return (
-                <Grid key={index} item lg>
+                <Grid key={index} item xs={12} className="recurrenceGridContainer">
                   <TimeslotRecurrenceComponent
                     timeslotPk={pk}
                     id={index}
                     recurrence={recurrence}
-                    onChange={(id: number, recurrence: TimeRecurrence) => {
+                    onChange={(id: number, recurrence: TimeRecurrence, isValid?: boolean) => {
                       setRecurrences((prev: TimeRecurrence[]) => {
                         const recurrences = [...prev];
                         recurrences[id] = recurrence;
                         return recurrences;
                       });
+
+                      if (!isValid) {
+                        setInvalidTime(true);
+                      } else if (recurrences
+                        .filter((r, index) =>
+                          index !== id && !isValidTime(r.start, r.end) && !r.all_day).length > 0) {
+                        setInvalidTime(true);
+                      } else {
+                        setInvalidTime(false);
+                      }
+
                       setHasChanged(true);
                     }}
                     // eslint-disable-next-line @typescript-eslint/no-unused-vars
