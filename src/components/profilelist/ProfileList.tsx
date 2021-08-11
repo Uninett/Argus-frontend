@@ -30,7 +30,7 @@ import SaveIcon from "@material-ui/icons/Save";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import Modal from "../modal/Modal";
 import Typography from "@material-ui/core/Typography";
-import { TextField, createStyles } from "@material-ui/core";
+import { TextField, createStyles, Card } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(() =>
@@ -49,6 +49,10 @@ const useStyles = makeStyles(() =>
     },
     loadingText: {
       marginTop: "30px",
+    },
+    noProfilesCard: {
+      marginTop: "10px",
+      padding: "20px",
     },
   }),
 );
@@ -664,21 +668,27 @@ export const NotificationProfileList = () => {
               Create new profile
             </Button>
           </div>
-          {profiles.map((profile) => (
-            <NotificationProfileCard
-              key={profile.pk}
-              profile={profile}
-              timeslots={getAvailableTimeslots(profile)}
-              filters={filters}
-              mediaOptions={mediaOptions}
-              phoneNumbers={phoneNumbers}
-              exists={true}
-              onSave={handleSave}
-              onDelete={handleDelete}
-              onAddPhoneNumber={() => setShowAddPhoneNumberDialog(true)}
-              onSaveTimeslotChanged={handleSaveTimeslotChanged}
-            />
-          ))}
+          {profiles.length > 0 ? (
+            profiles.map((profile) => (
+              <NotificationProfileCard
+                key={profile.pk}
+                profile={profile}
+                timeslots={getAvailableTimeslots(profile)}
+                filters={filters}
+                mediaOptions={mediaOptions}
+                phoneNumbers={phoneNumbers}
+                exists={true}
+                onSave={handleSave}
+                onDelete={handleDelete}
+                onAddPhoneNumber={() => setShowAddPhoneNumberDialog(true)}
+                onSaveTimeslotChanged={handleSaveTimeslotChanged}
+              />
+            ))
+          ) : (
+            <Card className={style.noProfilesCard}>
+              <Typography align="center">No notification profiles</Typography>
+            </Card>
+          )}
         </div>
       )}
       <AddPhoneNumberDialog
