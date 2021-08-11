@@ -377,6 +377,22 @@ type AddPhoneNumberDialogPropsType = {
 
 const AddPhoneNumberDialog = ({ open, onSave, onCancel }: AddPhoneNumberDialogPropsType) => {
   const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const [error, setError] = useState<boolean>(false);
+
+  const handleSave = () => {
+    if (phoneNumber) {
+      setError(false);
+      onSave(phoneNumber);
+    } else {
+      setError(true);
+    }
+  };
+
+  const handleCancel = () => {
+    setError(false);
+    setPhoneNumber("");
+    onCancel();
+  };
 
   return (
     <Modal
@@ -385,20 +401,22 @@ const AddPhoneNumberDialog = ({ open, onSave, onCancel }: AddPhoneNumberDialogPr
         <TextField
           value={phoneNumber}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => setPhoneNumber(event.target.value)}
+          error={error}
+          helperText={error ? "This field cannot be empty." : null}
         />
       }
       actions={
         <div>
-          <Button onClick={() => onCancel()} color="primary" autoFocus>
+          <Button onClick={handleCancel} color="primary" autoFocus>
             Cancel
           </Button>
-          <Button onClick={() => onSave(phoneNumber)} color="primary" autoFocus>
+          <Button onClick={handleSave} color="primary" autoFocus>
             Save
           </Button>
         </div>
       }
       open={open}
-      onClose={() => onCancel()}
+      onClose={handleCancel}
     />
   );
 };
