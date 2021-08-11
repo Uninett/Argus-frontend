@@ -2,6 +2,8 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 
 import classNames from "classnames";
 
+import './IncidentFilterToolbar.css'
+
 // MUI
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 
@@ -15,6 +17,9 @@ import TextField from "@material-ui/core/TextField";
 import Toolbar from "@material-ui/core/Toolbar";
 import Tooltip from "@material-ui/core/Tooltip";
 import Typography from "@material-ui/core/Typography";
+import Accordion from '@material-ui/core/Accordion';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
 
 // For filter dialog list
 import List from "@material-ui/core/List";
@@ -58,6 +63,8 @@ import { useFilters } from "../../api/actions";
 import { useSelectedFilter } from "../filterprovider";
 import { useApiState, useTimeframe } from "../../state/hooks";
 import { DropdownMenu } from "./DropdownMenu";
+import {ExpandMore} from "@material-ui/icons";
+import {Grid, Hidden} from "@material-ui/core";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -452,6 +459,12 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
   const [sourceNameById, setSourceNameById] = useState<{ [id: number]: string }>({});
   const [timeframe, { setTimeframe }] = useTimeframe();
 
+  const [isFilterExpanded, setIsFilterExpanded] = useState<boolean>(false);
+
+  const handleFilterAccordionChange = () => {
+    setIsFilterExpanded(!isFilterExpanded);
+  }
+
   useEffect(() => {
     // Save current timeframe in localStorage
     saveToLocalStorage(TIMEFRAME, timeframe.timeframeInHours);
@@ -515,9 +528,9 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
   );
 
   return (
-    <div className={style.root} data-testid="incidents-toolbar">
+    <div className={`${style.root} incidents-filter-toolbar-root`} data-testid="incidents-toolbar">
       <Toolbar className={style.toolbarContainer}>
-        <ToolbarItem title="Open state switch" name="Open State">
+        <ToolbarItem title="Open state switch" name="Open State" className="open-state-switch">
           <ButtonGroupSwitch
             selected={optionalOr(selectedFilter?.incidentsFilter?.filter?.open, null)}
             options={[true, false, null]}
@@ -536,7 +549,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
           />
         </ToolbarItem>
 
-        <ToolbarItem title="Acked state switch" name="Acked">
+        <ToolbarItem title="Acked state switch" name="Acked" className="acked-state-switch">
           <ButtonGroupSwitch
             selected={optionalOr(selectedFilter?.incidentsFilter?.filter?.acked, null)}
             options={[true, false, null]}
@@ -555,51 +568,128 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
           />
         </ToolbarItem>
 
-        <ToolbarItem title="Source selector" name="Sources" className={classNames(style.medium)}>
-          <SourceSelector
-            disabled={disabled}
-            sources={knownSources}
-            onSelectionChange={(sources: string[]) => {
-              const findSourceId = (name: string) => {
-                return sourceIdByName[name];
-              };
-              setSelectedFilter({ sourceSystemIds: sources.map(findSourceId) });
-            }}
-            defaultSelected={(selectedFilter.incidentsFilter?.sourceSystemIds || []).map(
-              (source: number) => sourceNameById[source],
-            )}
-          />
-        </ToolbarItem>
-
-        <ToolbarItem title="Tags selector" name="Tags" className={classNames(style.medium)}>
-          <TagSelector
-            disabled={disabled}
-            tags={selectedFilter.incidentsFilter?.tags || []}
-            onSelectionChange={(tags: string[]) => setSelectedFilter({ tags })}
-            selected={selectedFilter.incidentsFilter?.tags}
-          />
-        </ToolbarItem>
-
-        {SHOW_SEVERITY_LEVELS && (
-          <ToolbarItem title="Max severity level selector" name="Max level" className={classNames(style.medium)}>
-            <DropdownMenu
-              selected={optionalOr(selectedFilter?.incidentsFilter?.filter?.maxlevel, 5)}
-              onChange={(maxlevel: SeverityLevelNumber) => setSelectedFilter({ filterContent: { maxlevel } })}
+        <Hidden only={['lg', 'xl', 'md']}>
+          <Accordion color="default" className="extra-filter-accordion"
+                     expanded={isFilterExpanded}
+                     onChange={handleFilterAccordionChange}>
+            <AccordionSummary
+              expandIcon={<ExpandMore />}
+              aria-controls="filtertoolbar-content"
+              id="filtertoolbar-header"
+              className="accordion-summary"
             >
-              {SEVERITY_LEVELS.reverse().map((level: SeverityLevelNumber) => (
-                <MenuItem key={level} value={level}>{`${level} - ${SeverityLevelNumberNameMap[level]}`}</MenuItem>
-              ))}
-            </DropdownMenu>
-          </ToolbarItem>
-        )}
+              <Typography>Extra Filter Options</Typography>
+            </AccordionSummary>
+            <AccordionDetails className="extra-filter-options-container">
+              <Grid container direction="row" wrap="wrap" justify="space-between" alignItems="stretch">
+                <Grid item xs={12} sm={5}>
+                  <ToolbarItem title="Source selector" name="Sources" className={classNames(style.medium)}>
+                    <SourceSelector
+                      disabled={disabled}
+                      sources={knownSources}
+                      onSelectionChange={(sources: string[]) => {
+                        const findSourceId = (name: string) => {
+                          return sourceIdByName[name];
+                        };
+                        setSelectedFilter({ sourceSystemIds: sources.map(findSourceId) });
+                      }}
+                      defaultSelected={(selectedFilter.incidentsFilter?.sourceSystemIds || []).map(
+                        (source: number) => sourceNameById[source],
+                      )}
+                    />
+                  </ToolbarItem>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <ToolbarItem title="Tags selector" name="Tags" className={classNames(style.medium)}>
+                    <TagSelector
+                      disabled={disabled}
+                      tags={selectedFilter.incidentsFilter?.tags || []}
+                      onSelectionChange={(tags: string[]) => setSelectedFilter({ tags })}
+                      selected={selectedFilter.incidentsFilter?.tags}
+                    />
+                  </ToolbarItem>
+                </Grid>
+                <Grid item xs={12} sm={5}>
+                  {SHOW_SEVERITY_LEVELS && (
+                    <ToolbarItem title="Max severity level selector" name="Max level" className={classNames(style.medium)}>
+                      <DropdownMenu
+                        selected={optionalOr(selectedFilter?.incidentsFilter?.filter?.maxlevel, 5)}
+                        onChange={(maxlevel: SeverityLevelNumber) => setSelectedFilter({ filterContent: { maxlevel } })}
+                      >
+                        {SEVERITY_LEVELS.reverse().map((level: SeverityLevelNumber) => (
+                          <MenuItem key={level} value={level}>{`${level} - ${SeverityLevelNumberNameMap[level]}`}</MenuItem>
+                        ))}
+                      </DropdownMenu>
+                    </ToolbarItem>
+                  )}
+                </Grid>
+                <Grid item xs={12} sm={6} container wrap="wrap" direction="row" justify="space-evenly" alignItems="center">
+                  <Grid item xs={10} sm={10} >
+                    <ToolbarItem title="Filter selector" name="Filter" className={classNames(style.medium)}>
+                      <FiltersDropdownToolbarItem />
+                    </ToolbarItem>
+                  </Grid>
+                  <Grid item xs={2} sm={2}>
+                    <MoreSettingsToolbarItem
+                      open={dropdownToolbarOpen}
+                      onChange={(open: boolean) => setDropdownToolbarOpen(open)}
+                      className="more-settings-item"
+                    />
+                  </Grid>
+                </Grid>
+              </Grid>
+            </AccordionDetails>
+          </Accordion>
+        </Hidden>
 
-        <ToolbarItem title="Filter selector" name="Filter" className={classNames(style.medium)}>
-          <FiltersDropdownToolbarItem />
-        </ToolbarItem>
-        <MoreSettingsToolbarItem
-          open={dropdownToolbarOpen}
-          onChange={(open: boolean) => setDropdownToolbarOpen(open)}
-        />
+        <Hidden only={['xs', 'sm']}>
+          <ToolbarItem title="Source selector" name="Sources" className={classNames(style.medium)}>
+            <SourceSelector
+              disabled={disabled}
+              sources={knownSources}
+              onSelectionChange={(sources: string[]) => {
+                const findSourceId = (name: string) => {
+                  return sourceIdByName[name];
+                };
+                setSelectedFilter({ sourceSystemIds: sources.map(findSourceId) });
+              }}
+              defaultSelected={(selectedFilter.incidentsFilter?.sourceSystemIds || []).map(
+                (source: number) => sourceNameById[source],
+              )}
+            />
+          </ToolbarItem>
+
+          <ToolbarItem title="Tags selector" name="Tags" className={classNames(style.medium)}>
+            <TagSelector
+              disabled={disabled}
+              tags={selectedFilter.incidentsFilter?.tags || []}
+              onSelectionChange={(tags: string[]) => setSelectedFilter({ tags })}
+              selected={selectedFilter.incidentsFilter?.tags}
+            />
+          </ToolbarItem>
+
+          {SHOW_SEVERITY_LEVELS && (
+            <ToolbarItem title="Max severity level selector" name="Max level" className={classNames(style.medium)}>
+              <DropdownMenu
+                selected={optionalOr(selectedFilter?.incidentsFilter?.filter?.maxlevel, 5)}
+                onChange={(maxlevel: SeverityLevelNumber) => setSelectedFilter({ filterContent: { maxlevel } })}
+              >
+                {SEVERITY_LEVELS.reverse().map((level: SeverityLevelNumber) => (
+                  <MenuItem key={level} value={level}>{`${level} - ${SeverityLevelNumberNameMap[level]}`}</MenuItem>
+                ))}
+              </DropdownMenu>
+            </ToolbarItem>
+          )}
+
+          <ToolbarItem title="Filter selector" name="Filter" className={classNames(style.medium)}>
+            <FiltersDropdownToolbarItem />
+          </ToolbarItem>
+          <MoreSettingsToolbarItem
+            open={dropdownToolbarOpen}
+            onChange={(open: boolean) => setDropdownToolbarOpen(open)}
+          />
+        </Hidden>
+
       </Toolbar>
       <DropdownToolbar open={dropdownToolbarOpen} onClose={() => setDropdownToolbarOpen(false)}>
         {autoUpdateToolbarItem}

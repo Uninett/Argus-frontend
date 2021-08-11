@@ -1,0 +1,87 @@
+.extra-filter-options-container {
+    display: flex;
+    justify-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.extra-filter-options-container > div{
+    width: 100%;
+    margin: 0.5px;
+}
+
+.extra-filter-accordion {
+    width: 100%;
+    margin: 0.5rem 0;
+    border: 3px solid #e0e0e0;
+}
+
+@media (max-width: 960px) {
+    div[title="Filter selector"] > div div{
+        max-width: 12em;
+        flex-grow: 1;
+    }
+    #filter-select {
+        padding-right: 0.3rem;
+    }
+    div[title="Filter selector"] button {
+        padding-left: 0.3rem;
+        padding-right: 0.3rem;
+    }
+    .extra-filter-options-container {
+        padding: 1rem !important;
+    }
+    .incidents-filter-toolbar-root {
+        padding: 0.7rem !important;
+        box-sizing: border-box;
+    }
+    #filter-select-source-helper-text, #filter-select-tags-helper-text,
+    .acked-state-switch > p, .open-state-switch > p {
+        display: none;
+    }
+    .acked-state-switch, .open-state-switch{
+        margin: 0.5rem 0.5rem !important;
+        width: 47%;
+    }
+    .acked-state-switch button, .open-state-switch button{
+        flex-grow: 1;
+        width: calc(100%/3);
+        height: 2.3rem;
+    }
+    .extra-filter-accordion {
+        margin: 0.5rem 0.5rem !important;
+    }
+}
+
+@media (max-width: 600px) {
+    div[title="Filter selector"] > div div{
+        max-width: 20rem;
+    }
+    .acked-state-switch, .open-state-switch{
+        width: 100%;
+    }
+    .acked-state-switch button, .open-state-switch button{
+        height: 2.2rem;
+    }
+}
+
+@media (max-width: 500px) {
+    div[title="Filter selector"] > div div{
+        max-width: 14rem;
+    }
+}
+
+@media (max-width: 360px) {
+    div[title="Filter selector"] > div div{
+        max-width: 12rem;
+    }
+}
+
+@media (max-width: 300px) {
+    .extra-filter-options-container {
+        padding: 0.2rem !important;
+    }
+    div[title="Filter selector"] > div div{
+        max-width: 11rem;
+    }
+}
