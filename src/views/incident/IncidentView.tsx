@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {withRouter} from "react-router-dom";
 
 import FilteredIncidentTable from "../../components/incidenttable/FilteredIncidentTable";
@@ -32,8 +32,8 @@ const IncidentView: React.FC<IncidentViewPropsType> = () => {
   const [, { loadAllFilters }] = useFilters();
   const displayAlert = useAlerts();
 
-  let apiVersion: string = "";
-  let backendVersion: string = "";
+  const [apiVersion, setApiVersion] = useState<string>("");
+  const [backendVersion, setBackendVersion] = useState<string>("");
 
   const getServerMetadata = async () => {
     return await SERVER_METADATA()
@@ -41,10 +41,10 @@ const IncidentView: React.FC<IncidentViewPropsType> = () => {
           return data
         })
         .then(data => {
-          apiVersion = data["api-version"].stable ?
-              `${data["api-version"].stable} (stable)` :
-              `${data["api-version"].unstable} (unstable)`;
-          backendVersion = data["backend-version"];
+          setApiVersion(data["api-version"].stable ?
+              `${data["api-version"].stable}(stable)` :
+              `${data["api-version"].unstable}(unstable)`);
+          setBackendVersion(data["server-version"]);
         })
         .catch(error => console.log(error));
   }
@@ -70,7 +70,7 @@ const IncidentView: React.FC<IncidentViewPropsType> = () => {
         </IncidentsProvider>
       </SelectedFilterProvider>
       <p>
-        Backend {backendVersion},
+        Backend v.{backendVersion},
         API {apiVersion},
         frontend v.{FRONTEND_VERSION}
       </p>

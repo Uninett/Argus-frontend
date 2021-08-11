@@ -48,7 +48,7 @@ export const TIMESTAMP_FORMAT = "{date} {time}{timezone_offset}";
 export const SHOW_SEVERITY_LEVELS = true;
 
 export interface MetadataConfig {
-  'backend-version': string;
+  'server-version': string;
   'api-version': {
     stable: string;
     unstable: string;
@@ -61,7 +61,7 @@ export interface MetadataConfig {
 }
 export const SERVER_METADATA = async () => {
   const metadata: MetadataConfig =
-      await axios.get(`/api/`)
+      await axios.get(`${BACKEND_URL}/api/`)
           .then(response => Promise.resolve(response.data))
           .catch(error => console.log(error));
   return metadata;
