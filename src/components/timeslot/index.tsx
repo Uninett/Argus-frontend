@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+import './timeslot.css';
+
 import { Theme, createStyles, makeStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
 import Button from "@material-ui/core/Button";
@@ -35,43 +37,23 @@ import { isBefore, parse, isValid } from "date-fns";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {
-      flexGrow: 1,
-    },
-    grow: {
-      flexGrow: 1,
-    },
     paper: {
       padding: theme.spacing(3),
-      textAlign: "center",
       color: theme.palette.text.secondary,
       minWidth: 30,
     },
     recurrenceContainer: {
-      display: "flex",
-      flexDirection: "row",
-      flexWrap: "wrap",
       padding: theme.spacing(3),
       borderColor: theme.palette.divider,
-      borderWidth: "2px",
-      borderRadius: "5px",
-      borderStyle: "solid",
-      position: "relative",
     },
     dayPickersContainer: {
-      display: "flex",
-      flexDirection: "row",
-      flexWrap: "nowrap",
       padding: theme.spacing(3),
     },
     timePicker: {
       padding: theme.spacing(2),
     },
     removeWrapper: {
-      right: 0,
       paddingRight: theme.spacing(3),
-      left: "auto",
-      position: "absolute",
     },
     recurrencePaper: {
       padding: theme.spacing(2),
@@ -86,10 +68,6 @@ const useStyles = makeStyles((theme: Theme) =>
     safeButton: {
       background: theme.palette.primary.main,
       color: WHITE,
-    },
-    timeslot: {
-      alignItems: "center",
-      padding: theme.spacing(3),
     },
     createDeleteButtonGroup: {
       margin: theme.spacing(1),
@@ -188,8 +166,8 @@ export const TimeslotRecurrenceComponent: React.FC<TimeslotRecurrenceComponentPr
   const end = !allDay && dateFromTimeOfDayString(recurrence.end);
 
   return (
-    <div className={style.recurrenceContainer}>
-      <div className={style.removeWrapper}>
+    <div className={`${style.recurrenceContainer} recurrenceContainer`}>
+      <div className={`${style.removeWrapper} removeWrapper`}>
         <RemoveRecurrenceButton
           variant="text"
           size="small"
@@ -201,9 +179,10 @@ export const TimeslotRecurrenceComponent: React.FC<TimeslotRecurrenceComponentPr
           Remove
         </RemoveRecurrenceButton>
       </div>
-      <div className={style.dayPickersContainer}>
+      <div className={`${style.dayPickersContainer} dayPickersContainer`}>
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
           <FormControlLabel
+              id="all-day-checkbox"
             control={
               <Checkbox
                 checked={allDay}
@@ -228,37 +207,40 @@ export const TimeslotRecurrenceComponent: React.FC<TimeslotRecurrenceComponentPr
             }
             label="All day"
           />
-          <TimePicker
-            id={timeslotPk ? `timeslot-${timeslotPk}-start-time-picker-${id}` : `start-time-picker-${id}`}
-            className={style.timePicker}
-            disabled={allDay || disabled}
-            margin="normal"
-            label="Start time picker"
-            value={start || null}
-            required={!allDay}
-            error={startTimeError}
-            helperText={startTimeError ? startTimeHelperText : null}
-            onChange={(date: Date | null) => handleTimeChange(date, true, id, recurrence)}
-            KeyboardButtonProps={{
-              "aria-label": "change start time",
-            }}
-          />
-          <TimePicker
-            id={timeslotPk ? `timeslot-${timeslotPk}-end-time-picker-${id}` : `end-time-picker-${id}`}
-            className={style.timePicker}
-            disabled={allDay || disabled}
-            margin="normal"
-            label="End time picker"
-            value={end || null}
-            required={!allDay}
-            error={endTimeError}
-            helperText={endTimeError ? endTimeHelperText : null}
-            KeyboardButtonProps={{
-              "aria-label": "change end time",
-            }}
-            onChange={(date: Date | null) => handleTimeChange(date, false, id, recurrence)}
-          />
-          <div className={style.grow} />
+          <div className="timePickers">
+            <TimePicker
+                id={timeslotPk ? `timeslot-${timeslotPk}-start-time-picker-${id}` : `start-time-picker-${id}`}
+                className={style.timePicker}
+                disabled={allDay || disabled}
+                margin="normal"
+                label="Start time picker"
+                value={start || null}
+                required={!allDay}
+                error={startTimeError}
+                helperText={startTimeError ? startTimeHelperText : null}
+                onChange={(date: Date | null) => handleTimeChange(date, true, id, recurrence)}
+                KeyboardButtonProps={{
+                  "aria-label": "change start time",
+                }}
+            />
+            <TimePicker
+                id={timeslotPk ? `timeslot-${timeslotPk}-end-time-picker-${id}` : `end-time-picker-${id}`}
+                className={style.timePicker}
+                disabled={allDay || disabled}
+                margin="normal"
+                label="End time picker"
+                value={end || null}
+                required={!allDay}
+                error={endTimeError}
+                helperText={endTimeError ? endTimeHelperText : null}
+                KeyboardButtonProps={{
+                  "aria-label": "change end time",
+                }}
+                onChange={(date: Date | null) => handleTimeChange(date, false, id, recurrence)}
+            />
+          </div>
+
+          <div className="grow" />
         </MuiPickersUtilsProvider>
       </div>
       <DaySelector disabled={disabled} selectedDays={recurrence.days} onSelectionChange={handleRecurrenceDaysChange} />
@@ -294,7 +276,7 @@ export const DaySelector: React.FC<DaySelectorPropsType> = ({
         renderValue={(selected) => {
           const selectedDays = new Set<TimeRecurrenceDay>(selected as TimeRecurrenceDay[]);
           return (
-            <div>
+            <div className="dayChipsContainer">
               {TIME_RECURRENCE_DAY_IN_ORDER.filter((day) => selectedDays.has(day)).map((day: TimeRecurrenceDay) => (
                 <Chip key={day} label={TimeRecurrenceDayNameMap[day]} />
               ))}
@@ -383,17 +365,17 @@ const TimeslotComponent: React.FC<TimeslotPropsType> = ({
   });
 
   return (
-    <div key={pk} className={classes.root}>
-      <Paper className={classes.paper}>
+    <div key={pk} className="root">
+      <Paper className={`${classes.paper} paper`}>
         <form
-          className={classes.root}
+          className="root"
           aria-label={timeslotName ? timeslotName : "new timeslot"}
           noValidate
           autoComplete="off"
         >
           <Grid container direction="column" alignItems="stretch" spacing={4}>
-            <Grid item container lg direction="row" justify="space-between">
-              <Grid item>
+            <Grid item container direction="row" justify="space-between" spacing={2} id="input-buttons-container">
+              <Grid item xs={12} md={6}>
                 <TextField
                   id={pk ? `timeslot-${pk}-name-input` : "new-timeslot-name-input"}
                   error={invalidTimeslotName}
@@ -402,12 +384,13 @@ const TimeslotComponent: React.FC<TimeslotPropsType> = ({
                   label="Timeslot name"
                   variant="standard"
                   value={timeslotName}
+                  fullWidth
                   onChange={onTimeslotNameChange}
                   disabled={updateLoading || deleteLoading}
                 />
               </Grid>
-              <Grid item>
-                <ButtonGroup variant="contained" aria-label="outlined primary button group">
+              <Grid item xs={12} md={6} >
+                <ButtonGroup variant="contained" aria-label="outlined primary button group" className="button-group">
                   <Button
                     variant="contained"
                     size="small"
@@ -455,7 +438,7 @@ const TimeslotComponent: React.FC<TimeslotPropsType> = ({
             </Grid>
             {recurrences.map((recurrence: TimeRecurrence, index: number) => {
               return (
-                <Grid key={index} item lg>
+                <Grid key={index} item xs={12} className="recurrenceGridContainer">
                   <TimeslotRecurrenceComponent
                     timeslotPk={pk}
                     id={index}
