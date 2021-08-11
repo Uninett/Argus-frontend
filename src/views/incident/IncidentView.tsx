@@ -15,7 +15,7 @@ import {useApiState} from "../../state/hooks";
 import SelectedFilterProvider from "../../components/filterprovider"; // TODO: move
 import IncidentsProvider from "../../components/incidentsprovider"; // TODO: move
 import {Helmet} from "react-helmet";
-import {FRONTEND_VERSION, SERVER_METADATA} from "../../config";
+import {FRONTEND_VERSION, SERVER_METADATA, API_VERSION} from "../../config";
 
 const IncidentComponent = ({ autoUpdateMethod }: { autoUpdateMethod: AutoUpdateMethod }) => {
   return autoUpdateMethod === "realtime" ? (
@@ -35,23 +35,24 @@ const IncidentView: React.FC<IncidentViewPropsType> = () => {
   const [apiVersion, setApiVersion] = useState<string>("");
   const [backendVersion, setBackendVersion] = useState<string>("");
 
+  const [isMetadataFetchError, setIsMetadataFetchError] = useState<boolean>(false);
+
   const getServerMetadata = async () => {
     return await SERVER_METADATA()
-        .then(data => {
-          return data
-        })
         .then(data => {
           setApiVersion(data["api-version"].stable ?
               `${data["api-version"].stable}(stable)` :
               `${data["api-version"].unstable}(unstable)`);
           setBackendVersion(data["server-version"]);
+          setIsMetadataFetchError(false);
         })
-        .catch(error => console.log(error));
+        .catch(error => Promise.reject(error));
   }
 
 
   useEffect(() => {
-    getServerMetadata();
+    getServerMetadata()
+        .catch(error => setIsMetadataFetchError(true));
     loadAllFilters()
       // .then(() => displayAlert("Loaded filters", "success"))
       .catch((error) => displayAlert(`Failed to fetch filters: ${error}`, "error"));
@@ -69,11 +70,19 @@ const IncidentView: React.FC<IncidentViewPropsType> = () => {
           <IncidentComponent autoUpdateMethod={autoUpdateMethod} />
         </IncidentsProvider>
       </SelectedFilterProvider>
-      <p>
-        Backend v.{backendVersion},
-        API {apiVersion},
-        frontend v.{FRONTEND_VERSION}
-      </p>
+        { isMetadataFetchError ?
+            <p>
+                API {API_VERSION},
+                frontend v.{FRONTEND_VERSION}
+            </p>
+            :
+            <p>
+                Backend v.{backendVersion},
+                API {apiVersion},
+                frontend v.{FRONTEND_VERSION}
+            </p>
+        }
+
     </div>
   );
 };

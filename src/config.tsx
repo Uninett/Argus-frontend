@@ -63,7 +63,7 @@ export const SERVER_METADATA = async () => {
   const metadata: MetadataConfig =
       await axios.get(`${BACKEND_URL}/api/`)
           .then(response => Promise.resolve(response.data))
-          .catch(error => console.log(error));
+          .catch(error => Promise.reject(error));
   return metadata;
 }
 
