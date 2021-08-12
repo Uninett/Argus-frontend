@@ -2,6 +2,8 @@ import React, { useState, useMemo, useCallback } from "react";
 
 import { Link } from "react-router-dom";
 
+import './incidenttable.css';
+
 import Button from "@material-ui/core/Button";
 import Checkbox from "@material-ui/core/Checkbox";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
