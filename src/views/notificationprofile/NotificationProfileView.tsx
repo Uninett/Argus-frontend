@@ -1,8 +1,9 @@
 import React from "react";
 import "./NotificationProfileView.css";
 import { withRouter } from "react-router-dom";
-import ProfileList from "../../components/profilelist/ProfileList";
 import { Helmet } from "react-helmet";
+import NotificationProfileList from "../../components/notificationprofile/NotificationProfileList";
+import { Container } from "@material-ui/core";
 
 const NotificationProfileView: React.FC = () => {
   return (
@@ -11,7 +12,9 @@ const NotificationProfileView: React.FC = () => {
         <title>Argus | Profiles</title>
       </Helmet>
       <div className="profileList-container">
-        <ProfileList />
+        <Container>
+          <NotificationProfileList />
+        </Container>
       </div>
     </div>
   );
