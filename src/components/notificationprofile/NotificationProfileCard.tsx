@@ -197,8 +197,14 @@ const NotificationProfileCard = ({
             </Select>
           </Grid>
           <Grid item xs={12} sm={6} md={3} className={style.gridItem}>
-            <Typography className={style.itemHeader}>Filters</Typography>
+            <Typography
+              id={`filter-selector-${profileState.pk ? profileState.pk : "create"}-label`}
+              className={style.itemHeader}
+            >
+              Filters
+            </Typography>
             <Autocomplete
+              aria-labelledby={`filter-selector-${profileState.pk ? profileState.pk : "create"}-label`}
               multiple
               size="small"
               value={filters.filter((filter: Filter) => profileState.filters.includes(filter.pk))}
@@ -218,8 +224,14 @@ const NotificationProfileCard = ({
             />
           </Grid>
           <Grid item xs={12} sm={6} md={3} className={style.gridItem}>
-            <Typography className={style.itemHeader}>Media</Typography>
+            <Typography
+              id={`media-selector-${profileState.pk ? profileState.pk : "create"}-label`}
+              className={style.itemHeader}
+            >
+              Media
+            </Typography>
             <Autocomplete
+              aria-labelledby={`media-selector-${profileState.pk ? profileState.pk : "create"}-label`}
               multiple
               size="small"
               value={mediaOptions.filter((mediaOption) => profileState.media.includes(mediaOption.value))}
@@ -244,7 +256,12 @@ const NotificationProfileCard = ({
                   </MenuItem>
                 ))}
               </Select>
-              <IconButton className={style.addPhoneNumberButton} color="primary" onClick={handleAddPhoneNumber}>
+              <IconButton
+                aria-label="Add phone number"
+                className={style.addPhoneNumberButton}
+                color="primary"
+                onClick={handleAddPhoneNumber}
+              >
                 <AddCircleIcon />
               </IconButton>
             </div>
