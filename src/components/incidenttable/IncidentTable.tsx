@@ -37,7 +37,8 @@ import IncidentTableToolbar from "../../components/incidenttable/IncidentTableTo
 import { useIncidentsContext } from "../incidentsprovider";
 import { useAlerts } from "../alertsnackbar";
 import { SHOW_SEVERITY_LEVELS } from "../../config";
-import {Hidden} from "@material-ui/core";
+import {Collapse, Hidden, Box} from "@material-ui/core";
+import {KeyboardArrowDown, KeyboardArrowUp} from "@material-ui/icons";
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -92,7 +93,9 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
   const style = useStyles();
 
   type SelectionState = Set<Incident["pk"]>;
+  type RowExpansionState = Set<Incident["pk"]>;
   const [selectedIncidents, setSelectedIncidents] = useState<SelectionState>(new Set<Incident["pk"]>([]));
+  const [expandedIncidents, setExpandedIncidents] = useState<RowExpansionState>(new Set<Incident["pk"]>([]));
 
   type IncidentOrderableFields = Pick<Incident, "start_time">;
 
@@ -117,6 +120,18 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
         newSelectedIncidents.add(incident.pk);
       }
       return newSelectedIncidents;
+    });
+  };
+
+  const handleExpandIncident = (incident: Incident) => {
+    setExpandedIncidents((oldExpandedIncidents: RowExpansionState) => {
+      const newExpandedIncidents = new Set<Incident["pk"]>(oldExpandedIncidents);
+      if (oldExpandedIncidents.has(incident.pk)) {
+        newExpandedIncidents.delete(incident.pk);
+      } else {
+        newExpandedIncidents.add(incident.pk);
+      }
+      return newExpandedIncidents;
     });
   };
 
@@ -248,6 +263,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                   );
 
                   const isSelected = selectedIncidents.has(incident.pk);
+                  const isExpanded = expandedIncidents.has(incident.pk);
 
                   return (
                     <>
@@ -382,22 +398,53 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                               <AckedItem small acked={incident.acked} />
                             </div>
                           </ClickableCell>
-                          <ClickableCell className="source-cell">{incident.source.name}</ClickableCell>
 
+                          <TableCell className="source-cell source-ticket-cell">
+                            <Typography variant="body2" className="source-cell">{incident.source.name}</Typography>
+                            {incident.ticket_url && (
+                              <IconButton disabled={isLoading} href={incident.ticket_url}>
+                                <TicketIcon />
+                              </IconButton>
+                            )}
+                            {/* TODO: Not implementd yet */}
+                          </TableCell>
 
-                          {/*<TableCell className="actions-cell">*/}
-                          {/*  <IconButton disabled={isLoading} component={Link} to={`/incidents/${incident.pk}/`}>*/}
-                          {/*    <OpenInNewIcon />*/}
-                          {/*  </IconButton>*/}
-                          {/*  {incident.ticket_url && (*/}
-                          {/*    <IconButton disabled={isLoading} href={incident.ticket_url}>*/}
-                          {/*      <TicketIcon />*/}
-                          {/*    </IconButton>*/}
-                          {/*  )}*/}
-                          {/*  /!* TODO: Not implementd yet *!/*/}
-                          {/*</TableCell>*/}
+                          <TableCell>
+                            <IconButton aria-label="expand row" size="small" onClick={() => handleExpandIncident(incident)}>
+                              {isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+                            </IconButton>
+                          </TableCell>
 
-                          {/*<ClickableCell className="description-cell">{incident.description}</ClickableCell>*/}
+                        </TableRow>
+                        <TableRow>
+                          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+                            <Collapse in={isExpanded} timeout="auto" unmountOnExit>
+                              <Box margin={1}>
+                                <MuiTable size="small" aria-label="additional-xs-incident-data">
+                                  <TableHead>
+                                    <TableRow>
+                                      <TableCell align="left">Description</TableCell>
+                                      <TableCell align="right">Actions</TableCell>
+                                    </TableRow>
+                                  </TableHead>
+                                  <TableBody>
+                                    <ClickableCell align="left" className="description-cell">{incident.description}</ClickableCell>
+                                    <TableCell align="right" className="actions-cell">
+                                      <IconButton disabled={isLoading} component={Link} to={`/incidents/${incident.pk}/`}>
+                                        <OpenInNewIcon />
+                                      </IconButton>
+                                      {incident.ticket_url && (
+                                        <IconButton disabled={isLoading} href={incident.ticket_url}>
+                                          <TicketIcon />
+                                        </IconButton>
+                                      )}
+                                      {/* TODO: Not implementd yet */}
+                                    </TableCell>
+                                  </TableBody>
+                                </MuiTable>
+                              </Box>
+                            </Collapse>
+                          </TableCell>
                         </TableRow>
                       </Hidden>
                     </>
