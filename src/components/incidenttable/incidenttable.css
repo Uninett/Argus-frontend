@@ -86,9 +86,6 @@ div .ReactTable .rt-noData {
     padding: 0 0.1rem 0.1rem 0.1rem;
     margin: 0 0.1rem 0.1rem 0.1rem;
   }
-  .incidents-table-row {
-    border-top: 2px solid #555;
-  }
   .table-head {
     position: sticky;
     top: 0;
@@ -120,5 +117,14 @@ div .ReactTable .rt-noData {
   .state-cell-contents > div {
     margin: 0.1rem;
   }
+  .source-cell {
+    overflow-wrap: break-word;
+    max-width: 10ch;
+  }
+}
 
+@media (max-width: 600px) {
+  .incidents-table-row {
+    border-left: unset !important;
+  }
 }
