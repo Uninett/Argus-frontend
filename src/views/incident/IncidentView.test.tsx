@@ -850,8 +850,6 @@ describe('Incidents Table: reflects incident modifications', () => {
         .getByRole('button', { name: /re-open selected/i });
       userEvent.click(reopenBtn);
 
-      await screen.findAllByRole('dialog');
-
       const submitBtn = screen.getByRole('button', { name: /yes/i });
       userEvent.click(submitBtn);
 

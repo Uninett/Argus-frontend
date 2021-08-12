@@ -1,20 +1,21 @@
-import React, { useEffect } from "react";
-import { withRouter } from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import {withRouter} from "react-router-dom";
 
 import FilteredIncidentTable from "../../components/incidenttable/FilteredIncidentTable";
 import RealtimeIncidentTable from "../../components/incidenttable/RealtimeIncidentTable";
 
-import { IncidentFilterToolbar } from "../../components/incident/IncidentFilterToolbar";
+import {IncidentFilterToolbar} from "../../components/incident/IncidentFilterToolbar";
 
-import type { AutoUpdateMethod } from "../../api/types.d";
+import type {AutoUpdateMethod} from "../../api/types.d";
 
 // Context/Hooks
-import { useFilters } from "../../api/actions";
-import { useAlerts } from "../../components/alertsnackbar";
-import { useApiState } from "../../state/hooks";
+import {useFilters} from "../../api/actions";
+import {useAlerts} from "../../components/alertsnackbar";
+import {useApiState} from "../../state/hooks";
 import SelectedFilterProvider from "../../components/filterprovider"; // TODO: move
 import IncidentsProvider from "../../components/incidentsprovider"; // TODO: move
-import { Helmet } from "react-helmet";
+import {Helmet} from "react-helmet";
+import {FRONTEND_VERSION, SERVER_METADATA, API_VERSION} from "../../config";
 
 const IncidentComponent = ({ autoUpdateMethod }: { autoUpdateMethod: AutoUpdateMethod }) => {
   return autoUpdateMethod === "realtime" ? (
@@ -31,7 +32,27 @@ const IncidentView: React.FC<IncidentViewPropsType> = () => {
   const [, { loadAllFilters }] = useFilters();
   const displayAlert = useAlerts();
 
+  const [apiVersion, setApiVersion] = useState<string>("");
+  const [backendVersion, setBackendVersion] = useState<string>("");
+
+  const [isMetadataFetchError, setIsMetadataFetchError] = useState<boolean>(false);
+
+  const getServerMetadata = async () => {
+    return await SERVER_METADATA()
+        .then(data => {
+          setApiVersion(data["api-version"].stable ?
+              `${data["api-version"].stable}(stable)` :
+              `${data["api-version"].unstable}(unstable)`);
+          setBackendVersion(data["server-version"]);
+          setIsMetadataFetchError(false);
+        })
+        .catch(error => Promise.reject(error));
+  }
+
+
   useEffect(() => {
+    getServerMetadata()
+        .catch(error => setIsMetadataFetchError(true));
     loadAllFilters()
       // .then(() => displayAlert("Loaded filters", "success"))
       .catch((error) => displayAlert(`Failed to fetch filters: ${error}`, "error"));
@@ -49,6 +70,19 @@ const IncidentView: React.FC<IncidentViewPropsType> = () => {
           <IncidentComponent autoUpdateMethod={autoUpdateMethod} />
         </IncidentsProvider>
       </SelectedFilterProvider>
+        { isMetadataFetchError ?
+            <p>
+                API {API_VERSION},
+                frontend v.{FRONTEND_VERSION}
+            </p>
+            :
+            <p>
+                Backend v.{backendVersion},
+                API {apiVersion},
+                frontend v.{FRONTEND_VERSION}
+            </p>
+        }
+
     </div>
   );
 };
