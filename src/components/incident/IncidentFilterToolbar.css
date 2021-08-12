@@ -16,9 +16,10 @@
     border: 3px solid #e0e0e0;
 }
 
-@media (max-width: 960px) {
-    div[title="Filter selector"] > div div{
-        max-width: 12em;
+@media (max-width: 959px) {
+    div[title="Filter selector"] > div {
+        min-width: 18rem;
+        max-width: 18em;
         flex-grow: 1;
     }
     #filter-select {
@@ -53,9 +54,31 @@
     }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 800px) {
+    div[title="Filter selector"] > div {
+        min-width: 16rem;
+        max-width: 16em;
+    }
+}
+
+@media (max-width: 730px) {
+    div[title="Filter selector"] > div {
+        min-width: 14rem;
+        max-width: 14em;
+    }
+}
+
+@media (max-width: 670px) {
+    div[title="Filter selector"] > div {
+        min-width: 13rem;
+        max-width: 13em;
+    }
+}
+
+@media (max-width: 599px) {
     div[title="Filter selector"] > div div{
-        max-width: 20rem;
+        width: 24rem;
+        max-width: 24em;
     }
     .acked-state-switch, .open-state-switch{
         width: 100%;
@@ -65,14 +88,37 @@
     }
 }
 
+@media (max-width: 540px) {
+    div[title="Filter selector"] > div div{
+        width: 20rem;
+        max-width: 20em;
+    }
+}
+
 @media (max-width: 500px) {
     div[title="Filter selector"] > div div{
-        max-width: 14rem;
+        width: 18rem;
+        max-width: 18em;
+    }
+}
+
+@media (max-width: 435px) {
+    div[title="Filter selector"] > div div{
+        width: 16rem;
+        max-width: 16em;
+    }
+}
+
+@media (max-width: 390px) {
+    div[title="Filter selector"] > div div{
+        width: 14rem;
+        max-width: 14em;
     }
 }
 
 @media (max-width: 360px) {
     div[title="Filter selector"] > div div{
+        width: 12rem;
         max-width: 12rem;
     }
 }
@@ -82,6 +128,7 @@
         padding: 0.2rem !important;
     }
     div[title="Filter selector"] > div div{
+        width: 11rem;
         max-width: 11rem;
     }
 }
