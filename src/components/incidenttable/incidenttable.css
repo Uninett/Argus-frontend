@@ -78,6 +78,12 @@ div .ReactTable .rt-noData {
 }
 
 @media (max-width: 959px) {
+  .lg-xl-header {
+    display: none !important;
+  }
+  .lg-xl-row {
+    display: none !important;
+  }
   .incidents-table-mui-container {
     max-height: 70vh;
 

@@ -152,8 +152,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
       )}
       <TableContainer component={Paper} className="incidents-table-mui-container">
         <MuiTable size="small" aria-label="incident table" className="incidents-table">
-          <Hidden only={['xs', 'sm']}>
-            <TableHead>
+            <TableHead className="lg-xl-header">
               <TableRow
                 className={`${classNames(
                   style.tableRow,
@@ -173,7 +172,6 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                 <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
-          </Hidden>
 
           <Hidden only={['xs', 'md', 'lg', 'xl']}>
             <TableHead className="table-head">
@@ -269,7 +267,6 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
 
                   return (
                     <>
-                      <Hidden only={['xs', 'sm']}>
                         <TableRow
                           hover
                           key={incident.pk}
@@ -284,7 +281,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                                 ? style.tableRowAcked
                                 : style.tableRowOpenUnacked
                               : style.tableRowClosed,
-                          )} incidents-table-row`}
+                          )} incidents-table-row lg-xl-row`}
                         >
                           {multiSelect && (
                             <TableCell padding="checkbox" onClick={() => handleSelectIncident(incident)}>
@@ -316,7 +313,6 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                             {/* TODO: Not implementd yet */}
                           </TableCell>
                         </TableRow>
-                      </Hidden>
 
                       <Hidden only={['xs', 'md', 'lg', 'xl']}>
                         <TableRow

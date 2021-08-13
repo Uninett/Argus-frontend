@@ -17,6 +17,11 @@
 }
 
 @media (max-width: 959px) {
+    .lg-xl-source-selector, .lg-xl-tags-selector,
+    .lg-xl-severity-selector, .lg-xl-filter-selector,
+    .lg-xl-more-settings-item {
+        display: none !important;
+    }
     div[title="Filter selector"] > div {
         min-width: 18rem;
         max-width: 18em;

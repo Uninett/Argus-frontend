@@ -642,8 +642,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
           </Accordion>
         </Hidden>
 
-        <Hidden only={['xs', 'sm']}>
-          <ToolbarItem title="Source selector" name="Sources" className={classNames(style.medium)}>
+          <ToolbarItem title="Source selector" name="Sources" className={`${classNames(style.medium)} lg-xl-source-selector`}>
             <SourceSelector
               disabled={disabled}
               sources={knownSources}
@@ -659,7 +658,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
             />
           </ToolbarItem>
 
-          <ToolbarItem title="Tags selector" name="Tags" className={classNames(style.medium)}>
+          <ToolbarItem title="Tags selector" name="Tags" className={`${classNames(style.medium)} lg-xl-tags-selector`}>
             <TagSelector
               disabled={disabled}
               tags={selectedFilter.incidentsFilter?.tags || []}
@@ -669,7 +668,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
           </ToolbarItem>
 
           {SHOW_SEVERITY_LEVELS && (
-            <ToolbarItem title="Max severity level selector" name="Max level" className={classNames(style.medium)}>
+            <ToolbarItem title="Max severity level selector" name="Max level" className={`${classNames(style.medium)} lg-xl-severity-selector`}>
               <DropdownMenu
                 selected={optionalOr(selectedFilter?.incidentsFilter?.filter?.maxlevel, 5)}
                 onChange={(maxlevel: SeverityLevelNumber) => setSelectedFilter({ filterContent: { maxlevel } })}
@@ -681,14 +680,14 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
             </ToolbarItem>
           )}
 
-          <ToolbarItem title="Filter selector" name="Filter" className={classNames(style.medium)}>
+          <ToolbarItem title="Filter selector" name="Filter" className={`${classNames(style.medium)} lg-xl-filter-selector`}>
             <FiltersDropdownToolbarItem />
           </ToolbarItem>
           <MoreSettingsToolbarItem
+            className={`lg-xl-more-settings-item`}
             open={dropdownToolbarOpen}
             onChange={(open: boolean) => setDropdownToolbarOpen(open)}
           />
-        </Hidden>
 
       </Toolbar>
       <DropdownToolbar open={dropdownToolbarOpen} onClose={() => setDropdownToolbarOpen(false)}>
