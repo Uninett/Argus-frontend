@@ -29,8 +29,6 @@ const ConfirmDialog: React.SFC<ConfirmDialogPropsType> = ({
   onConfirm,
   isOpen,
 }: ConfirmDialogPropsType) => {
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleReject = () => {
     onReject && onReject();
@@ -41,7 +39,7 @@ const ConfirmDialog: React.SFC<ConfirmDialogPropsType> = ({
   };
 
   return (
-    <Dialog fullScreen={fullScreen} open={isOpen} onClose={handleReject} aria-labelledby="responsive-dialog-title">
+    <Dialog open={isOpen} onClose={handleReject} aria-labelledby="responsive-dialog-title">
       <DialogTitle id="responsive-dialog-title">{title}</DialogTitle>
       <DialogContent>
         <DialogContentText>{question}</DialogContentText>
