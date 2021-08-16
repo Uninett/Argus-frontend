@@ -50,6 +50,8 @@ import { useApiIncidentAcks, useApiIncidentEvents } from "../../api/hooks";
 import { SHOW_SEVERITY_LEVELS } from "../../config";
 import { Alert } from "@material-ui/lab";
 
+import "./IncidentDetails.css";
+import {Hidden} from "@material-ui/core";
 type IncidentDetailsListItemPropsType = {
   title: string;
   detail: string | React.ReactNode;
@@ -157,21 +159,26 @@ const TicketModifiableField: React.FC<TicketModifiableFieldPropsType> = ({
 
   return (
     <ListItem>
-      <Grid container direction="row" justify="space-between">
-        <TextField
-          label="Ticket"
-          defaultValue={url || ""}
-          onChange={handleChange}
-          error={invalidAbsoluteUrl}
-          helperText={invalidAbsoluteUrl && "Invalid absolute URL"}
-        />
+      <Grid container direction="row" wrap="wrap">
+        <Grid item container direction="row" wrap="nowrap" justify="space-between" className="ticket-input-button-container">
+          <TextField
+            label="Ticket"
+            defaultValue={url || ""}
+            onChange={handleChange}
+            error={invalidAbsoluteUrl}
+            helperText={invalidAbsoluteUrl && "Invalid absolute URL"}
+            className="ticket-url-input-field"
+          />
+          {changeUrl && (
+            <Button className={classes.safeButton} endIcon={<SaveIcon />} onClick={handleSave}>
+              Save
+            </Button>
+          )}
+        </Grid>
         {changeUrl && (
-          <Button className={classes.safeButton} endIcon={<SaveIcon />} onClick={handleSave}>
-            Save
-          </Button>
-        )}
-        {changeUrl && (
-          <Alert severity="info">Leave this field empty in order to remove ticket urls from the selected incidents</Alert>
+          <Grid item>
+            <Alert severity="info">Leave this field empty in order to remove ticket urls from the selected incidents</Alert>
+          </Grid>
         )}
       </Grid>
     </ListItem>
@@ -332,7 +339,8 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
           variant="h5"
         >{`${incident.pk}: ${incident.description}`}</Typography>
       )}
-      <Grid container spacing={3} className={classes.grid}>
+
+      <Grid container spacing={3} className={`${classes.grid} incident-detailed-lg`}>
         <Grid container item spacing={2} md alignItems="stretch" direction="column">
           <Grid item>
             <Card>
@@ -484,6 +492,173 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
           </Grid>
         </Grid>
       </Grid>
+
+      <Hidden only={["md", "lg", "xl"]}>
+        <Grid container spacing={3} className={`${classes.grid} incident-detailed-sm`}>
+          <Grid container item spacing={2} lg direction="column">
+            <Grid item>
+              <Typography color="textSecondary" gutterBottom>
+                Status
+              </Typography>
+              <Grid container spacing={0} direction="row" wrap="wrap" alignItems="baseline" alignContent="stretch">
+                {SHOW_SEVERITY_LEVELS && (
+                  <Grid item>
+                    <LevelItem level={incident.level} />
+                  </Grid>
+                )}
+                <Grid item>
+                  <OpenItem open={incident.open} />
+                </Grid>
+                <Grid item>
+                  <AckedItem acked={incident.acked} expiration={ackExpiryDate} />
+                </Grid>
+                <Grid item>
+                  <TicketItem ticketUrl={incident.ticket_url} />
+                </Grid>
+              </Grid>
+            </Grid>
+
+            <Grid item>
+              <Typography color="textSecondary" gutterBottom>
+                Tags
+              </Typography>
+              <Grid container spacing={0} direction="row" wrap="wrap" alignItems="baseline" alignContent="stretch">
+                {tags.map((tag: Tag) => (
+                  <Grid item>
+                    <TagChip key={tag.key} tag={tag} />
+                  </Grid>
+                ))}
+              </Grid>
+            </Grid>
+
+            <Grid item className="primary-details-container-sm">
+              <Typography color="textSecondary" gutterBottom>
+                Primary details (#{incident.pk})
+              </Typography>
+              <Grid className="primary-details-container-sm" container alignItems="baseline" alignContent="stretch" spacing={0} wrap="wrap">
+                <Grid item sm={6} xs={12}>
+                  <IncidentDetailsListItem title="Description" detail={incident.description} />
+                </Grid>
+                <Grid item sm={6} xs={12}>
+                  <IncidentDetailsListItem
+                    title="Start time"
+                    detail={formatTimestamp(incident.start_time, { withSeconds: true })}
+                  />
+                </Grid>
+                {incident.stateful && (
+                  <Grid item sm={6} xs={12}>
+                    <IncidentDetailsListItem
+                      title="Duration"
+                      detail={formatDuration(incident.start_time, incident.end_time || undefined)}
+                    />
+                  </Grid>
+                )}
+                <Grid item sm={6} xs={12}>
+                  <IncidentDetailsListItem title="Source" detail={incident.source.name} />
+                </Grid>
+                <Grid item sm={6} xs={12}>
+                  <IncidentDetailsListItem
+                    title="Details URL"
+                    detail={hyperlinkIfAbsoluteUrl(incident.details_url) || "–"}
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+
+            <Grid item>
+              <Card>
+                <CardContent>
+                  <Typography color="textSecondary" gutterBottom>
+                    Actions
+                  </Typography>
+                  <Grid container spacing={1} direction="row" wrap="wrap" justify="center" alignItems="center" alignContent="stretch">
+                    <Grid item sm={12} className="add-ticket-container">
+                      <TicketModifiableField
+                        url={incident.ticket_url}
+                        saveChange={(url?: string) => {
+                          // TODO: api
+                          api
+                            .patchIncidentTicketUrl(incident.pk, url || "")
+                            // eslint-disable-next-line @typescript-eslint/camelcase
+                            .then(({ ticket_url }: IncidentTicketUrlBody) => {
+                              displayAlert(`Updated ticket URL for ${incident.pk}`, "success");
+
+                              // eslint-disable-next-line @typescript-eslint/camelcase
+                              onIncidentChange({ ...incident, ticket_url });
+                            })
+                            .catch((error) => {
+                              displayAlert(`Failed to updated ticket URL ${error}`, "error");
+                            });
+                        }}
+                      />
+                    </Grid>
+                    <Grid item className="close-button-container">
+                      <ManualClose
+                        open={incident.open}
+                        onManualClose={handleManualClose}
+                        onManualOpen={handleManualOpen}
+                      />
+                    </Grid>
+                    <Grid item className="ack-button-container">
+                      <CreateAck
+                        key={(acks || []).length}
+                        onSubmitAck={(ack: AcknowledgementBody) => {
+                          api
+                            .postAck(incident.pk, ack)
+                            .then((ack: Acknowledgement) => {
+                              displayAlert(`Submitted ${ack.event.type.display} for ${incident && incident.pk}`, "success");
+                              // NOTE: this assumes that nothing about the incident
+                              // changes in the backend response other than the acked
+                              // field, which may not be true in the future.
+                              onIncidentChange({ ...incident, acked: true });
+                            })
+                            .catch((error) => {
+                              displayAlert(`Failed to post ack ${error}`, "error");
+                            });
+                        }}
+                      />
+                    </Grid>
+                  </Grid>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            <Grid item>
+              <Typography color="textSecondary" gutterBottom>
+                Acknowledgements
+              </Typography>
+              <List>
+                {(isAcksLoading &&
+                  Array.from(new Array(3)).map((item: number, index: number) => (
+                    <Skeleton key={index} variant="rect" animation="wave">
+                      {" "}
+                      <AckListItem ack={defaultAck} />
+                    </Skeleton>
+                  ))) ||
+                chronoAcks.map((ack: Acknowledgement) => <AckListItem key={ack.event.timestamp} ack={ack} />)}
+              </List>
+            </Grid>
+
+            <Grid item>
+              <Typography color="textSecondary" gutterBottom>
+                Related events
+              </Typography>
+              <List>
+                {(isEventsLoading &&
+                  Array.from(new Array(3)).map((item: number, index: number) => (
+                    <Skeleton key={index} variant="rect" animation="wave">
+                      {" "}
+                      <EventListItem event={defaultEvent} />
+                    </Skeleton>
+                  ))) ||
+                (events || [])
+                  .filter((event: Event) => event.type.value !== "ACK")
+                  .map((event: Event) => <EventListItem key={event.pk} event={event} />)}
+              </List>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Hidden>
     </div>
   );
 };
