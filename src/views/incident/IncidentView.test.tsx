@@ -147,6 +147,19 @@ const cursorPaginationMock: CursorPaginationResponse<Incident> = {
   results: EXISTING_INCIDENTS
 }
 
+const SERVER_METADATA_RESPONSE = {
+  "server-version": "1.2.3",
+  "api-version": {
+    "stable": "v1",
+    "unstable": "v2"
+  },
+  "jsonapi-schema": {
+    "stable": "/api/schema/",
+    "v1": "/api/v1/schema/",
+    "v2": "/api/v2/schema/"
+  }
+};
+
 // Existing incidents counts
 const OPEN_AND_UNACKED_COUNT =
   EXISTING_INCIDENTS.filter(i => i.open && !i.acked).length;
@@ -180,7 +193,9 @@ beforeEach(() => {
     .onGet("/api/v1/incidents/")
     .reply(200, EXISTING_INCIDENTS)
     .onGet('/api/v1/notificationprofiles/filters/')
-    .reply(200, FILTER_SUCCESS_RES);
+    .reply(200, FILTER_SUCCESS_RES)
+    .onGet("/api/")
+    .reply(200, SERVER_METADATA_RESPONSE);
 });
 
 afterEach(() => {
@@ -234,6 +249,7 @@ describe('Incidents Page: initial state rendering', () => {
       );
     });
 
+
     // Header is rendered correctly
     expect(screen.getByRole('img', {name: /argus logo/i})).toBeInTheDocument();
     expect(screen.getByRole('link', {name: /argus logo/i})).toBeInTheDocument();
@@ -246,7 +262,7 @@ describe('Incidents Page: initial state rendering', () => {
     expect(screen.getByTestId('incidents-toolbar')).toBeInTheDocument();
 
     // Additional settings button is rendered
-    expect(screen.getByTitle('Additional settings')).toBeInTheDocument();
+    expect(screen.getByTitle(/additional settings/i)).toBeInTheDocument();
 
     // Incidents table is rendered correctly
     const incidentsTable = screen.getByRole('table');
@@ -703,7 +719,9 @@ describe('Incidents Table: reflects incident modifications', () => {
             description: 'Acknowledged'
           },
           expiration: null
-        });
+        })
+        .onGet("/api/")
+        .reply(200, SERVER_METADATA_RESPONSE);
     });
 
     it("should show 1 less incident", async () => {
@@ -768,7 +786,9 @@ describe('Incidents Table: reflects incident modifications', () => {
             display: "CLO"
           },
           description: "Incident is fixed"
-        });
+        })
+        .onGet("/api/")
+        .reply(200, SERVER_METADATA_RESPONSE);
     });
 
     it("should show 1 less incident", async () => {
@@ -832,7 +852,9 @@ describe('Incidents Table: reflects incident modifications', () => {
             display: "REO"
           },
           description: ""
-        });
+        })
+        .onGet("/api/")
+        .reply(200, SERVER_METADATA_RESPONSE);
     });
 
     it("should show 1 less incident", async () => {

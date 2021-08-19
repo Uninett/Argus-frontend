@@ -225,7 +225,7 @@ const TimeslotList: React.FC<TimeslotListPropsType> = () => {
       </div>
 
       <Grid key="new-timeslot-grid-item" item xs={12} className={`${classes.timeslot} timeslot new-timeslot`}>
-        <Typography>Create new timeslot</Typography>
+        <Typography className="new-timeslot-paragraph">Create new timeslot</Typography>
         {newTimeslotComponent}
       </Grid>
       {[...timeslots.values()].map((timeslot: InternalTimeslot) => {
