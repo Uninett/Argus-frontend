@@ -1,0 +1,49 @@
+.incident-table-toolbar-selected {
+    justify-content: space-between;
+}
+.table-toolbar-tooltip {
+    display: flex !important;
+    flex-direction: row;
+    align-items: center;
+}
+.bulk-op-buttons {
+    display: flex !important;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+}
+
+@media (max-width: 959px) {
+    .bulk-op-buttons {
+        padding-right: 0.5rem;
+    }
+    .sign-off-button button {
+        height: 2.4rem !important;
+    }
+}
+
+@media (max-width: 599px) {
+    .incident-table-toolbar-selected {
+        flex-direction: column;
+        justify-content: space-around;
+        padding: 0.2rem;
+    }
+    .bulk-op-buttons {
+        display: flex;
+        justify-content: space-between;
+        padding-right: 0.7rem;
+    }
+    .sign-off-button button {
+        height: 3rem !important;
+    }
+}
+
+@media (max-width: 320px) {
+    .sign-off-button {
+        padding: 0;
+    }
+    .sign-off-button button {
+        height: 3rem !important;
+        padding: 0.2rem;
+    }
+}

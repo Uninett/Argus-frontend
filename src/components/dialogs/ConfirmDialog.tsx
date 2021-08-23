@@ -5,8 +5,6 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { useTheme } from "@material-ui/core/styles";
 
 export type ConfirmDialogPropsType = {
   title: string;
@@ -29,8 +27,6 @@ const ConfirmDialog: React.SFC<ConfirmDialogPropsType> = ({
   onConfirm,
   isOpen,
 }: ConfirmDialogPropsType) => {
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleReject = () => {
     onReject && onReject();
@@ -41,7 +37,7 @@ const ConfirmDialog: React.SFC<ConfirmDialogPropsType> = ({
   };
 
   return (
-    <Dialog fullScreen={fullScreen} open={isOpen} onClose={handleReject} aria-labelledby="responsive-dialog-title">
+    <Dialog open={isOpen} onClose={handleReject} aria-labelledby="responsive-dialog-title">
       <DialogTitle id="responsive-dialog-title">{title}</DialogTitle>
       <DialogContent>
         <DialogContentText>{question}</DialogContentText>

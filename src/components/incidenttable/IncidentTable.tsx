@@ -42,6 +42,9 @@ import { SHOW_SEVERITY_LEVELS } from "../../config";
 import {Collapse, Hidden, Box} from "@material-ui/core";
 import {KeyboardArrowDown, KeyboardArrowUp} from "@material-ui/icons";
 
+import {useMediaQuery} from "@material-ui/core";
+import {useTheme} from "@material-ui/core/styles";
+
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -472,6 +475,9 @@ export const MinimalIncidentTable = ({
   isLoadingRealtime,
   paginationComponent,
 }: MinimalIncidentTablePropsType) => {
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
   const displayAlert = useAlerts();
 
   const [{ incidents }, { incidentByPk, modifyIncident }] = useIncidentsContext();
@@ -531,7 +537,7 @@ export const MinimalIncidentTable = ({
               Copy URL
             </Button>
           }
-          dialogProps={{ maxWidth: "lg", fullWidth: true }}
+          dialogProps={{ maxWidth: "lg", fullWidth: true , fullScreen: fullScreen}}
         />
         <MUIIncidentTable
           isRealtime={isRealtime}

@@ -1,3 +1,5 @@
+import "./IncidentTableToolbar.css";
+
 import React, { useEffect, useMemo } from "react";
 
 import classNames from "classnames";
@@ -93,10 +95,12 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
   return (
     <Toolbar
       variant="dense"
-      className={selectedIncidents.size === 0 ? classes.root : classNames(classes.root, classes.selected)}
+      className={`${selectedIncidents.size === 0 
+        ? classes.root : `${classNames(classes.root, classes.selected)} incident-table-toolbar-selected`}
+        `}
     >
       {selectedIncidents.size > 0 ? (
-        <>
+        <div className="table-toolbar-tooltip">
           <Tooltip title="Clear selection">
             <IconButton onClick={() => onClearSelection()}>
               <CloseIcon />
@@ -105,7 +109,7 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
           <Typography className={classes.title} color="inherit" variant="subtitle1" component="div">
             {selectedIncidents.size} selected
           </Typography>
-        </>
+        </div>
       ) : (
         <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
           {(isLoading && "Loading incidents...") || "Incidents"}
@@ -113,7 +117,7 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
       )}
 
       {selectedIncidents.size > 0 ? (
-        <>
+        <div className="bulk-op-buttons">
           {
             /* NOT IMPLEMENTED */
             false && (
@@ -138,7 +142,7 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
             }}
             signOffActionProps={{
               ButtonComponent: OutlinedButton,
-              buttonProps: { className: undefined, size: "small" },
+              buttonProps: { className: "sign-off-button" },
             }}
           />
 
@@ -158,7 +162,7 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
             signOffActionProps={{
               dialogButtonText: "Ack",
               ButtonComponent: OutlinedButton,
-              buttonProps: { className: undefined },
+              buttonProps: { className: "sign-off-button" },
             }}
           />
 
@@ -196,13 +200,13 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
               closeButtonText="Close selected"
               signOffActionProps={{
                 ButtonComponent: OutlinedButton,
-                buttonProps: { className: undefined, size: "small" },
+                buttonProps: { className: "sign-off-button"},
               }}
-              reopenButtonProps={{ className: undefined, variant: "outlined", size: "small" }}
+              reopenButtonProps={{ className: "sign-off-button", variant: "outlined"}}
               ButtonComponent={OutlinedButton}
             />
           )}
-        </>
+        </div>
       ) : (
         <Tooltip title="Filter list">
           <IconButton aria-label="filter list">
