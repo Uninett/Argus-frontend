@@ -2,6 +2,8 @@ import React, { useState, useMemo, useCallback } from "react";
 
 import { Link } from "react-router-dom";
 
+import './incidenttable.css';
+
 import Button from "@material-ui/core/Button";
 import Checkbox from "@material-ui/core/Checkbox";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
@@ -37,6 +39,8 @@ import IncidentTableToolbar from "../../components/incidenttable/IncidentTableTo
 import { useIncidentsContext } from "../incidentsprovider";
 import { useAlerts } from "../alertsnackbar";
 import { SHOW_SEVERITY_LEVELS } from "../../config";
+import {Collapse, Hidden, Box} from "@material-ui/core";
+import {KeyboardArrowDown, KeyboardArrowUp} from "@material-ui/icons";
 
 import {useMediaQuery} from "@material-ui/core";
 import {useTheme} from "@material-ui/core/styles";
@@ -94,7 +98,9 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
   const style = useStyles();
 
   type SelectionState = Set<Incident["pk"]>;
+  type RowExpansionState = Set<Incident["pk"]>;
   const [selectedIncidents, setSelectedIncidents] = useState<SelectionState>(new Set<Incident["pk"]>([]));
+  const [expandedIncidents, setExpandedIncidents] = useState<RowExpansionState>(new Set<Incident["pk"]>([]));
 
   type IncidentOrderableFields = Pick<Incident, "start_time">;
 
@@ -122,6 +128,18 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
     });
   };
 
+  const handleExpandIncident = (incident: Incident) => {
+    setExpandedIncidents((oldExpandedIncidents: RowExpansionState) => {
+      const newExpandedIncidents = new Set<Incident["pk"]>(oldExpandedIncidents);
+      if (oldExpandedIncidents.has(incident.pk)) {
+        newExpandedIncidents.delete(incident.pk);
+      } else {
+        newExpandedIncidents.add(incident.pk);
+      }
+      return newExpandedIncidents;
+    });
+  };
+
   const multiSelect = true;
 
   const handleClearSelection = useCallback(() => setSelectedIncidents(new Set<Incident["pk"]>([])), []);
@@ -135,28 +153,72 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
           onClearSelection={handleClearSelection}
         />
       )}
-      <TableContainer component={Paper}>
-        <MuiTable size="small" aria-label="incident table">
-          <TableHead>
-            <TableRow
-              className={classNames(
-                style.tableRow,
-                isRealtime
-                  ? isLoadingRealtime
-                    ? style.tableRowHeadRealtimeLoading
-                    : style.tableRowHeadRealtime
-                  : style.tableRowHeadNormal,
-              )}
-            >
-              {multiSelect && <TableCell></TableCell>}
-              <TableCell>Timestamp</TableCell>
-              <TableCell>Status</TableCell>
-              {SHOW_SEVERITY_LEVELS && <TableCell>Severity level</TableCell>}
-              <TableCell>Source</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
+      <TableContainer component={Paper} className="incidents-table-mui-container">
+        <MuiTable size="small" aria-label="incident table" className="incidents-table">
+            <TableHead className="lg-xl-header">
+              <TableRow
+                className={`${classNames(
+                  style.tableRow,
+                  isRealtime
+                    ? isLoadingRealtime
+                      ? style.tableRowHeadRealtimeLoading
+                      : style.tableRowHeadRealtime
+                    : style.tableRowHeadNormal,
+                )} incidents-table-row incidents-table-header-row`}
+              >
+                {multiSelect && <TableCell></TableCell>}
+                <TableCell className="timestamp-cell">Timestamp</TableCell>
+                <TableCell>Status</TableCell>
+                {SHOW_SEVERITY_LEVELS && <TableCell>Severity level</TableCell>}
+                <TableCell>Source</TableCell>
+                <TableCell>Description</TableCell>
+                <TableCell>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+
+          <Hidden only={['xs', 'md', 'lg', 'xl']}>
+            <TableHead className="table-head">
+              <TableRow
+                className={`${classNames(
+                  style.tableRow,
+                  isRealtime
+                    ? isLoadingRealtime
+                      ? style.tableRowHeadRealtimeLoading
+                      : style.tableRowHeadRealtime
+                    : style.tableRowHeadNormal,
+                )} incidents-table-row incidents-table-header-row`}
+              >
+                {multiSelect && <TableCell></TableCell>}
+                <TableCell className="timestamp-cell">Time</TableCell>
+                <TableCell>State</TableCell>
+                <TableCell>Actions</TableCell>
+                <TableCell>Source</TableCell>
+                <TableCell>Description</TableCell>
+              </TableRow>
+            </TableHead>
+          </Hidden>
+
+          <Hidden only={['sm', 'md', 'lg', 'xl']}>
+            <TableHead className="table-head">
+              <TableRow
+                className={`${classNames(
+                  style.tableRow,
+                  isRealtime
+                    ? isLoadingRealtime
+                      ? style.tableRowHeadRealtimeLoading
+                      : style.tableRowHeadRealtime
+                    : style.tableRowHeadNormal,
+                )} incidents-table-row incidents-table-header-row`}
+              >
+                {multiSelect && <TableCell></TableCell>}
+                <TableCell className="timestamp-cell">Time</TableCell>
+                <TableCell>State</TableCell>
+                <TableCell>Source</TableCell>
+                <TableCell></TableCell>
+              </TableRow>
+            </TableHead>
+          </Hidden>
+
           <TableBody>
             {(isLoading &&
               [0, 1, 2, 3, 4, 5, 6, 7].map((key: number) => {
@@ -168,7 +230,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                     style={{
                       cursor: "pointer",
                     }}
-                    className={classNames(style.tableRow, style.tableRowLoading)}
+                    className={`${classNames(style.tableRow, style.tableRowLoading)} incidents-table-row`}
                   >
                     <TableCell>
                       <Skeleton />
@@ -204,54 +266,190 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                   );
 
                   const isSelected = selectedIncidents.has(incident.pk);
+                  const isExpanded = expandedIncidents.has(incident.pk);
 
                   return (
-                    <TableRow
-                      hover
-                      key={incident.pk}
-                      selected={isSelected}
-                      style={{
-                        cursor: "pointer",
-                      }}
-                      className={classNames(
-                        style.tableRow,
-                        incident.open
-                          ? incident.acked
-                            ? style.tableRowAcked
-                            : style.tableRowOpenUnacked
-                          : style.tableRowClosed,
-                      )}
-                    >
-                      {multiSelect && (
-                        <TableCell padding="checkbox" onClick={() => handleSelectIncident(incident)}>
-                          <Checkbox disabled={isLoading} checked={isSelected} />
-                        </TableCell>
-                      )}
-                      <ClickableCell>{formatTimestamp(incident.start_time)}</ClickableCell>
-                      <ClickableCell component="th" scope="row">
-                        <OpenItem small open={incident.open} />
-                        {/* <TicketItem small ticketUrl={incident.ticket_url} /> */}
-                        <AckedItem small acked={incident.acked} />
-                      </ClickableCell>
-                      {SHOW_SEVERITY_LEVELS && (
-                        <ClickableCell>
-                          <LevelItem small level={incident.level} />
-                        </ClickableCell>
-                      )}
-                      <ClickableCell>{incident.source.name}</ClickableCell>
-                      <ClickableCell>{incident.description}</ClickableCell>
-                      <TableCell>
-                        <IconButton disabled={isLoading} component={Link} to={`/incidents/${incident.pk}/`}>
-                          <OpenInNewIcon />
-                        </IconButton>
-                        {incident.ticket_url && (
-                          <IconButton disabled={isLoading} href={incident.ticket_url}>
-                            <TicketIcon />
-                          </IconButton>
-                        )}
-                        {/* TODO: Not implementd yet */}
-                      </TableCell>
-                    </TableRow>
+                    <>
+                        <TableRow
+                          hover
+                          key={incident.pk}
+                          selected={isSelected}
+                          style={{
+                            cursor: "pointer",
+                          }}
+                          className={`${classNames(
+                            style.tableRow,
+                            incident.open
+                              ? incident.acked
+                                ? style.tableRowAcked
+                                : style.tableRowOpenUnacked
+                              : style.tableRowClosed,
+                          )} incidents-table-row lg-xl-row`}
+                        >
+                          {multiSelect && (
+                            <TableCell padding="checkbox" onClick={() => handleSelectIncident(incident)}>
+                              <Checkbox disabled={isLoading} checked={isSelected} />
+                            </TableCell>
+                          )}
+                          <ClickableCell>{formatTimestamp(incident.start_time)}</ClickableCell>
+                          <ClickableCell component="th" scope="row">
+                            <OpenItem small open={incident.open} />
+                            {/* <TicketItem small ticketUrl={incident.ticket_url} /> */}
+                            <AckedItem small acked={incident.acked} />
+                          </ClickableCell>
+                          {SHOW_SEVERITY_LEVELS && (
+                            <ClickableCell>
+                              <LevelItem small level={incident.level} />
+                            </ClickableCell>
+                          )}
+                          <ClickableCell>{incident.source.name}</ClickableCell>
+                          <ClickableCell>{incident.description}</ClickableCell>
+                          <TableCell>
+                            <IconButton disabled={isLoading} component={Link} to={`/incidents/${incident.pk}/`}>
+                              <OpenInNewIcon />
+                            </IconButton>
+                            {incident.ticket_url && (
+                              <IconButton disabled={isLoading} href={incident.ticket_url}>
+                                <TicketIcon />
+                              </IconButton>
+                            )}
+                            {/* TODO: Not implementd yet */}
+                          </TableCell>
+                        </TableRow>
+
+                      <Hidden only={['xs', 'md', 'lg', 'xl']}>
+                        <TableRow
+                          hover
+                          key={incident.pk}
+                          selected={isSelected}
+                          style={{
+                            cursor: "pointer",
+                          }}
+                          className={`${classNames(
+                            style.tableRow,
+                            incident.open
+                              ? incident.acked
+                                ? style.tableRowAcked
+                                : style.tableRowOpenUnacked
+                              : style.tableRowClosed,
+                          )} incidents-table-row`}
+                        >
+                          {multiSelect && (
+                            <TableCell className="checkbox-cell" onClick={() => handleSelectIncident(incident)}>
+                              <Checkbox disabled={isLoading} checked={isSelected} />
+                            </TableCell>
+                          )}
+                          <ClickableCell className="timestamp-cell">{formatTimestamp(incident.start_time)}</ClickableCell>
+                          <ClickableCell className="state-cell" component="th" scope="row">
+                            <div className="state-cell-contents">
+                              {SHOW_SEVERITY_LEVELS && (
+                                <LevelItem small level={incident.level} />
+                              )}
+                              <OpenItem small open={incident.open} />
+                              {/* <TicketItem small ticketUrl={incident.ticket_url} /> */}
+                              <AckedItem small acked={incident.acked} />
+                            </div>
+                          </ClickableCell>
+                          <TableCell className="actions-cell">
+                            <IconButton disabled={isLoading} component={Link} to={`/incidents/${incident.pk}/`}>
+                              <OpenInNewIcon />
+                            </IconButton>
+                            {incident.ticket_url && (
+                              <IconButton disabled={isLoading} href={incident.ticket_url}>
+                                <TicketIcon />
+                              </IconButton>
+                            )}
+                            {/* TODO: Not implementd yet */}
+                          </TableCell>
+                          <ClickableCell className="source-cell">{incident.source.name}</ClickableCell>
+                          <ClickableCell className="description-cell">{incident.description}</ClickableCell>
+                        </TableRow>
+                      </Hidden>
+
+                      <Hidden only={['sm', 'md', 'lg', 'xl']}>
+                        <TableRow
+                          hover
+                          key={incident.pk}
+                          selected={isSelected}
+                          style={{
+                            cursor: "pointer",
+                          }}
+                          className={`${classNames(
+                            style.tableRow,
+                            incident.open
+                              ? incident.acked
+                                ? style.tableRowAcked
+                                : style.tableRowOpenUnacked
+                              : style.tableRowClosed,
+                          )} incidents-table-row`}
+                        >
+                          {multiSelect && (
+                            <TableCell className="checkbox-cell" onClick={() => handleSelectIncident(incident)}>
+                              <Checkbox disabled={isLoading} checked={isSelected} />
+                            </TableCell>
+                          )}
+                          <ClickableCell className="timestamp-cell">{formatTimestamp(incident.start_time)}</ClickableCell>
+                          <ClickableCell className="state-cell" component="th" scope="row">
+                            <div className="state-cell-contents">
+                              {SHOW_SEVERITY_LEVELS && (
+                                <LevelItem small level={incident.level} />
+                              )}
+                              <OpenItem small open={incident.open} />
+                              {/* <TicketItem small ticketUrl={incident.ticket_url} /> */}
+                              <AckedItem small acked={incident.acked} />
+                            </div>
+                          </ClickableCell>
+
+                          <TableCell className="source-cell source-ticket-cell">
+                            <Typography variant="body2" className="source-cell">{incident.source.name}</Typography>
+                            {incident.ticket_url && (
+                              <IconButton disabled={isLoading} href={incident.ticket_url}>
+                                <TicketIcon />
+                              </IconButton>
+                            )}
+                            {/* TODO: Not implementd yet */}
+                          </TableCell>
+
+                          <TableCell>
+                            <IconButton aria-label="expand row" size="small" onClick={() => handleExpandIncident(incident)}>
+                              {isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+                            </IconButton>
+                          </TableCell>
+
+                        </TableRow>
+                        <TableRow>
+                          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+                            <Collapse in={isExpanded} timeout="auto" unmountOnExit>
+                              <Box margin={1}>
+                                <MuiTable size="small" aria-label="additional-xs-incident-data">
+                                  <TableHead>
+                                    <TableRow>
+                                      <TableCell align="left">Description</TableCell>
+                                      <TableCell align="right">Actions</TableCell>
+                                    </TableRow>
+                                  </TableHead>
+                                  <TableBody>
+                                    <ClickableCell align="left" className="description-cell">{incident.description}</ClickableCell>
+                                    <TableCell align="right" className="actions-cell">
+                                      <IconButton disabled={isLoading} component={Link} to={`/incidents/${incident.pk}/`}>
+                                        <OpenInNewIcon />
+                                      </IconButton>
+                                      {incident.ticket_url && (
+                                        <IconButton disabled={isLoading} href={incident.ticket_url}>
+                                          <TicketIcon />
+                                        </IconButton>
+                                      )}
+                                      {/* TODO: Not implementd yet */}
+                                    </TableCell>
+                                  </TableBody>
+                                </MuiTable>
+                              </Box>
+                            </Collapse>
+                          </TableCell>
+                        </TableRow>
+                      </Hidden>
+                    </>
+
                   );
                 })}
           </TableBody>
