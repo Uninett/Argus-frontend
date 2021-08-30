@@ -116,7 +116,7 @@ const FilteredIncidentTable = () => {
     let timeframeStart;
     if (timeframe.timeframeInHours !== 0) timeframeStart = addHoursToDate(new Date(), -timeframe.timeframeInHours);
 
-    setIsLoading(true);
+    // setIsLoading(true);
     api
       .getPaginatedIncidentsFiltered(filter, paginationCursor.current, paginationCursor.pageSize, timeframeStart)
       .then((response: CursorPaginationResponse<Incident>) => {
@@ -246,7 +246,7 @@ const FilteredIncidentTable = () => {
   useEffect(() => {
     // refresh incidents from backend at a set interval if we
     // are utilizing the interval auto-update strategy
-    if (autoUpdateMethod === "interval" && !isPotentiallyModifying) {
+    if (autoUpdateMethod === "interval") {
       const interval = setInterval(() => {
         refresh();
       }, 1000 * DEFAULT_AUTO_REFRESH_INTERVAL);

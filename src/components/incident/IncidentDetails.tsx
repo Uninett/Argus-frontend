@@ -442,14 +442,10 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
               Acknowledgements
             </Typography>
             <List>
-              {(isAcksLoading &&
-                Array.from(new Array(3)).map((item: number, index: number) => (
-                  <Skeleton key={index} variant="rect" animation="wave">
-                    {" "}
-                    <AckListItem ack={defaultAck} />
-                  </Skeleton>
-                ))) ||
-                chronoAcks.map((ack: Acknowledgement) => <AckListItem key={ack.event.timestamp} ack={ack} />)}
+              {chronoAcks
+                .map((ack: Acknowledgement) =>
+                  <AckListItem key={ack.event.timestamp} ack={ack} />)
+              }
             </List>
             <CenterContainer>
               <CreateAck
@@ -478,16 +474,10 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
               Related events
             </Typography>
             <List>
-              {(isEventsLoading &&
-                Array.from(new Array(3)).map((item: number, index: number) => (
-                  <Skeleton key={index} variant="rect" animation="wave">
-                    {" "}
-                    <EventListItem event={defaultEvent} />
-                  </Skeleton>
-                ))) ||
-                (events || [])
+              {(events || [])
                   .filter((event: Event) => event.type.value !== "ACK")
-                  .map((event: Event) => <EventListItem key={event.pk} event={event} />)}
+                  .map((event: Event) => <EventListItem key={event.pk} event={event} />)
+              }
             </List>
           </Grid>
         </Grid>
