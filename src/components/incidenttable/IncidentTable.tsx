@@ -148,7 +148,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
   const handleClearSelection = useCallback(() => {
     onSelectionChange?.(false);
     setSelectedIncidents(new Set<Incident["pk"]>([]))
-  }, []);
+  }, [onSelectionChange]);
 
   return (
     <Paper>
@@ -508,7 +508,7 @@ export const MinimalIncidentTable = ({
 
   useEffect(() => {
     onPotentialModificationChange?.(isIncidentDetailOpen || isAtLeastOneChecked);
-  }, [isIncidentDetailOpen, isAtLeastOneChecked]);
+  }, [isIncidentDetailOpen, isAtLeastOneChecked, onPotentialModificationChange]);
 
   const copyCanonicalUrlToClipboard = useCallback(() => {
     if (detailPk) {
