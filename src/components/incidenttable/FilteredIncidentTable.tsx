@@ -81,6 +81,8 @@ const FilteredIncidentTable = () => {
   const [{ autoUpdateMethod }] = useApiState();
   const [timeframe] = useTimeframe();
 
+  const [isPotentiallyModifying, setIsPotentiallyModifying] = useState<boolean>(false);
+
   // Keep track of the pagination cursor
   const [paginationCursor, setPaginationCursor] = useState<PaginationCursor>(
     // Load page size from local storage if possible
@@ -244,13 +246,13 @@ const FilteredIncidentTable = () => {
   useEffect(() => {
     // refresh incidents from backend at a set interval if we
     // are utilizing the interval auto-update strategy
-    if (autoUpdateMethod === "interval") {
+    if (autoUpdateMethod === "interval" && !isPotentiallyModifying) {
       const interval = setInterval(() => {
         refresh();
       }, 1000 * DEFAULT_AUTO_REFRESH_INTERVAL);
       return () => clearInterval(interval);
     }
-  }, [refresh, autoUpdateMethod]);
+  }, [refresh, autoUpdateMethod, isPotentiallyModifying]);
 
   const autoUpdateTextOpts: Record<AutoUpdateMethod, string> = {
     never: "not updating automatically",
@@ -268,6 +270,7 @@ const FilteredIncidentTable = () => {
           isLoading={isLoading}
           isLoadingRealtime={false}
           paginationComponent={paginationComponent}
+          onPotentialModificationChange={setIsPotentiallyModifying}
         />
       </FilteredIncidentsProvider>
       <p>
