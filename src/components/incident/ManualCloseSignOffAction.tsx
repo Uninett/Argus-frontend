@@ -5,7 +5,6 @@ import Button, { ButtonProps } from "@material-ui/core/Button";
 import { useStyles } from "./styles";
 
 import SignOffAction, { SignOffActionPropsType } from "./SignOffAction";
-import  { makeConfirmationButton } from "../../components/buttons/ConfirmationButton";
 import ConfirmationButton from "../../components/buttons/ConfirmationButton";
 
 type ManualClosePropsType = {
