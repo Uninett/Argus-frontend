@@ -85,7 +85,6 @@ type MUIIncidentTablePropsType = {
   isLoadingRealtime?: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   paginationComponent?: any;
-  onSelectionChange: ((isAtLeastOneSelected: boolean) => void) | undefined;
 };
 
 const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
@@ -95,7 +94,6 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
   isRealtime = false,
   isLoadingRealtime = true,
   paginationComponent,
-  onSelectionChange,
 }: MUIIncidentTablePropsType) => {
   const style = useStyles();
 
@@ -126,7 +124,6 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
       } else {
         newSelectedIncidents.add(incident.pk);
       }
-      onSelectionChange?.(newSelectedIncidents.size > 0);
       return newSelectedIncidents;
     });
   };
@@ -146,9 +143,8 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
   const multiSelect = true;
 
   const handleClearSelection = useCallback(() => {
-    onSelectionChange?.(false);
     setSelectedIncidents(new Set<Incident["pk"]>([]))
-  }, [onSelectionChange]);
+  }, []);
 
   return (
     <Paper>
@@ -473,8 +469,6 @@ export type MinimalIncidentTablePropsType = {
   isLoadingRealtime: boolean;
 
   paginationComponent?: MUIIncidentTablePropsType["paginationComponent"];
-
-  onPotentialModificationChange?: ((isPotentiallyModifying: boolean) => void) | undefined;
 };
 
 export const MinimalIncidentTable = ({
@@ -482,7 +476,6 @@ export const MinimalIncidentTable = ({
   isRealtime,
   isLoadingRealtime,
   paginationComponent,
-  onPotentialModificationChange,
 }: MinimalIncidentTablePropsType) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -493,22 +486,13 @@ export const MinimalIncidentTable = ({
 
   const [detailPk, setDetailPk] = useState<Incident["pk"] | undefined>(undefined);
 
-  const [isIncidentDetailOpen, setIsIncidentDetailOpen] = useState<boolean>(false);
-  const [isAtLeastOneChecked, setIsAtLeastOneChecked] = useState<boolean>(true);
-
   const handleShowDetail = (incident: Incident) => {
-    setIsIncidentDetailOpen(true);
     setDetailPk(incident.pk);
   };
 
   const onModalClose = () => {
-    setIsIncidentDetailOpen(false);
     setDetailPk(undefined);
   };
-
-  useEffect(() => {
-    onPotentialModificationChange?.(isIncidentDetailOpen || isAtLeastOneChecked);
-  }, [isIncidentDetailOpen, isAtLeastOneChecked, onPotentialModificationChange]);
 
   const copyCanonicalUrlToClipboard = useCallback(() => {
     if (detailPk) {
@@ -564,8 +548,6 @@ export const MinimalIncidentTable = ({
           incidents={incidents}
           onShowDetail={handleShowDetail}
           paginationComponent={paginationComponent}
-          onSelectionChange={isRealtime ?
-            undefined : setIsAtLeastOneChecked}
         />
       </div>
     </ClickAwayListener>
