@@ -154,7 +154,6 @@ const TicketModifiableField: React.FC<TicketModifiableFieldPropsType> = ({
       setInvalidAbsoluteUrl(false);
       setChangeUrl(false);
     }
-
   };
 
   return (
@@ -163,7 +162,7 @@ const TicketModifiableField: React.FC<TicketModifiableFieldPropsType> = ({
         <Grid item container direction="row" wrap="nowrap" justify="space-between" className="ticket-input-button-container">
           <TextField
             label="Ticket"
-            defaultValue={url || ""}
+            value={url || ""}
             onChange={handleChange}
             error={invalidAbsoluteUrl}
             helperText={invalidAbsoluteUrl && "Invalid absolute URL"}
