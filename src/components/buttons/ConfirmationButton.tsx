@@ -15,6 +15,43 @@ type ConfirmationButtonPropsType = Partial<ButtonProps> & {
   onReject?: ConfirmDialogPropsType["onReject"];
 };
 
+const ConfirmationButton: React.FC<ConfirmationButtonParamsType> = ({
+  title,
+  question,
+  confirmName,
+  rejectName,
+
+  onConfirm: onConfirmProp,
+  onReject: onRejectProp,
+  ButtonComponent = Button,
+  ...props
+}: ConfirmationButtonParamsType) => {
+  const [showConfirmDialog, setShowConfirmDeleteDialog] = useState<boolean>(false);
+
+  return (
+    <>
+      <ButtonComponent onClick={() => setShowConfirmDeleteDialog(true)} {...props} />
+      {showConfirmDialog && (
+        <ConfirmDialog
+          title={title}
+          question={question}
+          confirmName={confirmName || "yes"}
+          rejectName={rejectName || "no"}
+          isOpen={showConfirmDialog}
+          onConfirm={() => {
+            setShowConfirmDeleteDialog(false);
+            if (onConfirmProp) onConfirmProp();
+          }}
+          onReject={() => {
+            setShowConfirmDeleteDialog(false);
+            if (onRejectProp) onRejectProp();
+          }}
+        />
+      )}
+    </>
+  );
+}
+
 export function makeConfirmationButton({
   title,
   question,
@@ -60,3 +97,5 @@ export function makeConfirmationButton({
 
   return ConfirmationButton;
 }
+
+export default ConfirmationButton;
