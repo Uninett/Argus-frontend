@@ -8,14 +8,17 @@ import { AppProvider } from "./state/contexts";
 import { StoreProvider } from "./store";
 import { BrowserRouter } from "react-router-dom";
 
+// todo replace store provider with auth provider
 ReactDOM.render(
-  <BrowserRouter>
-    <StoreProvider>
-      <AppProvider>
-        <App />
-      </AppProvider>
-    </StoreProvider>
-  </BrowserRouter>,
+  <React.StrictMode>
+    <BrowserRouter>
+      <StoreProvider>
+        <AppProvider>
+          <App />
+        </AppProvider>
+      </StoreProvider>
+    </BrowserRouter>
+  </React.StrictMode>,
   document.getElementById("root"),
 );
 

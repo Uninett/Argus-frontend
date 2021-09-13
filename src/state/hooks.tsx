@@ -1,4 +1,4 @@
-import { useCallback, useContext } from "react";
+import {useCallback, useContext, useEffect} from "react";
 
 import type { AutoUpdateMethod, User, Token } from "../api/types.d";
 
@@ -13,6 +13,7 @@ import { UserStateType, loginUser, loginTokenUser, logoutUser } from "../state/r
 
 import { AppContext } from "../state/contexts";
 import { setTimeframe, TimeframeStateType } from "./reducers/timeframe";
+import {useAuthContext} from "./provider/AuthProvider";
 
 export type UseApiStateActionType = {
   setAutoUpdateMethod: (method: AutoUpdateMethod) => void;
@@ -91,4 +92,10 @@ export const useTimeframe = (): [TimeframeStateType, UseTimeframeActionType] => 
       setTimeframe: setTimeframeCallback,
     },
   ];
+};
+
+export const useAppInit = () => {
+  const { setAuthInfo } = useAuthContext();
+
+  // todo make api call
 };
