@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 
 import { useHistory } from "react-router-dom";
 
@@ -97,6 +97,14 @@ const LoginForm: React.FC<{}> = () => {
 
   const [loginFailed, setLoginFailed] = useState<boolean>(false);
 
+  useEffect(() => {
+    const token = auth.token();
+
+    if (token) {
+      history.push("/");
+    }
+  }, [auth.token()]);
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -123,7 +131,6 @@ const LoginForm: React.FC<{}> = () => {
           .then((user: User) => {
             console.debug("[userpass-auth] logged in as user", user);
             login(user);
-            history.push("/");
           })
           .catch((error) => {
             console.error("[userpass-auth] error logging in as user", username, error);
