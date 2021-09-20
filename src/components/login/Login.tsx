@@ -8,7 +8,7 @@ import { TextFieldProps } from "@material-ui/core/TextField";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 
 // Api
-import type { Token, User } from "../../api/types.d";
+import type { User } from "../../api/types.d";
 import api from "../../api";
 import auth from "../../auth";
 
@@ -100,28 +100,60 @@ const LoginForm: React.FC<{}> = () => {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    await api
-      .userpassAuth(username, password)
-      .then((token: Token) => {
-        auth.login(token, () => {
-          api
-            .authGetCurrentUser()
-            .then((user: User) => {
-              console.debug("[userpass-auth] logged in as user", user);
-              login(user);
-              history.push("/");
-            })
-            .catch((error) => {
-              console.error("[userpass-auth] error logging in as user", username, error);
-              setLoginFailed(true);
-            });
-        });
-      })
-      .catch((error) => {
+    let token;
+
+    console.log("Local storage: ", auth.token())
+
+    if (auth.token()) {
+      token = auth.token();
+      console.log("LOCAL STORAGE", token)
+    } else {
+      token = await api.userpassAuth(username, password)
+        .catch((error) => {
         console.log(error);
         setLoginFailed(true);
         auth.logout();
       });
+    }
+
+    if (token) {
+      auth.login(token, () => {
+        api
+          .authGetCurrentUser()
+          .then((user: User) => {
+            console.debug("[userpass-auth] logged in as user", user);
+            login(user);
+            history.push("/");
+          })
+          .catch((error) => {
+            console.error("[userpass-auth] error logging in as user", username, error);
+            setLoginFailed(true);
+          });
+      });
+    }
+
+    // await api
+    //   .userpassAuth(username, password)
+    //   .then((token: Token) => {
+    //     auth.login(token, () => {
+    //       api
+    //         .authGetCurrentUser()
+    //         .then((user: User) => {
+    //           console.debug("[userpass-auth] logged in as user", user);
+    //           login(user);
+    //           history.push("/");
+    //         })
+    //         .catch((error) => {
+    //           console.error("[userpass-auth] error logging in as user", username, error);
+    //           setLoginFailed(true);
+    //         });
+    //     });
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //     setLoginFailed(true);
+    //     auth.logout();
+    //   });
   };
 
   return (

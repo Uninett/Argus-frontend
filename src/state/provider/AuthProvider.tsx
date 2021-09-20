@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 
 interface AuthContextValues {
   authInfo: AuthInfo;
@@ -17,11 +17,13 @@ interface Props {
 
 interface AuthInfo {
   token: string | null;
+  userPk: number | null;
 }
 
 export function AuthProvider({ children }: Props) {
   const [authInfo, setAuthInfo] = React.useState<AuthInfo>({
     token: null,
+    userPk: null
   });
 
   const isAuthenticated = authInfo.token !== null;

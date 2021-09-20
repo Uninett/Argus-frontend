@@ -27,11 +27,11 @@ class Auth {
   }
 
   token(): string | undefined {
-    return this._token;
+    return cookies.get("token");
   }
 
   isAuthenticated() {
-    return this.authenticated;
+    return cookies.get("token") !== undefined && cookies.get("token") !== null;
   }
 }
 export default new Auth();
