@@ -1,7 +1,5 @@
-import React, { useContext } from "react";
+import React, {useContext, useEffect} from "react";
 import { Route, Redirect } from "react-router-dom";
-
-import { Cookies } from "react-cookie";
 
 // Api
 import type { User } from "./api/types.d";
@@ -25,9 +23,8 @@ export const ProtectedRoute: React.SFC<ProtectedRoutePropsType> = ({
 }: ProtectedRoutePropsType) => {
   const { dispatch } = useContext(AppContext);
 
-  async function updateLoggedInState() {
-    const cookies = new Cookies();
-    const token = cookies.get("token");
+  useEffect(() => {
+    const token = auth.token();
 
     if (!auth.isAuthenticated() && token !== undefined) {
       auth.login(token, () => {
@@ -40,16 +37,14 @@ export const ProtectedRoute: React.SFC<ProtectedRoutePropsType> = ({
             console.log("error", error);
           });
       });
-    } else {
     }
-  }
+  }, [auth.token()])
 
   return (
     <Route
       {...rest}
       render={(props) => {
-        updateLoggedInState();
-        if (auth.isAuthenticated()) {
+        if (auth.token()) {
           return <Component {...props} />;
         } else {
           return (
