@@ -1,4 +1,4 @@
-import {useCallback, useContext, useEffect} from "react";
+import {useCallback, useContext} from "react";
 
 import type { AutoUpdateMethod, User, Token } from "../api/types.d";
 
