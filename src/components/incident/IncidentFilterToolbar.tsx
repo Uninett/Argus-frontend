@@ -530,7 +530,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
   return (
     <div className={`${style.root} incidents-filter-toolbar-root`} data-testid="incidents-toolbar">
       <Toolbar className={style.toolbarContainer}>
-        <ToolbarItem title="Open state switch" name="Open State" className="open-state-switch">
+        <ToolbarItem title="Open state switch" name="Open State" className="lg-xl-open-state-switch">
           <ButtonGroupSwitch
             selected={optionalOr(selectedFilter?.incidentsFilter?.filter?.open, null)}
             options={[true, false, null]}
@@ -549,7 +549,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
           />
         </ToolbarItem>
 
-        <ToolbarItem title="Acked state switch" name="Acked" className="acked-state-switch">
+        <ToolbarItem title="Acked state switch" name="Acked" className="lg-xl-acked-state-switch">
           <ButtonGroupSwitch
             selected={optionalOr(selectedFilter?.incidentsFilter?.filter?.acked, null)}
             options={[true, false, null]}
@@ -567,80 +567,6 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
             onSelect={(acked?: boolean | null) => setSelectedFilter({ filterContent: { acked } })}
           />
         </ToolbarItem>
-
-        <Hidden only={['lg', 'xl', 'md']}>
-          <Accordion color="default" className="extra-filter-accordion"
-                     expanded={isFilterExpanded}
-                     onChange={handleFilterAccordionChange}>
-            <AccordionSummary
-              expandIcon={<ExpandMore />}
-              aria-controls="filtertoolbar-content"
-              id="filtertoolbar-header"
-              className="accordion-summary"
-            >
-              <Typography>Extra Filter Options</Typography>
-            </AccordionSummary>
-            <AccordionDetails className="extra-filter-options-container">
-              <Grid container direction="row" wrap="wrap" justify="space-between" alignItems="stretch">
-                <Grid item xs={12} sm={5}>
-                  <ToolbarItem title="Source selector" name="Sources" className={classNames(style.medium)}>
-                    <SourceSelector
-                      disabled={disabled}
-                      sources={knownSources}
-                      onSelectionChange={(sources: string[]) => {
-                        const findSourceId = (name: string) => {
-                          return sourceIdByName[name];
-                        };
-                        setSelectedFilter({ sourceSystemIds: sources.map(findSourceId) });
-                      }}
-                      defaultSelected={(selectedFilter.incidentsFilter?.sourceSystemIds || []).map(
-                        (source: number) => sourceNameById[source],
-                      )}
-                    />
-                  </ToolbarItem>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <ToolbarItem title="Tags selector" name="Tags" className={classNames(style.medium)}>
-                    <TagSelector
-                      disabled={disabled}
-                      tags={selectedFilter.incidentsFilter?.tags || []}
-                      onSelectionChange={(tags: string[]) => setSelectedFilter({ tags })}
-                      selected={selectedFilter.incidentsFilter?.tags}
-                    />
-                  </ToolbarItem>
-                </Grid>
-                <Grid item xs={12} sm={5}>
-                  {SHOW_SEVERITY_LEVELS && (
-                    <ToolbarItem title="Max severity level selector" name="Max level" className={classNames(style.medium)}>
-                      <DropdownMenu
-                        selected={optionalOr(selectedFilter?.incidentsFilter?.filter?.maxlevel, 5)}
-                        onChange={(maxlevel: SeverityLevelNumber) => setSelectedFilter({ filterContent: { maxlevel } })}
-                      >
-                        {SEVERITY_LEVELS.reverse().map((level: SeverityLevelNumber) => (
-                          <MenuItem key={level} value={level}>{`${level} - ${SeverityLevelNumberNameMap[level]}`}</MenuItem>
-                        ))}
-                      </DropdownMenu>
-                    </ToolbarItem>
-                  )}
-                </Grid>
-                <Grid item xs={12} sm={6} container wrap="wrap" direction="row" justify="space-evenly" alignItems="center">
-                  <Grid item xs={10} sm={10} >
-                    <ToolbarItem title="Filter selector" name="Filter" className={classNames(style.medium)}>
-                      <FiltersDropdownToolbarItem />
-                    </ToolbarItem>
-                  </Grid>
-                  <Grid item xs={2} sm={2}>
-                    <MoreSettingsToolbarItem
-                      open={dropdownToolbarOpen}
-                      onChange={(open: boolean) => setDropdownToolbarOpen(open)}
-                      className="more-settings-item"
-                    />
-                  </Grid>
-                </Grid>
-              </Grid>
-            </AccordionDetails>
-          </Accordion>
-        </Hidden>
 
           <ToolbarItem title="Source selector" name="Sources" className={`${classNames(style.medium)} lg-xl-source-selector`}>
             <SourceSelector
@@ -688,6 +614,113 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
             open={dropdownToolbarOpen}
             onChange={(open: boolean) => setDropdownToolbarOpen(open)}
           />
+
+        <Hidden only={['lg', 'xl', 'md']}>
+          <Accordion color="default" className="extra-filter-accordion"
+                     expanded={isFilterExpanded}
+                     onChange={handleFilterAccordionChange}>
+            <AccordionSummary
+              expandIcon={<ExpandMore />}
+              aria-controls="filtertoolbar-content"
+              id="filtertoolbar-header"
+              className="accordion-summary"
+            >
+              <Typography>Filter Options</Typography>
+            </AccordionSummary>
+            <AccordionDetails className="extra-filter-options-container">
+              <Grid container direction="row" wrap="wrap" justify="space-between" alignItems="stretch">
+                <ToolbarItem title="Open state switch" name="Open State" className="open-state-switch">
+                  <ButtonGroupSwitch
+                    selected={optionalOr(selectedFilter?.incidentsFilter?.filter?.open, null)}
+                    options={[true, false, null]}
+                    getLabel={(open: boolean | null) =>
+                      ({ true: "Open", false: "Closed", null: "Both" }[optionalBoolToKey(open)])
+                    }
+                    getColor={(selected: boolean) => (selected ? "primary" : "default")}
+                    getTooltip={(option: boolean | null) =>
+                      ({
+                        true: "Only open incidents",
+                        false: "Only closed incidents",
+                        null: "Both open and closed incidents ",
+                      }[optionalBoolToKey(option)])
+                    }
+                    onSelect={(open: boolean | null) => setSelectedFilter({ filterContent: { open } })}
+                  />
+                </ToolbarItem>
+
+                <ToolbarItem title="Acked state switch" name="Acked" className="acked-state-switch">
+                  <ButtonGroupSwitch
+                    selected={optionalOr(selectedFilter?.incidentsFilter?.filter?.acked, null)}
+                    options={[true, false, null]}
+                    getLabel={(open: boolean | null) =>
+                      ({ true: "Acked", false: "Unacked", null: "Both" }[optionalBoolToKey(open)])
+                    }
+                    getColor={(selected: boolean | null) => (selected ? "primary" : "default")}
+                    getTooltip={(option: boolean | null) =>
+                      ({
+                        true: "Only acked incidents",
+                        false: "Only unacked incidents",
+                        null: "Both acked and unacked incidents ",
+                      }[optionalBoolToKey(option)])
+                    }
+                    onSelect={(acked?: boolean | null) => setSelectedFilter({ filterContent: { acked } })}
+                  />
+                </ToolbarItem>
+                <Grid item xs={12} sm={6}>
+                  <ToolbarItem title="Source selector" name="Sources" className={classNames(style.medium)}>
+                    <SourceSelector
+                      disabled={disabled}
+                      sources={knownSources}
+                      onSelectionChange={(sources: string[]) => {
+                        const findSourceId = (name: string) => {
+                          return sourceIdByName[name];
+                        };
+                        setSelectedFilter({ sourceSystemIds: sources.map(findSourceId) });
+                      }}
+                      defaultSelected={(selectedFilter.incidentsFilter?.sourceSystemIds || []).map(
+                        (source: number) => sourceNameById[source],
+                      )}
+                    />
+                  </ToolbarItem>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <ToolbarItem title="Tags selector" name="Tags" className={classNames(style.medium)}>
+                    <TagSelector
+                      disabled={disabled}
+                      tags={selectedFilter.incidentsFilter?.tags || []}
+                      onSelectionChange={(tags: string[]) => setSelectedFilter({ tags })}
+                      selected={selectedFilter.incidentsFilter?.tags}
+                    />
+                  </ToolbarItem>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  {SHOW_SEVERITY_LEVELS && (
+                    <ToolbarItem title="Max severity level selector" name="Max level" className={classNames(style.medium)}>
+                      <DropdownMenu
+                        selected={optionalOr(selectedFilter?.incidentsFilter?.filter?.maxlevel, 5)}
+                        onChange={(maxlevel: SeverityLevelNumber) => setSelectedFilter({ filterContent: { maxlevel } })}
+                      >
+                        {SEVERITY_LEVELS.reverse().map((level: SeverityLevelNumber) => (
+                          <MenuItem key={level} value={level}>{`${level} - ${SeverityLevelNumberNameMap[level]}`}</MenuItem>
+                        ))}
+                      </DropdownMenu>
+                    </ToolbarItem>
+                  )}
+                </Grid>
+                <Grid item xs={12} sm={6} container wrap="wrap" direction="row" justify="space-evenly" alignItems="center">
+                  <ToolbarItem title="Filter selector" name="Filter" className={classNames(style.medium)}>
+                    <FiltersDropdownToolbarItem />
+                  </ToolbarItem>
+                </Grid>
+              </Grid>
+            </AccordionDetails>
+          </Accordion>
+          <MoreSettingsToolbarItem
+            open={dropdownToolbarOpen}
+            onChange={(open: boolean) => setDropdownToolbarOpen(open)}
+            className="more-settings-item sm-more-settings-item"
+          />
+        </Hidden>
 
       </Toolbar>
       <DropdownToolbar open={dropdownToolbarOpen} onClose={() => setDropdownToolbarOpen(false)}>
