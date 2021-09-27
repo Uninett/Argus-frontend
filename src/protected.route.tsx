@@ -9,6 +9,7 @@ import auth from "./auth";
 // Contexts/Hooks
 import { AppContext } from "./state/contexts";
 import { loginUser } from "./state/reducers/user";
+import {useUser} from "./state/hooks";
 
 type ProtectedRoutePropsType = {
   // Should be able to take all components, so any is probably acceptable here?
@@ -22,11 +23,12 @@ export const ProtectedRoute: React.SFC<ProtectedRoutePropsType> = ({
   ...rest
 }: ProtectedRoutePropsType) => {
   const { dispatch } = useContext(AppContext);
+  const [user] = useUser();
 
   useEffect(() => {
     const token = auth.token();
 
-    if (!auth.isAuthenticated() && token !== undefined) {
+    if (!user.isAuthenticated && token !== undefined) {
       auth.login(token, () => {
         api
           .authGetCurrentUser()

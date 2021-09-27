@@ -208,6 +208,9 @@ const Header: React.FC<HeaderPropsType> = () => {
     };
   }, []);
 
+  useEffect(() => {
+  }, [user]);
+
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
