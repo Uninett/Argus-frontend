@@ -9,6 +9,11 @@ import { createMemoryHistory } from "history";
 
 import LoginForm from "./Login";
 import api from "../../api";
+import auth from "../../auth";
+
+
+const authTokenSpy = jest.spyOn(auth, 'token');
+const authIsAuthenticatedSpy = jest.spyOn(auth, 'isAuthenticated');
 
 const apiMock = new MockAdapter(api.api);
 const flushPromises = () => new Promise(setImmediate);
@@ -87,6 +92,8 @@ describe("Functionality of LoginForm", () => {
   });
 
   it("redirects the user when login is successful", async () => {
+    authTokenSpy.mockImplementation(() => "token");
+    authIsAuthenticatedSpy.mockImplementation(() => true);
     // Create mock for history
     const history = createMemoryHistory();
     history.push("/login");
