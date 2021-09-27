@@ -103,6 +103,7 @@ const LoginForm: React.FC<{}> = () => {
     if (token) {
       history.push("/");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auth.token()]);
 
   const onSubmit = async (e: React.FormEvent) => {

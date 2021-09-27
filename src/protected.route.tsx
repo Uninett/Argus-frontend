@@ -40,6 +40,7 @@ export const ProtectedRoute: React.SFC<ProtectedRoutePropsType> = ({
           });
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, auth.token()])
 
   return (
