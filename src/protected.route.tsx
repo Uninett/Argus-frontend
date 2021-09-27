@@ -40,7 +40,7 @@ export const ProtectedRoute: React.SFC<ProtectedRoutePropsType> = ({
           });
       });
     }
-  }, [auth.token()])
+  }, [user, auth.token()])
 
   return (
     <Route

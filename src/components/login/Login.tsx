@@ -110,11 +110,8 @@ const LoginForm: React.FC<{}> = () => {
 
     let token;
 
-    console.log("Local storage: ", auth.token())
-
     if (auth.token()) {
       token = auth.token();
-      console.log("LOCAL STORAGE", token)
     } else {
       token = await api.userpassAuth(username, password)
         .catch((error) => {
@@ -138,29 +135,6 @@ const LoginForm: React.FC<{}> = () => {
           });
       });
     }
-
-    // await api
-    //   .userpassAuth(username, password)
-    //   .then((token: Token) => {
-    //     auth.login(token, () => {
-    //       api
-    //         .authGetCurrentUser()
-    //         .then((user: User) => {
-    //           console.debug("[userpass-auth] logged in as user", user);
-    //           login(user);
-    //           history.push("/");
-    //         })
-    //         .catch((error) => {
-    //           console.error("[userpass-auth] error logging in as user", username, error);
-    //           setLoginFailed(true);
-    //         });
-    //     });
-    //   })
-    //   .catch((error) => {
-    //     console.log(error);
-    //     setLoginFailed(true);
-    //     auth.logout();
-    //   });
   };
 
   return (

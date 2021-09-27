@@ -4,21 +4,14 @@ import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { AppProvider } from "./state/contexts";
-// TODO: Remove use of store provider
-import { StoreProvider } from "./store";
 import { BrowserRouter } from "react-router-dom";
 
-// todo replace store provider with auth provider
 ReactDOM.render(
-  <React.StrictMode>
     <BrowserRouter>
-      <StoreProvider>
         <AppProvider>
           <App />
         </AppProvider>
-      </StoreProvider>
-    </BrowserRouter>
-  </React.StrictMode>,
+    </BrowserRouter>,
   document.getElementById("root"),
 );
 
