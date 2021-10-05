@@ -114,7 +114,7 @@ const FilteredIncidentTable = () => {
     let timeframeStart;
     if (timeframe.timeframeInHours !== 0) timeframeStart = addHoursToDate(new Date(), -timeframe.timeframeInHours);
 
-    setIsLoading(true);
+    // setIsLoading(true);
     api
       .getPaginatedIncidentsFiltered(filter, paginationCursor.current, paginationCursor.pageSize, timeframeStart)
       .then((response: CursorPaginationResponse<Incident>) => {

@@ -5,7 +5,7 @@ import Button, { ButtonProps } from "@material-ui/core/Button";
 import { useStyles } from "./styles";
 
 import SignOffAction, { SignOffActionPropsType } from "./SignOffAction";
-import { makeConfirmationButton } from "../../components/buttons/ConfirmationButton";
+import ConfirmationButton from "../../components/buttons/ConfirmationButton";
 
 type ManualClosePropsType = {
   open: boolean;
@@ -50,17 +50,20 @@ const ManualClose: React.FC<ManualClosePropsType> = ({
       />
     );
   } else {
-    const ReopenButton = makeConfirmationButton({
-      title: "Reopen incident",
-      question: "Are you sure you want to reopen this incident?",
-      onConfirm: onManualOpen,
-      ButtonComponent,
-    });
-
     return (
-      <ReopenButton variant="contained" className={classes.dangerousButton} {...reopenButtonProps}>
+      <ConfirmationButton
+        title={"Reopen incident"}
+        question={"Are you sure you want to reopen this incident?"}
+        onConfirm={onManualOpen}
+        ButtonComponent={ButtonComponent}
+        buttonProps={{
+            variant: "contained"
+        }}
+        className={classes.dangerousButton}
+        {...reopenButtonProps}
+      >
         {reopenButtonText}
-      </ReopenButton>
+      </ConfirmationButton>
     );
   }
 };
