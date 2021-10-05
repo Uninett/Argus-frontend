@@ -24,7 +24,7 @@ type UserPayload = {
   [UserType.Logout]: undefined;
 };
 
-export const initialUserState = {
+export const initialUserState: UserStateType = {
   object: undefined,
   displayName: "Anonymous",
   isAuthenticated: false,
@@ -53,7 +53,7 @@ export const userReducer = (state: UserStateType, action: UserActions) => {
         isTokenAuthenticated: true,
       };
     case UserType.Logout: {
-      return initialUserState;
+      return {...initialUserState};
     }
     default:
       return state;

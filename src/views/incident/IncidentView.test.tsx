@@ -29,6 +29,8 @@ import userEvent from "@testing-library/user-event";
 // Mocks of critical functions and modules
 const paginationSpy = jest.spyOn(client, 'getPaginatedIncidentsFiltered');
 const apiMock = new MockAdapter(api.api);
+const authTokenSpy = jest.spyOn(auth, 'token');
+const authIsAuthenticatedSpy = jest.spyOn(auth, 'isAuthenticated');
 
 // Mocks of initial data
 const KNOWN_SOURCE_SYSTEMS: SourceSystem[] = [
@@ -178,6 +180,7 @@ const CLOSED_COUNT =
 // For avoiding authentication errors
 beforeAll(() => {
   auth.login("token");
+
 });
 
 afterAll(() => {
@@ -186,8 +189,15 @@ afterAll(() => {
 
 // Mocking api return values
 beforeEach(() => {
+  authTokenSpy.mockImplementation(() => "token");
+  authIsAuthenticatedSpy.mockImplementation(() => true);
   paginationSpy.mockResolvedValue(cursorPaginationMock);
   apiMock
+    .onPost("/api/v1/token-auth/")
+    .reply(200, { token: "token" })
+    .onGet("/api/v1/auth/user/")
+    // eslint-disable-next-line @typescript-eslint/camelcase
+    .reply(200, { username: "test", first_name: "test", last_name: "test", email: "test" })
     .onGet("/api/v1/incidents/metadata/")
     .reply(200, {sourceSystems: KNOWN_SOURCE_SYSTEMS} as IncidentMetadata)
     .onGet("/api/v1/incidents/")
@@ -195,11 +205,14 @@ beforeEach(() => {
     .onGet('/api/v1/notificationprofiles/filters/')
     .reply(200, FILTER_SUCCESS_RES)
     .onGet("/api/")
-    .reply(200, SERVER_METADATA_RESPONSE);
+    .reply(200, SERVER_METADATA_RESPONSE)
+;
 });
 
 afterEach(() => {
   apiMock.reset();
+  authTokenSpy.mockReset();
+  authIsAuthenticatedSpy.mockReset();
   jest.clearAllMocks();
   jest.resetAllMocks();
 });

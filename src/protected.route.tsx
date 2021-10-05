@@ -1,7 +1,5 @@
-import React, { useContext } from "react";
+import React, {useContext, useEffect} from "react";
 import { Route, Redirect } from "react-router-dom";
-
-import { Cookies } from "react-cookie";
 
 // Api
 import type { User } from "./api/types.d";
@@ -11,6 +9,7 @@ import auth from "./auth";
 // Contexts/Hooks
 import { AppContext } from "./state/contexts";
 import { loginUser } from "./state/reducers/user";
+import {useUser} from "./state/hooks";
 
 type ProtectedRoutePropsType = {
   // Should be able to take all components, so any is probably acceptable here?
@@ -24,12 +23,12 @@ export const ProtectedRoute: React.SFC<ProtectedRoutePropsType> = ({
   ...rest
 }: ProtectedRoutePropsType) => {
   const { dispatch } = useContext(AppContext);
+  const [user] = useUser();
 
-  async function updateLoggedInState() {
-    const cookies = new Cookies();
-    const token = cookies.get("token");
+  useEffect(() => {
+    const token = auth.token();
 
-    if (!auth.isAuthenticated() && token !== undefined) {
+    if (!user.isAuthenticated && token !== undefined) {
       auth.login(token, () => {
         api
           .authGetCurrentUser()
@@ -40,16 +39,15 @@ export const ProtectedRoute: React.SFC<ProtectedRoutePropsType> = ({
             console.log("error", error);
           });
       });
-    } else {
     }
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, auth.token()])
 
   return (
     <Route
       {...rest}
       render={(props) => {
-        updateLoggedInState();
-        if (auth.isAuthenticated()) {
+        if (auth.token()) {
           return <Component {...props} />;
         } else {
           return (

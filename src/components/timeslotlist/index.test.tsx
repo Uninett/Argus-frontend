@@ -12,6 +12,8 @@ import TimeslotList from "./index";
 import auth from "../../auth";
 
 const apiMock = new MockAdapter(api.api);
+const authTokenSpy = jest.spyOn(auth, 'token');
+const authIsAuthenticatedSpy = jest.spyOn(auth, 'isAuthenticated');
 
 const DAY_VALUES: TimeRecurrenceDay[] = [1, 2, 3, 4, 5, 6, 7];
 
@@ -46,15 +48,25 @@ const NEW_TIMESLOT: Timeslot = {
 };
 
 beforeAll(() => {
-  auth.login("token");
+  authTokenSpy.mockImplementation(() => "token");
+  authIsAuthenticatedSpy.mockImplementation(() => true);
 });
 
 afterAll(() => {
-  auth.logout();
+  authTokenSpy.mockReset();
+  authIsAuthenticatedSpy.mockReset();
 });
 
 beforeEach(() => {
-  apiMock.onGet("/api/v1/notificationprofiles/timeslots/").reply(200, [EXISTING_TIMESLOT]);
+  apiMock
+    .onGet("/api/v1/notificationprofiles/timeslots/")
+    .reply(200, [EXISTING_TIMESLOT])
+    .onPost("/api/v1/token-auth/")
+    .reply(200, { token: "token" })
+    .onGet("/api/v1/auth/user/")
+    // eslint-disable-next-line @typescript-eslint/camelcase
+    .reply(200, { username: "test", first_name: "test", last_name: "test", email: "test" })
+  ;
   render(<TimeslotList />);
 });
 

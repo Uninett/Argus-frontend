@@ -20,6 +20,7 @@ import Skeleton from "@material-ui/lab/Skeleton";
 import MenuIcon from "@material-ui/icons/Menu";
 
 // Api
+import api from "../../api";
 import auth from "../../auth";
 
 // Contexts/Hooks
@@ -207,6 +208,9 @@ const Header: React.FC<HeaderPropsType> = () => {
     };
   }, []);
 
+  useEffect(() => {
+  }, [user]);
+
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -215,12 +219,15 @@ const Header: React.FC<HeaderPropsType> = () => {
     setAnchorEl(null);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     handleMenuClose();
-    auth.logout(() => {
-      logout();
-      history.push("/login");
-    });
+    await api.postLogout()
+      .then(() => {
+        auth.logout(() => {
+          logout();
+          history.push("/login");
+        })
+      });
   };
 
   const menuId = "primary-search-account-menu";

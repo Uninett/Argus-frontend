@@ -4,18 +4,14 @@ import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { AppProvider } from "./state/contexts";
-// TODO: Remove use of store provider
-import { StoreProvider } from "./store";
 import { BrowserRouter } from "react-router-dom";
 
 ReactDOM.render(
-  <BrowserRouter>
-    <StoreProvider>
-      <AppProvider>
-        <App />
-      </AppProvider>
-    </StoreProvider>
-  </BrowserRouter>,
+    <BrowserRouter>
+        <AppProvider>
+          <App />
+        </AppProvider>
+    </BrowserRouter>,
   document.getElementById("root"),
 );
 
