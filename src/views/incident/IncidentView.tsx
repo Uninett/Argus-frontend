@@ -16,6 +16,7 @@ import SelectedFilterProvider from "../../components/filterprovider"; // TODO: m
 import IncidentsProvider from "../../components/incidentsprovider"; // TODO: move
 import {Helmet} from "react-helmet";
 import {FRONTEND_VERSION, SERVER_METADATA, API_VERSION} from "../../config";
+import {useBackground} from "../../hooks";
 
 const IncidentComponent = ({ autoUpdateMethod }: { autoUpdateMethod: AutoUpdateMethod }) => {
   return autoUpdateMethod === "realtime" ? (
@@ -36,6 +37,8 @@ const IncidentView: React.FC<IncidentViewPropsType> = () => {
   const [backendVersion, setBackendVersion] = useState<string>("");
 
   const [isMetadataFetchError, setIsMetadataFetchError] = useState<boolean>(false);
+
+  useBackground("");
 
   const getServerMetadata = async () => {
     return await SERVER_METADATA()

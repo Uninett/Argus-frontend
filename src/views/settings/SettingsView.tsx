@@ -6,8 +6,10 @@ import { withRouter } from "react-router-dom";
 
 import PhoneNumberList from "../../components/phonenumberlist";
 import { Helmet } from "react-helmet";
+import {useBackground} from "../../hooks";
 
 const SettingsView: React.FC = () => {
+  useBackground("");
   return (
     <div>
       <Helmet>
