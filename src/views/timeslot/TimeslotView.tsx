@@ -5,6 +5,7 @@ import TimeslotList from "../../components/timeslotlist";
 
 import { createStyles, makeStyles } from "@material-ui/core/styles";
 import { Helmet } from "react-helmet";
+import {useBackground} from "../../hooks";
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -17,6 +18,7 @@ const useStyles = makeStyles(() =>
 );
 
 const TimeslotView: React.FC = () => {
+  useBackground("");
   const style = useStyles();
   return (
     <div className={style.root}>
