@@ -30,7 +30,7 @@
         padding: 1rem !important;
     }
     .incidents-filter-toolbar-root {
-        padding: 0.7rem !important;
+        padding: 0.5rem !important;
         box-sizing: border-box;
     }
     #filter-select-source-helper-text, #filter-select-tags-helper-text,
@@ -49,18 +49,10 @@
     .extra-filter-accordion {
         margin: 0.5rem 0.5rem !important;
     }
-    .sm-more-settings-item {
-        flex-grow: 1;
-        flex-shrink: 1;
-    }
-    .sm-more-settings-item button{
-        width: 100%;
-        height: 2.3rem;
-    }
     .sm-more-settings-item svg{
         display:block; position: absolute;
-        height:100%; width:100%; margin: 0; padding: 0;
-        border: none; overflow: hidden;
+        border: none;
+        overflow: hidden;
     }
 }
 
