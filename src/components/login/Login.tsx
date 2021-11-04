@@ -108,21 +108,27 @@ const LoginForm: React.FC<{}> = () => {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("******** SUBMITTING U/P LOGIN ********")
+
 
     let token;
 
     if (auth.token()) {
       token = auth.token();
+      console.log("TOKEN FROM COOKIES", token)
     } else {
       token = await api.userpassAuth(username, password)
         .catch((error) => {
-        console.log(error);
+          console.log("FAILED TOKEN FROM /api/v1/token-auth/", error)
+        // console.log(error);
         setLoginFailed(true);
         auth.logout();
       });
+      console.log("TOKEN FROM /api/v1/token-auth/", token)
     }
 
     if (token) {
+      console.log("TOKEN EXISTS in Login onSubmit", token)
       auth.login(token, () => {
         api
           .authGetCurrentUser()
@@ -136,6 +142,7 @@ const LoginForm: React.FC<{}> = () => {
           });
       });
     }
+    console.log("TOKEN DOES NOT EXIST in Login onSubmit", token)
   };
 
   return (
@@ -182,6 +189,7 @@ const LoginForm: React.FC<{}> = () => {
           className={style.loginWithFeideButton}
           variant="outlined"
           href={`${BACKEND_URL}/oidc/login/dataporten_feide/`}
+          onClick={() => console.log("******** SUBMITTING FEIDE LOGIN ********")}
         >
           Login with Feide
         </Button>

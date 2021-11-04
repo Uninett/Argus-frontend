@@ -220,14 +220,17 @@ const Header: React.FC<HeaderPropsType> = () => {
   };
 
   const handleLogout = async () => {
+    console.log("******** SUBMITTING LOGOUT ********")
     handleMenuClose();
     await api.postLogout()
       .then(() => {
+        console.log("SUCCESSFUL LOGOUT ENDPOINT CALL")
         auth.logout(() => {
           logout();
           history.push("/login");
         })
-      });
+      })
+      .catch(e => console.log("FAILED LOGOUT ENDPOINT CALL: ", e));
   };
 
   const menuId = "primary-search-account-menu";

@@ -36,6 +36,7 @@ export type UserActions = ActionMap<UserPayload>[keyof ActionMap<UserPayload>];
 export const userReducer = (state: UserStateType, action: UserActions) => {
   switch (action.type) {
     case UserType.Login:
+      console.log("pre token login in user reducer: ", state);
       return {
         object: action.payload,
         displayName: action.payload.first_name,
@@ -44,6 +45,7 @@ export const userReducer = (state: UserStateType, action: UserActions) => {
         token: undefined,
       };
     case UserType.LoginToken:
+      console.log("pre token state in user reducer: ", state);
       const { user, token } = action.payload;
       return {
         token,
@@ -53,9 +55,12 @@ export const userReducer = (state: UserStateType, action: UserActions) => {
         isTokenAuthenticated: true,
       };
     case UserType.Logout: {
+      console.log("pre logout state in user reducer: ", state);
       return {...initialUserState};
     }
     default:
+      console.log("default action in user reducer...");
+      console.log("state in user reducer: ", state);
       return state;
   }
 };
