@@ -209,6 +209,7 @@ const Header: React.FC<HeaderPropsType> = () => {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auth.token()]);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
