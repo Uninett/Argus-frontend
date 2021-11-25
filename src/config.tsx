@@ -7,6 +7,7 @@ export const USE_SECURE_COOKIE = process.env.REACT_APP_USE_SECURE_COOKIE !== "fa
 export const DEBUG = process.env.REACT_APP_DEBUG === "true" || false;
 export const FRONTEND_VERSION = require('../package.json').version;
 export const API_VERSION = require('../package.json').apiVersion;
+export const COOKIE_DOMAIN = process.env.REACT_APP_COOKIE_DOMAIN || "";
 
 let refreshInterval = 30;
 if (process.env.REACT_APP_DEFAULT_AUTO_REFRESH_INTERVAL) {
