@@ -1,5 +1,5 @@
 import { Cookies } from "react-cookie";
-import { USE_SECURE_COOKIE } from "./config";
+import {COOKIE_DOMAIN, USE_SECURE_COOKIE} from "./config";
 
 const cookies = new Cookies();
 
@@ -11,27 +11,40 @@ class Auth {
     this.authenticated = false;
   }
 
+  // feideLogin(token: string, callback?: () => void) {
+  //   this.authenticated = true;
+  //   this._token = token;
+  //   if (callback) callback();
+  // }
+
   login(token: string, callback?: () => void) {
     this.authenticated = true;
     this._token = token;
+
     cookies.set("token", token, { path: "/", secure: USE_SECURE_COOKIE });
+
     if (callback) callback();
   }
+
   logout(callback?: () => void) {
-    // TODO: log out using `api.postLogout()`
+    try {
+      cookies.remove("token", {path: "/", domain: `.${COOKIE_DOMAIN}`})
+      cookies.remove("token", {path: "/"})
+      localStorage.removeItem("user");
+    } catch (e) { }
+
     this.authenticated = false;
     this._token = undefined;
-    cookies.remove("token");
-    localStorage.removeItem("user");
+
     if (callback) callback();
   }
 
   token(): string | undefined {
-    return cookies.get("token");
+    return this._token;
   }
 
   isAuthenticated() {
-    return cookies.get("token") !== undefined && cookies.get("token") !== null;
+    return this.authenticated;
   }
 }
 export default new Auth();
