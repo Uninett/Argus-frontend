@@ -22,6 +22,7 @@ import { useUser } from "../../state/hooks";
 import OutlinedTextField from "../../components/textfields/OutlinedTextField";
 import Button from "../../components/buttons/OutlinedButton";
 import Logo from "../../components/logo/Logo";
+import {Cookies} from "react-cookie";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -86,55 +87,60 @@ const WhiteOutlinedTextField = (props: TextFieldProps) => {
 };
 
 const LoginForm: React.FC<{}> = () => {
+  const cookies = new Cookies();
   const style = useStyles();
   const history = useHistory();
 
-  // const { dispatch } = useContext(AppContext);
-  const [, { login }] = useUser();
+  const [, { login, logout }] = useUser();
 
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
   const [loginFailed, setLoginFailed] = useState<boolean>(false);
 
-  useEffect(() => {
-    const token = auth.token();
+  const logUserOut = async () => {
+    setLoginFailed(true);
+    logout();
+    auth.logout();
+  }
 
-    if (token) {
+  useEffect(() => {
+    const token = cookies.get("token")
+
+    if (token && token !== undefined) {
       history.push("/");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [auth.token()]);
+  });
+
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     let token;
 
-    if (auth.token()) {
+    if (auth.token() && auth.token() !== undefined) {
       token = auth.token();
     } else {
       token = await api.userpassAuth(username, password)
-        .catch((error) => {
-        console.log(error);
-        setLoginFailed(true);
-        auth.logout();
-      });
+        .catch(async () => {
+          await logUserOut();
+        });
     }
 
     if (token) {
-      auth.login(token, () => {
-        api
+      auth.login(token, async () => {
+        await api
           .authGetCurrentUser()
-          .then((user: User) => {
-            console.debug("[userpass-auth] logged in as user", user);
-            login(user);
+          .then((resUser: User) => {
+            login(resUser);
+            history.push("/");
           })
-          .catch((error) => {
-            console.error("[userpass-auth] error logging in as user", username, error);
-            setLoginFailed(true);
+          .catch(async () => {
+            await logUserOut();
           });
       });
+    } else {
+      await logUserOut();
     }
   };
 
