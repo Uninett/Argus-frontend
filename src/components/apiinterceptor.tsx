@@ -12,6 +12,7 @@ import { AppContext } from "../state/contexts";
 import { useAlerts } from "../components/alertsnackbar";
 
 import { setHasConnectionProblems, unsetHasConnectionProblems } from "../state/reducers/apistate";
+import {logoutUser} from "../state/reducers/user";
 
 export const ApiInterceptor = ({ children }: { children?: React.ReactNode }) => {
   const history = useHistory();
@@ -23,6 +24,7 @@ export const ApiInterceptor = ({ children }: { children?: React.ReactNode }) => 
     api.registerInterceptors(
       () => {
         displayAlert("Unauthorized, logging out", "error");
+        dispatch(logoutUser())
         auth.logout();
         history.push("/login");
       },
