@@ -11,12 +11,6 @@ class Auth {
     this.authenticated = false;
   }
 
-  // feideLogin(token: string, callback?: () => void) {
-  //   this.authenticated = true;
-  //   this._token = token;
-  //   if (callback) callback();
-  // }
-
   login(token: string, callback?: () => void) {
     this.authenticated = true;
     this._token = token;
