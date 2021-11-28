@@ -1,4 +1,5 @@
 import axios from "axios";
+import {url_domain} from "./utils";
 
 export const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "";
 export const ENABLE_WEBSOCKETS_SUPPORT = process.env.REACT_APP_ENABLE_WEBSOCKETS_SUPPORT === "true" || false;
@@ -7,7 +8,9 @@ export const USE_SECURE_COOKIE = process.env.REACT_APP_USE_SECURE_COOKIE !== "fa
 export const DEBUG = process.env.REACT_APP_DEBUG === "true" || false;
 export const FRONTEND_VERSION = require('../package.json').version;
 export const API_VERSION = require('../package.json').apiVersion;
-export const COOKIE_DOMAIN = process.env.REACT_APP_COOKIE_DOMAIN || "";
+export const COOKIE_DOMAIN = process.env.REACT_APP_COOKIE_DOMAIN ||
+  (BACKEND_URL !== "" && url_domain(BACKEND_URL)) ||
+  document.createElement('a').hostname;
 
 let refreshInterval = 30;
 if (process.env.REACT_APP_DEFAULT_AUTO_REFRESH_INTERVAL) {

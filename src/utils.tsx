@@ -289,3 +289,10 @@ export function isValidUrl(value: string): Boolean {
   }
   return true;
 }
+
+// Inspired by https://stackoverflow.com/a/8498668
+export function url_domain(data: string) {
+  const a = document.createElement('a');
+  a.href = data;
+  return a.hostname;
+}
