@@ -8,15 +8,8 @@ export const DEBUG = process.env.REACT_APP_DEBUG === "true" || false;
 export const FRONTEND_VERSION = require('../package.json').version;
 export const API_VERSION = require('../package.json').apiVersion;
 
-export const COOKIE_DOMAIN =
-  process.env.REACT_APP_COOKIE_DOMAIN
-  || (BACKEND_URL !== "" && (() => {
-    // Inspired by https://stackoverflow.com/a/8498668
-    const a = document.createElement('a');
-    a.href = BACKEND_URL;
-    return a.hostname;
-  }))
-  || document.createElement('a').hostname;
+// Inspired by https://stackoverflow.com/a/8498668
+export const COOKIE_DOMAIN = process.env.REACT_APP_COOKIE_DOMAIN || document.createElement('a').hostname;
 
 let refreshInterval = 30;
 if (process.env.REACT_APP_DEFAULT_AUTO_REFRESH_INTERVAL) {
