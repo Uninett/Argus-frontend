@@ -209,7 +209,8 @@ const Header: React.FC<HeaderPropsType> = () => {
   }, []);
 
   useEffect(() => {
-  }, [user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [auth.token()]);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -222,12 +223,10 @@ const Header: React.FC<HeaderPropsType> = () => {
   const handleLogout = async () => {
     handleMenuClose();
     await api.postLogout()
-      .then(() => {
-        auth.logout(() => {
-          logout();
-          history.push("/login");
-        })
-      });
+    auth.logout(() => {
+      logout();
+      history.push("/login");
+    })
   };
 
   const menuId = "primary-search-account-menu";
