@@ -74,10 +74,10 @@ To download Argus frontend and install all required dependencies, run
 
 Afterwards, use
 
-    npm start
+    npm run localdev
 
 to start the app in development mode.
-This will open your browser at http://localhost:3000 or similar.
+This will open your browser at http://localhost:8080.
 
 Congrats, you now have the Argus frontend up and running!
 
