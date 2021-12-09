@@ -576,9 +576,13 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
                 const findSourceId = (name: string) => {
                   return sourceIdByName[name];
                 };
-                setSelectedFilter({ sourceSystemIds: sources.map(findSourceId) });
+                setSelectedFilter({
+                  filterContent: {
+                    sourceSystemIds: sources.map(findSourceId).filter(s => s && s !== undefined)
+                  }
+                });
               }}
-              defaultSelected={(selectedFilter.incidentsFilter?.sourceSystemIds || []).map(
+              defaultSelected={(selectedFilter.incidentsFilter?.filter.sourceSystemIds || []).map(
                 (source: number) => sourceNameById[source],
               )}
             />
@@ -587,9 +591,16 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
           <ToolbarItem title="Tags selector" name="Tags" className={`${classNames(style.medium)} lg-xl-tags-selector`}>
             <TagSelector
               disabled={disabled}
-              tags={selectedFilter.incidentsFilter?.tags || []}
-              onSelectionChange={(tags: string[]) => setSelectedFilter({ tags })}
-              selected={selectedFilter.incidentsFilter?.tags}
+              tags={selectedFilter.incidentsFilter.filter.tags || []}
+              onSelectionChange={(tags: string[]) => {
+                const clearedTags: string[] = tags.filter(t => t.split("=").length === 2)
+                setSelectedFilter({
+                  filterContent: {
+                    tags: clearedTags,
+                  }
+                })
+              }}
+              selected={selectedFilter.incidentsFilter?.filter.tags}
             />
           </ToolbarItem>
 
@@ -678,9 +689,15 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
                           const findSourceId = (name: string) => {
                             return sourceIdByName[name];
                           };
-                          setSelectedFilter({ sourceSystemIds: sources.map(findSourceId) });
+                          if (findSourceId) {
+                            setSelectedFilter({
+                              filterContent: {
+                                sourceSystemIds: sources.map(findSourceId).filter(s => s && s !== undefined)
+                              }
+                            });
+                          }
                         }}
-                        defaultSelected={(selectedFilter.incidentsFilter?.sourceSystemIds || []).map(
+                        defaultSelected={(selectedFilter.incidentsFilter?.filter.sourceSystemIds || []).map(
                           (source: number) => sourceNameById[source],
                         )}
                       />
@@ -690,9 +707,16 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
                     <ToolbarItem title="Tags selector" name="Tags" className={classNames(style.medium)}>
                       <TagSelector
                         disabled={disabled}
-                        tags={selectedFilter.incidentsFilter?.tags || []}
-                        onSelectionChange={(tags: string[]) => setSelectedFilter({ tags })}
-                        selected={selectedFilter.incidentsFilter?.tags}
+                        tags={selectedFilter.incidentsFilter.filter.tags || []}
+                        onSelectionChange={(tags: string[]) => {
+                          const clearedTags: string[] = tags.filter(t => t.split("=").length === 2)
+                          setSelectedFilter({
+                            filterContent: {
+                              tags: clearedTags,
+                            }
+                          })
+                        }}
+                        selected={selectedFilter.incidentsFilter.filter.tags}
                       />
                     </ToolbarItem>
                   </Grid>
