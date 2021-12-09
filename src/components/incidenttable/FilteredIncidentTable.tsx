@@ -227,10 +227,15 @@ const FilteredIncidentTable = () => {
   }, [incidentsFilter]);
 
   const filterMatcher = useMemo(() => {
-    const { filter, tags, sourceSystemIds } = incidentsFilter;
+    const {
+      filter,
+    } = incidentsFilter;
     const incidentMatchesFilter = (incident: Incident): boolean => {
       return (
-        matchesFilter(incident, { filter, tags, sourceSystemIds }) &&
+        matchesFilter(incident,
+          {
+            filter,
+          }) &&
         matchesTimeframe(incident, timeframe.timeframeInHours)
       );
     };

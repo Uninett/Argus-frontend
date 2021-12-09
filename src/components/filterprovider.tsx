@@ -89,12 +89,25 @@ function oldOrNew<K>(oldObject: K | undefined, newObject: K | undefined | null):
   }
 }
 
+function oldOrNewArray<K>(oldObject: K[] | undefined, newObject: K[] | undefined | null): K[] | undefined {
+  if (newObject === null) {
+    return undefined;
+  } else if (newObject === undefined) {
+    return oldObject;
+  } else {
+    return newObject;
+  }
+}
+
+
 function mergedFilterContent(state: FilterContent, selected: SelectedFilterProperties["filterContent"]): FilterContent {
   const nextState: FilterContent = { ...state };
   nextState.acked = oldOrNew(state.acked, selected?.acked);
   nextState.open = oldOrNew(state.open, selected?.open);
   nextState.stateful = oldOrNew(state.stateful, selected?.stateful);
   nextState.maxlevel = oldOrNew(state.maxlevel, selected?.maxlevel);
+  nextState.tags = oldOrNewArray(state.tags, selected?.tags);
+  nextState.sourceSystemIds = oldOrNewArray(state.sourceSystemIds, selected?.sourceSystemIds);
   // console.log("state", state, "selected", selected, "next", nextState);
   return nextState;
 }
@@ -110,10 +123,12 @@ export const selectedFilterReducer = (
   state: SelectedFilterStateType,
   action: SelectedFilterActions,
 ): SelectedFilterStateType => {
-  function arrayEquals<T>(p: T[], q: T[]): boolean {
-    if (p.length !== q.length) return false;
+  function arrayEquals<T>(p: T[] | undefined, q: T[] | undefined): boolean {
+    if (!p && !q) return true;
+    if ((p && !q) || (!p && q)) return false;
+    if (p?.length !== q?.length) return false;
     let i = 0;
-    while (i < p.length) {
+    while (p && q && i < p?.length) {
       if (p[i] !== q[i]) return false;
       i++;
     }
@@ -135,27 +150,17 @@ export const selectedFilterReducer = (
         filterContent.maxlevel !== state.filterContent.maxlevel
       ) {
         unset = true;
-      } else if (selected.tags && !arrayEquals(selected.tags, state.incidentsFilter.tags)) {
+      } else if (!arrayEquals(filterContent.tags, state.filterContent.tags)) {
         unset = true;
-      } else if (
-        selected.sourceSystemIds &&
-        ((state.incidentsFilter.sourceSystemIds &&
-          !arrayEquals(selected.sourceSystemIds, state.incidentsFilter.sourceSystemIds)) ||
-          !state.incidentsFilter.sourceSystemIds)
-      ) {
+      } else if (!arrayEquals(filterContent.sourceSystemIds, state.filterContent.sourceSystemIds)) {
         unset = true;
       }
 
-      const tags: string[] = selected.tags ? selected.tags : state.incidentsFilter.tags;
-      const sourceSystemIds: number[] | undefined = selected.sourceSystemIds
-        ? selected.sourceSystemIds
-        : state.incidentsFilter.sourceSystemIds;
+      const updated: Omit<Filter, "pk" | "name"> = {
+        filter: filterContent
+      };
 
-      const updated: Omit<Filter, "pk" | "name"> = { tags, sourceSystemIds, filter: filterContent };
-
-      const nextState = { ...state, ...selected, tags, sourceSystemIds, filterContent, incidentsFilter: updated };
-
-      // console.log("NEXT STATE", nextState);
+      const nextState = { ...state, ...selected, filterContent, incidentsFilter: updated };
 
       if (unset) {
         return { ...nextState, existingFilter: undefined };

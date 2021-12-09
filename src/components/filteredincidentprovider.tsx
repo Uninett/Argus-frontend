@@ -15,8 +15,8 @@ import { SHOW_SEVERITY_LEVELS } from "../config";
 
 // for all different tags "keys", THERE HAS TO BE ONE tag with
 // matching value in incident.tags
-export const matchesOnTags = (incident: Incident, tagStrings: string[]): boolean => {
-  if (tagStrings.length === 0) {
+export const matchesOnTags = (incident: Incident, tagStrings: string[] | undefined): boolean => {
+  if (!tagStrings || tagStrings.length === 0) {
     return true;
   }
 
