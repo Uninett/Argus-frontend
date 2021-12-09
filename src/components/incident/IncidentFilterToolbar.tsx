@@ -600,7 +600,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
                   }
                 })
               }}
-              selected={selectedFilter.incidentsFilter?.filter.tags}
+              selected={selectedFilter.incidentsFilter.filter.tags}
             />
           </ToolbarItem>
 
