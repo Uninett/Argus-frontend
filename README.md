@@ -107,6 +107,11 @@ These environment variables are available:
 
   <dt>REACT_APP_DEFAULT_AUTO_REFRESH_INTERVAL</dt>
   <dd>Set to the default number of seconds between each auto refresh</dd>
+
+These environment variables are optional:
+
+  <dt>REACT_APP_COOKIE_DOMAIN</dt>
+  <dd>Ignore it if Argus frontend and backend are deployed on the same domain. Otherwise, set it to the same value as <code>ARGUS_COOKIE_DOMAIN</code> variable on the backend.</dd>
 </dl>
 
 
