@@ -74,8 +74,8 @@ export const matchesFilter = (incident: Incident, filter: Omit<Filter, "pk" | "n
   return (
     matchesShow(incident, filter.filter.open) &&
     matchesAcked(incident, filter.filter.acked) &&
-    matchesOnTags(incident, filter.tags) &&
-    matchesOnSources(incident, filter.sourceSystemIds) &&
+    matchesOnTags(incident, filter.filter.tags) &&
+    matchesOnSources(incident, filter.filter.sourceSystemIds) &&
     matchesMaxlevel(incident, filter.filter.maxlevel)
   );
 };

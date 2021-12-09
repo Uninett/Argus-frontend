@@ -51,9 +51,8 @@ export interface Timeslot {
 // using predefied fields, instead of storing a json
 // blob of whatever contents (FilterString).
 export type FilterContent = {
-  // TODO
-  // sourceSystemIds: number[];
-  // tags: string[];
+  sourceSystemIds?: number[];
+  tags?: string[];
 
   open?: boolean;
   acked?: boolean;
@@ -65,11 +64,6 @@ export type FilterPK = number; // WIP: fix this
 export interface Filter {
   pk: FilterPK;
   name: string;
-
-  // TODO: Remove these two fields
-  // when "filter" gets used instead.
-  sourceSystemIds: number[]; // TO_BE_REMOVED
-  tags: string[]; // TO_BE_REMOVED
 
   filter: FilterContent;
 }
