@@ -15,8 +15,8 @@ import { SHOW_SEVERITY_LEVELS } from "../config";
 
 // for all different tags "keys", THERE HAS TO BE ONE tag with
 // matching value in incident.tags
-export const matchesOnTags = (incident: Incident, tagStrings: string[]): boolean => {
-  if (tagStrings.length === 0) {
+export const matchesOnTags = (incident: Incident, tagStrings: string[] | undefined): boolean => {
+  if (!tagStrings || tagStrings.length === 0) {
     return true;
   }
 
@@ -74,8 +74,8 @@ export const matchesFilter = (incident: Incident, filter: Omit<Filter, "pk" | "n
   return (
     matchesShow(incident, filter.filter.open) &&
     matchesAcked(incident, filter.filter.acked) &&
-    matchesOnTags(incident, filter.tags) &&
-    matchesOnSources(incident, filter.sourceSystemIds) &&
+    matchesOnTags(incident, filter.filter.tags) &&
+    matchesOnSources(incident, filter.filter.sourceSystemIds) &&
     matchesMaxlevel(incident, filter.filter.maxlevel)
   );
 };

@@ -103,11 +103,7 @@ const FilteredIncidentTable = () => {
 
   const refresh = useCallback(() => {
     const filter: Omit<Filter, "pk" | "name"> = {
-      filter: incidentsFilter.filter,
-
-      tags: incidentsFilter.tags,
-      // sourceSystemNames: sources === "AllSources" ? undefined : sources,
-      sourceSystemIds: incidentsFilter.sourceSystemIds,
+      filter: incidentsFilter.filter
     };
 
     // Find start of timeframe by removing hours from current datetime
@@ -231,10 +227,15 @@ const FilteredIncidentTable = () => {
   }, [incidentsFilter]);
 
   const filterMatcher = useMemo(() => {
-    const { filter, tags, sourceSystemIds } = incidentsFilter;
+    const {
+      filter,
+    } = incidentsFilter;
     const incidentMatchesFilter = (incident: Incident): boolean => {
       return (
-        matchesFilter(incident, { filter, tags, sourceSystemIds }) &&
+        matchesFilter(incident,
+          {
+            filter,
+          }) &&
         matchesTimeframe(incident, timeframe.timeframeInHours)
       );
     };

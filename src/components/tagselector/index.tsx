@@ -19,7 +19,7 @@ export const originalToTag = (str: string): Tag => {
 export type TagSelectorPropsType = {
   tags: string[];
   onSelectionChange: (tags: string[]) => void;
-  selected: string[];
+  selected?: string[];
   allSelected?: boolean;
   disabled?: boolean;
   className?: string;

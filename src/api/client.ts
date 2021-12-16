@@ -395,19 +395,16 @@ class ApiClient {
       if (SHOW_SEVERITY_LEVELS && filter.filter.maxlevel !== undefined) {
         params.push(`level__lte=${filter.filter.maxlevel}`);
       }
-      if (filter.sourceSystemIds !== undefined) {
-        params.push(`source__id__in=${filter.sourceSystemIds.join(",")}`);
+      if (filter.filter.sourceSystemIds !== undefined) {
+        params.push(`source__id__in=${filter.filter.sourceSystemIds.join(",")}`);
       }
       if (timeframeStart) {
         params.push(`start_time__gte=${formatTimestamp(timeframeStart)}`);
       }
-      // if (filter.sourceSystemNames !== undefined) {
-      //   params.push(`source__name__in=${filter.sourceSystemNames.join(",")}`);
-      // }
-      console.log("filter tags:", filter.tags);
-      // if (filter.tags !== undefined) {
-      //   params.push(`tags=${filter.tags.join(",")}`);
-      // }
+      console.log("filter tags:", filter.filter.tags);
+      if (filter.filter.tags !== undefined) {
+        params.push(`tags=${filter.filter.tags.join(",")}`);
+      }
       if (pageSize !== undefined) {
         params.push(`page_size=${pageSize}`);
       }
@@ -494,10 +491,6 @@ class ApiClient {
       (resps: FilterSuccessResponse[]): Filter[] =>
         resps.map(
           (resp: FilterSuccessResponse): Filter => {
-            // NOTE: When the new "filter" field is used we don't need this
-            // anymore:
-            const definition: FilterString = JSON.parse(resp.filter_string);
-
             console.log("got all filters", resp);
 
             // Convert null-values to undefined to make page rerender correctly on state update
@@ -518,8 +511,6 @@ class ApiClient {
             return {
               pk: resp.pk,
               name: resp.name,
-              tags: definition.tags,
-              sourceSystemIds: definition.sourceSystemIds,
               filter: filter,
             };
           },
@@ -530,11 +521,12 @@ class ApiClient {
 
   public postFilter(filter: Omit<Filter, "pk">): Promise<FilterSuccessResponse> {
     const definition: FilterString = {
-      sourceSystemIds: filter.sourceSystemIds,
-      tags: filter.tags,
+      sourceSystemIds: filter.filter.sourceSystemIds ? filter.filter.sourceSystemIds : [],
+      tags: filter.filter.tags ? filter.filter.tags : [],
     };
 
     const filterString = JSON.stringify(definition) as string;
+    console.log(filterString)
 
     return this.resolveOrReject(
       this.authPost<FilterSuccessResponse, FilterRequest>(`/api/v1/notificationprofiles/filters/`, {
@@ -550,11 +542,12 @@ class ApiClient {
 
   public putFilter(filter: Filter): Promise<FilterSuccessResponse> {
     const definition: FilterString = {
-      sourceSystemIds: filter.sourceSystemIds,
-      tags: filter.tags,
+      sourceSystemIds: filter.filter.sourceSystemIds ? filter.filter.sourceSystemIds : [],
+      tags: filter.filter.tags ? filter.filter.tags : [],
     };
 
     const filterString = JSON.stringify(definition) as string;
+    console.log(filterString)
 
     return this.resolveOrReject(
       this.authPut<FilterSuccessResponse, FilterRequest>(`/api/v1/notificationprofiles/filters/${filter.pk}/`, {
