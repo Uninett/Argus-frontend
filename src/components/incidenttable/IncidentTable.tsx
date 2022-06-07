@@ -130,7 +130,6 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
   };
 
   // TODO: fix select-all checkbox state per page
-  // TODO: fix uncheck when bulk operation is complete
   const handleSelectAllIncidents = () => {
     setSelectedIncidents((oldSelectedIncidents: SelectionState) => {
       const newSelectedIncidents = new Set<Incident["pk"]>(oldSelectedIncidents);
@@ -164,6 +163,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
 
   const handleClearSelection = useCallback(() => {
     setSelectedIncidents(new Set<Incident["pk"]>([]))
+    setIsSelectAll(false)
   }, []);
 
   return (
