@@ -6,6 +6,9 @@ services:
       - "8080:8080"
     volumes:
       - .:/app:Z
+    # If npm refuses to start, you may need to use the `node` user instead of
+    # ${UID}. However, on Linux, the latter might cause issues with file
+    # permissions in the `/app` bind-mount.
     user: ${UID}
     environment:
       - CI=true

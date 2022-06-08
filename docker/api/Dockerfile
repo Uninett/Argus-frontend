@@ -8,7 +8,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends tini build-esse
 # Install argus from configured branch/tag and lock in some dev requirements
 # that aren't part of the regular setup.cfg:
 ARG BRANCH=master
-RUN pip install psycopg2-binary django-extensions python-dotenv git+https://github.com/Uninett/argus@${BRANCH}
+ARG REPO=git+https://github.com/Uninett/argus
+RUN pip install psycopg2-binary django-extensions python-dotenv ${REPO}@${BRANCH}
 
 ENV PORT=8000
 EXPOSE 8000
