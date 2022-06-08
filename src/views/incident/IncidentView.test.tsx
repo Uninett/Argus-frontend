@@ -300,7 +300,7 @@ describe('Incidents Page: initial state rendering', () => {
       .getByRole('cell', { name: EXISTING_INCIDENTS[0].start_time.slice(0,-3)}))
       .toBeInTheDocument();
     expect(within(tableRows[1])
-      .getByRole('cell', { name: /open non-acked/i}))
+      .getByRole('cell', { name: /open unacked/i}))
       .toBeInTheDocument();
     expect(within(tableRows[1])
       .getByRole('cell', { name: new RegExp(EXISTING_INCIDENTS[0].level.toString())}))
@@ -327,7 +327,7 @@ describe('Incidents Page: initial state rendering', () => {
       .getByRole('cell', { name: EXISTING_INCIDENTS[2].start_time.slice(0,-3)}))
       .toBeInTheDocument();
     expect(within(tableRows[2])
-      .getByRole('cell', { name: /open non-acked/i}))
+      .getByRole('cell', { name: /open unacked/i}))
       .toBeInTheDocument();
     expect(within(tableRows[2])
       .getByRole('cell', { name: new RegExp(EXISTING_INCIDENTS[2].level.toString())}))
@@ -363,7 +363,7 @@ describe('Incidents Table: reflects user interactions with Incidents Filter Tool
     it("should display closed incidents only", async () => {
 
       // Check correct counts after rendering with initial conditions
-      expect(screen.getAllByRole('cell', { name: /non-acked/i }))
+      expect(screen.getAllByRole('cell', { name: /unacked/i }))
         .toHaveLength(OPEN_AND_UNACKED_COUNT);
       expect(screen.queryByRole('cell', { name: /closed/i }))
         .toBeNull();
@@ -373,7 +373,7 @@ describe('Incidents Table: reflects user interactions with Incidents Filter Tool
       userEvent.click(closedStateBtn);
 
       // Check correct counts after filter update event
-      expect(await screen.findAllByRole('cell', { name: /non-acked/i }))
+      expect(await screen.findAllByRole('cell', { name: /unacked/i }))
         .toHaveLength(CLOSED_AND_UNACKED_COUNT);
       expect(screen.queryByRole('cell', { name: /open/i }))
         .toBeNull();
@@ -382,7 +382,7 @@ describe('Incidents Table: reflects user interactions with Incidents Filter Tool
     it("should display both open and closed incidents", async () => {
 
       // Check correct counts after a preceding user interaction
-      expect(screen.getAllByRole('cell', { name: /non-acked/i }))
+      expect(screen.getAllByRole('cell', { name: /unacked/i }))
         .toHaveLength(CLOSED_AND_UNACKED_COUNT);
       expect(screen.queryByRole('cell', { name: /open/i }))
         .toBeNull();
@@ -392,7 +392,7 @@ describe('Incidents Table: reflects user interactions with Incidents Filter Tool
       userEvent.click(bothOpenStatesBtn);
 
       // Check correct counts after filter update event
-      expect(await screen.findAllByRole('cell', { name: /non-acked/i }))
+      expect(await screen.findAllByRole('cell', { name: /unacked/i }))
         .toHaveLength(UNACKED_COUNT);
 
       // Check that all incidents links are rendered
@@ -408,7 +408,7 @@ describe('Incidents Table: reflects user interactions with Incidents Filter Tool
     it("should display open incidents only", async () => {
 
       // Check correct counts after a preceding user interaction
-      expect(screen.getAllByRole('cell', { name: /non-acked/i }))
+      expect(screen.getAllByRole('cell', { name: /unacked/i }))
         .toHaveLength(UNACKED_COUNT);
 
       // Simulate switching to showing open incidents only (filter update event)
@@ -416,7 +416,7 @@ describe('Incidents Table: reflects user interactions with Incidents Filter Tool
       userEvent.click(openStateBtn);
 
       // Check correct counts after filter update event
-      expect(await screen.findAllByRole('cell', { name: /non-acked/i }))
+      expect(await screen.findAllByRole('cell', { name: /unacked/i }))
         .toHaveLength(OPEN_AND_UNACKED_COUNT);
       expect(screen.queryByRole('cell', { name: /closed/i }))
         .toBeNull();
@@ -446,7 +446,7 @@ describe('Incidents Table: reflects user interactions with Incidents Filter Tool
     it("should display no incidents", async () => {
 
       // Check correct counts after rendering with initial conditions
-      expect(await screen.findAllByRole('cell', { name: /non-acked/i }))
+      expect(await screen.findAllByRole('cell', { name: /unacked/i }))
         .toHaveLength(OPEN_AND_UNACKED_COUNT);
       expect(screen.queryByRole('cell', { name: /closed/i }))
         .toBeNull();
@@ -466,7 +466,7 @@ describe('Incidents Table: reflects user interactions with Incidents Filter Tool
     it("should display both acked and unacked incidents", async () => {
 
       // Check correct counts after rendering with initial conditions
-      expect(await screen.findAllByRole('cell', { name: /non-acked/i }))
+      expect(await screen.findAllByRole('cell', { name: /unacked/i }))
         .toHaveLength(OPEN_AND_UNACKED_COUNT);
       expect(screen.queryByRole('cell', { name: /closed/i }))
         .toBeNull();

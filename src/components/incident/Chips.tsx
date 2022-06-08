@@ -96,7 +96,7 @@ export const AckedItem: React.FC<AckedItemPropsType> = ({ acked, expiration, sma
 
   const expiryDate = expiration && new Date(expiration);
   if (small) {
-    return <Chip size="small" className={className} label={acked ? "Acked" : "Non-acked"} />;
+    return <Chip size="small" className={className} label={acked ? "Acked" : "Unacked"} />;
   }
   return (
     <Chip
