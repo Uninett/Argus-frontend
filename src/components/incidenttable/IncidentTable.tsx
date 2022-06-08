@@ -102,6 +102,8 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
   const [selectedIncidents, setSelectedIncidents] = useState<SelectionState>(new Set<Incident["pk"]>([]));
   const [expandedIncidents, setExpandedIncidents] = useState<RowExpansionState>(new Set<Incident["pk"]>([]));
   const [isSelectAll, setIsSelectAll] = useState<boolean>(false);
+  const[selectedCount, setSelectedCount] = useState<number>(selectedIncidents.size);
+  const [rowsCount, setRowsCount] = useState<number>(incidents.length);
 
   type IncidentOrderableFields = Pick<Incident, "start_time">;
 
@@ -130,20 +132,54 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
   };
 
   // TODO: fix select-all checkbox state per page
-  const handleSelectAllIncidents = () => {
-    setSelectedIncidents((oldSelectedIncidents: SelectionState) => {
-      const newSelectedIncidents = new Set<Incident["pk"]>(oldSelectedIncidents);
-      if (isSelectAll) {
-        setIsSelectAll(false);
-        incidents.map((i) => newSelectedIncidents.delete(i.pk))
-        return newSelectedIncidents;
-      } else {
-        setIsSelectAll(true);
+  const handleSelectAllIncidents = (event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
+    const isChecked = event.target.checked
+    const isCh = checked
+    console.log("isChecked", isChecked)
+    console.log("isCh", isCh)
+    console.log("isSelectAll", isSelectAll)
+    console.log("selectedCount", selectedCount)
+    console.log("rowsCount", rowsCount)
+    console.log("incidents length", incidents.length)
+    if (isChecked) {
+      setSelectedIncidents((oldSelectedIncidents: SelectionState) => {
+        const newSelectedIncidents = new Set<Incident["pk"]>(oldSelectedIncidents);
+        // setIsSelectAll(true)
+        // setIsSelectAll(true);
         incidents.map((i) => newSelectedIncidents.add(i.pk))
+        setSelectedCount(newSelectedIncidents.size)
         return newSelectedIncidents;
-      }
-      return newSelectedIncidents;
-    })
+      })
+    } else {
+      setSelectedIncidents((oldSelectedIncidents: SelectionState) => {
+        const newSelectedIncidents = new Set<Incident["pk"]>(oldSelectedIncidents);
+        // setIsSelectAll(false);
+        incidents.map((i) => newSelectedIncidents.delete(i.pk))
+        setSelectedCount(newSelectedIncidents.size)
+        return newSelectedIncidents;
+      })
+    }
+    setIsSelectAll(incidents.length > 0 && selectedCount === incidents.length)
+    // setIsSelectAll(isChecked)
+    // setSelectedIncidents((oldSelectedIncidents: SelectionState) => {
+    //   const newSelectedIncidents = new Set<Incident["pk"]>(oldSelectedIncidents);
+    //   if (isSelectAll) {
+    //     // setIsSelectAll(!isSelectAll)
+    //     setIsSelectAll(true);
+    //     incidents.map((i) => newSelectedIncidents.delete(i.pk))
+    //     setSelectedCount(newSelectedIncidents.size)
+    //     return newSelectedIncidents;
+    //   } else {
+    //     setIsSelectAll(false)
+    //     // setIsSelectAll(true);
+    //     incidents.map((i) => newSelectedIncidents.add(i.pk))
+    //     setSelectedCount(newSelectedIncidents.size)
+    //     return newSelectedIncidents;
+    //   }
+    //   // setIsSelectAll(false);
+    //   // return newSelectedIncidents;
+    // })
+
 
   };
 
@@ -166,6 +202,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
     setIsSelectAll(false)
   }, []);
 
+  // @ts-ignore
   return (
     <Paper>
       {multiSelect && (
@@ -191,11 +228,14 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                 {multiSelect &&
                     <TableCell
                         padding="checkbox"
-                        onClick={() => handleSelectAllIncidents()}
+                        // onClick={() => handleSelectAllIncidents()}
                     >
                       <Checkbox
                           disabled={isLoading}
-                          checked={isSelectAll}
+                          // checked={isSelectAll}
+                          indeterminate={selectedCount > 0 && selectedCount < incidents.length}
+                          checked={isSelectAll && incidents.length > 0 && selectedCount === incidents.length}
+                          onChange={(event, checked) => handleSelectAllIncidents(event, checked)}
                       />
                     </TableCell>
                 }
@@ -224,14 +264,28 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                 {multiSelect &&
                     <TableCell
                         padding="checkbox"
-                        onClick={() => handleSelectAllIncidents()}
+                        // onClick={() => handleSelectAllIncidents()}
                     >
                       <Checkbox
-                          disabled={isLoading}
-                          checked={isSelectAll}
+                          // disabled={isLoading}
+                          // checked={isSelectAll}
+                          indeterminate={selectedIncidents.size > 0 && selectedIncidents.size < incidents.length}
+                          checked={incidents.length > 0 && selectedIncidents.size === incidents.length}
+                          onChange={handleSelectAllIncidents}
                       />
                     </TableCell>
                 }
+                {/*{multiSelect &&*/}
+                {/*    <TableCell*/}
+                {/*        padding="checkbox"*/}
+                {/*        onClick={() => handleSelectAllIncidents()}*/}
+                {/*    >*/}
+                {/*      <Checkbox*/}
+                {/*          disabled={isLoading}*/}
+                {/*          checked={isSelectAll}*/}
+                {/*      />*/}
+                {/*    </TableCell>*/}
+                {/*}*/}
                 <TableCell className="timestamp-cell">Time</TableCell>
                 <TableCell>State</TableCell>
                 <TableCell>Actions</TableCell>
@@ -256,14 +310,28 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                 {multiSelect &&
                     <TableCell
                         padding="checkbox"
-                        onClick={() => handleSelectAllIncidents()}
+                        // onClick={() => handleSelectAllIncidents()}
                     >
                       <Checkbox
-                          disabled={isLoading}
-                          checked={isSelectAll}
+                          // disabled={isLoading}
+                          // checked={isSelectAll}
+                          indeterminate={selectedIncidents.size > 0 && selectedIncidents.size < incidents.length}
+                          checked={incidents.length > 0 && selectedIncidents.size === incidents.length}
+                          onChange={handleSelectAllIncidents}
                       />
                     </TableCell>
                 }
+                {/*{multiSelect &&*/}
+                {/*    <TableCell*/}
+                {/*        padding="checkbox"*/}
+                {/*        onClick={() => handleSelectAllIncidents()}*/}
+                {/*    >*/}
+                {/*      <Checkbox*/}
+                {/*          disabled={isLoading}*/}
+                {/*          checked={isSelectAll}*/}
+                {/*      />*/}
+                {/*    </TableCell>*/}
+                {/*}*/}
                 <TableCell className="timestamp-cell">Time</TableCell>
                 <TableCell>State</TableCell>
                 <TableCell>Source</TableCell>
