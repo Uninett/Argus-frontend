@@ -11,6 +11,11 @@ ARG BRANCH=master
 ARG REPO=git+https://github.com/Uninett/argus
 RUN pip install psycopg2-binary django-extensions python-dotenv ${REPO}@${BRANCH}
 
+# Install api backend settings specific to dev deployment of frontend
+RUN mkdir /extrapython
+COPY dockerdev.py /extrapython/
+ENV PYTHONPATH=/extrapython
+
 ENV PORT=8000
 EXPOSE 8000
 COPY docker-entrypoint.sh /

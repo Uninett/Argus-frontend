@@ -31,7 +31,7 @@ services:
       - redis
     environment:
       - TIME_ZONE=Europe/Oslo
-      - DJANGO_SETTINGS_MODULE=argus.site.settings.dockerdev
+      - DJANGO_SETTINGS_MODULE=dockerdev
       - DATABASE_URL=postgresql://argus:HahF9araeKoo@postgres/argus
       - ARGUS_FRONTEND_URL=http://localhost:8080
       - ARGUS_REDIS_SERVER=redis
