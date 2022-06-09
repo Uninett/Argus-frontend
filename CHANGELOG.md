@@ -5,3 +5,6 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 
 ### Fixed
 - Fix ARGUS logo clipping part of the name.
+
+### Added
+- End time to the incident detailed view (for closed incidents only)
