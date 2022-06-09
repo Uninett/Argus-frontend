@@ -101,9 +101,11 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
   type RowExpansionState = Set<Incident["pk"]>;
   const [selectedIncidents, setSelectedIncidents] = useState<SelectionState>(new Set<Incident["pk"]>([]));
   const [expandedIncidents, setExpandedIncidents] = useState<RowExpansionState>(new Set<Incident["pk"]>([]));
-  const [isSelectAll, setIsSelectAll] = useState<boolean>(false);
+  const [isSelectedAll, setIsSelectedAll] = useState<boolean>(false);
   const[selectedCount, setSelectedCount] = useState<number>(selectedIncidents.size);
   const [rowsCount, setRowsCount] = useState<number>(incidents.length);
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
   type IncidentOrderableFields = Pick<Incident, "start_time">;
 
@@ -130,21 +132,20 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
       return newSelectedIncidents;
     });
   };
-
   // TODO: fix select-all checkbox state per page
   const handleSelectAllIncidents = (event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
     const isChecked = event.target.checked
     const isCh = checked
-    console.log("isChecked", isChecked)
-    console.log("isCh", isCh)
-    console.log("isSelectAll", isSelectAll)
-    console.log("selectedCount", selectedCount)
-    console.log("rowsCount", rowsCount)
-    console.log("incidents length", incidents.length)
+    console.log("isChecked before", isChecked)
+    console.log("isCh before", isCh)
+    console.log("isSelectAll before", isSelectedAll)
+    console.log("selectedCount before", selectedCount)
+    console.log("rowsCount before", rowsCount)
+    console.log("incidents length before", incidents.length)
     if (isChecked) {
       setSelectedIncidents((oldSelectedIncidents: SelectionState) => {
         const newSelectedIncidents = new Set<Incident["pk"]>(oldSelectedIncidents);
-        // setIsSelectAll(true)
+        setIsSelectedAll(true)
         // setIsSelectAll(true);
         incidents.map((i) => newSelectedIncidents.add(i.pk))
         setSelectedCount(newSelectedIncidents.size)
@@ -153,13 +154,21 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
     } else {
       setSelectedIncidents((oldSelectedIncidents: SelectionState) => {
         const newSelectedIncidents = new Set<Incident["pk"]>(oldSelectedIncidents);
-        // setIsSelectAll(false);
+        setIsSelectedAll(false);
         incidents.map((i) => newSelectedIncidents.delete(i.pk))
         setSelectedCount(newSelectedIncidents.size)
         return newSelectedIncidents;
       })
     }
-    setIsSelectAll(incidents.length > 0 && selectedCount === incidents.length)
+    console.log("isChecked after", isChecked)
+    console.log("isCh after", isCh)
+    console.log("isSelectAll after", isSelectedAll)
+    console.log("selectedCount after", selectedCount)
+    console.log("rowsCount after", rowsCount)
+    console.log("incidents length after", incidents.length)
+    console.log("|||||||||||||||||||||||||||||||||||||||||||")
+    console.log("|||||||||||||||||||||||||||||||||||||||||||")
+    // setIsSelectAll(incidents.length > 0 && selectedCount === incidents.length)
     // setIsSelectAll(isChecked)
     // setSelectedIncidents((oldSelectedIncidents: SelectionState) => {
     //   const newSelectedIncidents = new Set<Incident["pk"]>(oldSelectedIncidents);
@@ -183,6 +192,66 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
 
   };
 
+  // // TODO: fix select-all checkbox state per page
+  // const handleSelectAllIncidents = (event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
+  //   const isChecked = event.target.checked
+  //   const isCh = checked
+  //   console.log("isChecked before", isChecked)
+  //   console.log("isCh before", isCh)
+  //   console.log("isSelectAll before", isSelectedAll)
+  //   console.log("selectedCount before", selectedCount)
+  //   console.log("rowsCount before", rowsCount)
+  //   console.log("incidents length before", incidents.length)
+  //   if (isChecked && !isSelectedAll) {
+  //     setSelectedIncidents((oldSelectedIncidents: SelectionState) => {
+  //       const newSelectedIncidents = new Set<Incident["pk"]>(oldSelectedIncidents);
+  //       setIsSelectedAll(true)
+  //       // setIsSelectAll(true);
+  //       incidents.map((i) => newSelectedIncidents.add(i.pk))
+  //       setSelectedCount(newSelectedIncidents.size)
+  //       return newSelectedIncidents;
+  //     })
+  //   } else {
+  //     setSelectedIncidents((oldSelectedIncidents: SelectionState) => {
+  //       const newSelectedIncidents = new Set<Incident["pk"]>(oldSelectedIncidents);
+  //       setIsSelectedAll(false);
+  //       incidents.map((i) => newSelectedIncidents.delete(i.pk))
+  //       setSelectedCount(newSelectedIncidents.size)
+  //       return newSelectedIncidents;
+  //     })
+  //   }
+  //   console.log("isChecked after", isChecked)
+  //   console.log("isCh after", isCh)
+  //   console.log("isSelectAll after", isSelectedAll)
+  //   console.log("selectedCount after", selectedCount)
+  //   console.log("rowsCount after", rowsCount)
+  //   console.log("incidents length after", incidents.length)
+  //   console.log("|||||||||||||||||||||||||||||||||||||||||||")
+  //   console.log("|||||||||||||||||||||||||||||||||||||||||||")
+  //   // setIsSelectAll(incidents.length > 0 && selectedCount === incidents.length)
+  //   // setIsSelectAll(isChecked)
+  //   // setSelectedIncidents((oldSelectedIncidents: SelectionState) => {
+  //   //   const newSelectedIncidents = new Set<Incident["pk"]>(oldSelectedIncidents);
+  //   //   if (isSelectAll) {
+  //   //     // setIsSelectAll(!isSelectAll)
+  //   //     setIsSelectAll(true);
+  //   //     incidents.map((i) => newSelectedIncidents.delete(i.pk))
+  //   //     setSelectedCount(newSelectedIncidents.size)
+  //   //     return newSelectedIncidents;
+  //   //   } else {
+  //   //     setIsSelectAll(false)
+  //   //     // setIsSelectAll(true);
+  //   //     incidents.map((i) => newSelectedIncidents.add(i.pk))
+  //   //     setSelectedCount(newSelectedIncidents.size)
+  //   //     return newSelectedIncidents;
+  //   //   }
+  //   //   // setIsSelectAll(false);
+  //   //   // return newSelectedIncidents;
+  //   // })
+  //
+  //
+  // };
+
   const handleExpandIncident = (incident: Incident) => {
     setExpandedIncidents((oldExpandedIncidents: RowExpansionState) => {
       const newExpandedIncidents = new Set<Incident["pk"]>(oldExpandedIncidents);
@@ -199,7 +268,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
 
   const handleClearSelection = useCallback(() => {
     setSelectedIncidents(new Set<Incident["pk"]>([]))
-    setIsSelectAll(false)
+    setIsSelectedAll(false)
   }, []);
 
   // @ts-ignore
@@ -232,9 +301,10 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                     >
                       <Checkbox
                           disabled={isLoading}
-                          // checked={isSelectAll}
+                          // checked={isSelectedAll}
                           indeterminate={selectedCount > 0 && selectedCount < incidents.length}
-                          checked={isSelectAll && incidents.length > 0 && selectedCount === incidents.length}
+                          checked={incidents.length > 0 && selectedCount === incidents.length}
+                          // checked={isSelectedAll && incidents.length > 0 && selectedCount === incidents.length}
                           onChange={(event, checked) => handleSelectAllIncidents(event, checked)}
                       />
                     </TableCell>
@@ -268,7 +338,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                     >
                       <Checkbox
                           // disabled={isLoading}
-                          // checked={isSelectAll}
+                          // checked={isSelectedAll}
                           indeterminate={selectedIncidents.size > 0 && selectedIncidents.size < incidents.length}
                           checked={incidents.length > 0 && selectedIncidents.size === incidents.length}
                           onChange={handleSelectAllIncidents}
@@ -314,7 +384,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                     >
                       <Checkbox
                           // disabled={isLoading}
-                          // checked={isSelectAll}
+                          // checked={isSelectedAll}
                           indeterminate={selectedIncidents.size > 0 && selectedIncidents.size < incidents.length}
                           checked={incidents.length > 0 && selectedIncidents.size === incidents.length}
                           onChange={handleSelectAllIncidents}
@@ -380,7 +450,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                 );
               })) ||
               stableSort<Incident>(incidents, getComparator<IncidentOrderableFields>(order, orderBy))
-                //.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((incident: Incident) => {
                   const ClickableCell = (props: TableCellProps) => (
                     <TableCell onClick={(event) => handleRowClick(event, incident)} {...props} />
