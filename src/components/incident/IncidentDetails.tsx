@@ -390,7 +390,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                     title="Start time"
                     detail={formatTimestamp(incident.start_time, { withSeconds: true })}
                   />
-                  {(incident.end_time !== undefined && incident.end_time !== "infinity") &&
+                  {(incident.stateful && incident.end_time !== undefined && incident.end_time !== "infinity") &&
                       <IncidentDetailsListItem
                           title="End time"
                           detail={formatTimestamp(incident.end_time, { withSeconds: true })}
@@ -540,7 +540,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                     detail={formatTimestamp(incident.start_time, { withSeconds: true })}
                   />
                 </Grid>
-                {(incident.end_time !== undefined && incident.end_time !== "infinity") && (
+                {(incident.stateful && incident.end_time !== undefined && incident.end_time !== "infinity") && (
                     <Grid item sm={6} xs={12}>
                       <IncidentDetailsListItem
                           title="End time"
