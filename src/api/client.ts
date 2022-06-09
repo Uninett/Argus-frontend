@@ -491,6 +491,10 @@ class ApiClient {
       (resps: FilterSuccessResponse[]): Filter[] =>
         resps.map(
           (resp: FilterSuccessResponse): Filter => {
+            // NOTE: When the new "filter" field is used we don't need this
+            // anymore:
+            const definition: FilterString = JSON.parse(resp.filter_string);
+
             console.log("got all filters", resp);
 
             // Convert null-values to undefined to make page rerender correctly on state update
@@ -507,6 +511,9 @@ class ApiClient {
             if (filter.maxlevel === null) {
               filter.maxlevel = undefined;
             }
+
+            filter.sourceSystemIds = definition.sourceSystemIds
+            filter.tags = definition.tags
 
             return {
               pk: resp.pk,
