@@ -100,6 +100,7 @@ const FilteredIncidentTable = () => {
     next: null,
   });
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isCursorLoading, setIsCursorLoading] = useState<boolean>(false);
 
   const refresh = useCallback(() => {
     const filter: Omit<Filter, "pk" | "name"> = {
@@ -111,6 +112,7 @@ const FilteredIncidentTable = () => {
     if (timeframe.timeframeInHours !== 0) timeframeStart = addHoursToDate(new Date(), -timeframe.timeframeInHours);
 
     // setIsLoading(true);
+    setIsCursorLoading(true);
     api
       .getPaginatedIncidentsFiltered(filter, paginationCursor.current, paginationCursor.pageSize, timeframeStart)
       .then((response: CursorPaginationResponse<Incident>) => {
@@ -119,10 +121,12 @@ const FilteredIncidentTable = () => {
         setCursors({ previous, next });
         setLastRefresh({ time: new Date(), filter: incidentsFilter });
         setIsLoading(false);
+        setIsCursorLoading(false);
         return response;
       })
       .catch((error: Error) => {
         setIsLoading(false);
+        setIsCursorLoading(false);
         displayAlert(error.message, "error");
       });
   }, [incidentsFilter, timeframe, paginationCursor, loadAllIncidents, displayAlert]);
@@ -160,11 +164,11 @@ const FilteredIncidentTable = () => {
     const handlePreviousPage = () => {
       const previous = cursors?.previous;
       if (previous) {
-        setPaginationCursor((old) => {
-          return { ...old, ...cursors, current: previous };
-        });
         setVirtCursor((old) => {
           return { ...old, currentVirtualPage: old.currentVirtualPage - 1 };
+        });
+        setPaginationCursor((old) => {
+          return { ...old, ...cursors, current: previous };
         });
       }
     };
@@ -172,11 +176,11 @@ const FilteredIncidentTable = () => {
     const handleNextPage = () => {
       const next = cursors?.next;
       if (next) {
-        setPaginationCursor((old) => {
-          return { ...old, ...cursors, current: next };
-        });
         setVirtCursor((old) => {
           return { ...old, currentVirtualPage: old.currentVirtualPage + 1 };
+        });
+        setPaginationCursor((old) => {
+          return { ...old, ...cursors, current: next };
         });
       }
     };
@@ -189,7 +193,7 @@ const FilteredIncidentTable = () => {
       setVirtCursor(DEFAULT_VIRT_CURSOR);
     };
 
-    const disabled = isLoading || false;
+    const disabled = isLoading || isCursorLoading || false;
 
     const nextButtonProps = { disabled: disabled || !cursors?.next || false };
     const prevButtonProps = { disabled: disabled || !cursors?.previous || false };
@@ -217,7 +221,7 @@ const FilteredIncidentTable = () => {
         SelectProps={selectProps}
       />
     );
-  }, [paginationCursor, cursors, virtCursor, isLoading, totalElements]);
+  }, [paginationCursor, cursors, virtCursor, isLoading, totalElements, isCursorLoading]);
 
   // Reset pagination when any of the filter options are changed.
   // Also set the filter matcher
