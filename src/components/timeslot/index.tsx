@@ -133,9 +133,6 @@ export const TimeslotRecurrenceComponent: React.FC<TimeslotRecurrenceComponentPr
       const startTime = isStart ? newTime : parse(recurrence.start, 'HH:mm:ss', new Date());
       const endTime = isStart ? parse(recurrence.end, 'HH:mm:ss', new Date()) : newTime;
 
-
-      const wasStartValid = !startTimeError;
-      const wasEndValid = !endTimeError;
       const isEndValid = isValid(endTime);
       const isStartValid = isValid(startTime);
 
