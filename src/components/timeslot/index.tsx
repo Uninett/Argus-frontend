@@ -157,7 +157,7 @@ export const TimeslotRecurrenceComponent: React.FC<TimeslotRecurrenceComponentPr
           } else {
             setStartTimeError(isStart);
             setEndTimeError(!isStart);
-            setStartTimeHelperText(isStart ? "Must before end time" : "Required");
+            setStartTimeHelperText(isStart ? "Must be before end time" : "Required");
             setEndTimeHelperText(isStart ? "Required" : "Must be after start time");
             onChange(id, { ...recurrence, start: timeOfDayFromDate(startTime), end: timeOfDayFromDate(endTime) }, false)
           }
