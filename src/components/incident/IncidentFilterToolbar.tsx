@@ -48,12 +48,15 @@ import { ENABLE_WEBSOCKETS_SUPPORT, SHOW_SEVERITY_LEVELS } from "../../config";
 
 // Utils
 import {
-  saveToLocalStorage,
-  fromLocalStorageOrDefault,
-  optionalBoolToKey,
-  optionalOr,
-  usePrevious,
-  validateStringInput,
+    saveToLocalStorage,
+    fromLocalStorageOrDefault,
+    optionalBoolToKey,
+    optionalOr,
+    usePrevious,
+    validateStringInput,
+    progressStateToKey,
+    progressOptionToLabel,
+    progressOptionToTooltip,
 } from "../../utils";
 import { AUTO_UPDATE_METHOD, DROPDOWN_TOOLBAR, TIMEFRAME } from "../../localstorageconsts";
 
@@ -530,22 +533,30 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
   return (
     <div className={`${style.root} incidents-filter-toolbar-root`} data-testid="incidents-toolbar">
       <Toolbar className={style.toolbarContainer}>
-        <ToolbarItem title="Open state switch" name="Open State" className="lg-xl-open-state-switch">
+        <ToolbarItem title="Progress state switch" name="Progress State" className="lg-xl-open-state-switch">
           <ButtonGroupSwitch
-            selected={optionalOr(selectedFilter?.incidentsFilter?.filter?.open, null)}
-            options={[true, false, null]}
-            getLabel={(open: boolean | null) =>
-              ({ true: "Open", false: "Closed", null: "Both" }[optionalBoolToKey(open)])
-            }
+            selected={progressStateToKey(selectedFilter?.incidentsFilter?.filter?.open, selectedFilter?.incidentsFilter?.filter?.stateful)}
+            options={["open", "closed", "stateless", "all"]}
+            getLabel={(option: "open" | "closed" | "stateless" | "all") => progressOptionToLabel(option)}
             getColor={(selected: boolean) => (selected ? "primary" : "default")}
-            getTooltip={(option: boolean | null) =>
-              ({
-                true: "Only open incidents",
-                false: "Only closed incidents",
-                null: "Both open and closed incidents ",
-              }[optionalBoolToKey(option)])
-            }
-            onSelect={(open: boolean | null) => setSelectedFilter({ filterContent: { open } })}
+            getTooltip={(option: "open" | "closed" | "stateless" | "all") => progressOptionToTooltip(option)}
+            onSelect={(option: "open" | "closed" | "stateless" | "all") => {
+                console.log("onSelect value", option)
+                switch (option) {
+                    case "open":
+                        setSelectedFilter({ filterContent: { open: true, stateful: true } });
+                        break
+                    case "closed":
+                        setSelectedFilter({ filterContent: { open: false, stateful: true } });
+                        break
+                    case "stateless":
+                        setSelectedFilter({ filterContent: { open: null, stateful: false } });
+                        break
+                    case "all":
+                        setSelectedFilter({ filterContent: { open: null, stateful: null } });
+                        break
+                }
+            }}
           />
         </ToolbarItem>
 
@@ -643,23 +654,31 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
               </Grid>
               <AccordionDetails className="extra-filter-options-container">
                 <Grid container direction="row" wrap="wrap" justify="space-between" alignItems="stretch">
-                  <ToolbarItem title="Open state switch" name="Open State" className="open-state-switch">
-                    <ButtonGroupSwitch
-                      selected={optionalOr(selectedFilter?.incidentsFilter?.filter?.open, null)}
-                      options={[true, false, null]}
-                      getLabel={(open: boolean | null) =>
-                        ({ true: "Open", false: "Closed", null: "Both" }[optionalBoolToKey(open)])
-                      }
-                      getColor={(selected: boolean) => (selected ? "primary" : "default")}
-                      getTooltip={(option: boolean | null) =>
-                        ({
-                          true: "Only open incidents",
-                          false: "Only closed incidents",
-                          null: "Both open and closed incidents ",
-                        }[optionalBoolToKey(option)])
-                      }
-                      onSelect={(open: boolean | null) => setSelectedFilter({ filterContent: { open } })}
-                    />
+                  <ToolbarItem title="Progress state switch" name="Progress State" className="open-state-switch">
+                      <ButtonGroupSwitch
+                          selected={progressStateToKey(selectedFilter?.incidentsFilter?.filter?.open, selectedFilter?.incidentsFilter?.filter?.stateful)}
+                          options={["open", "closed", "stateless", "all"]}
+                          getLabel={(option: "open" | "closed" | "stateless" | "all") => progressOptionToLabel(option)}
+                          getColor={(selected: boolean) => (selected ? "primary" : "default")}
+                          getTooltip={(option: "open" | "closed" | "stateless" | "all") => progressOptionToTooltip(option)}
+                          onSelect={(option: "open" | "closed" | "stateless" | "all") => {
+                              console.log("onSelect value", option)
+                              switch (option) {
+                                  case "open":
+                                      setSelectedFilter({ filterContent: { open: true, stateful: true } });
+                                      break
+                                  case "closed":
+                                      setSelectedFilter({ filterContent: { open: false, stateful: true } });
+                                      break
+                                  case "stateless":
+                                      setSelectedFilter({ filterContent: { open: null, stateful: false } });
+                                      break
+                                  case "all":
+                                      setSelectedFilter({ filterContent: { open: null, stateful: null } });
+                                      break
+                              }
+                          }}
+                      />
                   </ToolbarItem>
 
                   <ToolbarItem title="Acked state switch" name="Acked" className="acked-state-switch">

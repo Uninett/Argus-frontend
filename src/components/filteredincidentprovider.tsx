@@ -43,6 +43,11 @@ export const matchesShow = (incident: Incident, open?: boolean): boolean => {
   return incident.open === open;
 };
 
+export const matchesStateful = (incident: Incident, stateful?: boolean): boolean => {
+  if (stateful === undefined) return true;
+  return incident.stateful === stateful;
+};
+
 export const matchesAcked = (incident: Incident, acked?: boolean): boolean => {
   if (acked === undefined) return true;
   return incident.acked === acked;
@@ -76,7 +81,8 @@ export const matchesFilter = (incident: Incident, filter: Omit<Filter, "pk" | "n
     matchesAcked(incident, filter.filter.acked) &&
     matchesOnTags(incident, filter.filter.tags) &&
     matchesOnSources(incident, filter.filter.sourceSystemIds) &&
-    matchesMaxlevel(incident, filter.filter.maxlevel)
+    matchesMaxlevel(incident, filter.filter.maxlevel) &&
+    matchesStateful(incident, filter.filter.stateful)
   );
 };
 

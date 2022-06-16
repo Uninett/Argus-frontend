@@ -249,6 +249,46 @@ export function fromLocalStorageOrDefault<T>(key: string, defaultData: T, valida
   return value;
 }
 
+export function progressStateToKey(open: boolean | undefined, stateful: boolean | undefined): "open" | "closed" | "stateless" | "all" {
+  if (open === true) {
+    return "open";
+  } else if (open === false) {
+    return "closed"
+  } else if (open === undefined && stateful === false) {
+    return "stateless"
+  } else if (open === undefined && (stateful === true || stateful == undefined)) {
+    return "all"
+  } else return "all";
+}
+
+export function progressOptionToLabel(option: "open" | "closed" | "stateless" | "all"): string {
+  switch (option) {
+    case "open":
+      return "Open";
+    case "closed":
+      return "Closed";
+    case "stateless":
+      return "Stateless";
+    case "all":
+      return "All";
+    default: return "";
+  }
+}
+
+export function progressOptionToTooltip(option: "open" | "closed" | "stateless" | "all"): string {
+  switch (option) {
+    case "open":
+      return "Only open incidents";
+    case "closed":
+      return "Only closed incidents";
+    case "stateless":
+      return "Only stateless incidents";
+    case "all":
+      return "All incidents";
+    default: return "";
+  }
+}
+
 export function optionalBoolToKey(value: boolean | null): "true" | "false" | "null" {
   switch (value) {
     case true:
@@ -258,15 +298,6 @@ export function optionalBoolToKey(value: boolean | null): "true" | "false" | "nu
     default:
     case null:
       return "null";
-  }
-}
-
-export function undefinedToNull<T>(value: T | undefined): T | null {
-  switch (value) {
-    case undefined:
-      return null;
-    default:
-      return value;
   }
 }
 
