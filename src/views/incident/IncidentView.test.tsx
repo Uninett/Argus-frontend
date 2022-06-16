@@ -388,7 +388,7 @@ describe('Incidents Table: reflects user interactions with Incidents Filter Tool
         .toBeNull();
 
       // Simulate switching to showing both open and closed incidents (filter update event)
-      const bothOpenStatesBtn = screen.getByTitle('Both open and closed incidents');
+      const bothOpenStatesBtn = screen.getByTitle('All incidents');
       userEvent.click(bothOpenStatesBtn);
 
       // Check correct counts after filter update event
@@ -505,7 +505,7 @@ describe('Incidents Table: reflects user interactions with Incidents Filter Tool
 
     beforeEach(() => {
       // Simulate switching to showing both open and closed incidents (filter update event)
-      const bothOpenStatesBtn = screen.getByTitle('Both open and closed incidents');
+      const bothOpenStatesBtn = screen.getByTitle('All incidents');
       userEvent.click(bothOpenStatesBtn);
       // Simulate switching to showing both acked and unacked incidents (filter update event)
       const bothAckedStatesButton = screen.getByTitle('Both acked and unacked incidents');
@@ -604,7 +604,7 @@ describe('Incidents Table: reflects user interactions with Incidents Filter Tool
 
     beforeEach(() => {
       // Simulate switching to showing both open and closed incidents (filter update event)
-      const bothOpenStatesBtn = screen.getByTitle('Both open and closed incidents');
+      const bothOpenStatesBtn = screen.getByTitle('All incidents');
       userEvent.click(bothOpenStatesBtn);
       // Simulate switching to showing both acked and unacked incidents (filter update event)
       const bothAckedStatesButton = screen.getByTitle('Both acked and unacked incidents');
@@ -910,7 +910,7 @@ describe('Incidents Table: reflects incident modifications', () => {
 
     beforeEach(() => {
       // Simulate switching to showing both open and closed incidents (filter update event)
-      const bothOpenStatesBtn = screen.getByTitle('Both open and closed incidents');
+      const bothOpenStatesBtn = screen.getByTitle('All incidents');
       userEvent.click(bothOpenStatesBtn);
       // Simulate switching to showing both acked and unacked incidents (filter update event)
       const bothAckedStatesButton = screen.getByTitle('Both acked and unacked incidents');

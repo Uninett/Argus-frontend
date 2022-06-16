@@ -27,7 +27,7 @@ describe("Incident Toolbar test suite", () => {
     const incidentsToolbarElement = screen.getByTestId("incidents-toolbar");
     expect(incidentsToolbarElement).toBeInTheDocument();
 
-    const openStateSwitch = screen.getByTitle("Open state switch");
+    const openStateSwitch = screen.getByTitle("Progress state switch");
     expect(openStateSwitch).toBeInTheDocument();
     expect(openStateSwitch).toBeVisible();
 
@@ -66,7 +66,7 @@ describe("Incident Toolbar test suite", () => {
   test("open state switch buttons have correct initial conditions", () => {
     const openStateButton = screen.getByTitle("Only open incidents");
     const closedStateButton = screen.getByTitle("Only closed incidents");
-    const bothOpenStatesButton = screen.getByTitle("Both open and closed incidents");
+    const bothOpenStatesButton = screen.getByTitle("All incidents");
 
     // All buttons are enabled
     expect(openStateButton).toBeEnabled();
@@ -80,7 +80,7 @@ describe("Incident Toolbar test suite", () => {
   });
 
   test("open state switch buttons render correctly", () => {
-    const openStateSwitch = screen.getByTitle("Open state switch");
+    const openStateSwitch = screen.getByTitle("Progress state switch");
     const openStateButtons: HTMLCollectionOf<HTMLButtonElement> = openStateSwitch.getElementsByTagName("button");
 
     // Provided options render
@@ -96,14 +96,14 @@ describe("Incident Toolbar test suite", () => {
     expect(closedStateButton).toBeVisible();
     expect(closedStateButton.querySelector(".MuiButton-label")?.textContent).toBe("Closed");
 
-    const bothOpenStatesButton = screen.getByTitle("Both open and closed incidents");
+    const bothOpenStatesButton = screen.getByTitle("All incidents");
     expect(openStateButtons).toContain(bothOpenStatesButton);
     expect(bothOpenStatesButton).toBeInTheDocument();
     expect(bothOpenStatesButton).toBeVisible();
-    expect(bothOpenStatesButton.querySelector(".MuiButton-label")?.textContent).toBe("Both");
+    expect(bothOpenStatesButton.querySelector(".MuiButton-label")?.textContent).toBe("All");
 
     // No other options render
-    expect(openStateButtons.length).toBe(3);
+    expect(openStateButtons.length).toBe(4);
   });
 
   test("acked state switch buttons have correct initial conditions", () => {
