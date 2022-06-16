@@ -256,7 +256,7 @@ export function progressStateToKey(open: boolean | undefined, stateful: boolean 
     return "closed"
   } else if (open === undefined && stateful === false) {
     return "stateless"
-  } else if (open === undefined && (stateful === true || stateful == undefined)) {
+  } else if (open === undefined && (stateful === true || stateful === undefined)) {
     return "all"
   } else return "all";
 }
