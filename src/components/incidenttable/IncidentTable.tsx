@@ -239,10 +239,10 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                     </TableCell>
                     <TableCell component="th" scope="row">
                       <Skeleton>
-                        <OpenItem small open />
+                        <OpenItem small open stateful/>
                       </Skeleton>
                       <Skeleton>
-                        <AckedItem small acked />
+                        <AckedItem small acked stateful/>
                       </Skeleton>
                     </TableCell>
                     <TableCell>
@@ -295,9 +295,9 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                           )}
                           <ClickableCell>{formatTimestamp(incident.start_time)}</ClickableCell>
                           <ClickableCell component="th" scope="row">
-                            <OpenItem small open={incident.open} />
+                            <OpenItem small open={incident.open} stateful={incident.stateful}/>
                             {/* <TicketItem small ticketUrl={incident.ticket_url} /> */}
-                            <AckedItem small acked={incident.acked} />
+                            <AckedItem small acked={incident.acked} stateful={incident.stateful}/>
                           </ClickableCell>
                           {SHOW_SEVERITY_LEVELS && (
                             <ClickableCell>
@@ -347,9 +347,9 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                               {SHOW_SEVERITY_LEVELS && (
                                 <LevelItem small level={incident.level} />
                               )}
-                              <OpenItem small open={incident.open} />
+                              <OpenItem small open={incident.open} stateful={incident.stateful}/>
                               {/* <TicketItem small ticketUrl={incident.ticket_url} /> */}
-                              <AckedItem small acked={incident.acked} />
+                              <AckedItem small acked={incident.acked} stateful={incident.stateful}/>
                             </div>
                           </ClickableCell>
                           <TableCell className="actions-cell">
@@ -396,9 +396,9 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                               {SHOW_SEVERITY_LEVELS && (
                                 <LevelItem small level={incident.level} />
                               )}
-                              <OpenItem small open={incident.open} />
+                              <OpenItem small open={incident.open} stateful={incident.stateful}/>
                               {/* <TicketItem small ticketUrl={incident.ticket_url} /> */}
-                              <AckedItem small acked={incident.acked} />
+                              <AckedItem small acked={incident.acked} stateful={incident.stateful}/>
                             </div>
                           </ClickableCell>
 
