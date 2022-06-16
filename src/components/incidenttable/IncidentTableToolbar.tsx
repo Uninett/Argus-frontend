@@ -88,6 +88,27 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
     return "mixed";
   }, [selectedIncidents, incidentByPk]);
 
+  const allStateful: "mixed" | "stateful" | "stateless" = useMemo(() => {
+    const pks: Incident["pk"][] = [...selectedIncidents.keys()];
+    if (pks.length === 0) return "mixed"; // no all state
+
+    const incidentsMap = pks.map(incidentByPk);
+    const firstState = incidentsMap[0]?.stateful ? "stateful" : "stateless";
+
+    const allSame = incidentsMap.every((incident?: Incident) => {
+      if (incident === undefined) {
+        // Failed to find some incident, just quit now
+        return false;
+      }
+      const currentState = incident.stateful ? "stateful" : "stateless";
+      return firstState === currentState;
+    });
+    if (allSame) {
+      return firstState;
+    }
+    return "mixed";
+  }, [selectedIncidents, incidentByPk]);
+
   useEffect(() => {
     onClearSelection();
   }, [selectedFilter, onClearSelection]);
@@ -200,9 +221,9 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
               closeButtonText="Close selected"
               signOffActionProps={{
                 ButtonComponent: OutlinedButton,
-                buttonProps: { className: "sign-off-button"},
+                buttonProps: { className: "sign-off-button", disabled: allStateful !== "stateful"},
               }}
-              reopenButtonProps={{ className: "sign-off-button", variant: "outlined"}}
+              reopenButtonProps={{ className: "sign-off-button", variant: "outlined", disabled: allStateful !== "stateful"}}
               ButtonComponent={OutlinedButton}
             />
           )}

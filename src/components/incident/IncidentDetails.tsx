@@ -426,6 +426,10 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                         open={incident.open}
                         onManualClose={handleManualClose}
                         onManualOpen={handleManualOpen}
+                        signOffActionProps={{
+                          buttonProps: { disabled: !incident.stateful}
+                        }}
+                        reopenButtonProps={{disabled: !incident.stateful}}
                       />
                     </CenterContainer>
                   </ListItem>
@@ -586,6 +590,10 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                         open={incident.open}
                         onManualClose={handleManualClose}
                         onManualOpen={handleManualOpen}
+                        signOffActionProps={{
+                          buttonProps: { disabled: !incident.stateful}
+                        }}
+                        reopenButtonProps={{disabled: !incident.stateful}}
                       />
                     </Grid>
                     <Grid item className="ack-button-container">
