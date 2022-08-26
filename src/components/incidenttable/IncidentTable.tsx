@@ -176,6 +176,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
       pageSelectionStatus.set(currentPage, false);
       return pageSelectionStatus;
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
