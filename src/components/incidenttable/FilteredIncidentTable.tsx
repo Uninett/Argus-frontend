@@ -269,6 +269,7 @@ const FilteredIncidentTable = () => {
           isLoading={isLoading}
           isLoadingRealtime={false}
           paginationComponent={paginationComponent}
+          currentPage={paginationComponent.props.page}
         />
       </FilteredIncidentsProvider>
       <p>

@@ -59,12 +59,12 @@ function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 type Order = "asc" | "desc";
 
 function getComparator<T extends { [key: string]: number | string }>(
-  order: Order,
-  orderBy: keyof T,
+    order: Order,
+    orderBy: keyof T,
 ): (a: T, b: T) => number {
   return order === "desc"
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
+      ? (a, b) => descendingComparator(a, b, orderBy)
+      : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
 function stableSort<T>(array: T[], comparator: (a: T, b: T) => number) {
@@ -85,27 +85,30 @@ type MUIIncidentTablePropsType = {
   isLoadingRealtime?: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   paginationComponent?: any;
+  currentPage: number;
 };
 
 const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
-  incidents,
-  onShowDetail,
-  isLoading,
-  isRealtime = false,
-  isLoadingRealtime = true,
-  paginationComponent,
-}: MUIIncidentTablePropsType) => {
+                                                                 incidents,
+                                                                 onShowDetail,
+                                                                 isLoading,
+                                                                 isRealtime = false,
+                                                                 isLoadingRealtime = true,
+                                                                 paginationComponent,
+                                                                 currentPage
+                                                               }: MUIIncidentTablePropsType) => {
   const style = useStyles();
+
+  const pageSelectionStatus = new Map<number, boolean>();
+  pageSelectionStatus.set(currentPage, false);
 
   type SelectionState = Set<Incident["pk"]>;
   type RowExpansionState = Set<Incident["pk"]>;
   const [selectedIncidents, setSelectedIncidents] = useState<SelectionState>(new Set<Incident["pk"]>([]));
   const [expandedIncidents, setExpandedIncidents] = useState<RowExpansionState>(new Set<Incident["pk"]>([]));
-  const [isSelectedAll, setIsSelectedAll] = useState<boolean>(false);
-  const[selectedCount, setSelectedCount] = useState<number>(selectedIncidents.size);
-  const [rowsCount, setRowsCount] = useState<number>(incidents.length);
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [isSelectAll, setIsSelectAll] = useState<Map<number, boolean>>(pageSelectionStatus);
+  // const [isSelectAll, setIsSelectAll] = useState<boolean>(false);
+  const [selectedPages, setSelectedPages] = useState<Set<number>>(new Set<number>([]));
 
   type IncidentOrderableFields = Pick<Incident, "start_time">;
 
@@ -132,125 +135,28 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
       return newSelectedIncidents;
     });
   };
-  // TODO: fix select-all checkbox state per page
-  const handleSelectAllIncidents = (event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
-    const isChecked = event.target.checked
-    const isCh = checked
-    console.log("isChecked before", isChecked)
-    console.log("isCh before", isCh)
-    console.log("isSelectAll before", isSelectedAll)
-    console.log("selectedCount before", selectedCount)
-    console.log("rowsCount before", rowsCount)
-    console.log("incidents length before", incidents.length)
-    if (isChecked) {
-      setSelectedIncidents((oldSelectedIncidents: SelectionState) => {
-        const newSelectedIncidents = new Set<Incident["pk"]>(oldSelectedIncidents);
-        setIsSelectedAll(true)
-        // setIsSelectAll(true);
-        incidents.map((i) => newSelectedIncidents.add(i.pk))
-        setSelectedCount(newSelectedIncidents.size)
-        return newSelectedIncidents;
-      })
-    } else {
-      setSelectedIncidents((oldSelectedIncidents: SelectionState) => {
-        const newSelectedIncidents = new Set<Incident["pk"]>(oldSelectedIncidents);
-        setIsSelectedAll(false);
+
+
+  const handleSelectAllIncidents = () => {
+    setSelectedIncidents((oldSelectedIncidents: SelectionState) => {
+      const newSelectedIncidents = new Set<Incident["pk"]>(oldSelectedIncidents);
+      if (isSelectAll.get(currentPage)) {
+        setIsSelectAll(() => {
+          pageSelectionStatus.set(currentPage, false);
+          return pageSelectionStatus;
+        });
         incidents.map((i) => newSelectedIncidents.delete(i.pk))
-        setSelectedCount(newSelectedIncidents.size)
         return newSelectedIncidents;
-      })
-    }
-    console.log("isChecked after", isChecked)
-    console.log("isCh after", isCh)
-    console.log("isSelectAll after", isSelectedAll)
-    console.log("selectedCount after", selectedCount)
-    console.log("rowsCount after", rowsCount)
-    console.log("incidents length after", incidents.length)
-    console.log("|||||||||||||||||||||||||||||||||||||||||||")
-    console.log("|||||||||||||||||||||||||||||||||||||||||||")
-    // setIsSelectAll(incidents.length > 0 && selectedCount === incidents.length)
-    // setIsSelectAll(isChecked)
-    // setSelectedIncidents((oldSelectedIncidents: SelectionState) => {
-    //   const newSelectedIncidents = new Set<Incident["pk"]>(oldSelectedIncidents);
-    //   if (isSelectAll) {
-    //     // setIsSelectAll(!isSelectAll)
-    //     setIsSelectAll(true);
-    //     incidents.map((i) => newSelectedIncidents.delete(i.pk))
-    //     setSelectedCount(newSelectedIncidents.size)
-    //     return newSelectedIncidents;
-    //   } else {
-    //     setIsSelectAll(false)
-    //     // setIsSelectAll(true);
-    //     incidents.map((i) => newSelectedIncidents.add(i.pk))
-    //     setSelectedCount(newSelectedIncidents.size)
-    //     return newSelectedIncidents;
-    //   }
-    //   // setIsSelectAll(false);
-    //   // return newSelectedIncidents;
-    // })
-
-
+      } else {
+        setIsSelectAll(() => {
+          pageSelectionStatus.set(currentPage, true);
+          return pageSelectionStatus;
+        });
+        incidents.map((i) => newSelectedIncidents.add(i.pk))
+        return newSelectedIncidents;
+      }
+    });
   };
-
-  // // TODO: fix select-all checkbox state per page
-  // const handleSelectAllIncidents = (event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
-  //   const isChecked = event.target.checked
-  //   const isCh = checked
-  //   console.log("isChecked before", isChecked)
-  //   console.log("isCh before", isCh)
-  //   console.log("isSelectAll before", isSelectedAll)
-  //   console.log("selectedCount before", selectedCount)
-  //   console.log("rowsCount before", rowsCount)
-  //   console.log("incidents length before", incidents.length)
-  //   if (isChecked && !isSelectedAll) {
-  //     setSelectedIncidents((oldSelectedIncidents: SelectionState) => {
-  //       const newSelectedIncidents = new Set<Incident["pk"]>(oldSelectedIncidents);
-  //       setIsSelectedAll(true)
-  //       // setIsSelectAll(true);
-  //       incidents.map((i) => newSelectedIncidents.add(i.pk))
-  //       setSelectedCount(newSelectedIncidents.size)
-  //       return newSelectedIncidents;
-  //     })
-  //   } else {
-  //     setSelectedIncidents((oldSelectedIncidents: SelectionState) => {
-  //       const newSelectedIncidents = new Set<Incident["pk"]>(oldSelectedIncidents);
-  //       setIsSelectedAll(false);
-  //       incidents.map((i) => newSelectedIncidents.delete(i.pk))
-  //       setSelectedCount(newSelectedIncidents.size)
-  //       return newSelectedIncidents;
-  //     })
-  //   }
-  //   console.log("isChecked after", isChecked)
-  //   console.log("isCh after", isCh)
-  //   console.log("isSelectAll after", isSelectedAll)
-  //   console.log("selectedCount after", selectedCount)
-  //   console.log("rowsCount after", rowsCount)
-  //   console.log("incidents length after", incidents.length)
-  //   console.log("|||||||||||||||||||||||||||||||||||||||||||")
-  //   console.log("|||||||||||||||||||||||||||||||||||||||||||")
-  //   // setIsSelectAll(incidents.length > 0 && selectedCount === incidents.length)
-  //   // setIsSelectAll(isChecked)
-  //   // setSelectedIncidents((oldSelectedIncidents: SelectionState) => {
-  //   //   const newSelectedIncidents = new Set<Incident["pk"]>(oldSelectedIncidents);
-  //   //   if (isSelectAll) {
-  //   //     // setIsSelectAll(!isSelectAll)
-  //   //     setIsSelectAll(true);
-  //   //     incidents.map((i) => newSelectedIncidents.delete(i.pk))
-  //   //     setSelectedCount(newSelectedIncidents.size)
-  //   //     return newSelectedIncidents;
-  //   //   } else {
-  //   //     setIsSelectAll(false)
-  //   //     // setIsSelectAll(true);
-  //   //     incidents.map((i) => newSelectedIncidents.add(i.pk))
-  //   //     setSelectedCount(newSelectedIncidents.size)
-  //   //     return newSelectedIncidents;
-  //   //   }
-  //   //   // setIsSelectAll(false);
-  //   //   // return newSelectedIncidents;
-  //   // })
-  //
-  //
-  // };
 
   const handleExpandIncident = (incident: Incident) => {
     setExpandedIncidents((oldExpandedIncidents: RowExpansionState) => {
@@ -268,44 +174,42 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
 
   const handleClearSelection = useCallback(() => {
     setSelectedIncidents(new Set<Incident["pk"]>([]))
-    setIsSelectedAll(false)
+    setIsSelectAll(() => {
+      pageSelectionStatus.set(currentPage, false);
+      return pageSelectionStatus;
+    });
   }, []);
 
-  // @ts-ignore
   return (
-    <Paper>
-      {multiSelect && (
-        <IncidentTableToolbar
-          isLoading={isLoading}
-          selectedIncidents={selectedIncidents}
-          onClearSelection={handleClearSelection}
-        />
-      )}
-      <TableContainer component={Paper} className="incidents-table-mui-container">
-        <MuiTable size="small" aria-label="incident table" className="incidents-table">
+      <Paper>
+        {multiSelect && (
+            <IncidentTableToolbar
+                isLoading={isLoading}
+                selectedIncidents={selectedIncidents}
+                onClearSelection={handleClearSelection}
+            />
+        )}
+        <TableContainer component={Paper} className="incidents-table-mui-container">
+          <MuiTable size="small" aria-label="incident table" className="incidents-table">
             <TableHead className="lg-xl-header">
               <TableRow
-                className={`${classNames(
-                  style.tableRow,
-                  isRealtime
-                    ? isLoadingRealtime
-                      ? style.tableRowHeadRealtimeLoading
-                      : style.tableRowHeadRealtime
-                    : style.tableRowHeadNormal,
-                )} incidents-table-row incidents-table-header-row`}
+                  className={`${classNames(
+                      style.tableRow,
+                      isRealtime
+                          ? isLoadingRealtime
+                              ? style.tableRowHeadRealtimeLoading
+                              : style.tableRowHeadRealtime
+                          : style.tableRowHeadNormal,
+                  )} incidents-table-row incidents-table-header-row`}
               >
                 {multiSelect &&
                     <TableCell
                         padding="checkbox"
-                        // onClick={() => handleSelectAllIncidents()}
+                        onClick={() => handleSelectAllIncidents()}
                     >
                       <Checkbox
                           disabled={isLoading}
-                          // checked={isSelectedAll}
-                          indeterminate={selectedCount > 0 && selectedCount < incidents.length}
-                          checked={incidents.length > 0 && selectedCount === incidents.length}
-                          // checked={isSelectedAll && incidents.length > 0 && selectedCount === incidents.length}
-                          onChange={(event, checked) => handleSelectAllIncidents(event, checked)}
+                          checked={isSelectAll.get(currentPage)}
                       />
                     </TableCell>
                 }
@@ -319,336 +223,310 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
               </TableRow>
             </TableHead>
 
-          <Hidden only={['xs', 'md', 'lg', 'xl']}>
-            <TableHead className="table-head">
-              <TableRow
-                className={`${classNames(
-                  style.tableRow,
-                  isRealtime
-                    ? isLoadingRealtime
-                      ? style.tableRowHeadRealtimeLoading
-                      : style.tableRowHeadRealtime
-                    : style.tableRowHeadNormal,
-                )} incidents-table-row incidents-table-header-row`}
-              >
-                {multiSelect &&
-                    <TableCell
-                        padding="checkbox"
-                        // onClick={() => handleSelectAllIncidents()}
-                    >
-                      <Checkbox
-                          // disabled={isLoading}
-                          // checked={isSelectedAll}
-                          indeterminate={selectedIncidents.size > 0 && selectedIncidents.size < incidents.length}
-                          checked={incidents.length > 0 && selectedIncidents.size === incidents.length}
-                          onChange={handleSelectAllIncidents}
-                      />
-                    </TableCell>
-                }
-                {/*{multiSelect &&*/}
-                {/*    <TableCell*/}
-                {/*        padding="checkbox"*/}
-                {/*        onClick={() => handleSelectAllIncidents()}*/}
-                {/*    >*/}
-                {/*      <Checkbox*/}
-                {/*          disabled={isLoading}*/}
-                {/*          checked={isSelectAll}*/}
-                {/*      />*/}
-                {/*    </TableCell>*/}
-                {/*}*/}
-                <TableCell className="timestamp-cell">Time</TableCell>
-                <TableCell>State</TableCell>
-                <TableCell>Actions</TableCell>
-                <TableCell>Source</TableCell>
-                <TableCell>Description</TableCell>
-              </TableRow>
-            </TableHead>
-          </Hidden>
+            <Hidden only={['xs', 'md', 'lg', 'xl']}>
+              <TableHead className="table-head">
+                <TableRow
+                    className={`${classNames(
+                        style.tableRow,
+                        isRealtime
+                            ? isLoadingRealtime
+                                ? style.tableRowHeadRealtimeLoading
+                                : style.tableRowHeadRealtime
+                            : style.tableRowHeadNormal,
+                    )} incidents-table-row incidents-table-header-row`}
+                >
+                  {multiSelect &&
+                      <TableCell
+                          padding="checkbox"
+                          onClick={() => handleSelectAllIncidents()}
+                      >
+                        <Checkbox
+                            disabled={isLoading}
+                            checked={isSelectAll.get(currentPage)}
+                        />
+                      </TableCell>
+                  }
 
-          <Hidden only={['sm', 'md', 'lg', 'xl']}>
-            <TableHead className="table-head">
-              <TableRow
-                className={`${classNames(
-                  style.tableRow,
-                  isRealtime
-                    ? isLoadingRealtime
-                      ? style.tableRowHeadRealtimeLoading
-                      : style.tableRowHeadRealtime
-                    : style.tableRowHeadNormal,
-                )} incidents-table-row incidents-table-header-row`}
-              >
-                {multiSelect &&
-                    <TableCell
-                        padding="checkbox"
-                        // onClick={() => handleSelectAllIncidents()}
-                    >
-                      <Checkbox
-                          // disabled={isLoading}
-                          // checked={isSelectedAll}
-                          indeterminate={selectedIncidents.size > 0 && selectedIncidents.size < incidents.length}
-                          checked={incidents.length > 0 && selectedIncidents.size === incidents.length}
-                          onChange={handleSelectAllIncidents}
-                      />
-                    </TableCell>
-                }
-                {/*{multiSelect &&*/}
-                {/*    <TableCell*/}
-                {/*        padding="checkbox"*/}
-                {/*        onClick={() => handleSelectAllIncidents()}*/}
-                {/*    >*/}
-                {/*      <Checkbox*/}
-                {/*          disabled={isLoading}*/}
-                {/*          checked={isSelectAll}*/}
-                {/*      />*/}
-                {/*    </TableCell>*/}
-                {/*}*/}
-                <TableCell className="timestamp-cell">Time</TableCell>
-                <TableCell>State</TableCell>
-                <TableCell>Source</TableCell>
-                <TableCell></TableCell>
-              </TableRow>
-            </TableHead>
-          </Hidden>
+                  <TableCell className="timestamp-cell">Time</TableCell>
+                  <TableCell>State</TableCell>
+                  <TableCell>Actions</TableCell>
+                  <TableCell>Source</TableCell>
+                  <TableCell>Description</TableCell>
+                </TableRow>
+              </TableHead>
+            </Hidden>
 
-          <TableBody>
-            {(isLoading &&
-              [0, 1, 2, 3, 4, 5, 6, 7].map((key: number) => {
-                return (
-                  <TableRow
-                    hover
-                    key={key}
-                    selected={false}
-                    style={{
-                      cursor: "pointer",
-                    }}
-                    className={`${classNames(style.tableRow, style.tableRowLoading)} incidents-table-row`}
-                  >
-                    <TableCell>
-                      <Skeleton />
-                    </TableCell>
-                    <TableCell component="th" scope="row">
-                      <Skeleton>
-                        <OpenItem small open />
-                      </Skeleton>
-                      <Skeleton>
-                        <AckedItem small acked />
-                      </Skeleton>
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton />
-                    </TableCell>
-                  </TableRow>
-                );
-              })) ||
-              stableSort<Incident>(incidents, getComparator<IncidentOrderableFields>(order, orderBy))
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((incident: Incident) => {
-                  const ClickableCell = (props: TableCellProps) => (
-                    <TableCell onClick={(event) => handleRowClick(event, incident)} {...props} />
-                  );
+            <Hidden only={['sm', 'md', 'lg', 'xl']}>
+              <TableHead className="table-head">
+                <TableRow
+                    className={`${classNames(
+                        style.tableRow,
+                        isRealtime
+                            ? isLoadingRealtime
+                                ? style.tableRowHeadRealtimeLoading
+                                : style.tableRowHeadRealtime
+                            : style.tableRowHeadNormal,
+                    )} incidents-table-row incidents-table-header-row`}
+                >
+                  {multiSelect &&
+                      <TableCell
+                          padding="checkbox"
+                          onClick={() => handleSelectAllIncidents()}
+                      >
+                        <Checkbox
+                            disabled={isLoading}
+                            checked={isSelectAll.get(currentPage)}
+                        />
+                      </TableCell>
+                  }
 
-                  const isSelected = selectedIncidents.has(incident.pk);
-                  const isExpanded = expandedIncidents.has(incident.pk);
+                  <TableCell className="timestamp-cell">Time</TableCell>
+                  <TableCell>State</TableCell>
+                  <TableCell>Source</TableCell>
+                  <TableCell></TableCell>
+                </TableRow>
+              </TableHead>
+            </Hidden>
 
-                  return (
-                    <>
-                        <TableRow
-                          hover
-                          key={incident.pk}
-                          selected={isSelected}
-                          style={{
-                            cursor: "pointer",
-                          }}
-                          className={`${classNames(
-                            style.tableRow,
-                            incident.open
-                              ? incident.acked
-                                ? style.tableRowAcked
-                                : style.tableRowOpenUnacked
-                              : style.tableRowClosed,
-                          )} incidents-table-row lg-xl-row`}
-                        >
-                          {multiSelect && (
-                            <TableCell padding="checkbox" onClick={() => handleSelectIncident(incident)}>
-                              <Checkbox disabled={isLoading} checked={isSelected} />
-                            </TableCell>
-                          )}
-                          <ClickableCell>{formatTimestamp(incident.start_time)}</ClickableCell>
-                          <ClickableCell component="th" scope="row">
-                            <OpenItem small open={incident.open} />
-                            {/* <TicketItem small ticketUrl={incident.ticket_url} /> */}
-                            <AckedItem small acked={incident.acked} />
-                          </ClickableCell>
-                          {SHOW_SEVERITY_LEVELS && (
-                            <ClickableCell>
-                              <LevelItem small level={incident.level} />
-                            </ClickableCell>
-                          )}
-                          <ClickableCell>{incident.source.name}</ClickableCell>
-                          <ClickableCell>{incident.description}</ClickableCell>
-                          <TableCell>
-                            <IconButton disabled={isLoading} component={Link} to={`/incidents/${incident.pk}/`}>
-                              <OpenInNewIcon />
-                            </IconButton>
-                            {incident.ticket_url && (
-                              <IconButton disabled={isLoading} href={incident.ticket_url}>
-                                <TicketIcon />
-                              </IconButton>
-                            )}
-                            {/* TODO: Not implementd yet */}
-                          </TableCell>
-                        </TableRow>
+            <TableBody>
+              {(isLoading &&
+                      [0, 1, 2, 3, 4, 5, 6, 7].map((key: number) => {
+                        return (
+                            <TableRow
+                                hover
+                                key={key}
+                                selected={false}
+                                style={{
+                                  cursor: "pointer",
+                                }}
+                                className={`${classNames(style.tableRow, style.tableRowLoading)} incidents-table-row`}
+                            >
+                              <TableCell>
+                                <Skeleton />
+                              </TableCell>
+                              <TableCell component="th" scope="row">
+                                <Skeleton>
+                                  <OpenItem small open />
+                                </Skeleton>
+                                <Skeleton>
+                                  <AckedItem small acked />
+                                </Skeleton>
+                              </TableCell>
+                              <TableCell>
+                                <Skeleton />
+                              </TableCell>
+                              <TableCell>
+                                <Skeleton />
+                              </TableCell>
+                              <TableCell>
+                                <Skeleton />
+                              </TableCell>
+                              <TableCell>
+                                <Skeleton />
+                              </TableCell>
+                            </TableRow>
+                        );
+                      })) ||
+                  stableSort<Incident>(incidents, getComparator<IncidentOrderableFields>(order, orderBy))
+                      //.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                      .map((incident: Incident) => {
+                        const ClickableCell = (props: TableCellProps) => (
+                            <TableCell onClick={(event) => handleRowClick(event, incident)} {...props} />
+                        );
 
-                      <Hidden only={['xs', 'md', 'lg', 'xl']}>
-                        <TableRow
-                          hover
-                          key={incident.pk}
-                          selected={isSelected}
-                          style={{
-                            cursor: "pointer",
-                          }}
-                          className={`${classNames(
-                            style.tableRow,
-                            incident.open
-                              ? incident.acked
-                                ? style.tableRowAcked
-                                : style.tableRowOpenUnacked
-                              : style.tableRowClosed,
-                          )} incidents-table-row`}
-                        >
-                          {multiSelect && (
-                            <TableCell className="checkbox-cell" onClick={() => handleSelectIncident(incident)}>
-                              <Checkbox disabled={isLoading} checked={isSelected} />
-                            </TableCell>
-                          )}
-                          <ClickableCell className="timestamp-cell">{formatTimestamp(incident.start_time)}</ClickableCell>
-                          <ClickableCell className="state-cell" component="th" scope="row">
-                            <div className="state-cell-contents">
-                              {SHOW_SEVERITY_LEVELS && (
-                                <LevelItem small level={incident.level} />
-                              )}
-                              <OpenItem small open={incident.open} />
-                              {/* <TicketItem small ticketUrl={incident.ticket_url} /> */}
-                              <AckedItem small acked={incident.acked} />
-                            </div>
-                          </ClickableCell>
-                          <TableCell className="actions-cell">
-                            <IconButton disabled={isLoading} component={Link} to={`/incidents/${incident.pk}/`}>
-                              <OpenInNewIcon />
-                            </IconButton>
-                            {incident.ticket_url && (
-                              <IconButton disabled={isLoading} href={incident.ticket_url}>
-                                <TicketIcon />
-                              </IconButton>
-                            )}
-                            {/* TODO: Not implementd yet */}
-                          </TableCell>
-                          <ClickableCell className="source-cell">{incident.source.name}</ClickableCell>
-                          <ClickableCell className="description-cell">{incident.description}</ClickableCell>
-                        </TableRow>
-                      </Hidden>
+                        const isSelected = selectedIncidents.has(incident.pk);
+                        const isExpanded = expandedIncidents.has(incident.pk);
 
-                      <Hidden only={['sm', 'md', 'lg', 'xl']}>
-                        <TableRow
-                          hover
-                          key={incident.pk}
-                          selected={isSelected}
-                          style={{
-                            cursor: "pointer",
-                          }}
-                          className={`${classNames(
-                            style.tableRow,
-                            incident.open
-                              ? incident.acked
-                                ? style.tableRowAcked
-                                : style.tableRowOpenUnacked
-                              : style.tableRowClosed,
-                          )} incidents-table-row`}
-                        >
-                          {multiSelect && (
-                            <TableCell className="checkbox-cell" onClick={() => handleSelectIncident(incident)}>
-                              <Checkbox disabled={isLoading} checked={isSelected} />
-                            </TableCell>
-                          )}
-                          <ClickableCell className="timestamp-cell">{formatTimestamp(incident.start_time)}</ClickableCell>
-                          <ClickableCell className="state-cell" component="th" scope="row">
-                            <div className="state-cell-contents">
-                              {SHOW_SEVERITY_LEVELS && (
-                                <LevelItem small level={incident.level} />
-                              )}
-                              <OpenItem small open={incident.open} />
-                              {/* <TicketItem small ticketUrl={incident.ticket_url} /> */}
-                              <AckedItem small acked={incident.acked} />
-                            </div>
-                          </ClickableCell>
-
-                          <TableCell className="source-cell source-ticket-cell">
-                            <Typography variant="body2" className="source-cell">{incident.source.name}</Typography>
-                            {incident.ticket_url && (
-                              <IconButton disabled={isLoading} href={incident.ticket_url}>
-                                <TicketIcon />
-                              </IconButton>
-                            )}
-                            {/* TODO: Not implementd yet */}
-                          </TableCell>
-
-                          <TableCell>
-                            <IconButton aria-label="expand row" size="small" onClick={() => handleExpandIncident(incident)}>
-                              {isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
-                            </IconButton>
-                          </TableCell>
-
-                        </TableRow>
-                        <TableRow>
-                          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-                            <Collapse in={isExpanded} timeout="auto" unmountOnExit>
-                              <Box margin={1}>
-                                <MuiTable size="small" aria-label="additional-xs-incident-data">
-                                  <TableHead>
-                                    <TableRow>
-                                      <TableCell align="left">Description</TableCell>
-                                      <TableCell align="right">Actions</TableCell>
-                                    </TableRow>
-                                  </TableHead>
-                                  <TableBody>
-                                    <ClickableCell align="left" className="description-cell">{incident.description}</ClickableCell>
-                                    <TableCell align="right" className="actions-cell">
-                                      <IconButton disabled={isLoading} component={Link} to={`/incidents/${incident.pk}/`}>
-                                        <OpenInNewIcon />
+                        return (
+                            <>
+                              <TableRow
+                                  hover
+                                  key={incident.pk}
+                                  selected={isSelected}
+                                  style={{
+                                    cursor: "pointer",
+                                  }}
+                                  className={`${classNames(
+                                      style.tableRow,
+                                      incident.open
+                                          ? incident.acked
+                                              ? style.tableRowAcked
+                                              : style.tableRowOpenUnacked
+                                          : style.tableRowClosed,
+                                  )} incidents-table-row lg-xl-row`}
+                              >
+                                {multiSelect && (
+                                    <TableCell padding="checkbox" onClick={() => handleSelectIncident(incident)}>
+                                      <Checkbox disabled={isLoading} checked={isSelected} />
+                                    </TableCell>
+                                )}
+                                <ClickableCell>{formatTimestamp(incident.start_time)}</ClickableCell>
+                                <ClickableCell component="th" scope="row">
+                                  <OpenItem small open={incident.open} />
+                                  {/* <TicketItem small ticketUrl={incident.ticket_url} /> */}
+                                  <AckedItem small acked={incident.acked} />
+                                </ClickableCell>
+                                {SHOW_SEVERITY_LEVELS && (
+                                    <ClickableCell>
+                                      <LevelItem small level={incident.level} />
+                                    </ClickableCell>
+                                )}
+                                <ClickableCell>{incident.source.name}</ClickableCell>
+                                <ClickableCell>{incident.description}</ClickableCell>
+                                <TableCell>
+                                  <IconButton disabled={isLoading} component={Link} to={`/incidents/${incident.pk}/`}>
+                                    <OpenInNewIcon />
+                                  </IconButton>
+                                  {incident.ticket_url && (
+                                      <IconButton disabled={isLoading} href={incident.ticket_url}>
+                                        <TicketIcon />
                                       </IconButton>
-                                      {incident.ticket_url && (
+                                  )}
+                                  {/* TODO: Not implementd yet */}
+                                </TableCell>
+                              </TableRow>
+
+                              <Hidden only={['xs', 'md', 'lg', 'xl']}>
+                                <TableRow
+                                    hover
+                                    key={incident.pk}
+                                    selected={isSelected}
+                                    style={{
+                                      cursor: "pointer",
+                                    }}
+                                    className={`${classNames(
+                                        style.tableRow,
+                                        incident.open
+                                            ? incident.acked
+                                                ? style.tableRowAcked
+                                                : style.tableRowOpenUnacked
+                                            : style.tableRowClosed,
+                                    )} incidents-table-row`}
+                                >
+                                  {multiSelect && (
+                                      <TableCell className="checkbox-cell" onClick={() => handleSelectIncident(incident)}>
+                                        <Checkbox disabled={isLoading} checked={isSelected} />
+                                      </TableCell>
+                                  )}
+                                  <ClickableCell className="timestamp-cell">{formatTimestamp(incident.start_time)}</ClickableCell>
+                                  <ClickableCell className="state-cell" component="th" scope="row">
+                                    <div className="state-cell-contents">
+                                      {SHOW_SEVERITY_LEVELS && (
+                                          <LevelItem small level={incident.level} />
+                                      )}
+                                      <OpenItem small open={incident.open} />
+                                      {/* <TicketItem small ticketUrl={incident.ticket_url} /> */}
+                                      <AckedItem small acked={incident.acked} />
+                                    </div>
+                                  </ClickableCell>
+                                  <TableCell className="actions-cell">
+                                    <IconButton disabled={isLoading} component={Link} to={`/incidents/${incident.pk}/`}>
+                                      <OpenInNewIcon />
+                                    </IconButton>
+                                    {incident.ticket_url && (
                                         <IconButton disabled={isLoading} href={incident.ticket_url}>
                                           <TicketIcon />
                                         </IconButton>
-                                      )}
-                                      {/* TODO: Not implementd yet */}
-                                    </TableCell>
-                                  </TableBody>
-                                </MuiTable>
-                              </Box>
-                            </Collapse>
-                          </TableCell>
-                        </TableRow>
-                      </Hidden>
-                    </>
+                                    )}
+                                    {/* TODO: Not implementd yet */}
+                                  </TableCell>
+                                  <ClickableCell className="source-cell">{incident.source.name}</ClickableCell>
+                                  <ClickableCell className="description-cell">{incident.description}</ClickableCell>
+                                </TableRow>
+                              </Hidden>
 
-                  );
-                })}
-          </TableBody>
-        </MuiTable>
-        {!isLoading && incidents.length === 0 && <Typography>No incidents</Typography>}
-      </TableContainer>
-      {paginationComponent}
-    </Paper>
+                              <Hidden only={['sm', 'md', 'lg', 'xl']}>
+                                <TableRow
+                                    hover
+                                    key={incident.pk}
+                                    selected={isSelected}
+                                    style={{
+                                      cursor: "pointer",
+                                    }}
+                                    className={`${classNames(
+                                        style.tableRow,
+                                        incident.open
+                                            ? incident.acked
+                                                ? style.tableRowAcked
+                                                : style.tableRowOpenUnacked
+                                            : style.tableRowClosed,
+                                    )} incidents-table-row`}
+                                >
+                                  {multiSelect && (
+                                      <TableCell className="checkbox-cell" onClick={() => handleSelectIncident(incident)}>
+                                        <Checkbox disabled={isLoading} checked={isSelected} />
+                                      </TableCell>
+                                  )}
+                                  <ClickableCell className="timestamp-cell">{formatTimestamp(incident.start_time)}</ClickableCell>
+                                  <ClickableCell className="state-cell" component="th" scope="row">
+                                    <div className="state-cell-contents">
+                                      {SHOW_SEVERITY_LEVELS && (
+                                          <LevelItem small level={incident.level} />
+                                      )}
+                                      <OpenItem small open={incident.open} />
+                                      {/* <TicketItem small ticketUrl={incident.ticket_url} /> */}
+                                      <AckedItem small acked={incident.acked} />
+                                    </div>
+                                  </ClickableCell>
+
+                                  <TableCell className="source-cell source-ticket-cell">
+                                    <Typography variant="body2" className="source-cell">{incident.source.name}</Typography>
+                                    {incident.ticket_url && (
+                                        <IconButton disabled={isLoading} href={incident.ticket_url}>
+                                          <TicketIcon />
+                                        </IconButton>
+                                    )}
+                                    {/* TODO: Not implementd yet */}
+                                  </TableCell>
+
+                                  <TableCell>
+                                    <IconButton aria-label="expand row" size="small" onClick={() => handleExpandIncident(incident)}>
+                                      {isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+                                    </IconButton>
+                                  </TableCell>
+
+                                </TableRow>
+                                <TableRow>
+                                  <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+                                    <Collapse in={isExpanded} timeout="auto" unmountOnExit>
+                                      <Box margin={1}>
+                                        <MuiTable size="small" aria-label="additional-xs-incident-data">
+                                          <TableHead>
+                                            <TableRow>
+                                              <TableCell align="left">Description</TableCell>
+                                              <TableCell align="right">Actions</TableCell>
+                                            </TableRow>
+                                          </TableHead>
+                                          <TableBody>
+                                            <ClickableCell align="left" className="description-cell">{incident.description}</ClickableCell>
+                                            <TableCell align="right" className="actions-cell">
+                                              <IconButton disabled={isLoading} component={Link} to={`/incidents/${incident.pk}/`}>
+                                                <OpenInNewIcon />
+                                              </IconButton>
+                                              {incident.ticket_url && (
+                                                  <IconButton disabled={isLoading} href={incident.ticket_url}>
+                                                    <TicketIcon />
+                                                  </IconButton>
+                                              )}
+                                              {/* TODO: Not implementd yet */}
+                                            </TableCell>
+                                          </TableBody>
+                                        </MuiTable>
+                                      </Box>
+                                    </Collapse>
+                                  </TableCell>
+                                </TableRow>
+                              </Hidden>
+                            </>
+
+                        );
+                      })}
+            </TableBody>
+          </MuiTable>
+          {!isLoading && incidents.length === 0 && <Typography>No incidents</Typography>}
+        </TableContainer>
+        {paginationComponent}
+      </Paper>
   );
 };
 
@@ -658,14 +536,16 @@ export type MinimalIncidentTablePropsType = {
   isLoadingRealtime: boolean;
 
   paginationComponent?: MUIIncidentTablePropsType["paginationComponent"];
+  currentPage: number;
 };
 
 export const MinimalIncidentTable = ({
-  isLoading,
-  isRealtime,
-  isLoadingRealtime,
-  paginationComponent,
-}: MinimalIncidentTablePropsType) => {
+                                       isLoading,
+                                       isRealtime,
+                                       isLoadingRealtime,
+                                       paginationComponent,
+                                       currentPage
+                                     }: MinimalIncidentTablePropsType) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -709,36 +589,37 @@ export const MinimalIncidentTable = ({
       open: true,
       incident: incident,
       content: (
-        <IncidentDetails onIncidentChange={(incident: Incident) => modifyIncident(incident)} incident={incident} />
+          <IncidentDetails onIncidentChange={(incident: Incident) => modifyIncident(incident)} incident={incident} />
       ),
     };
   }, [detailPk, incidentByPk, modifyIncident]);
 
   return (
-    <ClickAwayListener onClickAway={onModalClose}>
-      <div>
-        <Modal
-          truncateTitle
-          open={modalDetails.open}
-          title={modalDetails.title}
-          onClose={onModalClose}
-          content={modalDetails.content}
-          actions={
-            <Button autoFocus onClick={copyCanonicalUrlToClipboard} color="primary">
-              Copy URL
-            </Button>
-          }
-          dialogProps={{ maxWidth: "lg", fullWidth: true , fullScreen: fullScreen}}
-        />
-        <MUIIncidentTable
-          isRealtime={isRealtime}
-          isLoading={isLoading}
-          isLoadingRealtime={isLoadingRealtime}
-          incidents={incidents}
-          onShowDetail={handleShowDetail}
-          paginationComponent={paginationComponent}
-        />
-      </div>
-    </ClickAwayListener>
+      <ClickAwayListener onClickAway={onModalClose}>
+        <div>
+          <Modal
+              truncateTitle
+              open={modalDetails.open}
+              title={modalDetails.title}
+              onClose={onModalClose}
+              content={modalDetails.content}
+              actions={
+                <Button autoFocus onClick={copyCanonicalUrlToClipboard} color="primary">
+                  Copy URL
+                </Button>
+              }
+              dialogProps={{ maxWidth: "lg", fullWidth: true , fullScreen: fullScreen}}
+          />
+          <MUIIncidentTable
+              isRealtime={isRealtime}
+              isLoading={isLoading}
+              isLoadingRealtime={isLoadingRealtime}
+              incidents={incidents}
+              onShowDetail={handleShowDetail}
+              paginationComponent={paginationComponent}
+              currentPage={currentPage}
+          />
+        </div>
+      </ClickAwayListener>
   );
 };
