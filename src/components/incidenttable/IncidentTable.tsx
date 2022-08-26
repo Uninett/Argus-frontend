@@ -101,6 +101,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
   type RowExpansionState = Set<Incident["pk"]>;
   const [selectedIncidents, setSelectedIncidents] = useState<SelectionState>(new Set<Incident["pk"]>([]));
   const [expandedIncidents, setExpandedIncidents] = useState<RowExpansionState>(new Set<Incident["pk"]>([]));
+  const [isSelectAll, setIsSelectAll] = useState<boolean>(false);
 
   type IncidentOrderableFields = Pick<Incident, "start_time">;
 
@@ -126,6 +127,24 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
       }
       return newSelectedIncidents;
     });
+  };
+
+
+  // TODO: fix select-all checkbox state per page
+  // TODO: fix uncheck when bulk operation is complete
+  // TODO: fix deselect so that it works per page and not per whole table
+  const handleSelectAllIncidents = () => {
+    if (isSelectAll) {
+      setIsSelectAll(false);
+      setSelectedIncidents(new Set<Incident["pk"]>([]))
+    } else {
+      setIsSelectAll(true);
+      setSelectedIncidents(() => {
+        const newSelectedIncidents = new Set<Incident["pk"]>([]);
+        incidents.map((i) => newSelectedIncidents.add(i.pk))
+        return newSelectedIncidents;
+      })
+    }
   };
 
   const handleExpandIncident = (incident: Incident) => {
@@ -171,11 +190,11 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                 {multiSelect &&
                     <TableCell
                         padding="checkbox"
-                        // onClick={}
+                        onClick={() => handleSelectAllIncidents()}
                     >
                       <Checkbox
                           disabled={isLoading}
-                          // checked={isSelected}
+                          checked={isSelectAll}
                       />
                     </TableCell>
                 }
@@ -204,11 +223,11 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                 {multiSelect &&
                     <TableCell
                         padding="checkbox"
-                        // onClick={}
+                        onClick={() => handleSelectAllIncidents()}
                     >
                       <Checkbox
                           disabled={isLoading}
-                          // checked={isSelected}
+                          checked={isSelectAll}
                       />
                     </TableCell>
                 }
@@ -237,11 +256,11 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                 {multiSelect &&
                     <TableCell
                         padding="checkbox"
-                        // onClick={}
+                        onClick={() => handleSelectAllIncidents()}
                     >
                       <Checkbox
                           disabled={isLoading}
-                          // checked={isSelected}
+                          checked={isSelectAll}
                       />
                     </TableCell>
                 }
