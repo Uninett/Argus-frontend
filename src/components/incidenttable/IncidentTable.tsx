@@ -99,14 +99,11 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
 }: MUIIncidentTablePropsType) => {
   const style = useStyles();
 
-  const pageSelectionStatus = new Map<number, boolean>();
-  pageSelectionStatus.set(currentPage, false);
-
   type SelectionState = Set<Incident["pk"]>;
   type RowExpansionState = Set<Incident["pk"]>;
   const [selectedIncidents, setSelectedIncidents] = useState<SelectionState>(new Set<Incident["pk"]>([]));
   const [expandedIncidents, setExpandedIncidents] = useState<RowExpansionState>(new Set<Incident["pk"]>([]));
-  const [isSelectAll, setIsSelectAll] = useState<Map<number, boolean>>(pageSelectionStatus);
+  const [isSelectAll, setIsSelectAll] = useState<Map<number, boolean>>(new Map<number, boolean>([[currentPage, false]]));
 
   type IncidentOrderableFields = Pick<Incident, "start_time">;
 
@@ -140,15 +137,17 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
       const newSelectedIncidents = new Set<Incident["pk"]>(oldSelectedIncidents);
       if (isSelectAll.get(currentPage)) {
         setIsSelectAll(() => {
-          pageSelectionStatus.set(currentPage, false);
-          return pageSelectionStatus;
+          const newPageSelectionStatus = new Map<number, boolean>(isSelectAll);
+          newPageSelectionStatus.set(currentPage, false);
+          return newPageSelectionStatus;
         });
         incidents.map((i) => newSelectedIncidents.delete(i.pk))
         return newSelectedIncidents;
       } else {
         setIsSelectAll(() => {
-          pageSelectionStatus.set(currentPage, true);
-          return pageSelectionStatus;
+          const newPageSelectionStatus = new Map<number, boolean>(isSelectAll);
+          newPageSelectionStatus.set(currentPage, true);
+          return newPageSelectionStatus;
         });
         incidents.map((i) => newSelectedIncidents.add(i.pk))
         return newSelectedIncidents;
@@ -173,8 +172,9 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
   const handleClearSelection = useCallback(() => {
     setSelectedIncidents(new Set<Incident["pk"]>([]))
     setIsSelectAll(() => {
-      pageSelectionStatus.set(currentPage, false);
-      return pageSelectionStatus;
+      const newPageSelectionStatus = new Map<number, boolean>(isSelectAll);
+      newPageSelectionStatus.set(currentPage, false);
+      return newPageSelectionStatus;
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
