@@ -168,7 +168,18 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                     : style.tableRowHeadNormal,
                 )} incidents-table-row incidents-table-header-row`}
               >
-                {multiSelect && <TableCell></TableCell>}
+                {multiSelect &&
+                    <TableCell
+                        padding="checkbox"
+                        // onClick={}
+                    >
+                      <Checkbox
+                          disabled={isLoading}
+                          // checked={isSelected}
+                      />
+                    </TableCell>
+                }
+
                 <TableCell className="timestamp-cell">Timestamp</TableCell>
                 <TableCell>Status</TableCell>
                 {SHOW_SEVERITY_LEVELS && <TableCell>Severity level</TableCell>}
@@ -190,7 +201,18 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                     : style.tableRowHeadNormal,
                 )} incidents-table-row incidents-table-header-row`}
               >
-                {multiSelect && <TableCell></TableCell>}
+                {multiSelect &&
+                    <TableCell
+                        padding="checkbox"
+                        // onClick={}
+                    >
+                      <Checkbox
+                          disabled={isLoading}
+                          // checked={isSelected}
+                      />
+                    </TableCell>
+                }
+
                 <TableCell className="timestamp-cell">Time</TableCell>
                 <TableCell>State</TableCell>
                 <TableCell>Actions</TableCell>
@@ -212,7 +234,18 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                     : style.tableRowHeadNormal,
                 )} incidents-table-row incidents-table-header-row`}
               >
-                {multiSelect && <TableCell></TableCell>}
+                {multiSelect &&
+                    <TableCell
+                        padding="checkbox"
+                        // onClick={}
+                    >
+                      <Checkbox
+                          disabled={isLoading}
+                          // checked={isSelected}
+                      />
+                    </TableCell>
+                }
+
                 <TableCell className="timestamp-cell">Time</TableCell>
                 <TableCell>State</TableCell>
                 <TableCell>Source</TableCell>
