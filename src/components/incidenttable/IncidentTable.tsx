@@ -107,8 +107,6 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
   const [selectedIncidents, setSelectedIncidents] = useState<SelectionState>(new Set<Incident["pk"]>([]));
   const [expandedIncidents, setExpandedIncidents] = useState<RowExpansionState>(new Set<Incident["pk"]>([]));
   const [isSelectAll, setIsSelectAll] = useState<Map<number, boolean>>(pageSelectionStatus);
-  // const [isSelectAll, setIsSelectAll] = useState<boolean>(false);
-  const [selectedPages, setSelectedPages] = useState<Set<number>>(new Set<number>([]));
 
   type IncidentOrderableFields = Pick<Incident, "start_time">;
 
