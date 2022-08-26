@@ -85,6 +85,7 @@ type MUIIncidentTablePropsType = {
   isLoadingRealtime?: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   paginationComponent?: any;
+  currentPage: number;
 };
 
 const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
@@ -94,14 +95,20 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
   isRealtime = false,
   isLoadingRealtime = true,
   paginationComponent,
+  currentPage
 }: MUIIncidentTablePropsType) => {
   const style = useStyles();
+
+  const pageSelectionStatus = new Map<number, boolean>();
+  pageSelectionStatus.set(currentPage, false);
 
   type SelectionState = Set<Incident["pk"]>;
   type RowExpansionState = Set<Incident["pk"]>;
   const [selectedIncidents, setSelectedIncidents] = useState<SelectionState>(new Set<Incident["pk"]>([]));
   const [expandedIncidents, setExpandedIncidents] = useState<RowExpansionState>(new Set<Incident["pk"]>([]));
-  const [isSelectAll, setIsSelectAll] = useState<boolean>(false);
+  const [isSelectAll, setIsSelectAll] = useState<Map<number, boolean>>(pageSelectionStatus);
+  // const [isSelectAll, setIsSelectAll] = useState<boolean>(false);
+  const [selectedPages, setSelectedPages] = useState<Set<number>>(new Set<number>([]));
 
   type IncidentOrderableFields = Pick<Incident, "start_time">;
 
@@ -130,21 +137,25 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
   };
 
 
-  // TODO: fix select-all checkbox state per page
-  // TODO: fix uncheck when bulk operation is complete
-  // TODO: fix deselect so that it works per page and not per whole table
   const handleSelectAllIncidents = () => {
-    if (isSelectAll) {
-      setIsSelectAll(false);
-      setSelectedIncidents(new Set<Incident["pk"]>([]))
-    } else {
-      setIsSelectAll(true);
-      setSelectedIncidents(() => {
-        const newSelectedIncidents = new Set<Incident["pk"]>([]);
+    setSelectedIncidents((oldSelectedIncidents: SelectionState) => {
+      const newSelectedIncidents = new Set<Incident["pk"]>(oldSelectedIncidents);
+      if (isSelectAll.get(currentPage)) {
+        setIsSelectAll(() => {
+          pageSelectionStatus.set(currentPage, false);
+          return pageSelectionStatus;
+        });
+        incidents.map((i) => newSelectedIncidents.delete(i.pk))
+        return newSelectedIncidents;
+      } else {
+        setIsSelectAll(() => {
+          pageSelectionStatus.set(currentPage, true);
+          return pageSelectionStatus;
+        });
         incidents.map((i) => newSelectedIncidents.add(i.pk))
         return newSelectedIncidents;
-      })
-    }
+      }
+    });
   };
 
   const handleExpandIncident = (incident: Incident) => {
@@ -163,6 +174,10 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
 
   const handleClearSelection = useCallback(() => {
     setSelectedIncidents(new Set<Incident["pk"]>([]))
+    setIsSelectAll(() => {
+      pageSelectionStatus.set(currentPage, false);
+      return pageSelectionStatus;
+    });
   }, []);
 
   return (
@@ -194,7 +209,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                     >
                       <Checkbox
                           disabled={isLoading}
-                          checked={isSelectAll}
+                          checked={isSelectAll.get(currentPage)}
                       />
                     </TableCell>
                 }
@@ -227,7 +242,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                     >
                       <Checkbox
                           disabled={isLoading}
-                          checked={isSelectAll}
+                          checked={isSelectAll.get(currentPage)}
                       />
                     </TableCell>
                 }
@@ -260,7 +275,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                     >
                       <Checkbox
                           disabled={isLoading}
-                          checked={isSelectAll}
+                          checked={isSelectAll.get(currentPage)}
                       />
                     </TableCell>
                 }
@@ -521,6 +536,7 @@ export type MinimalIncidentTablePropsType = {
   isLoadingRealtime: boolean;
 
   paginationComponent?: MUIIncidentTablePropsType["paginationComponent"];
+  currentPage: number;
 };
 
 export const MinimalIncidentTable = ({
@@ -528,6 +544,7 @@ export const MinimalIncidentTable = ({
   isRealtime,
   isLoadingRealtime,
   paginationComponent,
+  currentPage
 }: MinimalIncidentTablePropsType) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -600,6 +617,7 @@ export const MinimalIncidentTable = ({
           incidents={incidents}
           onShowDetail={handleShowDetail}
           paginationComponent={paginationComponent}
+          currentPage={currentPage}
         />
       </div>
     </ClickAwayListener>

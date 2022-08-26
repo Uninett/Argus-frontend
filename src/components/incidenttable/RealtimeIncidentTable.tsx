@@ -194,7 +194,7 @@ const RealtimeIncidentTable = () => {
 
   return (
     <FilteredIncidentsProvider filterMatcher={filterMatcher}>
-      <MinimalIncidentTable isRealtime isLoading={isLoading} isLoadingRealtime={isLoadingRealtime} />
+      <MinimalIncidentTable isRealtime isLoading={isLoading} isLoadingRealtime={isLoadingRealtime} currentPage={0}/>
     </FilteredIncidentsProvider>
   );
 };
