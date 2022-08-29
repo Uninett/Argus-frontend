@@ -20,6 +20,7 @@ import {
 import { IncidentsStateType, useIncidentsContext } from "../components/incidentsprovider";
 
 import { AppContext } from "../state/contexts";
+import {setOngoingBulkUpdate, unsetOngoingBulkUpdate} from "../state/reducers/apistate";
 
 type Dispatch = React.Dispatch<ActionsType>;
 
@@ -92,10 +93,13 @@ export type UseIncidentsActionType = {
   reopenIncident: (pk: Incident["pk"], description?: string) => Promise<Event>;
   acknowledgeIncident: (pk: Incident["pk"], ackBody: AcknowledgementBody) => Promise<Acknowledgement>;
   addTicketUrl: (pk: Incident["pk"], description: string) => Promise<IncidentTicketUrlBody>;
+  bulkAcknowledgeIncidents: (pks: Incident["pk"][], ackBody: AcknowledgementBody) => Promise<Acknowledgement[]>;
 };
 
 export const useIncidents = (): [IncidentsStateType, UseIncidentsActionType] => {
   const [state, { loadAllIncidents, closeIncident, reopenIncident, acknowledgeIncident, addTicketUrl }] = useIncidentsContext();
+
+  const { dispatch } = useContext(AppContext);
 
   const loadIncidentsFiltered = useCallback(
     (filter: Omit<Filter, "pk" | "name">) => {
@@ -143,6 +147,24 @@ export const useIncidents = (): [IncidentsStateType, UseIncidentsActionType] => 
     [addTicketUrl],
   );
 
+  const bulkAcknowledgeIncidentsCallback = useCallback(
+      (async (pks: Incident["pk"][], ackBody: AcknowledgementBody) => {
+        dispatch(setOngoingBulkUpdate());
+        let acks: Acknowledgement[] = [];
+        for (const pk of pks) {
+          await api.postAck(pk, ackBody).then((ack: Acknowledgement) => {
+            acks.push(ack);
+          }).catch((error) => {
+            dispatch(unsetOngoingBulkUpdate());
+            throw new Error(error);
+          })
+        }
+        dispatch(unsetOngoingBulkUpdate());
+        return acks;
+      }),
+      [],
+  );
+
   return [
     state,
     {
@@ -151,6 +173,7 @@ export const useIncidents = (): [IncidentsStateType, UseIncidentsActionType] => 
       reopenIncident: reopenIncidentCallback,
       acknowledgeIncident: acknowledgeIncidentCallback,
       addTicketUrl: addTicketUrlCallback,
+      bulkAcknowledgeIncidents: bulkAcknowledgeIncidentsCallback,
     },
   ];
 };

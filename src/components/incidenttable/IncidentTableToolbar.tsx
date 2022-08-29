@@ -60,7 +60,7 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
   const rootClasses = useStyles();
   const displayAlert = useAlerts();
 
-  const [, { closeIncident, reopenIncident, acknowledgeIncident, addTicketUrl }] = useIncidents();
+  const [, { closeIncident, reopenIncident, acknowledgeIncident, addTicketUrl, bulkAcknowledgeIncidents }] = useIncidents();
   const [, { incidentByPk }] = useIncidentsContext();
 
   // XXX: In the future there should be better seperation of components, and this
@@ -150,14 +150,26 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
             onSubmitAck={(ackBody: AcknowledgementBody) => {
               console.log("acknowledegment of all incidents", selectedIncidents);
               const pks: Incident["pk"][] = [...selectedIncidents.values()];
-              pks.forEach((pk: Incident["pk"]) => {
-                acknowledgeIncident(pk, ackBody)
-                  .then(() => {
-                    onClearSelection();
-                    displayAlert(`Submitted acknowledgment(s)`, "success");
-                  })
-                  .catch((error) => displayAlert(`Failed to submit acknowledgments(s) - ${error}`, "error"));
-              });
+              if (pks.length > 1) {
+                bulkAcknowledgeIncidents(pks, ackBody)
+                    .then(() => {
+                      onClearSelection();
+                      displayAlert(`Submitted acknowledgment(s)`, "success");
+                    }).catch((error) => {
+                      displayAlert(`Failed to submit acknowledgments(s) - ${error}`, "error")
+                });
+              } else {
+                pks.forEach((pk: Incident["pk"]) => {
+                  acknowledgeIncident(pk, ackBody)
+                      .then(() => {
+                        onClearSelection();
+                        displayAlert(`Submitted acknowledgment`, "success");
+                      })
+                      .catch((error) => {
+                        displayAlert(`Failed to submit acknowledgment - ${error}`, "error")
+                      });
+                });
+              }
             }}
             signOffActionProps={{
               dialogButtonText: "Ack",
