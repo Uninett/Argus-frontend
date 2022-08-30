@@ -100,18 +100,19 @@ export type UseIncidentsActionType = {
 };
 
 export const useIncidents = (): [IncidentsStateType, UseIncidentsActionType] => {
-  const [state, { loadAllIncidents, closeIncident, reopenIncident, acknowledgeIncident, addTicketUrl }] = useIncidentsContext();
+  const [state, { storeAllIncidents, loadAllIncidents, closeIncident, reopenIncident, acknowledgeIncident, addTicketUrl }] = useIncidentsContext();
 
   const { dispatch } = useContext(AppContext);
 
   const loadIncidentsFiltered = useCallback(
     (filter: Omit<Filter, "pk" | "name">) => {
       return api.getAllIncidentsFiltered(filter).then((incidents: Incident[]) => {
+        storeAllIncidents(incidents);
         loadAllIncidents(incidents);
         return incidents;
       });
     },
-    [loadAllIncidents],
+    [storeAllIncidents, loadAllIncidents],
   );
 
   const closeIncidentCallback = useCallback(
@@ -156,6 +157,7 @@ export const useIncidents = (): [IncidentsStateType, UseIncidentsActionType] => 
         let acks: Acknowledgement[] = [];
         for (const pk of pks) {
           await api.postAck(pk, ackBody).then((ack: Acknowledgement) => {
+            acknowledgeIncident(pk);
             acks.push(ack);
           }).catch((error) => {
             dispatch(unsetOngoingBulkUpdate());
@@ -165,7 +167,7 @@ export const useIncidents = (): [IncidentsStateType, UseIncidentsActionType] => 
         dispatch(unsetOngoingBulkUpdate());
         return acks;
       }),
-      [dispatch],
+      [dispatch, acknowledgeIncident],
   );
 
     const bulkAddTicketUrlCallback = useCallback(
@@ -175,6 +177,7 @@ export const useIncidents = (): [IncidentsStateType, UseIncidentsActionType] => 
             for (const pk of pks) {
                 await api.patchIncidentTicketUrl(pk, ticketUrl)
                     .then((response: IncidentTicketUrlBody) => {
+                        addTicketUrl(pk, ticketUrl);
                         responses.push(response);
                     }).catch((error) => {
                         dispatch(unsetOngoingBulkUpdate());
@@ -184,7 +187,7 @@ export const useIncidents = (): [IncidentsStateType, UseIncidentsActionType] => 
             dispatch(unsetOngoingBulkUpdate());
             return responses;
         }),
-        [dispatch],
+        [dispatch, addTicketUrl],
     );
 
     const bulkReopenIncidentsCallback = useCallback(
@@ -194,6 +197,7 @@ export const useIncidents = (): [IncidentsStateType, UseIncidentsActionType] => 
             for (const pk of pks) {
                 await api.postIncidentReopenEvent(pk)
                     .then((reopenEvent: Event) => {
+                        reopenIncident(pk);
                         reopenEvents.push(reopenEvent);
                     }).catch((error) => {
                         dispatch(unsetOngoingBulkUpdate());
@@ -203,7 +207,7 @@ export const useIncidents = (): [IncidentsStateType, UseIncidentsActionType] => 
             dispatch(unsetOngoingBulkUpdate());
             return reopenEvents;
         }),
-        [dispatch],
+        [dispatch, reopenIncident],
     );
 
     const bulkCloseIncidentsCallback = useCallback(
@@ -213,6 +217,7 @@ export const useIncidents = (): [IncidentsStateType, UseIncidentsActionType] => 
             for (const pk of pks) {
                 await api.postIncidentCloseEvent(pk, description)
                     .then((closeEvent: Event) => {
+                        closeIncident(pk);
                         closeEvents.push(closeEvent);
                     }).catch((error) => {
                         dispatch(unsetOngoingBulkUpdate());
@@ -222,7 +227,7 @@ export const useIncidents = (): [IncidentsStateType, UseIncidentsActionType] => 
             dispatch(unsetOngoingBulkUpdate());
             return closeEvents;
         }),
-        [dispatch],
+        [dispatch, closeIncident],
     );
 
   return [

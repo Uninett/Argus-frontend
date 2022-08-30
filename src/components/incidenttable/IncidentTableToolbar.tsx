@@ -62,7 +62,7 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
 
   const [, { closeIncident, reopenIncident, acknowledgeIncident, addTicketUrl,
     bulkAcknowledgeIncidents, bulkAddTicketUrl, bulkReopenIncidents, bulkCloseIncidents }] = useIncidents();
-  const [, { incidentByPk }] = useIncidentsContext();
+  const [, { storedIncidentByPk }] = useIncidentsContext();
 
   // XXX: In the future there should be better seperation of components, and this
   // shouldn't be needed here. Now it's used to clear selection when the filter changes.
@@ -72,7 +72,7 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
     const pks: Incident["pk"][] = [...selectedIncidents.keys()];
     if (pks.length === 0) return "mixed"; // no all state
 
-    const incidentsMap = pks.map(incidentByPk);
+    const incidentsMap = pks.map(storedIncidentByPk);
     const firstState = incidentsMap[0]?.open ? "open" : "closed";
 
     const allSame = incidentsMap.every((incident?: Incident) => {
@@ -87,7 +87,7 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
       return firstState;
     }
     return "mixed";
-  }, [selectedIncidents, incidentByPk]);
+  }, [selectedIncidents, storedIncidentByPk]);
 
   useEffect(() => {
     onClearSelection();

@@ -103,7 +103,9 @@ export const FilteredIncidentsProvider = ({
     if (filterMatcher === undefined) return state;
     const incidents = state.incidents.filter(filterMatcher);
     const _indexByPk = createIncidentsIndex(incidents);
-    return { incidents, _indexByPk, lastModified: state.lastModified };
+    const storedIncidents = state.storedIncidents.filter(filterMatcher);
+    const _storedIndexByPk = createIncidentsIndex(storedIncidents);
+    return { incidents, _indexByPk, lastModified: state.lastModified, storedIncidents, _storedIndexByPk, lastModifiedInStore: state.lastModifiedInStore };
   }, [filterMatcher, state]);
 
   return <IncidentsContext.Provider value={{ state: newState, dispatch }}>{children}</IncidentsContext.Provider>;
