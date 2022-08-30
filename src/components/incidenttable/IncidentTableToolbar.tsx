@@ -61,7 +61,7 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
   const displayAlert = useAlerts();
 
   const [, { closeIncident, reopenIncident, acknowledgeIncident, addTicketUrl,
-    bulkAcknowledgeIncidents, bulkAddTicketUrl }] = useIncidents();
+    bulkAcknowledgeIncidents, bulkAddTicketUrl, bulkReopenIncidents }] = useIncidents();
   const [, { incidentByPk }] = useIncidentsContext();
 
   // XXX: In the future there should be better seperation of components, and this
@@ -208,17 +208,29 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
               onManualOpen={() => {
                 console.log("reopening of all incidents", selectedIncidents);
                 const pks: Incident["pk"][] = [...selectedIncidents.values()];
-                pks.forEach((pk: Incident["pk"]) => {
-                  reopenIncident(pk)
-                    .then(() => {
-                      onClearSelection();
-                      displayAlert(`Reopened incident(s)`, "success");
-                    })
-                    .catch((error) => {
-                      console.log(error);
-                      displayAlert(`Failed to reopen incident(s) - ${error}`, "error")
-                    });
-                });
+                if (pks.length > 1) {
+                  bulkReopenIncidents(pks)
+                      .then((res) => {
+                        onClearSelection();
+                        displayAlert(`Reopened ${res.length}/${pks.length} incident(s)`, "success");
+                      })
+                      .catch((error) => {
+                        displayAlert(`Failed to reopen incident(s) - ${error}`, "error");
+                      });
+
+                } else {
+                  pks.forEach((pk: Incident["pk"]) => {
+                    reopenIncident(pk)
+                        .then(() => {
+                          onClearSelection();
+                          displayAlert(`Reopened incident`, "success");
+                        })
+                        .catch((error) => {
+                          console.log(error);
+                          displayAlert(`Failed to reopen incident - ${error}`, "error")
+                        });
+                  });
+                }
               }}
               reopenButtonText="Re-open selected"
               closeButtonText="Close selected"
