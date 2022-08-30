@@ -94,6 +94,7 @@ export type UseIncidentsActionType = {
   acknowledgeIncident: (pk: Incident["pk"], ackBody: AcknowledgementBody) => Promise<Acknowledgement>;
   addTicketUrl: (pk: Incident["pk"], description: string) => Promise<IncidentTicketUrlBody>;
   bulkAcknowledgeIncidents: (pks: Incident["pk"][], ackBody: AcknowledgementBody) => Promise<Acknowledgement[]>;
+  bulkAddTicketUrl: (pks: Incident["pk"][], description: string) => Promise<IncidentTicketUrlBody[]>;
 };
 
 export const useIncidents = (): [IncidentsStateType, UseIncidentsActionType] => {
@@ -165,6 +166,25 @@ export const useIncidents = (): [IncidentsStateType, UseIncidentsActionType] => 
       [dispatch],
   );
 
+    const bulkAddTicketUrlCallback = useCallback(
+        (async (pks: Incident["pk"][], ticketUrl: string) => {
+            dispatch(setOngoingBulkUpdate());
+            let responses: IncidentTicketUrlBody[] = [];
+            for (const pk of pks) {
+                await api.patchIncidentTicketUrl(pk, ticketUrl)
+                    .then((response: IncidentTicketUrlBody) => {
+                        responses.push(response);
+                    }).catch((error) => {
+                        dispatch(unsetOngoingBulkUpdate());
+                        throw new Error(error);
+                })
+            }
+            dispatch(unsetOngoingBulkUpdate());
+            return responses;
+        }),
+        [dispatch],
+    );
+
   return [
     state,
     {
@@ -174,6 +194,8 @@ export const useIncidents = (): [IncidentsStateType, UseIncidentsActionType] => 
       acknowledgeIncident: acknowledgeIncidentCallback,
       addTicketUrl: addTicketUrlCallback,
       bulkAcknowledgeIncidents: bulkAcknowledgeIncidentsCallback,
+      bulkAddTicketUrl: bulkAddTicketUrlCallback,
+
     },
   ];
 };

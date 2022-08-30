@@ -60,7 +60,8 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
   const rootClasses = useStyles();
   const displayAlert = useAlerts();
 
-  const [, { closeIncident, reopenIncident, acknowledgeIncident, addTicketUrl, bulkAcknowledgeIncidents }] = useIncidents();
+  const [, { closeIncident, reopenIncident, acknowledgeIncident, addTicketUrl,
+    bulkAcknowledgeIncidents, bulkAddTicketUrl }] = useIncidents();
   const [, { incidentByPk }] = useIncidentsContext();
 
   // XXX: In the future there should be better seperation of components, and this
@@ -131,14 +132,25 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
           <AddTicketUrl
             onAddTicketUrl={(url: string) => {
               const pks: Incident["pk"][] = [...selectedIncidents.values()];
-              pks.forEach((pk: Incident["pk"]) => {
-                addTicketUrl(pk, url)
-                  .then(() => {
-                    onClearSelection();
-                    displayAlert(`Updated ticket URL`, "success");
-                  })
-                  .catch((error) => displayAlert(`Failed to update ticket URL - ${error}`, "error"));
-              });
+              if (pks.length > 1) {
+                bulkAddTicketUrl(pks, url)
+                    .then((res) => {
+                      onClearSelection();
+                      displayAlert(`Updated ${res.length}/${pks.length} ticket URL(s)`, "success");
+                    })
+                    .catch((error) => {
+                      displayAlert(`Failed to update ticket URL(s) - ${error}`, "error");
+                    });
+              } else {
+                pks.forEach((pk: Incident["pk"]) => {
+                  addTicketUrl(pk, url)
+                      .then(() => {
+                        onClearSelection();
+                        displayAlert(`Updated ticket URL`, "success");
+                      })
+                      .catch((error) => displayAlert(`Failed to update ticket URL - ${error}`, "error"));
+                });
+              }
             }}
             signOffActionProps={{
               ButtonComponent: OutlinedButton,
