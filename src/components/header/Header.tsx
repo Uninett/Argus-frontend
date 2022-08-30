@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: theme.palette.error.dark,
     },
     rootInfoMessage: {
-        backgroundColor: theme.palette.info.dark,
+        backgroundColor: theme.palette.warning.dark,
     },
     grow: { flexGrow: 1 },
     rightAligned: { marginRight: theme.spacing(2) },
