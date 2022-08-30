@@ -61,7 +61,7 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
   const displayAlert = useAlerts();
 
   const [, { closeIncident, reopenIncident, acknowledgeIncident, addTicketUrl,
-    bulkAcknowledgeIncidents, bulkAddTicketUrl, bulkReopenIncidents }] = useIncidents();
+    bulkAcknowledgeIncidents, bulkAddTicketUrl, bulkReopenIncidents, bulkCloseIncidents }] = useIncidents();
   const [, { incidentByPk }] = useIncidentsContext();
 
   // XXX: In the future there should be better seperation of components, and this
@@ -196,14 +196,25 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
               onManualClose={(msg: string) => {
                 console.log("closing of all incidents", selectedIncidents);
                 const pks: Incident["pk"][] = [...selectedIncidents.values()];
-                pks.forEach((pk: Incident["pk"]) => {
-                  closeIncident(pk, msg)
-                    .then(() => {
-                      onClearSelection();
-                      displayAlert(`Closed incident(s)`, "success");
-                    })
-                    .catch((error) => displayAlert(`Failed to close incident(s) - ${error}`, "error"));
-                });
+                if (pks.length > 1) {
+                  bulkCloseIncidents(pks, msg)
+                      .then((res) => {
+                        onClearSelection();
+                        displayAlert(`Closed ${res.length}/${pks.length} incident(s)`, "success");
+                      })
+                      .catch((error) => {
+                        displayAlert(`Failed to close incident(s) - ${error}`, "error");
+                      });
+                } else {
+                  pks.forEach((pk: Incident["pk"]) => {
+                    closeIncident(pk, msg)
+                        .then(() => {
+                          onClearSelection();
+                          displayAlert(`Closed incident`, "success");
+                        })
+                        .catch((error) => displayAlert(`Failed to close incident - ${error}`, "error"));
+                  });
+                }
               }}
               onManualOpen={() => {
                 console.log("reopening of all incidents", selectedIncidents);

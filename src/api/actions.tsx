@@ -96,6 +96,7 @@ export type UseIncidentsActionType = {
   bulkAcknowledgeIncidents: (pks: Incident["pk"][], ackBody: AcknowledgementBody) => Promise<Acknowledgement[]>;
   bulkAddTicketUrl: (pks: Incident["pk"][], description: string) => Promise<IncidentTicketUrlBody[]>;
   bulkReopenIncidents: (pks: Incident["pk"][], description?: string) => Promise<Event[]>;
+  bulkCloseIncidents: (pks: Incident["pk"][], description?: string) => Promise<Event[]>;
 };
 
 export const useIncidents = (): [IncidentsStateType, UseIncidentsActionType] => {
@@ -205,6 +206,25 @@ export const useIncidents = (): [IncidentsStateType, UseIncidentsActionType] => 
         [dispatch],
     );
 
+    const bulkCloseIncidentsCallback = useCallback(
+        (async (pks: Incident["pk"][], description?: string) => {
+            dispatch(setOngoingBulkUpdate());
+            let closeEvents: Event[] = [];
+            for (const pk of pks) {
+                await api.postIncidentCloseEvent(pk, description)
+                    .then((closeEvent: Event) => {
+                        closeEvents.push(closeEvent);
+                    }).catch((error) => {
+                        dispatch(unsetOngoingBulkUpdate());
+                        throw new Error(error);
+                    })
+            }
+            dispatch(unsetOngoingBulkUpdate());
+            return closeEvents;
+        }),
+        [dispatch],
+    );
+
   return [
     state,
     {
@@ -216,7 +236,7 @@ export const useIncidents = (): [IncidentsStateType, UseIncidentsActionType] => 
       bulkAcknowledgeIncidents: bulkAcknowledgeIncidentsCallback,
       bulkAddTicketUrl: bulkAddTicketUrlCallback,
       bulkReopenIncidents: bulkReopenIncidentsCallback,
-
+      bulkCloseIncidents: bulkCloseIncidentsCallback,
     },
   ];
 };
