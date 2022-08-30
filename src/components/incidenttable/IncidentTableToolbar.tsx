@@ -152,11 +152,11 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
               const pks: Incident["pk"][] = [...selectedIncidents.values()];
               if (pks.length > 1) {
                 bulkAcknowledgeIncidents(pks, ackBody)
-                    .then(() => {
+                    .then((acks) => {
                       onClearSelection();
-                      displayAlert(`Submitted acknowledgment(s)`, "success");
+                      displayAlert(`Submitted ${acks.length}/${pks.length} acknowledgment(s)`, "success");
                     }).catch((error) => {
-                      displayAlert(`Failed to submit acknowledgments(s) - ${error}`, "error")
+                      displayAlert(`Failed to submit acknowledgments(s) - ${error}`, "error");
                 });
               } else {
                 pks.forEach((pk: Incident["pk"]) => {

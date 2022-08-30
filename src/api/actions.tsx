@@ -162,7 +162,7 @@ export const useIncidents = (): [IncidentsStateType, UseIncidentsActionType] => 
         dispatch(unsetOngoingBulkUpdate());
         return acks;
       }),
-      [],
+      [dispatch],
   );
 
   return [
