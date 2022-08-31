@@ -177,7 +177,6 @@ export type FormatTimestampOptions = Partial<{
 }>;
 
 export function formatTimestamp(timestamp: Date | string, options?: FormatTimestampOptions): string {
-  /* TODO: Have (global?) setting on user to allow forcing of ISO 8601 */
   const dateTimestamp = new Date(timestamp);
 
   let formatString = TIMESTAMP_FORMAT;

@@ -25,10 +25,7 @@ export type SelectedFilterStateType = {
 
 const initialSelectedFilter: SelectedFilterStateType = {
   existingFilter: undefined,
-
-  // showAcked: false,
-  // autoUpdate: "realtime", // TODO: this should not be here...
-  // show: "open",
+  
   filterContent: {
     open: true,
     acked: false,
