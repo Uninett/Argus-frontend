@@ -42,12 +42,8 @@ export const SourceSelector: React.FC<SourceSelectorPropsType> = ({
         />
       )}
       onChange={(e: unknown, changeValue, reason: string) => {
-        switch (reason) {
-          default:
-            setSelectValue(changeValue);
-            onSelectionChange(changeValue);
-            break;
-        }
+        setSelectValue(changeValue);
+        onSelectionChange(changeValue);
       }}
       value={selectValue}
     />
