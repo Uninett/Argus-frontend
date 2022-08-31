@@ -366,7 +366,7 @@ export const useIncidentsContext = (): [IncidentsStateType, IncidentsActionsType
 
   const acknowledgeIncidentCallback = useCallback(
     (pk: Incident["pk"]) => {
-      const incident = findIncidentByPk(state, pk);
+      const incident = findStoredIncidentByPk(state, pk);
       if (incident === undefined) {
         throw new Error(`Unable to acknowledge incident with pk: ${pk}, couldn't find it`);
       }
