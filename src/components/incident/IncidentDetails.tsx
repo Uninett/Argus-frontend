@@ -273,7 +273,6 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
       .postIncidentCloseEvent(incident.pk, msg)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .then((event: Event) => {
-        // TODO: add close event to list of events
         displayAlert(`Closed incident ${incident && incident.pk}`, "success");
         onIncidentChange({ ...incident, open: false });
       })
@@ -287,7 +286,6 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
       .postIncidentReopenEvent(incident.pk)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .then((event: Event) => {
-        // TODO: add open event to list of events
         displayAlert(`Reopened incident ${incident && incident.pk}`, "success");
         onIncidentChange({ ...incident, open: true });
       })
@@ -298,7 +296,6 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
 
   const ackExpiryDate = undefined;
 
-  // TODO: get tag from incident
   const tags = useMemo(
     () =>
       incident.tags.map((tag: IncidentTag) => {
@@ -405,7 +402,6 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                   <TicketModifiableField
                     url={incident.ticket_url}
                     saveChange={(url?: string) => {
-                      // TODO: api
                       api
                         .patchIncidentTicketUrl(incident.pk, url || "")
                         // eslint-disable-next-line @typescript-eslint/camelcase
@@ -565,7 +561,6 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                       <TicketModifiableField
                         url={incident.ticket_url}
                         saveChange={(url?: string) => {
-                          // TODO: api
                           api
                             .patchIncidentTicketUrl(incident.pk, url || "")
                             // eslint-disable-next-line @typescript-eslint/camelcase
