@@ -68,7 +68,6 @@ type CB = (response: AxiosResponse, error: ErrorType) => void;
 
 const apiConfig = {
   returnRejectedPromiseOnError: false,
-  // withCredentials: true,
   baseURL: BACKEND_URL,
 };
 
@@ -315,11 +314,6 @@ class ApiClient {
       return Promise.reject(new Error(`Failed to put incident`));
     }
     return Promise.resolve(incident);
-    // return this.resolveOrReject(
-    //   this.authPut<Incident, Incident>(`/api/v1/incidents/${incident.pk}`, incident),
-    //   defaultResolver,
-    //   (error) => new Error(`Failed to put incident: ${error}`),
-    // );
   }
 
   public postIncidentReopenEvent(pk: number): Promise<Event> {
