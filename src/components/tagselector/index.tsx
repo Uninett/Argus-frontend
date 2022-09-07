@@ -46,15 +46,8 @@ export const TagSelector: React.FC<TagSelectorPropsType> = ({
   }, [tags]);
 
   const [value, setValue] = useState<string>("");
-  // const [selectValue, setSelectValue] = useState<string[]>([]);
-
-  // useEffect(() => {
-  //   if (!defaultSelected) return;
-  //   if (JSON.stringify(defaultSelected) !== JSON.stringify(selectValue)) setSelectValue(defaultSelected);
-  // }, [defaultSelected]);
 
   const handleSelectNew = (newValue: string[]) => {
-    //setSelectValue((oldValue: string[]) => {
     const oldSet = new Set<string>(selected);
 
     let updatedInputValue = false;
@@ -69,10 +62,6 @@ export const TagSelector: React.FC<TagSelectorPropsType> = ({
 
     if (updatedInputValue) onSelectionChange(newValue);
   };
-
-  // useEffect(() => {
-  //   onSelectionChange(selectValue.map(originalToTag));
-  // }, [selectValue, onSelectionChange]);
 
   return (
     <Autocomplete
@@ -91,7 +80,7 @@ export const TagSelector: React.FC<TagSelectorPropsType> = ({
         }
       }}
       inputValue={value}
-      onInputChange={(e: unknown, inputValue: string /* , reason: string */) => {
+      onInputChange={(e: unknown, inputValue: string) => {
         setValue(inputValue);
       }}
       renderInput={(params) => (

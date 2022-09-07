@@ -75,7 +75,6 @@ export const incidentsReducer = (state: IncidentsStateType, action: IncidentsAct
       const index: Index | null = findIncidentIndex(incident.pk);
       if (index === null) {
         // Doesn't exist :(
-        // throw new Error(`Incident ${incident.pk} can't be modified because it doesn't exist`);
         return incidentsReducer(state, { type: IncidentsType.AddIncident, payload: incident });
       }
 
@@ -91,7 +90,6 @@ export const incidentsReducer = (state: IncidentsStateType, action: IncidentsAct
       if (index === null) {
         // Doesn't exist :(
         console.warn(`Trying to remove incident ${pk} that doesn't exist, ignoring.`);
-        // throw new Error(`Incident ${pk} can't be removed because it doesn't exist`);
         return state;
       }
 
@@ -102,7 +100,6 @@ export const incidentsReducer = (state: IncidentsStateType, action: IncidentsAct
       const { [pk]: removedIndex, ..._indexByPk } = createIncidentsIndex(incidents);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { [pk]: removedLM, ...lastModified } = state.lastModified;
-      // const _indexByPk = createIncidentsIndex(incidents);
       return { incidents: incidents, lastModified, _indexByPk };
     }
 
@@ -111,7 +108,6 @@ export const incidentsReducer = (state: IncidentsStateType, action: IncidentsAct
       const index: Index | null = findIncidentIndex(incident.pk);
       if (index !== null) {
         // Already exists :(
-        // throw new Error(`Incident ${incident} can't be added because it already exists`);
         console.warn(`Trying to add incident ${incident} that already exists, passing to modify instead.`);
         return incidentsReducer(state, { type: IncidentsType.ModifyIncident, payload: incident });
       }
