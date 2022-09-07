@@ -84,14 +84,10 @@ export const TagSelector: React.FC<TagSelectorPropsType> = ({
       options={keys}
       disabled={disabled}
       onChange={(e: unknown, changeValue, reason: string) => {
-        switch (reason) {
-          case "select-option":
-            handleSelectNew(changeValue);
-            break;
-
-          default:
-            onSelectionChange(changeValue);
-            break;
+        if (reason === "select-option") {
+          handleSelectNew(changeValue);
+        } else {
+          onSelectionChange(changeValue);
         }
       }}
       inputValue={value}
