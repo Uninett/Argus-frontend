@@ -1,7 +1,7 @@
 import React from "react";
 
-import DarkLogo from "../../Media/img/logo/logo_dark.png";
-import WhiteLogo from "../../Media/img/logo/logo_white.png";
+import DarkLogo from "../../Media/img/logo/logo_dark.svg";
+import WhiteLogo from "../../Media/img/logo/logo_white.svg";
 
 type LogoPropsType = {
   dark?: boolean;
