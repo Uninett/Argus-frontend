@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useMemo } from "react";
-// import "./incidenttable.css";
 import "react-table/react-table.css";
 
 import Button from "@material-ui/core/Button";

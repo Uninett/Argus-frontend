@@ -15,10 +15,6 @@ export type SelectedFilterStateType = {
 
   filterContent: FilterContent;
 
-  // showAcked: boolean;
-  // autoUpdate: AutoUpdateMethod;
-  // show: "open" | "closed" | "both";
-
   // The resulting incidents filter
   incidentsFilter: Omit<Filter, "pk" | "name">;
 };
@@ -64,12 +60,6 @@ export type SelectedFilterProperties = Partial<
   }
 >;
 
-// type NullableSelectedFilterProperties = Partial<
-//   Exclude<SelectedFilterProperties, "filterContent"> & {
-//     filterContent?: NullableAndOptional<FilterContent>;
-//   }
-// >;
-
 enum SelectedFilterType {
   SetExistingFilter = "SET_EXISTING_FILTER",
   UnsetExistingFilter = "UNSET_EXISTING_FILTER",
@@ -105,7 +95,6 @@ function mergedFilterContent(state: FilterContent, selected: SelectedFilterPrope
   nextState.maxlevel = oldOrNew(state.maxlevel, selected?.maxlevel);
   nextState.tags = oldOrNewArray(state.tags, selected?.tags);
   nextState.sourceSystemIds = oldOrNewArray(state.sourceSystemIds, selected?.sourceSystemIds);
-  // console.log("state", state, "selected", selected, "next", nextState);
   return nextState;
 }
 
@@ -135,7 +124,6 @@ export const selectedFilterReducer = (
   switch (action.type) {
     case SelectedFilterType.SetSelectedFilter: {
       const selected = action.payload;
-      // const { filterContent } = { ...state, ...selected };
 
       let unset = false; // did we do changes so that we need to change the existingFilter to undefined?
       const filterContent: FilterContent = mergedFilterContent(state.filterContent, selected.filterContent);

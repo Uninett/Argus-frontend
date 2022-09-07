@@ -74,7 +74,6 @@ export class RealtimeService {
   }
 
   private setState(state: RealtimeServiceState) {
-    // console.debug(`[RTS ${this.id}] setState`, state);
     this.onStateChange(this.state, state);
     this.state = state;
   }
@@ -93,7 +92,6 @@ export class RealtimeService {
 
   private resetRetry() {
     this.retryInterval = 1;
-    // this.retries = 0;
     type ClearTimeoutParams = Parameters<typeof clearTimeout>;
     clearTimeout(this.reconnectInterval as ClearTimeoutParams[0]);
     this.reconnectInterval = undefined;
@@ -120,7 +118,6 @@ export class RealtimeService {
   }
 
   public connect() {
-    /// let reconnectInterval: ReturnType<typeof setTimeout> | undefined = undefined;
     if (this.state !== "closed" || this.ws !== undefined) {
       console.error(`[RealtimeService ${this.id}] calling connect() when there is existing ws connection. returning`);
       return;
@@ -183,7 +180,6 @@ export class RealtimeService {
       }
 
       this.setState("opened");
-      // console.log(ws.open)
 
       // The "subscribe" action is required to actually
       // make the server send updates. So we subscribe

@@ -68,7 +68,6 @@ type CB = (response: AxiosResponse, error: ErrorType) => void;
 
 const apiConfig = {
   returnRejectedPromiseOnError: false,
-  // withCredentials: true,
   baseURL: BACKEND_URL,
 };
 
