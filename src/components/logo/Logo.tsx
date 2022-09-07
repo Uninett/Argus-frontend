@@ -1,7 +1,7 @@
 import React from "react";
 
-import DarkLogoSvg from "../../Media/img/logo/logo_dark.svg";
-import WhiteLogoSvg from "../../Media/img/logo/logo_white.svg";
+import DarkLogo from "../../Media/img/logo/logo_dark.png";
+import WhiteLogo from "../../Media/img/logo/logo_white.png";
 
 type LogoPropsType = {
   dark?: boolean;
@@ -9,7 +9,7 @@ type LogoPropsType = {
 };
 
 const Logo: React.FC<LogoPropsType> = ({ dark, className }: LogoPropsType) => {
-  const src = dark ? DarkLogoSvg : WhiteLogoSvg;
+  const src = dark ? DarkLogo : WhiteLogo;
   return <img className={className} src={src} alt="Argus logo" />;
 };
 
