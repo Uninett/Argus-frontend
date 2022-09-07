@@ -14,7 +14,6 @@ import type {
   TimeslotPK,
 } from "../api/types.d";
 
-// TODO: fix this
 import { incidentWithFormattedTimestamp, IncidentWithFormattedTimestamp } from "../utils";
 import { toMap, pkGetter } from "../utils";
 

@@ -592,7 +592,6 @@ describe('Incidents Table: reflects user interactions with Incidents Filter Tool
     });
   });
 
-  // todo fix bug where tags containing word "tag" break the state logic
   describe('User interacts with the Tags Selector', () => {
 
     const TESTED_TAG = EXISTING_TAGS[0];

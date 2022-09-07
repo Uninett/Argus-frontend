@@ -208,7 +208,7 @@ export class RealtimeService {
     this.ws.onerror = (e: any) => {
       console.error(`[RealtimeService ${this.id}] got error on websocket client, closing: ${e.message}`);
       if (this.ws) this.ws.close();
-      this.setState("closed");
+      this.setState("closed"); 
     };
   }
 }

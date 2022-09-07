@@ -471,9 +471,6 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
   }, [timeframe]);
 
   useEffect(() => {
-    // TODO: This could be stored in the global state as well,
-    // because it is useful other places, but it's unnecessary to update
-    // all the time.
     api
       .getAllIncidentsMetadata()
       .then((incidentMetadata: IncidentMetadata) => {

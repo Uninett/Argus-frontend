@@ -21,7 +21,7 @@ export type SelectedFilterStateType = {
 
 const initialSelectedFilter: SelectedFilterStateType = {
   existingFilter: undefined,
-
+  
   filterContent: {
     open: true,
     acked: false,
