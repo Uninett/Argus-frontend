@@ -45,13 +45,14 @@ Log in and start using Argus at **/login**
 ## Customize alarm notifications in Argus
 
 ## Manage your contact details in Argus
+Edit phone numbers. Phone numbers that are present in your settings can be used when customizing notifications.
+
 1. Click on _user icon_ in header
 2. Click on `Settings` in drop-down menu
 
     ![](../../Screenshot 2022-09-07 at 14.18.11.png)
     
 #### Add new phone number
-
 1. Type in a phone number including land code
 
     ![](../../Screenshot 2022-09-07 at 14.46.13.png)
