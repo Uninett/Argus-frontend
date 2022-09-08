@@ -1,1 +1,91 @@
-<?xml version="1.0" encoding="UTF-8"?><svg id="uuid-9fffca87-1040-4a16-98eb-31c1ae266472" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 359.66 279.76"><defs><style>.uuid-26caa2b9-6ea9-462a-bfae-311ee7da8a51{fill:#00668a;}.uuid-2c442167-92d0-4057-a34b-f7f152c82221,.uuid-e28f3b4b-6806-4a65-9806-a4b2826c8fb3{fill:#fff;}.uuid-656d342e-c4c8-456e-8e5d-13e5812fcb65{letter-spacing:0em;}.uuid-e28f3b4b-6806-4a65-9806-a4b2826c8fb3{font-family:Futura-Bold, Futura;font-size:75px;}</style></defs><g id="uuid-3b24017c-f1d2-44a5-a5cd-1e924c84079d"><g id="uuid-4f00ec98-bc65-4abd-b549-068fa2ccb1b1"><path id="uuid-cefdf6b3-cb14-4176-b549-31df15414a8b" class="uuid-26caa2b9-6ea9-462a-bfae-311ee7da8a51" d="M359.66,279.76s-92.28-20.81-179.83-20.81c-77.15,0-179.83,20.81-179.83,20.81V.4C53.01,11.85,121.06,18.02,179.83,18.02S299.64,13.12,359.66,0V279.76Z"/><text class="uuid-e28f3b4b-6806-4a65-9806-a4b2826c8fb3" transform="translate(35.81 227.73)"><tspan x="0" y="0">A</tspan><tspan class="uuid-656d342e-c4c8-456e-8e5d-13e5812fcb65" x="60.15" y="0">R</tspan><tspan x="112.57" y="0">GUS</tspan></text><g id="uuid-5697901e-3437-499f-bb5e-bf338311221b"><path class="uuid-2c442167-92d0-4057-a34b-f7f152c82221" d="M56.8,133.84c2.64-11.75,8.2-22.49,14.93-32.36,17.47-25.63,45.42-44.08,75.84-51.07,12.27-2.76,24.86-3.78,37.41-3.4,15.07,.44,30.2,2.42,44.74,6.49,23.75,6.52,46.88,18.62,63.25,37.5,4.5,5.29,12.23,17.26,16.35,23.01,0,0-12.3,.07-12.3,.07-2.32,.3-3.74,2.2-5.65,3.91-2.4,2.34-5.04,5.12-7.9,7.65-5.66,4.99-12.4,8.97-19.57,11.07,0,0-1.3-2.12-1.3-2.12,5.76-3.61,10.83-8.2,14.95-13.62,4.45-5.44,7.26-12.46,13.22-16.66,0,0-.37,2.59-.37,2.59-21.39-20.18-52.96-29.46-81.58-33.21-13.39-1.62-27.33-2.29-40.82-1.68-38.24,1.92-74.18,21.49-99.12,50.17-3.57,4.1-7.01,8.43-9.93,12.94,0,0-2.14-1.27-2.14-1.27h0Z"/><path class="uuid-2c442167-92d0-4057-a34b-f7f152c82221" d="M181.31,75.55c21.13,0,38.26,17.13,38.26,38.26s-17.13,38.26-38.26,38.26-38.26-17.13-38.26-38.26,17.13-38.26,38.26-38.26"/></g></g></g></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:version="1.0beta1 (32d4812, 2019-09-19)"
+   sodipodi:docname="no frame white.svg"
+   version="1.1"
+   viewBox="0 0 296.96 208.42"
+   id="uuid-081bd064-f7a4-4701-a438-ece56dfc20f3">
+  <metadata
+     id="metadata1606">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     inkscape:current-layer="uuid-a5c0b25e-424b-4112-b6d7-882d6e5902f0"
+     inkscape:window-maximized="0"
+     inkscape:window-y="25"
+     inkscape:window-x="0"
+     inkscape:cy="104.21"
+     inkscape:cx="53.081872"
+     inkscape:zoom="1.3050571"
+     inkscape:pagecheckerboard="true"
+     showgrid="false"
+     id="namedview1604"
+     inkscape:window-height="889"
+     inkscape:window-width="2200"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     guidetolerance="10"
+     gridtolerance="10"
+     objecttolerance="10"
+     borderopacity="1"
+     inkscape:document-rotation="0"
+     bordercolor="#666666"
+     pagecolor="#ffffff" />
+  <defs
+     id="defs1586">
+    <style
+       id="style1584">.uuid-9c17ef5b-ea7f-4822-888b-1aa3cb48c6d5,.uuid-b11339f5-b3c4-4df5-98f2-8751bc0b936e{fill:#00668a;}.uuid-fb25c1fa-e217-44d9-93dd-479b5fce2fdb{letter-spacing:0em;}.uuid-b11339f5-b3c4-4df5-98f2-8751bc0b936e{font-family:Futura-Bold, Futura;font-size:75px;}</style>
+  </defs>
+  <g
+     id="uuid-a8323419-a906-4524-b7a3-4c87a5d06302">
+    <g
+       id="uuid-a5c0b25e-424b-4112-b6d7-882d6e5902f0">
+      <text
+         style="fill:#ffffff;fill-opacity:1;"
+         id="text1594"
+         transform="translate(0 182.62)"
+         class="uuid-b11339f5-b3c4-4df5-98f2-8751bc0b936e"><tspan
+           style="fill:#ffffff;fill-opacity:1;"
+           id="tspan1588"
+           y="0"
+           x="0">A</tspan><tspan
+           style="fill:#ffffff;fill-opacity:1;"
+           id="tspan1590"
+           y="0"
+           x="60.15"
+           class="uuid-fb25c1fa-e217-44d9-93dd-479b5fce2fdb">R</tspan><tspan
+           style="fill:#ffffff;fill-opacity:1;"
+           id="tspan1592"
+           y="0"
+           x="112.57">GUS</tspan></text>
+      <g
+         id="uuid-451afd43-a51d-42bd-82cc-033fbd978d12">
+        <path
+           style="fill:#ffffff;fill-opacity:1"
+           id="path1596"
+           d="M20.84,87.81c2.52-11.78,8.06-22.65,14.74-32.58C53.11,29.27,80.88,10.71,111.51,3.63,129.64-.77,148.66-.66,167.12,1.28c5.99,.52,12.12,1.72,18.01,2.79,5.8,1.29,12.14,2.91,17.79,4.82,16.25,5.15,32.08,13.28,45.28,24.12,5,4.13,9.67,8.69,13.74,13.76,2.35,2.91,18.85,25.45,21.45,28.9,0,0-20.72-5.13-20.72-5.13-.13-.03-.29-.25-.64-.12l-.25,.03s-.13,.01-.13,.01c0,0-.16,.07-.16,.07-.84,.33-1.5,.81-2.25,1.36-3.39,2.75-6.41,5.85-10.27,8.87-6.06,4.84-13.4,8.55-20.97,9.99,0,0-1.36-2.22-1.36-2.22,5.72-3.67,10.76-8.24,14.84-13.67,4.44-5.48,7.24-12.52,13.22-16.76,0,0-.42,2.96-.42,2.96-1.74-1.85-3.89-3.63-5.91-5.26-10.6-8.29-23.18-14.25-35.8-18.83-4.51-1.51-11.06-3.58-15.63-4.64,0,0-3.95-1.02-3.95-1.02l-4.01-.79c-6.21-1.38-13.86-2.38-20.18-3.2-6.26-.49-14.16-1.22-20.42-1.23-38.44-2.35-76.01,12.11-103.96,38.43-6,5.54-11.61,11.55-16.63,18.02-1.66,2.15-3.3,4.38-4.73,6.61,0,0-2.24-1.33-2.24-1.33h0Z"
+           class="uuid-9c17ef5b-ea7f-4822-888b-1aa3cb48c6d5" />
+        <path
+           style="fill:#ffffff;fill-opacity:1"
+           id="path1598"
+           d="M145.48,29.37c21.13,0,38.26,17.13,38.26,38.26s-17.13,38.26-38.26,38.26-38.26-17.13-38.26-38.26,17.13-38.26,38.26-38.26"
+           class="uuid-9c17ef5b-ea7f-4822-888b-1aa3cb48c6d5" />
+      </g>
+    </g>
+  </g>
+</svg>
