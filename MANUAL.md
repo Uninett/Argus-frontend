@@ -33,17 +33,21 @@ Argus is created for **ease of alarm management** and **customizable alarm notif
 
 ## Log into Argus
 Log in and start using Argus at **/login**
+    ![](../../Screenshot 2022-09-08 at 13.49.23.png)
 
 ### Login using username and password
 1. Fill out _username_ and _password_
 
+    ![](../../Screenshot 2022-09-08 at 13.48.07.png)
+
 2. Press `LOGIN`
 
-   <img height="170" src="../../Screenshot 2022-09-07 at 14.11.27.png" width="354"/>
+    ![](../../Screenshot 2022-09-08 at 13.48.07 2.png)
+
 ### Login using Feide
 1. Press `LOGIN WITH FEIDE`
 
-   <img src="../../Screenshot 2022-09-07 at 13.56.18.png" width="354" height="310"/>
+   ![](../../Screenshot 2022-09-08 at 13.48.07 3.png)
 
 2. Select account you want to log in with
 
@@ -66,6 +70,8 @@ Choose **when**, **where** and **what** alarm notifications you want to receive 
 
 ### Access your notification profiles
 1. Press `PROFILES` in header.
+
+    ![](../../Screenshot 2022-09-08 at 13.53.49 2.png)
 
 ### Add new notification profile
 1. Select timeslot for when to receive notifications in _Timeslot_ drop-down. If drop-down menu is empty, [create a timeslot](#add-new-timeslot) first.
@@ -91,6 +97,10 @@ Choose **when**, **where** and **what** alarm notifications you want to receive 
 ## Manage time for when to receive notifications in Argus
 Add, edit or delete timeslots in _Timeslots_.
 
+![](../../Screenshot 2022-09-08 at 14.02.43.png)
+
+![](../../Screenshot 2022-09-08 at 14.03.02.png)
+
 ### What is timeslot in Argus
 Timeslot is a collection of one or more recurrences with a meaningful name. Saved timeslots are used when customizing alarm notifications. Each timeslot represents a window or several windows of time for when it is OK to receive alarm notifications.
 
@@ -109,6 +119,8 @@ For example, in this timeslot alarm notifications are allowed from 4 p.m a.m to 
 
 ### Access your timeslots
 1. Press `TIMESLOTS` in header
+
+    ![](../../Screenshot 2022-09-08 at 13.53.49 3.png)
 ### Add new recurrence
 Each timeslot has at least one recurrence by default. Add more recurrences if your timeslot needs more than one.
 1. [Go to your timeslots](#access-your-timeslots).
@@ -174,8 +186,12 @@ Each timeslot has at least one recurrence by default. Add more recurrences if yo
 
 ## Manage your contact details in Argus
 Add, edit or delete phone numbers in your settings. Phone numbers that are present in your settings can be used when customizing notifications.
+
+![](../../Screenshot 2022-09-08 at 14.00.29.png)
 ### Access your contact details in settings
 1. Click on _user icon_ in header.
+    
+    ![](../../Screenshot 2022-09-08 at 13.53.49.png)
 2. Click on `Settings` in drop-down menu.
 
     ![](../../Screenshot 2022-09-07 at 14.18.11.png)
@@ -207,6 +223,8 @@ Add, edit or delete phone numbers in your settings. Phone numbers that are prese
 
 ## Log out from Argus
 1. Click on _user icon_ in header.
+
+    ![](../../Screenshot 2022-09-08 at 13.53.49.png)
 2. Click on `Logout` in drop-down menu.
 
    ![](../../Screenshot 2022-09-07 at 14.18.11 2.png)
