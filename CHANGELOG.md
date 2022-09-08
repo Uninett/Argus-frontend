@@ -5,3 +5,4 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 
 ### Fixed
 - Fix ARGUS logo clipping part of the name.
+- Add seconds to timestamps in elements of the event feed in detailed incident view

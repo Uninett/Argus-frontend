@@ -26,7 +26,7 @@ const SignedMessage: React.FC<SignedMessagePropsType> = ({
   TextComponent,
 }: SignedMessagePropsType) => {
   const ackDate = parseISO(timestamp);
-  const formattedAckDate = formatTimestamp(ackDate);
+  const formattedAckDate = formatTimestamp(ackDate, { withSeconds: true });
 
   const Component: React.ComponentType = TextComponent || ListItemText;
 
