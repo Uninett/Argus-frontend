@@ -7,4 +7,4 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 - Fix ARGUS logo clipping part of the name.
 
 ### Changed
-- Logo
+- Logo and favicon
