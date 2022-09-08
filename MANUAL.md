@@ -5,6 +5,11 @@
   - [Using Feide](#login-using-feide)
 - [Manage alarms](#work-with-alarms-in-argus)
 - [Customize notifications](#customize-alarm-notifications-in-argus)
+  - [Access your notification settings](#access-your-notification-profiles)
+  - [Add notification profile](#add-new-notification-profile)
+  - [Edit notification profile](#edit-existing-notification-profile)
+  - [Disable notification profile](#disable-notification-profile)
+  - [Delete notification profile](#delete-notification-profile)
 - [Manage notification time](#manage-time-for-when-to-receive-notifications-in-argus)
   - [What is timeslot](#what-is-timeslot-in-argus)
   - [What is recurrence](#what-is-recurrence-in-argus)
@@ -57,6 +62,31 @@ Log in and start using Argus at **/login**
 ## Work with alarms in Argus
 
 ## Customize alarm notifications in Argus
+Choose **when**, **where** and **what** alarm notifications you want to receive by creating, editing and deleting notification profiles.
+
+### Access your notification profiles
+1. Press `PROFILES` in header.
+
+### Add new notification profile
+1. Select timeslot for when to receive notifications in _Timeslot_ drop-down. If drop-down menu is empty, [create a timeslot](#add-new-timeslot) first.
+2. Select what alarms you want to receive notifications about in _Filter_ drop-down. If drop-down menu is empty, create a filter first.
+3. Choose whether you want to receive notifications via SMS or Email in _Media_ drop-down.
+4. Select what phone number(s) you want to receive notifications to in _Phone number_ drop-down. If drop-down menu is empty, [add a phone number](#add-new-phone-number-in-settings) first.
+5. Press `CREATE`.
+
+### Edit existing notification profile
+1. Change timeslot for when to receive notifications in _Timeslot_ drop-down if needed.
+2. Change what alarms you want to receive notifications about in _Filter_ drop-down if needed.
+3. Change whether you want to receive notifications via SMS or Email in _Media_ drop-down if needed.
+4. Change what phone number(s) you want to receive notifications to in _Phone number_ drop-down if needed.
+5. Press `SAVE`.
+
+### Disable notification profile
+1. Uncheck the _Active_-box inside one of your existing notification profiles.
+
+### Delete notification profile
+1. Press `DISCARD` inside one of your existing notification profiles.
+
 
 ## Manage time for when to receive notifications in Argus
 Add, edit or delete timeslots in _Timeslots_.
