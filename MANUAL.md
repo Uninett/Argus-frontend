@@ -64,6 +64,19 @@ Log in and start using Argus at **/login**
 5. Continue with preferred method of 2-factor Feide authentication
 
 ## Work with alarms in Argus
+**View**, **filter** and **update** alarms that come to Argus from different sources (systems that generate alarms).
+
+![](../../Screenshot 2022-09-08 at 14.18.46.png)
+
+### What is incident in Argus
+Incident is an alarm that was sent to Argus from a system of your choice that can generate alarms. 
+
+Each row in _Incidents_ table is one alarm. 
+
+![](../../Screenshot 2022-09-08 at 14.25.20.png)
+
+Each incident has a _start time_, _duration_, _source_ (which alarm system it came to Argus from), _tags_, _severity level_. Incident may have _end time_, _ticket url_ (associated ticket in an external ticket system)
+### 
 
 ## Customize alarm notifications in Argus
 Choose **when**, **where** and **what** alarm notifications you want to receive by creating, editing and deleting notification profiles.
