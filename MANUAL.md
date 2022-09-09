@@ -9,7 +9,7 @@
   - [Work with table](#work-with-incidents-table)
     - [Change rows per page](#change-how-many-rows-are-shown-per-incidents-table-page)
     - [Navigate table](#navigate-incidents-table)
-    - [Change refresh interval](#change-how-often-table-gets-refreshed)
+    - [Change refresh interval](#change-how-often-incidents-table-gets-refreshed)
   - [Filter incidents](#decide-which-incident-are-shown-in-the-table)
     - [Filter by open/close](#filter-by-openclose-status)
     - [Filter by acknowledgement](#filter-by-acknowledgement-status)
@@ -110,26 +110,128 @@ Each row in _Incidents_ table is one alarm. In the table, you can see incident's
 <img src="public/screenshots/manual/Screenshot 2022-09-09 at 08.21.36.png"/>
 
 ### Access detailed incident view
+* Alternative 1:
+  1. Click on incident row in the _Incidents_ table.
+  2. Detailed incident view appears in a pop-up window.
+     <img src="public/screenshots/manual/Screenshot 2022-09-09 at 09.40.01.png"/>
+* Alternative 2:
+  1. Click on one of the icons in _Actions_ in the _Incidents_ table.
+     <img src="public/screenshots/manual/Screenshot 2022-09-09 at 08.21.36 copy.png"/>
+  2. App redirects to selected incident's page.
+     <img src="public/screenshots/manual/Screenshot 2022-09-09 at 09.42.33.png"/>
 
 ### Work with incidents table
 
 #### Change how many rows are shown per incidents table page
+1. Scroll down to the bottom of the _Incidents_ table.
+   <img src="public/screenshots/manual/Screenshot 2022-09-09 at 09.57.34.png"/>
+2. Click on _Rows per page_ drop-down.
+   <img src="public/screenshots/manual/Screenshot 2022-09-09 at 09.57.34 copy.png"/>
+3. Select whether you want 10/25/50/100 incidents per page displayed.
+   <img src="public/screenshots/manual/Screenshot 2022-09-09 at 09.58.16.png"/>
 
 #### Navigate incidents table
+1. Scroll down to the bottom of the _Incidents_ table.
+   <img src="public/screenshots/manual/Screenshot 2022-09-09 at 09.57.34.png"/>
+2. Click on _right arrow icon_ if you want to go to the next table page.
+   <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.05.05 copy.png"/>
+3. Click on _left arrow icon_ if you want to go to the next table page.
+   <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.05.05.png"/>
 
-#### Change how often table gets refreshed
+#### Change how often incidents table gets refreshed
+1. Click on _gears icon_ to the right below the Argus header.
+   <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.08.23.png"/>
+2. Select refresh method in _Auto Update selector_:
+   * If you want **no automatic table updates**, press `NEVER`in _Auto Update selector_. Note that you will have to refresh the page yourself if you want the table to get updated.
+     <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.08.45.png"/>
+   * If you want table to update **in realtime**, press `REALTIME` in _Auto Update selector_.
+     <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.08.45 copy.png"/>
+   * If you want table to get updated **every couple of seconds**, press `INTERVAL` in _Auto Update selector_.
+     <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.08.45 copy 2.png"/>
+      * You can change the **amount of seconds** for the refresh interval in `/src/config.tsx`.
+        <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.13.15.png"/>
+
 
 ### Decide which incident are shown in the table
+For ease of alarm management, you can filter incidents so that only incidents that match all the preferred parameters are shown in the _Incidents_ table.
+
+_Filter toolbar_ is available:
+* Below the header in full-screen view.
+  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.30.37.png"/>
+* In the _Filter Options dropdown_ in mobile view.
+  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.30.18.png"/>
 
 #### Filter by open/close status
+* If you want only _open_ incidents to be displayed in the table, press `OPEN` in the _Open State selector_.
 
+  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.41.30.png"/>
+  
+  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.43.12.png"/>
+* If you want only _closed_ (resolved) incidents to be displayed in the table, press `CLOSED` in the _Open State selector_.
+
+  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.41.30 copy.png"/>
+  
+  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.43.12 copy.png"/>
+* If you want only both _open_ and _closed_ (resolved) incidents to be displayed in the table, press `BOTH` in the _Open State selector_.
+
+  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.41.30 copy 2.png"/>
+  
+  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.43.12 copy 2.png"/>
 #### Filter by acknowledgement status
+* If you want only _acknowledged_ incidents to be displayed in the table, press `ACKED` in the _Acked selector_.
+
+  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 11.07.30.png"/>
+
+  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 11.07.10.png"/>
+* If you want only _**un**acknowledged_ incidents to be displayed in the table, press `UNACKED` in the _Acked selector_.
+
+  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 11.07.30 copy.png"/>
+
+  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 11.07.10 copy.png"/>
+* If you want both _acknowledged_ and _unacknowledged_ incidents to be displayed in the table, press `BOTH` in the _Acked selector_.
+
+  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 11.07.30 copy 2.png"/>
+
+  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 11.07.10 copy 2.png"/>
 
 #### Filter by source monitoring system
+* If you want table to display only incidents that came from **specific monitoring system(s)**:
+  1. Click on _Sources input field_.
+
+    <img src="public/screenshots/manual/Screenshot 2022-09-09 at 11.18.20.png"/>
+  
+  2. In the drop-down that appears, you can see all available source systems. Click on the preferred one.
+
+    <img src="public/screenshots/manual/Screenshot 2022-09-09 at 11.18.20 copy.png"/>
+  
+  3. Press _Enter_. The newly selected _source system_ will appear in the input field.
+
+    <img src="public/screenshots/manual/Screenshot 2022-09-09 at 11.18.51.png"/>
+  
+  4. Repeat the process if you want to filter after several monitoring systems.
+
+* If you want table to display incidents from **any monitoring system**, leave the _Sources field_ empty.
+
+  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 11.19.23.png"/>
 
 #### Filer by tags
+* If you want table to display only incidents that have **specific tag(s)**:
+  1. Type in _tag_ into _Tags input field_ in a format `tag_name=tag_value`.
+
+  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 11.30.14.png"/>
+    
+   2. Press _Enter_. The newly added tag will appear in the input field.
+
+  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 11.30.35.png"/>
+    
+   3. Repeat the process if you want to filter after several tags.
+        
+* If you want table to display incidents with **any tags**, leave the _Tags field_ empty.
+
+  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 11.30.45.png"/>
 
 #### Filter by severity level
+Severity level ranges from _1-Critical_ to _5-Information_. 
 
 #### Filter out older incidents
 
