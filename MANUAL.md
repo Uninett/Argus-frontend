@@ -21,6 +21,7 @@
     - [Save filter](#save-current-filter)
     - [Modify filter](#modify-existing-filter)
     - [Apply filter](#apply-existing-filter)
+    - [Unselect applied filter](#unselect-applied-filter)
     - [Delete filter](#delete-existing-filter)
   - [Update one incident](#update-one-incident)
     - [Re-open incident](#re-open-incident)
@@ -135,7 +136,7 @@ Each row in _Incidents_ table is one alarm. In the table, you can see incident's
    <img src="public/screenshots/manual/Screenshot 2022-09-09 at 09.57.34.png"/>
 2. Click on _right arrow icon_ if you want to go to the next table page.
    <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.05.05 copy.png"/>
-3. Click on _left arrow icon_ if you want to go to the next table page.
+3. Click on _left arrow icon_ if you want to go to the previous table page.
    <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.05.05.png"/>
 
 #### Change how often incidents table gets refreshed
@@ -162,43 +163,37 @@ _Filter toolbar_ is available:
   <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.30.18.png"/>
 
 #### Filter by open/close status
-* If you want only _open_ incidents to be displayed in the table, press `OPEN` in the _Open State selector_.
+* If you only want _open_ incidents to be displayed in the table, press `OPEN` in the _Open State selector_.
 
-  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.41.30.png"/>
-  
-  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.43.12.png"/>
-* If you want only _closed_ (resolved) incidents to be displayed in the table, press `CLOSED` in the _Open State selector_.
+  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 13.58.35.png"/>
 
-  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.41.30 copy.png"/>
-  
-  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.43.12 copy.png"/>
-* If you want only both _open_ and _closed_ (resolved) incidents to be displayed in the table, press `BOTH` in the _Open State selector_.
+* If you only want _closed_ (resolved) incidents to be displayed in the table, press `CLOSED` in the _Open State selector_.
 
-  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.41.30 copy 2.png"/>
-  
-  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.43.12 copy 2.png"/>
+  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 13.58.35 copy.png"/>
+
+* If you want both _open_ and _closed_ (resolved) incidents to be displayed in the table, press `BOTH` in the _Open State selector_.
+
+  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 13.58.35 copy 2.png"/>
+
 #### Filter by acknowledgement status
-* If you want only _acknowledged_ incidents to be displayed in the table, press `ACKED` in the _Acked selector_.
+* If you only want _acknowledged_ incidents to be displayed in the table, press `ACKED` in the _Acked selector_.
 
-  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 11.07.30.png"/>
+  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 13.58.35 copy 3.png"/>
 
-  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 11.07.10.png"/>
-* If you want only _**un**acknowledged_ incidents to be displayed in the table, press `UNACKED` in the _Acked selector_.
+* If you only want _**un**acknowledged_ incidents to be displayed in the table, press `UNACKED` in the _Acked selector_.
 
-  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 11.07.30 copy.png"/>
+  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 13.58.35 copy 4.png"/>
 
-  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 11.07.10 copy.png"/>
 * If you want both _acknowledged_ and _unacknowledged_ incidents to be displayed in the table, press `BOTH` in the _Acked selector_.
 
-  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 11.07.30 copy 2.png"/>
+  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 13.58.35 copy 5.png"/>
 
-  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 11.07.10 copy 2.png"/>
 
 #### Filter by source monitoring system
 * If you want table to display only incidents that came from **specific monitoring system(s)**:
   1. Click on _Sources input field_.
 
-    <img src="public/screenshots/manual/Screenshot 2022-09-09 at 11.18.20.png"/>
+  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 13.58.51.png"/>
   
   2. In the drop-down that appears, you can see all available source systems. Click on the preferred one.
 
@@ -212,13 +207,12 @@ _Filter toolbar_ is available:
 
 * If you want table to display incidents from **any monitoring system**, leave the _Sources field_ empty.
 
-  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 11.19.23.png"/>
 
 #### Filer by tags
 * If you want table to display only incidents that have **specific tag(s)**:
   1. Type in _tag_ into _Tags input field_ in a format `tag_name=tag_value`.
 
-  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 11.30.14.png"/>
+  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 13.59.20.png"/>
     
    2. Press _Enter_. The newly added tag will appear in the input field.
 
@@ -228,22 +222,84 @@ _Filter toolbar_ is available:
         
 * If you want table to display incidents with **any tags**, leave the _Tags field_ empty.
 
-  <img src="public/screenshots/manual/Screenshot 2022-09-09 at 11.30.45.png"/>
 
 #### Filter by severity level
-Severity level ranges from _1-Critical_ to _5-Information_. 
+Severity level ranges from _1 - Critical_ to _5 - Information_. If you select _max severity level_ to be **5**, all incidents will be displayed in the table. If you select _max severity level_ to be **2**, incidents with severity **1** and **2** will be displayed in the table.
+
+To change _max severity level_:
+1. Open _Max level_ drop-down.
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-09 at 13.58.35 copy 6.png"/>
+2. Select the preferred _max severity_ option.
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-09 at 13.54.58.png"/>
 
 #### Filter out older incidents
+Note that you can not save this parameter in [stored filters](#work-with-stored-filters).
+1. Click on _gears icon_ to the right below the Argus header.
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.08.23.png"/>
+   
+2. Open _Timeframe_ drop-down menu.
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-09 at 14.16.33.png"/>
+
+3. Select the preferred option of _report-time-not-later-than_ for the incidents that are displayed in the table.
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-09 at 14.16.50.png"/>
+
 
 ### Work with stored filters
+After you [have set the preferred filter parameters for incidents](#decide-which-incident-are-shown-in-the-table), you can save your preferences as a _filter_. Stored _filters_ can be used when [customizing alarm notifications](#customize-alarm-notifications-in-argus).
 
 #### Save current filter
+1. [Set the preferred filter parameters](#decide-which-incident-are-shown-in-the-table).
+2. Click on _plus icon_ within _Filter input field_.
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-09 at 14.30.58.png"/>
+    
+3. Give a (meaningful) name to your filter. Press `CREATE`. Note that you can not edit filter's name after it is created.
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-09 at 14.31.38.png"/>
 
 #### Modify existing filter
+1. [Make desired changes to filter parameters](#decide-which-incident-are-shown-in-the-table).
+2. Click on _save icon_ within _Filter input field_.
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-09 at 14.33.09.png"/>
+
+3. Click on filter that you want to update, and press `SAVE TO`.
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-09 at 14.36.22.png"/>
+
 
 #### Apply existing filter
+1. Click into _Filter input field_.
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-09 at 14.46.06.png"/>
+
+2. Click on the preferred filter in the drop-down menu.
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-09 at 14.46.20.png"/>
+
+#### Unselect applied filter
+1. Click on _cross icon_ inside _Filter input field_.
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-09 at 14.38.17.png"/>
 
 #### Delete existing filter
+1. Click on _gears icon_ inside _Filter input field_.
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-09 at 14.30.58 copy.png"/>
+
+2. Select which filter you want to delete by clicking on _bin icon_.
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-09 at 14.33.57.png"/>
+
+3. Confirm deletion.
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-09 at 14.34.24.png"/>
+
 
 ### Update one incident
 
