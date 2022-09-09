@@ -44,7 +44,6 @@ export const ApiInterceptor = ({ children }: { children?: React.ReactNode }) => 
           break;
         }
         case "success": {
-          // const { response } = event;
           dispatch(unsetHasConnectionProblems());
           break;
         }

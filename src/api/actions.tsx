@@ -76,16 +76,6 @@ export function useFilters(): [InitialStateType["filters"], UseFiltersActionType
   ];
 }
 
-// const filterToQueryFilter = (filter: Omit<Filter, "pk">): Filter => {
-//   return {
-//     acked: filter.showAcked ? undefined : false,
-//     open: filter.show === "both" ? undefined : filter.show === "open",
-//     // stateful:
-//     sourceSystemIds: filter.sourcesById,
-//     tags: filter.tags.map((tag: Tag) => tag.original),
-//   };
-// };
-
 export type UseIncidentsActionType = {
   loadIncidentsFiltered: (filter: Omit<Filter, "pk" | "name">) => Promise<Incident[]>;
   closeIncident: (pk: Incident["pk"], description?: string) => Promise<Event>;

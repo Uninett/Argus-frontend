@@ -83,9 +83,6 @@ type NotificationProfileCardPropsType = {
   onDelete: (profile: NotificationProfileKeyed) => void;
   onAddPhoneNumber: () => void;
 
-  // Function used to update profile if the timeslot has changed. We need a separate case for this because
-  // of current limitations in the backend data model.
-  // TODO: remove this function and use "onSave()" instead when data model is updated
   onSaveTimeslotChanged: (profile: NotificationProfileKeyed) => void;
 };
 
@@ -144,8 +141,6 @@ const NotificationProfileCard = ({
     } else {
       setFilterError(false);
       setUnsavedChanges(false);
-      // Special case if timeslot has changed because of limitations in the backend data model
-      // TODO: remove this and just use normal "onSave()" when data model is updated
       if (exists && profileState.pk !== profileState.timeslot) {
         onSaveTimeslotChanged(profileState);
       } else {

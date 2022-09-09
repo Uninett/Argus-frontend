@@ -65,7 +65,6 @@ const NotificationProfileList = () => {
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // TODO: fetch these from backend instead when an endpoint for MediaAlternatives is created
   const mediaOptions: { label: string; value: MediaAlternative }[] = [
     {
       label: "Email",
@@ -191,10 +190,6 @@ const NotificationProfileList = () => {
       .catch((error: Error) => displayAlert(error.message, "error"));
   };
 
-  // Workaround to update the timeslot of a notification profile. This cannot be done using a normal PUT-request,
-  // since the timeslot PK also is the PK of the notification profile. The backend developers are aware of
-  // this problem, and will update the data model in the future to fix it.
-  // TODO: remove this and use the normal "handleSave()" instead when data model is updated
   const handleSaveTimeslotChanged = (profile: NotificationProfileKeyed) => {
     api
       .deleteNotificationProfile(Number(profile.pk))

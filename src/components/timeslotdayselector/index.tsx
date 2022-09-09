@@ -4,7 +4,6 @@ import { makeConfirmationButton } from "../buttons/ConfirmationButton";
 import { WHITE } from "../../colorscheme";
 import { Theme, createStyles, makeStyles } from "@material-ui/core/styles";
 
-// import "date-fns";
 import DateFnsUtils from "@date-io/date-fns";
 
 import { MuiPickersUtilsProvider, KeyboardTimePicker } from "@material-ui/pickers";
