@@ -4,6 +4,34 @@
   - [Using username and password](#login-using-username-and-password)
   - [Using Feide](#login-using-feide)
 - [Manage alarms](#work-with-alarms-in-argus)
+  - [What is incident](#what-is-incident-in-argus)
+  - [Access detailed incident view](#access-detailed-incident-view)
+  - [Work with table](#work-with-incidents-table)
+    - [Change rows per page](#change-how-many-rows-are-shown-per-incidents-table-page)
+    - [Navigate table](#navigate-incidents-table)
+    - [Change refresh interval](#change-how-often-table-gets-refreshed)
+  - [Filter incidents](#decide-which-incident-are-shown-in-the-table)
+    - [Filter by open/close](#filter-by-openclose-status)
+    - [Filter by acknowledgement](#filter-by-acknowledgement-status)
+    - [Filter by sources](#filter-by-source-monitoring-system)
+    - [Filter by tags](#filer-by-tags)
+    - [Filter by severity level](#filter-by-severity-level)
+    - [Filter out old incidents](#filter-out-older-incidents)
+  - [Work with stored filters](#work-with-stored-filters)
+    - [Save filter](#save-current-filter)
+    - [Modify filter](#modify-existing-filter)
+    - [Apply filter](#apply-existing-filter)
+    - [Delete filter](#delete-existing-filter)
+  - [Update one incident](#update-one-incident)
+    - [Re-open incident](#re-open-incident)
+    - [Close incident](#close-incident)
+    - [Acknowledge incident](#add-acknowledgement-to-incident)
+    - [Add ticket to incident](#add-ticket-url-to-incident)
+  - [Update several incidents](#update-several-incidents-at-a-time)
+    - [Re-open incidents](#re-open-incidents)
+    - [Close incidents](#close-incidents)
+    - [Acknowledge incidents](#add-acknowledgement-to-incidents)
+    - [Add ticket to incidents](#add-ticket-url-to-incidents)
 - [Customize notifications](#customize-alarm-notifications-in-argus)
   - [Access your notification settings](#access-your-notification-profiles)
   - [Add notification profile](#add-new-notification-profile)
@@ -64,19 +92,80 @@ Log in and start using Argus at **/login**
 5. Continue with preferred method of 2-factor Feide authentication
 
 ## Work with alarms in Argus
-**View**, **filter** and **update** alarms that come to Argus from different sources (systems that generate alarms).
+**View**, **filter** and **update** alarms that come to Argus from different sources (monitoring systems).
 
 <img src="public/screenshots/manual/Screenshot 2022-09-08 at 14.18.46.png"/>
 
 ### What is incident in Argus
-Incident is an alarm that was sent to Argus from a system of your choice that can generate alarms. 
+Incident is an alarm that was sent to Argus from a monitoring system of your choice.
 
-Each row in _Incidents_ table is one alarm.
+Each incident has a _description_ (created by the monitoring system), _start time_, _duration_, _source_ (which monitoring system it came to Argus from), _tags_, _severity level_. Incident may have _end time_, _ticket url_ (associated ticket in an external ticket system).
+Incidents may have different status. For example, incident may be _open_, or _closed_ (resolved). Incident may also be _acknowledged_ (noticed or commented in any way), or not. 
+In the detailed incident view below, you can get familiar with the above-mentioned attributes of an incident. Note that incident's event feed is also available in the detailed view. Event feed show events like _closing_ (resolving), and _acknowledging_ incident.
 
-<img src="public/screenshots/manual/Screenshot 2022-09-08 at 14.25.20.png"/>
+<img src="public/screenshots/manual/Screenshot 2022-09-08 at 14.28.18.png"/>
 
-Each incident has a _start time_, _duration_, _source_ (which alarm system it came to Argus from), _tags_, _severity level_. Incident may have _end time_, _ticket url_ (associated ticket in an external ticket system)
-### 
+Each row in _Incidents_ table is one alarm. In the table, you can see incident's _start time_, _closed/open status_, whether incident has at least one _acknowledgement_, _severity level_, _source_ (which monitoring system incident came from), _description_ (created by the monitoring system), whether incident has an associated _ticket url_ (label icon at the very end of the row).
+
+<img src="public/screenshots/manual/Screenshot 2022-09-09 at 08.21.36.png"/>
+
+### Access detailed incident view
+
+### Work with incidents table
+
+#### Change how many rows are shown per incidents table page
+
+#### Navigate incidents table
+
+#### Change how often table gets refreshed
+
+### Decide which incident are shown in the table
+
+#### Filter by open/close status
+
+#### Filter by acknowledgement status
+
+#### Filter by source monitoring system
+
+#### Filer by tags
+
+#### Filter by severity level
+
+#### Filter out older incidents
+
+### Work with stored filters
+
+#### Save current filter
+
+#### Modify existing filter
+
+#### Apply existing filter
+
+#### Delete existing filter
+
+### Update one incident
+
+#### Re-open incident
+
+#### Close incident
+
+#### Add acknowledgement to incident
+
+#### Add ticket URL to incident
+
+### Update several incidents at a time
+
+#### Re-open incidents
+
+#### Close incidents
+
+#### Add acknowledgement to incidents
+
+#### Add ticket URL to incidents
+
+
+
+
 
 ## Customize alarm notifications in Argus
 Choose **when**, **where** and **what** alarm notifications you want to receive by creating, editing and deleting notification profiles.
@@ -201,6 +290,7 @@ Each timeslot has at least one recurrence by default. Add more recurrences if yo
 Add, edit or delete phone numbers in your settings. Phone numbers that are present in your settings can be used when customizing notifications.
 
 <img src="public/screenshots/manual/Screenshot 2022-09-08 at 14.00.29.png"/>
+
 ### Access your contact details in settings
 1. Click on _user icon_ in header.
 
