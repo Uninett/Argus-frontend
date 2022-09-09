@@ -33,21 +33,21 @@ Argus is created for **ease of alarm management** and **customizable alarm notif
 
 ## Log into Argus
 Log in and start using Argus at **/login**
-    ![](public/screenshots/manual/Screenshot 2022-09-08 at 13.49.23.png)
+<img src="public/screenshots/manual/Screenshot 2022-09-08 at 13.49.23.png"/>
 
 ### Login using username and password
 1. Fill out _username_ and _password_
 
-    ![](public/screenshots/manual/Screenshot 2022-09-08 at 13.48.07.png)
+   <img src="public/screenshots/manual/Screenshot 2022-09-08 at 13.48.07.png"/>
 
 2. Press `LOGIN`
 
-    ![](public/screenshots/manual/Screenshot 2022-09-08 at 13.48.07 2.png)
+   <img src="public/screenshots/manual/Screenshot 2022-09-08 at 13.48.07 2.png"/>
 
 ### Login using Feide
 1. Press `LOGIN WITH FEIDE`
 
-   ![](public/screenshots/manual/Screenshot 2022-09-08 at 13.48.07 3.png)
+   <img src="public/screenshots/manual/Screenshot 2022-09-08 at 13.48.07 3.png"/>
 
 2. Select account you want to log in with
 
@@ -66,14 +66,14 @@ Log in and start using Argus at **/login**
 ## Work with alarms in Argus
 **View**, **filter** and **update** alarms that come to Argus from different sources (systems that generate alarms).
 
-![](public/screenshots/manual/Screenshot 2022-09-08 at 14.18.46.png)
+<img src="public/screenshots/manual/Screenshot 2022-09-08 at 14.18.46.png"/>
 
 ### What is incident in Argus
 Incident is an alarm that was sent to Argus from a system of your choice that can generate alarms. 
 
-Each row in _Incidents_ table is one alarm. 
+Each row in _Incidents_ table is one alarm.
 
-![](public/screenshots/manual/Screenshot 2022-09-08 at 14.25.20.png)
+<img src="public/screenshots/manual/Screenshot 2022-09-08 at 14.25.20.png"/>
 
 Each incident has a _start time_, _duration_, _source_ (which alarm system it came to Argus from), _tags_, _severity level_. Incident may have _end time_, _ticket url_ (associated ticket in an external ticket system)
 ### 
@@ -84,7 +84,7 @@ Choose **when**, **where** and **what** alarm notifications you want to receive 
 ### Access your notification profiles
 1. Press `PROFILES` in header.
 
-    ![](public/screenshots/manual/Screenshot 2022-09-08 at 13.53.49 2.png)
+   <img src="public/screenshots/manual/Screenshot 2022-09-08 at 13.53.49 2.png"/>
 
 ### Add new notification profile
 1. Select timeslot for when to receive notifications in _Timeslot_ drop-down. If drop-down menu is empty, [create a timeslot](#add-new-timeslot) first.
@@ -110,9 +110,9 @@ Choose **when**, **where** and **what** alarm notifications you want to receive 
 ## Manage time for when to receive notifications in Argus
 Add, edit or delete timeslots in _Timeslots_.
 
-![](public/screenshots/manual/Screenshot 2022-09-08 at 14.02.43.png)
+<img src="public/screenshots/manual/Screenshot 2022-09-08 at 14.02.43.png"/>
 
-![](public/screenshots/manual/Screenshot 2022-09-08 at 14.03.02.png)
+<img src="public/screenshots/manual/Screenshot 2022-09-08 at 14.03.02.png"/>
 
 ### What is timeslot in Argus
 Timeslot is a collection of one or more recurrences with a meaningful name. Saved timeslots are used when customizing alarm notifications. Each timeslot represents a window or several windows of time for when it is OK to receive alarm notifications.
@@ -126,121 +126,121 @@ Time range can either be:
 Each recurrence has only one time range, and it applies to all days that are selected in given recurrence. 
 
 For example, in this timeslot alarm notifications are allowed from 4 p.m a.m to 8 a.m on business days, and all hours on weekends:
-    ![](public/screenshots/manual/Screenshot 2022-09-08 at 11.57.49.png)
+<img src="public/screenshots/manual/Screenshot 2022-09-08 at 11.57.49.png"/>
 
 
 
 ### Access your timeslots
 1. Press `TIMESLOTS` in header
 
-    ![](public/screenshots/manual/Screenshot 2022-09-08 at 13.53.49 3.png)
+   <img src="public/screenshots/manual/Screenshot 2022-09-08 at 13.53.49 3.png"/>
 ### Add new recurrence
 Each timeslot has at least one recurrence by default. Add more recurrences if your timeslot needs more than one.
 1. [Go to your timeslots](#access-your-timeslots).
 2. Press `ADD RECURRENCE` either in _Create New Timeslot_ box, or in one of your existing timeslots.
 
-    ![](public/screenshots/manual/Screenshot 2022-09-08 at 10.50.13.png)
+   <img src="public/screenshots/manual/Screenshot 2022-09-08 at 10.50.13.png"/>
 
 ### Edit recurrence
 1. [Go to your timeslots](#access-your-timeslots).
 2. Modify one of existing recurrences either in _Create New Timeslot_ box, or in one of your existing timeslots:
    * If needed, change _start time_ either by typing new value, or by pressing on calendar icon:
-     ![](public/screenshots/manual/Screenshot 2022-09-08 at 12.03.51.png)
+     <img src="public/screenshots/manual/Screenshot 2022-09-08 at 12.03.51.png"/>
    * If needed, change _end time_ either by typing new value, or by pressing on calendar icon:
-     ![](public/screenshots/manual/Screenshot 2022-09-08 at 12.05.42.png)
+     <img src="public/screenshots/manual/Screenshot 2022-09-08 at 12.05.42.png"/>
    * Check _All day_ if you want recurrence to be from 00:00 a.m. to 11:59 p.m.. Note that if _All day_ is checked, you do not need to provide _start-_ and _end time_.
-     ![](public/screenshots/manual/Screenshot 2022-09-08 at 12.07.27.png)
+     <img src="public/screenshots/manual/Screenshot 2022-09-08 at 12.07.27.png"/>
    * If needed, change day(s):
      1. Open drop-down menu.
-        ![](public/screenshots/manual/Screenshot 2022-09-08 at 12.05.42 2.png)
+        <img src="public/screenshots/manual/Screenshot 2022-09-08 at 12.05.42 2.png"/>
      2. Select/de-select days for this recurrence by clicking on them once. Selected days are highlighted in light-yellow.
-        ![](public/screenshots/manual/Screenshot 2022-09-08 at 12.08.24.png)
+        <img src="public/screenshots/manual/Screenshot 2022-09-08 at 12.08.24.png"/>
      3. Click away anywhere outside the drop-down menu.
 
 ### Delete recurrence
 1. [Go to your timeslots](#access-your-timeslots).
 2. Press `REMOVE` inside one of existing recurrences either in _Create New Timeslot_ box, or in one of your existing timeslots:
 
-    ![](public/screenshots/manual/Screenshot 2022-09-08 at 12.20.00.png)
+   <img src="public/screenshots/manual/Screenshot 2022-09-08 at 12.20.00.png"/>
 ### Add new timeslot
 1. [Go to your timeslots](#access-your-timeslots).
 2. Go to _Create New Timeslot_ box.
     * In full-screen view it is visible by default at the top:
-      ![](public/screenshots/manual/Screenshot 2022-09-08 at 12.29.11.png)
+      <img src="public/screenshots/manual/Screenshot 2022-09-08 at 12.29.11.png"/>
     * In mobile-view, press button with _pencil-icon_ at the top to unfold _Create New Timeslot_ box:
-      ![](public/screenshots/manual/Screenshot 2022-09-08 at 12.28.24.png)
+      <img src="public/screenshots/manual/Screenshot 2022-09-08 at 12.28.24.png"/>
 3. Type in a (meaningful) timeslot name.
-    ![](public/screenshots/manual/Screenshot 2022-09-08 at 12.35.51.png)
+   <img src="public/screenshots/manual/Screenshot 2022-09-08 at 12.35.51.png"/>
 4. [Add another recurrence(s)](#add-new-recurrence) if needed.
 5. [Edit recurrence(s)](#edit-recurrence) if needed.
 6. [Remove recurrence(s)](#delete-recurrence) if needed.
 7. Press `CREATE`.
-   ![](public/screenshots/manual/Screenshot 2022-09-08 at 12.35.51 2.png)
+   <img src="public/screenshots/manual/Screenshot 2022-09-08 at 12.35.51 2.png"/>
 8. _Create New Timeslot_ box will refresh to default and your newly created timeslot will appear at the bottom of the timeslot list. Note that existing timeslots have a dark border at the top.
-   ![](public/screenshots/manual/Screenshot 2022-09-08 at 12.41.07.png)
+   <img src="public/screenshots/manual/Screenshot 2022-09-08 at 12.41.07.png"/>
 
 ### Edit existing timeslot
 1. [Go to your timeslots](#access-your-timeslots).
 2. Modify one of your existing timeslots:
    * Change name if needed.
-     ![](public/screenshots/manual/Screenshot 2022-09-08 at 12.47.38.png)
+     <img src="public/screenshots/manual/Screenshot 2022-09-08 at 12.47.38.png"/>
    * [Add another recurrence(s)](#add-new-recurrence) if needed.
    * [Edit recurrence(s)](#edit-recurrence) if needed.
    * [Remove recurrence(s)](#delete-recurrence) if needed.
-3. Press `SAVE`. Note that `SAVE`-button is inactive if no changes were made. `SAVE`-button is also inactive if some changes are invalid. In this case error messages inside the timeslot box will help you. 
-    ![](public/screenshots/manual/Screenshot 2022-09-08 at 12.49.29.png)
-    ![](public/screenshots/manual/Screenshot 2022-09-08 at 12.53.44.png)
+3. Press `SAVE`. Note that `SAVE`-button is inactive if no changes were made. `SAVE`-button is also inactive if some changes are invalid. In this case error messages inside the timeslot box will help you.
+   <img src="public/screenshots/manual/Screenshot 2022-09-08 at 12.49.29.png"/>
+   <img src="public/screenshots/manual/Screenshot 2022-09-08 at 12.53.44.png"/>
 
 ### Delete timeslot
 1. [Go to your timeslots](#access-your-timeslots).
 2. Press `DELETE` inside one of existing timeslots. Note that `DELETE`-button is disabled in _Create New Timeslot_ box.
-    ![](public/screenshots/manual/Screenshot 2022-09-08 at 12.56.02.png)
+   <img src="public/screenshots/manual/Screenshot 2022-09-08 at 12.56.02.png"/>
 
 
 ## Manage your contact details in Argus
 Add, edit or delete phone numbers in your settings. Phone numbers that are present in your settings can be used when customizing notifications.
 
-![](public/screenshots/manual/Screenshot 2022-09-08 at 14.00.29.png)
+<img src="public/screenshots/manual/Screenshot 2022-09-08 at 14.00.29.png"/>
 ### Access your contact details in settings
 1. Click on _user icon_ in header.
-    
-    ![](public/screenshots/manual/Screenshot 2022-09-08 at 13.53.49.png)
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-08 at 13.53.49.png"/>
 2. Click on `Settings` in drop-down menu.
 
-    ![](public/screenshots/manual/Screenshot 2022-09-07 at 14.18.11.png)
+<img src="public/screenshots/manual/Screenshot 2022-09-07 at 14.18.11.png"/>
     
 ### Add new phone number in settings
 1. [Go to your contact details](#access-your-contact-details-in-settings)
 2. Type in an existing phone number. Phone number **has to include land code.**
 
-    ![](public/screenshots/manual/Screenshot 2022-09-07 at 14.46.13.png)
+   <img src="public/screenshots/manual/Screenshot 2022-09-07 at 14.46.13.png"/>
 3. Press `CREATE`.
 
-    ![](public/screenshots/manual/Screenshot 2022-09-07 at 14.46.13 2.png)
+   <img src="public/screenshots/manual/Screenshot 2022-09-07 at 14.46.13 2.png"/>
 
 ### Edit existing phone number in settings
 1. [Go to your contact details](#access-your-contact-details-in-settings)
 2. Modify one of existing phone numbers.
 
-   ![](public/screenshots/manual/Screenshot 2022-09-08 at 09.48.43.png)
+   <img src="public/screenshots/manual/Screenshot 2022-09-08 at 09.48.43.png"/>
 3. Press `SAVE`.
 
-   ![](public/screenshots/manual/Screenshot 2022-09-08 at 09.48.43 2.png)
+   <img src="public/screenshots/manual/Screenshot 2022-09-08 at 09.48.43 2.png"/>
 
 ### Delete phone number in settings
 1. [Go to your contact details](#access-your-contact-details-in-settings)
 2. Press `DELETE` by one of your saved phone numbers.
 
-   ![](public/screenshots/manual/Screenshot 2022-09-08 at 09.54.43.png)
+   <img src="public/screenshots/manual/Screenshot 2022-09-08 at 09.54.43.png"/>
 
 
 ## Log out from Argus
 1. Click on _user icon_ in header.
 
-    ![](public/screenshots/manual/Screenshot 2022-09-08 at 13.53.49.png)
+   <img src="public/screenshots/manual/Screenshot 2022-09-08 at 13.53.49.png"/>
 2. Click on `Logout` in drop-down menu.
 
-   ![](public/screenshots/manual/Screenshot 2022-09-07 at 14.18.11 2.png)
+   <img src="public/screenshots/manual/Screenshot 2022-09-07 at 14.18.11 2.png"/>
 
 
 
