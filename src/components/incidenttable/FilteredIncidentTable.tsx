@@ -191,10 +191,10 @@ const FilteredIncidentTable = () => {
       setVirtCursor(DEFAULT_VIRT_CURSOR);
     };
 
-    const disabled = isLoading || isCursorLoading || false;
+    const disabled = isLoading || isCursorLoading;
 
-    const nextButtonProps = { disabled: disabled || !cursors?.next || false };
-    const prevButtonProps = { disabled: disabled || !cursors?.previous || false };
+    const nextButtonProps = { disabled: disabled || !cursors?.next };
+    const prevButtonProps = { disabled: disabled || !cursors?.previous };
     const selectProps = { disabled };
 
     return (
