@@ -118,7 +118,6 @@ export const AlertSnackbarProvider = ({ children }: { children?: React.ReactNode
   const component = <AlertSnackbar onOpen={onOpen} onClose={onClose} {...state} />;
 
   const displayAlertSnackbar = useCallback((message: string, severity?: AlertSnackbarSeverity) => {
-    // if (message === state.message && severity === state.severity && state.open) return;
     debuglog(`Displaying message with severity ${severity}: ${message}`);
     setState((state: AlertSnackbarState) => {
       return { ...state, open: true, message, severity: severity || "success", keepOpen: severity === "error" };

@@ -72,12 +72,10 @@ const TimeslotList: React.FC<TimeslotListPropsType> = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { incidentSnackbar, displayAlertSnackbar }: UseAlertSnackbarResultType = useAlertSnackbar();
 
-  // TODO: remove
   const responseToInternalTimeslot = (timeslot: Timeslot): InternalTimeslot => {
     return timeslot;
   };
 
-  // TODO: use memo?
   useEffect(() => {
     if (!timeslotsResponse) return;
 
@@ -149,7 +147,7 @@ const TimeslotList: React.FC<TimeslotListPropsType> = () => {
       })
       .catch(
         defaultErrorHandler((msg: string) => {
-          resetNewTimeslot(); // FIXME: This is required to re-enable the save buttons
+          resetNewTimeslot();
           displayAlertSnackbar(msg, "error");
         }),
       );

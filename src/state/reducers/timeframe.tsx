@@ -20,13 +20,10 @@ export const initialTimeframeState = {
 
 export type TimeframeActions = ActionMap<TimeframePayload>[keyof ActionMap<TimeframePayload>];
 export const timeframeReducer = (state: TimeframeStateType, action: TimeframeActions) => {
-  switch (action.type) {
-    case TimeframeType.SetTimeframe:
-      return {
-        timeframeInHours: action.payload,
-      };
-    default:
-      return state;
+  if (action.type === TimeframeType.SetTimeframe) {
+    return { timeframeInHours: action.payload };
+  } else {
+    return state;
   }
 };
 

@@ -23,7 +23,6 @@ export function mapToSelectOption<T extends { name: string }>(elems: T[]): Selec
 }
 
 export function onSelectChangeHandler<T>(callback: (target: T[] | T | undefined) => void): SelectProps["onChange"] {
-  // TODO: fix
   return (option: unknown | unknown[] | SelectOptionsType<T>) => {
     if (Array.isArray(option)) {
       callback(option.map((option: SelectOptionsType<T>): T => option.value));
