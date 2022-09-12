@@ -5,7 +5,10 @@ import { render, screen, within } from "@testing-library/react";
 
 import IncidentDetails from "../IncidentDetails";
 import { Incident, IncidentTag, SourceSystem } from "../../../api/types";
+import * as utils from "../../../utils";
 
+// Utils
+const formatDurationSpy = jest.spyOn(utils, "formatDuration");
 
 // Mocks
 const onIncidentChange = jest.fn();
@@ -81,7 +84,6 @@ describe('Incident Details: end time and duration are displayed correctly, depen
 
     afterEach(() => {
         jest.clearAllMocks();
-        jest.resetAllMocks();
     })
 
     it("should display both end time and duration (closed incident)", () => {
@@ -105,11 +107,17 @@ describe('Incident Details: end time and duration are displayed correctly, depen
 
         // end_time is always defined for resolvedIncidentMock
         // @ts-ignore
-        expect(within(endTimeItem).getByText(resolvedIncidentMock.end_time)).toBeInTheDocument() 
+        expect(within(endTimeItem).getByText(resolvedIncidentMock.end_time)).toBeInTheDocument()
 
         // Duration item is displayed
         const durationItem = within(primaryDetailsContainer).getByTitle(/duration/i)
         expect(durationItem).toBeInTheDocument()
+
+        // Duration value is displayed correctly
+        const durationValue = formatDurationSpy
+            .getMockImplementation()(resolvedIncidentMock.start_time, resolvedIncidentMock.end_time);
+        // @ts-ignore
+        expect(within(durationItem).getByText(durationValue)).toBeInTheDocument();
     });
 
     it("should display duration, but not end time (open incident)", () => {
@@ -135,6 +143,13 @@ describe('Incident Details: end time and duration are displayed correctly, depen
         // Duration item is displayed
         const durationItem = within(primaryDetailsContainer).getByTitle(/duration/i)
         expect(durationItem).toBeInTheDocument()
+
+
+        // Duration value is displayed correctly
+        const durationValue = formatDurationSpy
+            .getMockImplementation()(openIncidentMock.start_time, openIncidentMock.end_time);
+        // @ts-ignore
+        expect(within(durationItem).getByText(durationValue)).toBeInTheDocument();
     });
 
     it("should display neither duration, nor end time (stateless incident)", () => {
