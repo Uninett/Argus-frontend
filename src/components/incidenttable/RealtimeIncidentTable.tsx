@@ -46,19 +46,10 @@ const RealtimeIncidentTable = () => {
   });
   const [realtimeService, setRealtimeService] = useState<RealtimeService | undefined>(undefined);
 
-  // const onIncidentsInitial = (/* incidents: Incident[] */) => {
-  //   // const matchesFilter = incidents.filter((incident: Incident) =>
-  //   //   incidentMatchesFilter(incident, { showAcked, show, tags, sourcesById, autoUpdate }),
-  //   // );
-  //   // loadAllIncidents(matchesFilter);
-  //   // setIsLoading(false);
-  // };
-
   useEffect(() => {
     console.log("rtsState", rtsState);
     switch (rtsState) {
       case "opened":
-        // displayAlert("Realtime opened", "info");
         setIsLoadingRealtime(true);
         break;
 
@@ -155,11 +146,9 @@ const RealtimeIncidentTable = () => {
     if (realtimeService.config === rtsConfig) {
       return;
     }
-    // console.log("updating config", rtsConfig);
     realtimeService.setConfig(rtsConfig);
 
     realtimeService.onStateChange = (prev: RealtimeServiceState, curr: RealtimeServiceState) => {
-      // console.log("rts.onStateChange", prev, curr);
       if (curr === prev) {
         // Ignore.
         return;

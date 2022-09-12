@@ -126,7 +126,6 @@ export const incidentsReducer = (state: IncidentsStateType, action: IncidentsAct
       const storedIndex: Index | null = findStoredIncidentIndex(incident.pk);
       if (storedIndex === null) {
         // Doesn't exist :(
-        // throw new Error(`Incident ${incident.pk} can't be modified because it doesn't exist`);
         return incidentsReducer(state, { type: IncidentsType.AddIncident, payload: incident });
       }
 
@@ -151,7 +150,6 @@ export const incidentsReducer = (state: IncidentsStateType, action: IncidentsAct
       if (storedIndex === null) {
         // Doesn't exist :(
         console.warn(`Trying to remove incident ${pk} that doesn't exist, ignoring.`);
-        // throw new Error(`Incident ${pk} can't be removed because it doesn't exist`);
         return state;
       }
 
@@ -183,7 +181,6 @@ export const incidentsReducer = (state: IncidentsStateType, action: IncidentsAct
       const storedIndex: Index | null = findStoredIncidentIndex(incident.pk);
       if (storedIndex !== null) {
         // Already exists :(
-        // throw new Error(`Incident ${incident} can't be added because it already exists`);
         console.warn(`Trying to add incident ${incident} that already exists, passing to modify instead.`);
         return incidentsReducer(state, { type: IncidentsType.ModifyIncident, payload: incident });
       }

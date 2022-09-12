@@ -55,7 +55,6 @@ function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   return 0;
 }
 
-// TODO: refactor
 type Order = "asc" | "desc";
 
 function getComparator<T extends { [key: string]: number | string }>(
@@ -107,11 +106,8 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
 
   type IncidentOrderableFields = Pick<Incident, "start_time">;
 
-  // TODO: implement proper ordering/sorting when support
-  // for this is implemented in the backend.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [order, setOrder] = React.useState<Order>("desc");
-  // TODO: fix typing problems here without use of any
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [orderBy, setOrderBy] = React.useState<keyof IncidentOrderableFields>("start_time");
 
@@ -381,7 +377,6 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                                 <TicketIcon />
                               </IconButton>
                             )}
-                            {/* TODO: Not implementd yet */}
                           </TableCell>
                         </TableRow>
 
@@ -427,7 +422,6 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                                 <TicketIcon />
                               </IconButton>
                             )}
-                            {/* TODO: Not implementd yet */}
                           </TableCell>
                           <ClickableCell className="source-cell">{incident.source.name}</ClickableCell>
                           <ClickableCell className="description-cell">{incident.description}</ClickableCell>
@@ -475,7 +469,6 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                                 <TicketIcon />
                               </IconButton>
                             )}
-                            {/* TODO: Not implementd yet */}
                           </TableCell>
 
                           <TableCell>
@@ -507,7 +500,6 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                                           <TicketIcon />
                                         </IconButton>
                                       )}
-                                      {/* TODO: Not implementd yet */}
                                     </TableCell>
                                   </TableBody>
                                 </MuiTable>

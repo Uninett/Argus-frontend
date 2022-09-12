@@ -58,8 +58,6 @@ type IncidentsFilter = {
   tags: Tag[];
   sources: "AllSources" | string[] | undefined;
   sourcesById: number[] | undefined;
-  // show: "open" | "closed" | "both";
-  // showAcked: boolean;
 
   filter: FilterContent;
 };
@@ -109,8 +107,7 @@ const FilteredIncidentTable = () => {
     // Find start of timeframe by removing hours from current datetime
     let timeframeStart;
     if (timeframe.timeframeInHours !== 0) timeframeStart = addHoursToDate(new Date(), -timeframe.timeframeInHours);
-
-    // setIsLoading(true);
+    
     api
       .getPaginatedIncidentsFiltered(filter, paginationCursor.current, paginationCursor.pageSize, timeframeStart)
       .then((response: CursorPaginationResponse<Incident>) => {

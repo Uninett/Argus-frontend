@@ -68,7 +68,6 @@ type CB = (response: AxiosResponse, error: ErrorType) => void;
 
 const apiConfig = {
   returnRejectedPromiseOnError: false,
-  // withCredentials: true,
   baseURL: BACKEND_URL,
 };
 
@@ -308,20 +307,6 @@ class ApiClient {
       });
   }
 
-  // Incident
-  // WIP TODO untested
-  public putIncident(incident: Incident): Promise<Incident> {
-    if (Date.now() % 2 === 0) {
-      return Promise.reject(new Error(`Failed to put incident`));
-    }
-    return Promise.resolve(incident);
-    // return this.resolveOrReject(
-    //   this.authPut<Incident, Incident>(`/api/v1/incidents/${incident.pk}`, incident),
-    //   defaultResolver,
-    //   (error) => new Error(`Failed to put incident: ${error}`),
-    // );
-  }
-
   public postIncidentReopenEvent(pk: number): Promise<Event> {
     return this.resolveOrReject(
       this.authPost<Event, EventWithoutDescriptionBody>(`/api/v1/incidents/${pk}/events/`, { type: EventType.REOPEN }),
@@ -438,8 +423,6 @@ class ApiClient {
     );
   }
 
-  // NOTE: This won't actually get all incidents anymore because of the pagination
-  // TODO: Remove all use of this method.
   public getAllIncidentsFiltered(filter: Omit<Filter, "pk" | "name">): Promise<Incident[]> {
     return this.getPaginatedIncidentsFiltered(filter, null).then(paginationResponseResolver);
   }

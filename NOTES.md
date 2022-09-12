@@ -13,3 +13,5 @@ This file documents changes to Argus-frontend that are important for the users t
 
 ### Changed
 - Individual success alerts are replaced with a consolidated success message for bulk updates (bulk ack, bulk add/ticket etc.)
+- Logo to the one with eye and text (without TV-frame)
+- Favicon to the one with eye-only

@@ -16,3 +16,5 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 
 ### Changed
 - Individual success alerts are replaced with a consolidated success message for bulk updates (bulk ack, bulk add/ticket etc.)
+- Logo and favicon
+- Add seconds to timestamps in elements of the event feed in detailed incident view

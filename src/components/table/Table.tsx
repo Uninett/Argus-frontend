@@ -1,6 +1,5 @@
 import React from "react";
 import ReactTable, { SortingRule, Column } from "react-table";
-// import "./table.css";
 import "react-table/react-table.css";
 
 import { getPropertyByPath } from "../../utils";
