@@ -162,3 +162,4 @@ describe('Incident Details: end time and duration are displayed correctly, depen
         expect(durationItem).not.toBeInTheDocument()
     });
 });
+
