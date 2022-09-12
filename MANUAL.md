@@ -359,15 +359,50 @@ After you [have set the preferred filter parameters for incidents](#decide-which
 ### Update several incidents at a time
 
 #### Re-open incidents
+1. Select several incidents in the _Incidents table_ and press `RE-OPEN SELECTED` in the _table toolbar_.
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 08.18.39.png"/>
+    
+2. Confirm re-opening.
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.40.51.png"/>
 
 #### Close incidents
+1. Select several incidents in the _Incidents table_ and press `CLOSE SELECTED` in the _table toolbar_.
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 08.19.15.png"/>
+    
+2. Press `CLOSE NOW`. Note that you can optionally provide a closing comment if needed.
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.46.05.png"/>
 
 #### Add acknowledgement to incidents
+1. Select several incidents in the _Incidents table_ and press `ACK` in the _table toolbar_.
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 08.19.15 copy.png"/>
+    
+2. Press `SUBMIT`. Note that you can optionally provide an acknowledgement comment and/or date when these acknowledgements are no longer relevant.
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.46.26.png"/>
 
 #### Add ticket URL to incidents
+1. Select several incidents in the _Incidents table_ and press `ADD TICKET` in the _table toolbar_.
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 08.20.10.png"/>
+    
+2. Type in/paste in ticket URL into _Valid ticket URL field_ and press `SUBMIT`. Note that URL has to be absolute (full website address).
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 08.20.59.png"/>
+    
 
 #### Remove ticket URL from incidents
+1. Select several incidents in the _Incidents table_ and press `ADD TICKET` in the _table toolbar_.
 
+   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 08.20.32.png"/>
+
+2. Leave _Valid ticket URL field_ empty and press `SUBMIT`.
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 08.20.59.png"/>
 
 
 
