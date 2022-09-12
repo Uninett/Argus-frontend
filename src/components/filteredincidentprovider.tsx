@@ -54,23 +54,6 @@ export const matchesMaxlevel = (incident: Incident, maxlevel?: SeverityLevelNumb
 };
 
 export const matchesFilter = (incident: Incident, filter: Omit<Filter, "pk" | "name">): boolean => {
-  /*
-      // Useful for debugging
-      const matches = [
-        ["open", incident.open, filter.show, matchesShow(incident, filter.show)],
-        ["acked", incident.acked, filter.showAcked, matchesAcked(incident, filter.showAcked)],
-        ["tags", incident.tags, filter.tags, matchesOnTags(incident, filter.tags)],
-        ["source", incident.source, filter.sourcesById, matchesOnSources(incident, filter.sourcesById)],
-      ];
-
-      console.debug("Checking match on filter: ");
-      matches.forEach(([name, incidentValue, filterValue, match]) => {
-        console.debug(match ? "match" : "fail", `${name}: `, incidentValue, filterValue);
-      });
-
-      return matches.every(([name, incidentValue, filterValue, match]) => match);
-   */
-
   return (
     matchesShow(incident, filter.filter.open) &&
     matchesAcked(incident, filter.filter.acked) &&

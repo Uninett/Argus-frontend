@@ -90,7 +90,7 @@ describe("TimeslotList: Initial render", () => {
 
     const createTimeslotCreateButton = within(createTimeslot).getByRole("button", { name: /create/i });
     expect(createTimeslotCreateButton).toBeInTheDocument();
-    expect(createTimeslotCreateButton).toBeEnabled(); // TODO: should button be disabled before a name is specified?
+    expect(createTimeslotCreateButton).toBeEnabled();
 
     const createTimeslotDeleteButton = within(createTimeslot).getByRole("button", { name: /delete/i });
     expect(createTimeslotDeleteButton).toBeInTheDocument();
