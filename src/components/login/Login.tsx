@@ -60,6 +60,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     logo: {
       minHeight: "150px",
+      minWidth: "150px",
     },
     whiteTextInput: {
       color: "white",
