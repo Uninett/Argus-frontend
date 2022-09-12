@@ -350,8 +350,8 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                     </Grid>
                   )}
                   <Grid item>
-                    <OpenItem open={incident.open} />
-                    <AckedItem acked={incident.acked} expiration={ackExpiryDate} />
+                    <OpenItem open={incident.open} stateful={incident.stateful}/>
+                    <AckedItem acked={incident.acked} expiration={ackExpiryDate} stateful={incident.stateful}/>
                   </Grid>
                   <Grid item>
                     <TicketItem ticketUrl={incident.ticket_url} />
@@ -421,6 +421,10 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                         open={incident.open}
                         onManualClose={handleManualClose}
                         onManualOpen={handleManualOpen}
+                        signOffActionProps={{
+                          buttonProps: { disabled: !incident.stateful}
+                        }}
+                        reopenButtonProps={{disabled: !incident.stateful}}
                       />
                     </CenterContainer>
                   </ListItem>
@@ -491,10 +495,10 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                   </Grid>
                 )}
                 <Grid item>
-                  <OpenItem open={incident.open} />
+                  <OpenItem open={incident.open} stateful={incident.stateful}/>
                 </Grid>
                 <Grid item>
-                  <AckedItem acked={incident.acked} expiration={ackExpiryDate} />
+                  <AckedItem acked={incident.acked} expiration={ackExpiryDate} stateful={incident.stateful}/>
                 </Grid>
                 <Grid item>
                   <TicketItem ticketUrl={incident.ticket_url} />
@@ -580,6 +584,10 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                         open={incident.open}
                         onManualClose={handleManualClose}
                         onManualOpen={handleManualOpen}
+                        signOffActionProps={{
+                          buttonProps: { disabled: !incident.stateful}
+                        }}
+                        reopenButtonProps={{disabled: !incident.stateful}}
                       />
                     </Grid>
                     <Grid item className="ack-button-container">

@@ -25,7 +25,7 @@ const initialSelectedFilter: SelectedFilterStateType = {
   filterContent: {
     open: true,
     acked: false,
-    stateful: undefined,
+    stateful: true,
     maxlevel: 5,
     tags: [],
     sourceSystemIds: [],
@@ -35,7 +35,7 @@ const initialSelectedFilter: SelectedFilterStateType = {
     filter: {
       acked: false,
       open: true,
-      stateful: undefined,
+      stateful: true,
       maxlevel: 5,
       tags: [],
       sourceSystemIds: [],

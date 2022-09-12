@@ -17,6 +17,10 @@ const useStyles = makeStyles((theme: Theme) =>
       background: theme.palette.warning.main,
       color: WHITE,
     },
+      stateless: {
+          background: theme.palette.info.main,
+          color: WHITE,
+      },
     acknowledged: {
       background: theme.palette.success.main,
       color: WHITE,
@@ -64,19 +68,20 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export type OpenItemPropsType = {
   open: boolean;
+  stateful: boolean;
   small?: boolean;
 };
 
-export const OpenItem: React.FC<OpenItemPropsType> = ({ open, small }: OpenItemPropsType) => {
+export const OpenItem: React.FC<OpenItemPropsType> = ({ open, stateful, small }: OpenItemPropsType) => {
   const classes = useStyles();
-  const className = clsx(open ? classes.open : classes.closed, small ? classes.marginLeftSmall : classes.marginLeft);
-
+  const className = clsx(open ? classes.open : classes.closed, stateful ? "" : classes.stateless, small ? classes.marginLeftSmall : classes.marginLeft);
+  const label = stateful ? (open ? "Open" : "Closed") : "Stateless";
   return (
     <Chip
       size={(small && "small") || undefined}
       variant="outlined"
       className={className}
-      label={open ? "Open" : "Closed"}
+      label={label}
     />
   );
 };
@@ -85,12 +90,13 @@ type AckedItemPropsType = {
   acked: boolean;
   expiration?: Timestamp | null;
   small?: boolean;
+  stateful: boolean;
 };
 
-export const AckedItem: React.FC<AckedItemPropsType> = ({ acked, expiration, small }: AckedItemPropsType) => {
+export const AckedItem: React.FC<AckedItemPropsType> = ({ acked, expiration, small, stateful }: AckedItemPropsType) => {
   const classes = useStyles();
   const className = clsx(
-    acked ? classes.acknowledged : classes.unacknowledged,
+    stateful ? (acked ? classes.acknowledged : classes.unacknowledged) : classes.stateless,
     small ? classes.marginLeftSmall : classes.marginLeft,
   );
 
