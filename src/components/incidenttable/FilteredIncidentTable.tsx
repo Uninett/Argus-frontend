@@ -58,8 +58,6 @@ type IncidentsFilter = {
   tags: Tag[];
   sources: "AllSources" | string[] | undefined;
   sourcesById: number[] | undefined;
-  // show: "open" | "closed" | "both";
-  // showAcked: boolean;
 
   filter: FilterContent;
 };

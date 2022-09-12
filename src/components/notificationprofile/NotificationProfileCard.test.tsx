@@ -7,7 +7,6 @@ import { Filter, MediaAlternative, NotificationProfileKeyed, PhoneNumber, Timesl
 import NotificationProfileCard from "./NotificationProfileCard";
 
 // MOCK DATA INPUT TO COMPONENT
-// TODO: this can probably be reused for the NotificationProfileList-tests, so it should probably be exported to a separate file
 const existingProfile1: NotificationProfileKeyed = {
   pk: 1,
   timeslot: 1,
