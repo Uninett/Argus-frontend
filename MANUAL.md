@@ -28,11 +28,13 @@
     - [Close incident](#close-incident)
     - [Acknowledge incident](#add-acknowledgement-to-incident)
     - [Add ticket to incident](#add-ticket-url-to-incident)
+    - [Remove ticket from incident](#remove-ticket-url-from-incident)
   - [Update several incidents](#update-several-incidents-at-a-time)
     - [Re-open incidents](#re-open-incidents)
     - [Close incidents](#close-incidents)
     - [Acknowledge incidents](#add-acknowledgement-to-incidents)
     - [Add ticket to incidents](#add-ticket-url-to-incidents)
+    - [Remove ticket from incidents](#remove-ticket-url-from-incidents)
 - [Customize notifications](#customize-alarm-notifications-in-argus)
   - [Access your notification settings](#access-your-notification-profiles)
   - [Add notification profile](#add-new-notification-profile)
@@ -304,12 +306,55 @@ After you [have set the preferred filter parameters for incidents](#decide-which
 ### Update one incident
 
 #### Re-open incident
+1. [Open incident in detailed view](#access-detailed-incident-view).
+2. Press `OPEN ICIDENT`.
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.40.37.png"/>
+    
+3. Confirm re-opening.
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.40.51.png"/>
+    
 
 #### Close incident
+1. [Open incident in detailed view](#access-detailed-incident-view).
+2. Press `CLOSE INCIDENT`.
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.42.03.png"/>
+    
+3. Press `CLOSE NOW`. Note that you can optionally provide a closing comment if needed.
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.46.05.png"/>
+    
 
 #### Add acknowledgement to incident
+1. [Open incident in detailed view](#access-detailed-incident-view).
+2. Press `CREATE ACKNOWLEDGEMENT`.
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.42.17.png"/>
+    
+3. Press `SUBMIT`. Note that you can optionally provide an acknowledgement comment and/or date when this acknowledgement is no longer relevant.
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.46.26.png"/>
+    
 
 #### Add ticket URL to incident
+1. [Open incident in detailed view](#access-detailed-incident-view).
+2. Type in/paste in ticket URL into _Ticket input field_. Note that URL has to be absolute (full website address).
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.42.35.png"/>
+    
+3. Press `SAVE`.
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.44.40.png"/>
+    
+
+#### Remove ticket URL from incident
+1. [Open incident in detailed view](#access-detailed-incident-view).
+2. Remove URL from _Ticket input field_ and press `SAVE`.
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.44.59.png"/>
+    
 
 ### Update several incidents at a time
 
@@ -320,6 +365,8 @@ After you [have set the preferred filter parameters for incidents](#decide-which
 #### Add acknowledgement to incidents
 
 #### Add ticket URL to incidents
+
+#### Remove ticket URL from incidents
 
 
 
