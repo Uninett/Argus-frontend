@@ -102,9 +102,10 @@ describe('Incident Details: end time and duration are displayed correctly, depen
         // End time item is displayed
         const endTimeItem = within(primaryDetailsContainer).getByTitle(/end-time/i)
         expect(endTimeItem).toBeInTheDocument()
-        if (resolvedIncidentMock.end_time) {
-            expect(within(endTimeItem).getByText(resolvedIncidentMock.end_time)).toBeInTheDocument()
-        }
+
+        // end_time is always defined for resolvedIncidentMock
+        // @ts-ignore
+        expect(within(endTimeItem).getByText(resolvedIncidentMock.end_time)).toBeInTheDocument() 
 
         // Duration item is displayed
         const durationItem = within(primaryDetailsContainer).getByTitle(/duration/i)
