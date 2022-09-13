@@ -63,36 +63,32 @@ Argus is an _alert aggregator_ designed for storing and managing alerts from dif
 Argus is created for **ease of alarm management** and **customizable alarm notifications**.  
 
 ## Log into Argus
-Log in and start using Argus at **/login**
+Log in and start using Argus at **/login**.
 <img src="public/screenshots/manual/Screenshot 2022-09-08 at 13.49.23.png"/>
 
 ### Login using username and password
-1. Fill out _username_ and _password_
+1. Fill out _username_ and _password_.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-08 at 13.48.07.png"/>
 
-2. Press `LOGIN`
+2. Press `LOGIN`.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-08 at 13.48.07 2.png"/>
 
 ### Login using Feide
-1. Press `LOGIN WITH FEIDE`
+1. Press `LOGIN WITH FEIDE`.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-08 at 13.48.07 3.png"/>
 
-2. Select account you want to log in with
+2. Select account you want to log in with.
 
    <img height="461" src="public/screenshots/manual/Screenshot 2022-09-07 at 13.56.03.png" width="354"/>
 
-3. Fill out _feide-username_ and _password_
+3. Fill out _feide-username_ and _password_ and press `Log in`.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-07 at 13.55.48.png" width="354" height="740"/>
 
-4. Press `Log in`
-
-   <img height="125" src="public/screenshots/manual/Screenshot 2022-09-07 at 13.59.17.png" width="354"/>
-
-5. Continue with preferred method of 2-factor Feide authentication
+4. Continue with preferred method of 2-factor Feide authentication.
 
 ## Work with alarms in Argus
 **View**, **filter** and **update** alarms that come to Argus from different sources (monitoring systems).
