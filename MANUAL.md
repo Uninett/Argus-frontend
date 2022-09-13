@@ -10,7 +10,7 @@
     - [Change rows per page](#change-how-many-rows-are-shown-per-incidents-table-page)
     - [Navigate table](#navigate-incidents-table)
     - [Change refresh interval](#change-how-often-incidents-table-gets-refreshed)
-  - [Filter incidents](#decide-which-incident-are-shown-in-the-table)
+  - [Filter incidents](#decide-which-incidents-are-shown-in-the-table)
     - [Filter by open/close](#filter-by-openclose-status)
     - [Filter by acknowledgement](#filter-by-acknowledgement-status)
     - [Filter by sources](#filter-by-source-monitoring-system)
@@ -60,7 +60,7 @@
 
 ## What is Argus?
 Argus is an _alert aggregator_ designed for storing and managing alerts from different monitoring systems at one place.
-Argus is created for **ease of alarm management** and **customizable alarm notifications**.  
+Argus is created for **ease of alarm management** and **customizable alarm notifications**.
 
 ## Log into Argus
 Log in and start using Argus at **/login**.
@@ -100,65 +100,95 @@ Incident is an alarm that was sent to Argus from a monitoring system of your cho
 
 Each incident has a _description_ (created by the monitoring system), _start time_, _duration_, _source_ (which monitoring system it came to Argus from), _tags_, _severity level_. Incident may have _end time_, _ticket url_ (associated ticket in an external ticket system).
 Incidents may have different status. For example, incident may be _open_, or _closed_ (resolved). Incident may also be _acknowledged_ (noticed or commented in any way), or not. 
-In the detailed incident view below, you can get familiar with the above-mentioned attributes of an incident. Note that incident's event feed is also available in the detailed view. Event feed show events like _closing_ (resolving), and _acknowledging_ incident.
+In the detailed incident view below, you can get familiar with the above-mentioned attributes of an incident. Note that incident's event feed is also available in the detailed view. Event feed shows events like _closing_ (resolving), and _acknowledgment_ of an incident.
 
 <img src="public/screenshots/manual/Screenshot 2022-09-08 at 14.28.18.png"/>
 
-Each row in _Incidents_ table is one alarm. In the table, you can see incident's _start time_, _closed/open status_, whether incident has at least one _acknowledgement_, _severity level_, _source_ (which monitoring system incident came from), _description_ (created by the monitoring system), whether incident has an associated _ticket url_ (label icon at the very end of the row).
+Each row in the _Incidents_ table is one alarm. In the table, you can see incident's _start time_, _closed/open status_, whether an incident has at least one _acknowledgement_, _severity level_, _source_ (which monitoring system incident came from), _description_ (created by the monitoring system), whether incident has an associated _ticket url_ (label icon at the very end of the row).
 
 <img src="public/screenshots/manual/Screenshot 2022-09-09 at 08.21.36.png"/>
 
 ### Access detailed incident view
 * Alternative 1:
-  1. Click on incident row in the _Incidents_ table.
-  2. Detailed incident view appears in a pop-up window.
+  1. Click on an incident row in the _Incidents_ table.
+  2. Detailed incident will appear in a pop-up window.
+  
      <img src="public/screenshots/manual/Screenshot 2022-09-09 at 09.40.01.png"/>
+    
 * Alternative 2:
-  1. Click on one of the icons in _Actions_ in the _Incidents_ table.
+  1. Click on one of the icons under _Actions column_ in the _Incidents_ table.
+  
      <img src="public/screenshots/manual/Screenshot 2022-09-09 at 08.21.36 copy.png"/>
-  2. App redirects to selected incident's page.
+     
+  2. App will redirect you to the incident's page.
+  
      <img src="public/screenshots/manual/Screenshot 2022-09-09 at 09.42.33.png"/>
 
 ### Work with incidents table
 
 #### Change how many rows are shown per incidents table page
 1. Scroll down to the bottom of the _Incidents_ table.
+
    <img src="public/screenshots/manual/Screenshot 2022-09-09 at 09.57.34.png"/>
-2. Click on _Rows per page_ drop-down.
+   
+2. Click on the _Rows per page_ drop-down.
+
    <img src="public/screenshots/manual/Screenshot 2022-09-09 at 09.57.34 copy.png"/>
+   
 3. Select whether you want 10/25/50/100 incidents per page displayed.
+
    <img src="public/screenshots/manual/Screenshot 2022-09-09 at 09.58.16.png"/>
 
 #### Navigate incidents table
 1. Scroll down to the bottom of the _Incidents_ table.
+
    <img src="public/screenshots/manual/Screenshot 2022-09-09 at 09.57.34.png"/>
-2. Click on _right arrow icon_ if you want to go to the next table page.
+   
+2. Click on the _right arrow icon_ if you want to go to the next table page.
+
    <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.05.05 copy.png"/>
-3. Click on _left arrow icon_ if you want to go to the previous table page.
+   
+3. Click on the _left arrow icon_ if you want to go to the previous table page.
+
    <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.05.05.png"/>
 
+
 #### Change how often incidents table gets refreshed
-1. Click on _gears icon_ to the right below the Argus header.
+1. Click on the _gears icon_ to the right below the header.
+
    <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.08.23.png"/>
-2. Select refresh method in _Auto Update selector_:
-   * If you want **no automatic table updates**, press `NEVER`in _Auto Update selector_. Note that you will have to refresh the page yourself if you want the table to get updated.
+   
+2. Select refresh method in the _Auto Update selector_:
+
+   * If you want **no automatic table updates**, press `NEVER`in the _Auto Update selector_. Note that you will have to refresh the page yourself if you want the table to get updated.
+   
      <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.08.45.png"/>
-   * If you want table to update **in realtime**, press `REALTIME` in _Auto Update selector_.
+     
+   * If you want table to update **in realtime**, press `REALTIME` in the _Auto Update selector_.
+   
      <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.08.45 copy.png"/>
-   * If you want table to get updated **every couple of seconds**, press `INTERVAL` in _Auto Update selector_.
+     
+   * If you want table to get updated **every couple of seconds**, press `INTERVAL` in the _Auto Update selector_.
+   
      <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.08.45 copy 2.png"/>
+     
       * You can change the **amount of seconds** for the refresh interval in `/src/config.tsx`.
+     
         <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.13.15.png"/>
 
 
-### Decide which incident are shown in the table
+### Decide which incidents are shown in the table
 For ease of alarm management, you can filter incidents so that only incidents that match all the preferred parameters are shown in the _Incidents_ table.
 
 _Filter toolbar_ is available:
 * Below the header in full-screen view.
+
   <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.30.37.png"/>
+  
 * In the _Filter Options dropdown_ in mobile view.
+
   <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.30.18.png"/>
+
 
 #### Filter by open/close status
 * If you only want _open_ incidents to be displayed in the table, press `OPEN` in the _Open State selector_.
@@ -188,8 +218,8 @@ _Filter toolbar_ is available:
 
 
 #### Filter by source monitoring system
-* If you want table to display only incidents that came from **specific monitoring system(s)**:
-  1. Click on _Sources input field_.
+* If you want table to display only incidents that came from a **specific monitoring system(s)**:
+  1. Click on the _Sources input field_.
 
   <img src="public/screenshots/manual/Screenshot 2022-09-09 at 13.58.51.png"/>
   
@@ -203,12 +233,12 @@ _Filter toolbar_ is available:
   
   4. Repeat the process if you want to filter after several monitoring systems.
 
-* If you want table to display incidents from **any monitoring system**, leave the _Sources field_ empty.
+* If you want the table to display incidents from **any monitoring system**, leave the _Sources field_ empty.
 
 
 #### Filer by tags
-* If you want table to display only incidents that have **specific tag(s)**:
-  1. Type in _tag_ into _Tags input field_ in a format `tag_name=tag_value`.
+* If you want table to display only incidents that have a **specific tag(s)**:
+  1. Type in a _tag_ into the _Tags input field_ in a format `tag_name=tag_value`.
 
   <img src="public/screenshots/manual/Screenshot 2022-09-09 at 13.59.20.png"/>
     
@@ -218,31 +248,32 @@ _Filter toolbar_ is available:
     
    3. Repeat the process if you want to filter after several tags.
         
-* If you want table to display incidents with **any tags**, leave the _Tags field_ empty.
+* If you want the table to display incidents with **any tags**, leave the _Tags field_ empty.
 
 
 #### Filter by severity level
 Severity level ranges from _1 - Critical_ to _5 - Information_. If you select _max severity level_ to be **5**, all incidents will be displayed in the table. If you select _max severity level_ to be **2**, incidents with severity **1** and **2** will be displayed in the table.
 
 To change _max severity level_:
-1. Open _Max level_ drop-down.
+1. Open the _Max level_ drop-down.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-09 at 13.58.35 copy 6.png"/>
+   
 2. Select the preferred _max severity_ option.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-09 at 13.54.58.png"/>
 
 #### Filter out older incidents
 Note that you can not save this parameter in [stored filters](#work-with-stored-filters).
-1. Click on _gears icon_ to the right below the Argus header.
+1. Click on the _gears icon_ to the right below the header.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.08.23.png"/>
    
-2. Open _Timeframe_ drop-down menu.
+2. Open the _Timeframe_ drop-down menu.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-09 at 14.16.33.png"/>
 
-3. Select the preferred option of _report-time-not-later-than_ for the incidents that are displayed in the table.
+3. Select the preferred option of _report-time-not-later-than_ for the incidents in the table.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-09 at 14.16.50.png"/>
 
@@ -252,7 +283,7 @@ After you [have set the preferred filter parameters for incidents](#decide-which
 
 #### Save current filter
 1. [Set the preferred filter parameters](#decide-which-incident-are-shown-in-the-table).
-2. Click on _plus icon_ within _Filter input field_.
+2. Click on the _plus icon_ within the _Filter input field_.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-09 at 14.30.58.png"/>
     
@@ -262,7 +293,7 @@ After you [have set the preferred filter parameters for incidents](#decide-which
 
 #### Modify existing filter
 1. [Make desired changes to filter parameters](#decide-which-incident-are-shown-in-the-table).
-2. Click on _save icon_ within _Filter input field_.
+2. Click on the _save icon_ within the _Filter input field_.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-09 at 14.33.09.png"/>
 
@@ -272,7 +303,7 @@ After you [have set the preferred filter parameters for incidents](#decide-which
 
 
 #### Apply existing filter
-1. Click into _Filter input field_.
+1. Click into the _Filter input field_.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-09 at 14.46.06.png"/>
 
@@ -281,16 +312,16 @@ After you [have set the preferred filter parameters for incidents](#decide-which
    <img src="public/screenshots/manual/Screenshot 2022-09-09 at 14.46.20.png"/>
 
 #### Unselect applied filter
-1. Click on _cross icon_ inside _Filter input field_.
+1. Click on the _cross icon_ inside the _Filter input field_.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-09 at 14.38.17.png"/>
 
 #### Delete existing filter
-1. Click on _gears icon_ inside _Filter input field_.
+1. Click on the _gears icon_ inside the _Filter input field_.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-09 at 14.30.58 copy.png"/>
 
-2. Select which filter you want to delete by clicking on _bin icon_.
+2. Select which filter you want to delete by clicking on the _bin icon_.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-09 at 14.33.57.png"/>
 
@@ -336,7 +367,7 @@ After you [have set the preferred filter parameters for incidents](#decide-which
 
 #### Add ticket URL to incident
 1. [Open incident in detailed view](#access-detailed-incident-view).
-2. Type in/paste in ticket URL into _Ticket input field_. Note that URL has to be absolute (full website address).
+2. Type in/paste in ticket URL into the _Ticket input field_. Note that URL has to be absolute (full website address).
 
    <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.42.35.png"/>
     
@@ -347,7 +378,7 @@ After you [have set the preferred filter parameters for incidents](#decide-which
 
 #### Remove ticket URL from incident
 1. [Open incident in detailed view](#access-detailed-incident-view).
-2. Remove URL from _Ticket input field_ and press `SAVE`.
+2. Remove URL from the _Ticket input field_ and press `SAVE`.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.44.59.png"/>
     
@@ -386,7 +417,7 @@ After you [have set the preferred filter parameters for incidents](#decide-which
 
    <img src="public/screenshots/manual/Screenshot 2022-09-12 at 08.20.10.png"/>
     
-2. Type in/paste in ticket URL into _Valid ticket URL field_ and press `SUBMIT`. Note that URL has to be absolute (full website address).
+2. Type in/paste in ticket URL into the _Valid ticket URL field_ and press `SUBMIT`. Note that URL has to be absolute (full website address).
 
    <img src="public/screenshots/manual/Screenshot 2022-09-12 at 08.20.59.png"/>
     
@@ -396,7 +427,7 @@ After you [have set the preferred filter parameters for incidents](#decide-which
 
    <img src="public/screenshots/manual/Screenshot 2022-09-12 at 08.20.32.png"/>
 
-2. Leave _Valid ticket URL field_ empty and press `SUBMIT`.
+2. Leave the _Valid ticket URL field_ empty and press `SUBMIT`.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-12 at 08.20.59.png"/>
 
