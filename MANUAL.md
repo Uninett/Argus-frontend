@@ -404,29 +404,29 @@ After you [have set the preferred filter parameters for incidents](#decide-which
 
 
 ## Customize alarm notifications in Argus
-Choose **when**, **where** and **what** alarm notifications you want to receive by creating, editing and deleting notification profiles.
+Choose **when**, **where** and **what** alarm notifications you want to receive by creating, editing and deleting _notification profiles_.
 
 ### Access your notification profiles
-1. Press `PROFILES` in header.
+1. Press `PROFILES` in the header.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-08 at 13.53.49 2.png"/>
 
 ### Add new notification profile
-1. Select timeslot for when to receive notifications in _Timeslot_ drop-down. If drop-down menu is empty, [create a timeslot](#add-new-timeslot) first.
-2. Select what alarms you want to receive notifications about in _Filter_ drop-down. If drop-down menu is empty, create a filter first.
-3. Choose whether you want to receive notifications via SMS or Email in _Media_ drop-down.
-4. Select what phone number(s) you want to receive notifications to in _Phone number_ drop-down. If drop-down menu is empty, [add a phone number](#add-new-phone-number-in-settings) first.
+1. Select timeslot for when to receive notifications in _Timeslot drop-down_. If drop-down menu is empty, [create a timeslot](#add-new-timeslot) first.
+2. Select what alarms you want to receive notifications about in _Filter drop-down_. If drop-down menu is empty, [create a filter first](#save-current-filter).
+3. Choose whether you want to receive notifications via SMS or Email in _Media drop-down_.
+4. Select what phone number(s) you want to receive notifications to in _Phone number drop-down_. If drop-down menu is empty, [add a phone number](#add-new-phone-number-in-settings) first.
 5. Press `CREATE`.
 
 ### Edit existing notification profile
-1. Change timeslot for when to receive notifications in _Timeslot_ drop-down if needed.
-2. Change what alarms you want to receive notifications about in _Filter_ drop-down if needed.
-3. Change whether you want to receive notifications via SMS or Email in _Media_ drop-down if needed.
-4. Change what phone number(s) you want to receive notifications to in _Phone number_ drop-down if needed.
+1. Change timeslot for when to receive notifications in _Timeslot drop-down_ (if needed).
+2. Change what alarms you want to receive notifications about in _Filter drop-down_ (if needed).
+3. Change whether you want to receive notifications via SMS or Email in _Media drop-down_ (if needed).
+4. Change what phone number(s) you want to receive notifications to in _Phone number drop-down_ (if needed).
 5. Press `SAVE`.
 
 ### Disable notification profile
-1. Uncheck the _Active_-box inside one of your existing notification profiles.
+1. Uncheck the _Active checkbox_ inside one of your existing notification profiles.
 
 ### Delete notification profile
 1. Press `DISCARD` inside one of your existing notification profiles.
