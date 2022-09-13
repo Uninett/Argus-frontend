@@ -436,29 +436,30 @@ Choose **when**, **where** and **what** alarm notifications you want to receive 
 Add, edit or delete timeslots in _Timeslots_.
 
 <img src="public/screenshots/manual/Screenshot 2022-09-08 at 14.02.43.png"/>
-
 <img src="public/screenshots/manual/Screenshot 2022-09-08 at 14.03.02.png"/>
 
 ### What is timeslot in Argus
-Timeslot is a collection of one or more recurrences with a meaningful name. Saved timeslots are used when customizing alarm notifications. Each timeslot represents a window or several windows of time for when it is OK to receive alarm notifications.
+Timeslot is a collection of one or more recurrences with a meaningful name. Saved timeslots are used when [customizing alarm notifications](#customize-alarm-notifications-in-argus). Each timeslot represents a window (or several windows) of time for when it is OK to receive alarm notifications.
 
 ### What is recurrence in Argus
 Recurrence is a building block of each timeslot. Each recurrence represents a time range on selected weekdays for when it is OK to receive alarm notifications.
 Time range can either be:
-* a whole weekday, 
+* a whole day, 
 * or a window of time
 
-Each recurrence has only one time range, and it applies to all days that are selected in given recurrence. 
+Each recurrence has only one time range, and it applies to all days that are selected in a given recurrence. 
 
-For example, in this timeslot alarm notifications are allowed from 4 p.m a.m to 8 a.m on business days, and all hours on weekends:
+For example, in this timeslot with 3 recurrences, alarm notifications are allowed from 4 p.m. to 8 a.m. on business days, and all hours on weekends:
+
 <img src="public/screenshots/manual/Screenshot 2022-09-08 at 11.57.49.png"/>
 
 
 
 ### Access your timeslots
-1. Press `TIMESLOTS` in header
+1. Press `TIMESLOTS` in the header.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-08 at 13.53.49 3.png"/>
+
 ### Add new recurrence
 Each timeslot has at least one recurrence by default. Add more recurrences if your timeslot needs more than one.
 1. [Go to your timeslots](#access-your-timeslots).
@@ -468,57 +469,82 @@ Each timeslot has at least one recurrence by default. Add more recurrences if yo
 
 ### Edit recurrence
 1. [Go to your timeslots](#access-your-timeslots).
-2. Modify one of existing recurrences either in _Create New Timeslot_ box, or in one of your existing timeslots:
-   * If needed, change _start time_ either by typing new value, or by pressing on calendar icon:
+2. Modify one of the existing recurrences either in _Create New Timeslot_ box, or in one of your existing timeslots:
+   * If needed, change _start time_ either by typing a new value, or by using a calendar icon.
+   
      <img src="public/screenshots/manual/Screenshot 2022-09-08 at 12.03.51.png"/>
-   * If needed, change _end time_ either by typing new value, or by pressing on calendar icon:
+     
+   * If needed, change _end time_ either by typing a new value, or by using a calendar icon.
+   
      <img src="public/screenshots/manual/Screenshot 2022-09-08 at 12.05.42.png"/>
-   * Check _All day_ if you want recurrence to be from 00:00 a.m. to 11:59 p.m.. Note that if _All day_ is checked, you do not need to provide _start-_ and _end time_.
+     
+   * Check _All day_ if you want recurrence to be from 00:00 a.m. to 11:59 p.m. Note that if _All day_ is checked, you do not need to provide _start-_ and _end time_.
+   
      <img src="public/screenshots/manual/Screenshot 2022-09-08 at 12.07.27.png"/>
+     
    * If needed, change day(s):
      1. Open drop-down menu.
+     
         <img src="public/screenshots/manual/Screenshot 2022-09-08 at 12.05.42 2.png"/>
+        
      2. Select/de-select days for this recurrence by clicking on them once. Selected days are highlighted in light-yellow.
+     
         <img src="public/screenshots/manual/Screenshot 2022-09-08 at 12.08.24.png"/>
+        
      3. Click away anywhere outside the drop-down menu.
 
 ### Delete recurrence
 1. [Go to your timeslots](#access-your-timeslots).
-2. Press `REMOVE` inside one of existing recurrences either in _Create New Timeslot_ box, or in one of your existing timeslots:
+2. Press `REMOVE` inside one of the existing recurrences either in _Create New Timeslot_ box, or inside one of your existing timeslots.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-08 at 12.20.00.png"/>
+
 ### Add new timeslot
 1. [Go to your timeslots](#access-your-timeslots).
 2. Go to _Create New Timeslot_ box.
     * In full-screen view it is visible by default at the top:
+   
       <img src="public/screenshots/manual/Screenshot 2022-09-08 at 12.29.11.png"/>
-    * In mobile-view, press button with _pencil-icon_ at the top to unfold _Create New Timeslot_ box:
+      
+    * In mobile-view, press button with _pencil-icon_ at the top to unfold the _Create New Timeslot_ box:
+   
       <img src="public/screenshots/manual/Screenshot 2022-09-08 at 12.28.24.png"/>
+    
 3. Type in a (meaningful) timeslot name.
+
    <img src="public/screenshots/manual/Screenshot 2022-09-08 at 12.35.51.png"/>
+   
 4. [Add another recurrence(s)](#add-new-recurrence) if needed.
 5. [Edit recurrence(s)](#edit-recurrence) if needed.
 6. [Remove recurrence(s)](#delete-recurrence) if needed.
 7. Press `CREATE`.
+
    <img src="public/screenshots/manual/Screenshot 2022-09-08 at 12.35.51 2.png"/>
+   
 8. _Create New Timeslot_ box will refresh to default and your newly created timeslot will appear at the bottom of the timeslot list. Note that existing timeslots have a dark border at the top.
+
    <img src="public/screenshots/manual/Screenshot 2022-09-08 at 12.41.07.png"/>
 
 ### Edit existing timeslot
 1. [Go to your timeslots](#access-your-timeslots).
 2. Modify one of your existing timeslots:
    * Change name if needed.
+   
      <img src="public/screenshots/manual/Screenshot 2022-09-08 at 12.47.38.png"/>
+     
    * [Add another recurrence(s)](#add-new-recurrence) if needed.
    * [Edit recurrence(s)](#edit-recurrence) if needed.
    * [Remove recurrence(s)](#delete-recurrence) if needed.
 3. Press `SAVE`. Note that `SAVE`-button is inactive if no changes were made. `SAVE`-button is also inactive if some changes are invalid. In this case error messages inside the timeslot box will help you.
+
    <img src="public/screenshots/manual/Screenshot 2022-09-08 at 12.49.29.png"/>
+
    <img src="public/screenshots/manual/Screenshot 2022-09-08 at 12.53.44.png"/>
 
 ### Delete timeslot
 1. [Go to your timeslots](#access-your-timeslots).
-2. Press `DELETE` inside one of existing timeslots. Note that `DELETE`-button is disabled in _Create New Timeslot_ box.
+2. Press `DELETE` inside one of the existing timeslots. Note that `DELETE`-button is disabled in the _Create New Timeslot_ box.
+
    <img src="public/screenshots/manual/Screenshot 2022-09-08 at 12.56.02.png"/>
 
 
