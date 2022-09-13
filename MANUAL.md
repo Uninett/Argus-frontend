@@ -439,7 +439,7 @@ Add, edit or delete timeslots in _Timeslots_.
 <img src="public/screenshots/manual/Screenshot 2022-09-08 at 14.03.02.png"/>
 
 ### What is timeslot in Argus
-Timeslot is a collection of one or more recurrences with a meaningful name. Saved timeslots are used when [customizing alarm notifications](#customize-alarm-notifications-in-argus). Each timeslot represents a window (or several windows) of time for when it is OK to receive alarm notifications.
+Timeslot is a collection of one or more recurrences with a meaningful name. Saved timeslots can be used when [customizing alarm notifications](#customize-alarm-notifications-in-argus). Each timeslot represents a window (or several windows) of time for when it is OK to receive alarm notifications.
 
 ### What is recurrence in Argus
 Recurrence is a building block of each timeslot. Each recurrence represents a time range on selected weekdays for when it is OK to receive alarm notifications.
@@ -549,48 +549,52 @@ Each timeslot has at least one recurrence by default. Add more recurrences if yo
 
 
 ## Manage your contact details in Argus
-Add, edit or delete phone numbers in your settings. Phone numbers that are present in your settings can be used when customizing notifications.
+Add, edit or delete phone numbers in your settings. Phone numbers that are present in your settings can be used when [customizing alarm notifications](#customize-alarm-notifications-in-argus).
 
 <img src="public/screenshots/manual/Screenshot 2022-09-08 at 14.00.29.png"/>
 
 ### Access your contact details in settings
-1. Click on _user icon_ in header.
+1. Click on _user icon_ in the header.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-08 at 13.53.49.png"/>
-2. Click on `Settings` in drop-down menu.
+   
+2. Click on `Settings` in the drop-down menu.
 
-<img src="public/screenshots/manual/Screenshot 2022-09-07 at 14.18.11.png"/>
+    <img src="public/screenshots/manual/Screenshot 2022-09-07 at 14.18.11.png"/>
     
 ### Add new phone number in settings
-1. [Go to your contact details](#access-your-contact-details-in-settings)
-2. Type in an existing phone number. Phone number **has to include land code.**
+1. [Go to your contact details](#access-your-contact-details-in-settings).
+2. Type in an existing phone number. Phone number **has to include land code**.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-07 at 14.46.13.png"/>
+   
 3. Press `CREATE`.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-07 at 14.46.13 2.png"/>
 
 ### Edit existing phone number in settings
-1. [Go to your contact details](#access-your-contact-details-in-settings)
-2. Modify one of existing phone numbers.
+1. [Go to your contact details](#access-your-contact-details-in-settings).
+2. Modify one of the existing phone numbers.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-08 at 09.48.43.png"/>
+   
 3. Press `SAVE`.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-08 at 09.48.43 2.png"/>
 
 ### Delete phone number in settings
-1. [Go to your contact details](#access-your-contact-details-in-settings)
-2. Press `DELETE` by one of your saved phone numbers.
+1. [Go to your contact details](#access-your-contact-details-in-settings).
+2. Press `DELETE` inside one of your saved phone numbers.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-08 at 09.54.43.png"/>
 
 
 ## Log out from Argus
-1. Click on _user icon_ in header.
+1. Click on _user icon_ in the header.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-08 at 13.53.49.png"/>
-2. Click on `Logout` in drop-down menu.
+   
+2. Click on `Logout` in the drop-down menu.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-07 at 14.18.11 2.png"/>
 
