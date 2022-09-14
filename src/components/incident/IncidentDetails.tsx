@@ -267,6 +267,21 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
     });
   }, [acks]);
 
+  // chronological order is oldest-first
+  const chronoEvents = useMemo<Event[]>(() => {
+    return [...(events || [])].sort((first: Event, second: Event) => {
+      const firstTime = Date.parse(first.timestamp);
+      const secondTime = Date.parse(second.timestamp);
+      if (firstTime < secondTime) {
+        return -1;
+      } else if (firstTime > secondTime) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+  }, [events]);
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleManualClose = (msg: string) => {
     api
@@ -469,9 +484,10 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
               Related events
             </Typography>
             <List>
-              {(events || [])
-                  .filter((event: Event) => event.type.value !== "ACK")
-                  .map((event: Event) => <EventListItem key={event.pk} event={event} />)
+              {
+                chronoEvents
+                    .filter((event: Event) => event.type.value !== "ACK")
+                    .map((event: Event) => <EventListItem key={event.pk} event={event} />)
               }
             </List>
           </Grid>
@@ -635,9 +651,10 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                       <EventListItem event={defaultEvent} />
                     </Skeleton>
                   ))) ||
-                (events || [])
-                  .filter((event: Event) => event.type.value !== "ACK")
-                  .map((event: Event) => <EventListItem key={event.pk} event={event} />)}
+                    chronoEvents
+                        .filter((event: Event) => event.type.value !== "ACK")
+                        .map((event: Event) => <EventListItem key={event.pk} event={event} />)
+                }
               </List>
             </Grid>
           </Grid>
