@@ -416,7 +416,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
             <Typography color="textSecondary" gutterBottom>
               Acknowledgements
             </Typography>
-            <List>
+            <List className={classes.feedRoot}>
               {chronoAcks
                 .map((ack: Acknowledgement) =>
                   <AckListItem key={ack.event.timestamp} ack={ack} />)
@@ -449,7 +449,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
             <Typography color="textSecondary" gutterBottom>
               Related events
             </Typography>
-            <List>
+            <List className={classes.feedRoot}>
               {
                 chronoEvents
                     .filter((event: Event) => event.type.value !== "ACK")
@@ -602,7 +602,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
               <Typography color="textSecondary" gutterBottom>
                 Acknowledgements
               </Typography>
-              <List>
+              <List className={classes.feedRoot}>
                 {(isAcksLoading &&
                   Array.from(new Array(3)).map((item: number, index: number) => (
                     <Skeleton key={index} variant="rect" animation="wave">
@@ -618,7 +618,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
               <Typography color="textSecondary" gutterBottom>
                 Related events
               </Typography>
-              <List>
+              <List className={classes.feedRoot}>
                 {(isEventsLoading &&
                   Array.from(new Array(3)).map((item: number, index: number) => (
                     <Skeleton key={index} variant="rect" animation="wave">
