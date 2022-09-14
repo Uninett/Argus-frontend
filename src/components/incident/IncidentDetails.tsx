@@ -248,21 +248,22 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
     setEventsPromise(api.getIncidentEvents(incident.pk));
   }, [setAcksPromise, setEventsPromise, incident]);
 
+  // chronological order is oldest-first
   const chronoAcks = useMemo<Acknowledgement[]>(() => {
     return [...(acks || [])].sort((first: Acknowledgement, second: Acknowledgement) => {
       const firstTime = Date.parse(first.event.timestamp);
       const secondTime = Date.parse(second.event.timestamp);
       if (firstTime < secondTime) {
-        return 1;
-      } else if (firstTime > secondTime) {
         return -1;
+      } else if (firstTime > secondTime) {
+        return 1;
       }
       if (first.expiration && second.expiration) {
         const firstExpires = Date.parse(first.expiration);
         const secondExpires = Date.parse(second.expiration);
-        return firstExpires < secondExpires ? 1 : firstExpires > secondExpires ? -1 : 0;
+        return firstExpires < secondExpires ? -1 : firstExpires > secondExpires ? 1 : 0;
       }
-      return first.expiration ? 1 : -1;
+      return first.expiration ? -1 : 1;
     });
   }, [acks]);
 
