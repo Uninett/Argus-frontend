@@ -110,7 +110,7 @@ const NotificationProfileCard = ({
     const newName = event.target.value;
     if (newName !== profileState.name) {
       setUnsavedChanges(true);
-      setProfileState({ ... profileState, name: newName});
+      setProfileState({ ...profileState, name: newName});
     }
   };
 
