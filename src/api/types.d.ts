@@ -94,6 +94,7 @@ export type PhoneNumberSuccessResponse = PhoneNumber;
 export type NotificationProfilePK = number;
 
 export interface NotificationProfileKeyed {
+  name: string;
   timeslot: TimeslotPK;
   filters: FilterPK[];
   media: MediaAlternative[];
@@ -104,6 +105,7 @@ export interface NotificationProfileKeyed {
 
 export interface NotificationProfile {
   pk: number;
+  name: string;
   timeslot: Timeslot;
   filters: Filter[];
   media: MediaAlternative[];

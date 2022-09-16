@@ -106,6 +106,14 @@ const NotificationProfileCard = ({
   const [filterError, setFilterError] = useState<boolean>(false);
 
   // Action handlers
+  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newName = event.target.value;
+    if (newName !== profileState.name) {
+      setUnsavedChanges(true);
+      setProfileState({ ... profileState, name: newName});
+    }
+  };
+
   const handleTimeslotChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setUnsavedChanges(true);
     setProfileState({ ...profileState, timeslot: event.target.value as number });
@@ -181,7 +189,16 @@ const NotificationProfileCard = ({
     <Card className={style.root}>
       <CardContent>
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={6} md={3} className={style.gridItem}>
+          <Grid item xs={12} sm={6} md={2} className={style.gridItem}>
+            <Typography className={style.itemHeader}>Profile Name</Typography>
+            <TextField
+                id={profileState.pk ? `profile-${profileState.pk}-name-input` : "new-profile-name-input"}
+                variant="standard"
+                value={profileState.name}
+                onChange={handleNameChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={2} className={style.gridItem}>
             <Typography className={style.itemHeader}>Timeslot</Typography>
             <Select value={getSelectedTimeslot(profileState.timeslot)} onChange={handleTimeslotChange}>
               {timeslots.map((timeslot: Timeslot) => (
@@ -218,7 +235,7 @@ const NotificationProfileCard = ({
               )}
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={3} className={style.gridItem}>
+          <Grid item xs={12} sm={6} md={2} className={style.gridItem}>
             <Typography
               id={`media-selector-${profileState.pk ? profileState.pk : "create"}-label`}
               className={style.itemHeader}
@@ -229,7 +246,7 @@ const NotificationProfileCard = ({
               aria-labelledby={`media-selector-${profileState.pk ? profileState.pk : "create"}-label`}
               multiple
               size="small"
-              value={mediaOptions.filter((mediaOption) => profileState.media.includes(mediaOption.value))}
+              value={mediaOptions.filter((mediaOption) => profileState.media?.includes(mediaOption.value))}
               options={mediaOptions}
               getOptionLabel={(option) => option.label}
               filterSelectedOptions

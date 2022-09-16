@@ -241,13 +241,14 @@ class ApiClient {
 
   public getAllNotificationProfiles(): Promise<NotificationProfile[]> {
     return this.resolveOrReject(
-      this.authGet<NotificationProfile[], GetNotificationProfileRequest>(`/api/v1/notificationprofiles/`),
+      this.authGet<NotificationProfile[], GetNotificationProfileRequest>(`/api/v2/notificationprofiles/`),
       defaultResolver,
       (error) => new Error(`Failed to get notification profiles: ${getErrorCause(error)}`),
     );
   }
 
   public putNotificationProfile(
+    name: string,
     timeslot: TimeslotPK,
     filters: FilterPK[],
     media: MediaAlternative[],
@@ -257,8 +258,9 @@ class ApiClient {
   ): Promise<NotificationProfile> {
     return this.resolveOrReject(
       this.authPut<NotificationProfileSuccessResponse, NotificationProfileRequest>(
-        `/api/v1/notificationprofiles/${timeslot}/`,
+        `/api/v2/notificationprofiles/${timeslot}/`,
         {
+          name,
           timeslot: timeslot,
           filters,
           media,
@@ -273,6 +275,7 @@ class ApiClient {
   }
 
   public postNotificationProfile(
+    name: string,
     timeslot: TimeslotPK,
     filters: FilterPK[],
     media: MediaAlternative[],
@@ -281,7 +284,8 @@ class ApiClient {
     phone_number?: PhoneNumberPK | null,
   ): Promise<NotificationProfile> {
     return this.resolveOrReject(
-      this.authPost<NotificationProfileSuccessResponse, NotificationProfileRequest>(`/api/v1/notificationprofiles/`, {
+      this.authPost<NotificationProfileSuccessResponse, NotificationProfileRequest>(`/api/v2/notificationprofiles/`, {
+        name,
         // eslint-disable-next-line
         timeslot: timeslot,
         filters,
