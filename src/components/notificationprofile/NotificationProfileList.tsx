@@ -54,7 +54,6 @@ const NotificationProfileList = () => {
 
   // State
   const [timeslots, setTimeslots] = useState<Timeslot[]>([]);
-  const [availableTimeslots, setAvailableTimeslots] = useState<Timeslot[]>([]);
   const [filters, setFilters] = useState<Filter[]>([]);
   const [profiles, setProfiles] = useState<NotificationProfileKeyed[]>([]);
   const [phoneNumbers, setPhoneNumbers] = useState<PhoneNumber[]>([]);
@@ -90,15 +89,6 @@ const NotificationProfileList = () => {
     };
   };
 
-  // Function that returns all available timeslots (including the timeslot of the provided profile if available)
-  const getAvailableTimeslots = (profile: NotificationProfileKeyed): Timeslot[] => {
-    const currentTimeslot = timeslots.find((timeslot) => timeslot.pk === profile.timeslot);
-    if (currentTimeslot) {
-      return [currentTimeslot, ...availableTimeslots];
-    }
-    return availableTimeslots;
-  };
-
   // Fetch data from API on mount
   useEffect(() => {
     Promise.all([
@@ -111,12 +101,7 @@ const NotificationProfileList = () => {
         // Convert response to keyed profile
         const keyedProfileResponse = profileResponse.map((profile) => profileToKeyed(profile));
 
-        const availableTimeslots = timeslotResponse.filter((timeslot) => {
-          return keyedProfileResponse.every((profile) => profile.timeslot !== timeslot.pk);
-        });
-
         setTimeslots(timeslotResponse);
-        setAvailableTimeslots(availableTimeslots);
         setFilters(filterResponse);
         setProfiles(keyedProfileResponse);
         setPhoneNumbers(phoneNumberResponse);
@@ -127,14 +112,6 @@ const NotificationProfileList = () => {
         setIsLoading(false);
       });
   }, [displayAlert]);
-
-  // Update list of available timeslots every time profiles or timeslots change
-  useEffect(() => {
-    const availableTimeslots = timeslots.filter((timeslot) =>
-      profiles.every((profile) => profile.timeslot !== timeslot.pk),
-    );
-    setAvailableTimeslots(availableTimeslots);
-  }, [profiles, timeslots]);
 
   // Action handlers
   const handleCreate = (profile: NotificationProfileKeyed) => {
@@ -219,7 +196,7 @@ const NotificationProfileList = () => {
   // Default profile provided to NotificationProfileCard-component when creating a new profile
   const newProfile: NotificationProfileKeyed = {
     name: "",
-    timeslot: availableTimeslots.length > 0 ? availableTimeslots[0].pk : 0,
+    timeslot: timeslots.length > 0 ? timeslots[0].pk : 0,
     filters: [],
     media: [],
     // eslint-disable-next-line @typescript-eslint/camelcase
@@ -262,7 +239,7 @@ const NotificationProfileList = () => {
           </div>
           <NotificationProfileCard
             profile={newProfile}
-            timeslots={availableTimeslots}
+            timeslots={timeslots}
             filters={filters}
             mediaOptions={mediaOptions}
             phoneNumbers={phoneNumbers}
@@ -284,9 +261,7 @@ const NotificationProfileList = () => {
               variant="contained"
               color="primary"
               startIcon={<AddCircleIcon />}
-              onClick={() =>
-                availableTimeslots.length > 0 ? setCreateProfileVisible(true) : setNoAvailableTimeslotsDialogOpen(true)
-              }
+              onClick={() => setCreateProfileVisible(true)}
             >
               Create new profile
             </Button>
@@ -296,7 +271,7 @@ const NotificationProfileList = () => {
               <NotificationProfileCard
                 key={profile.pk}
                 profile={profile}
-                timeslots={getAvailableTimeslots(profile)}
+                timeslots={timeslots}
                 filters={filters}
                 mediaOptions={mediaOptions}
                 phoneNumbers={phoneNumbers}
