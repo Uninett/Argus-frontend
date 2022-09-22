@@ -75,7 +75,7 @@ Log in and start using Argus at **/login**.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-08 at 13.48.07 2.png"/>
 
-### Login using Feide
+### Login using federated login (Feide in example)
 1. Press `LOGIN WITH FEIDE`.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-08 at 13.48.07 3.png"/>
@@ -84,11 +84,11 @@ Log in and start using Argus at **/login**.
 
    <img height="461" src="public/screenshots/manual/Screenshot 2022-09-07 at 13.56.03.png" width="354"/>
 
-3. Fill out _feide-username_ and _password_ and press `Log in`.
+3. Fill out _username_ and _password_ and press `Log in`.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-07 at 13.55.48.png" width="354" height="740"/>
 
-4. Continue with preferred method of 2-factor Feide authentication.
+4. Continue with the preferred method of a 2-factor authentication.
 
 ## Work with alarms in Argus
 **View**, **filter** and **update** alarms that come to Argus from different sources (monitoring systems).
