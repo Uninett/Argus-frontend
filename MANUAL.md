@@ -95,6 +95,10 @@ Log in and start using Argus at **/login**.
 
 <img src="public/screenshots/manual/Screenshot 2022-09-08 at 14.18.46.png"/>
 
+You can see all of your monitoring systems that are connected to Argus in the _Sources selector_. Click into the _Sources selector_ and all available monitoring systems will appear in the drop-down menu.
+
+<img src="public/screenshots/manual/Screenshot 2022-09-22 at 09.18.46.png"/>
+
 ### What is incident in Argus
 Incident is an alarm that was sent to Argus from a monitoring system of your choice.
 
