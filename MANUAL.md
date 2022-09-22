@@ -24,8 +24,8 @@
     - [Unselect applied filter](#unselect-applied-filter)
     - [Delete filter](#delete-existing-filter)
   - [Update one incident](#update-one-incident)
-    - [Re-open incident](#re-open-incident)
-    - [Close incident](#close-incident)
+    - [Re-open closed (resolved) incident](#re-open-incident)
+    - [Close (resolve) incident](#close-incident)
     - [Acknowledge incident](#add-acknowledgement-to-incident)
     - [Add ticket to incident](#add-ticket-url-to-incident)
     - [Remove ticket from incident](#remove-ticket-url-from-incident)
@@ -342,7 +342,7 @@ After you [have set the preferred filter parameters for incidents](#decide-which
 
 ### Update one incident
 
-#### Re-open incident
+#### Re-open a closed (resolved) incident
 1. [Open incident in detailed view](#access-detailed-incident-view).
 2. Press `OPEN ICIDENT`.
 
@@ -353,7 +353,7 @@ After you [have set the preferred filter parameters for incidents](#decide-which
    <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.40.51.png"/>
     
 
-#### Close incident
+#### Close (resolve) an incident
 1. [Open incident in detailed view](#access-detailed-incident-view).
 2. Press `CLOSE INCIDENT`.
 
@@ -364,7 +364,7 @@ After you [have set the preferred filter parameters for incidents](#decide-which
    <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.46.05.png"/>
     
 
-#### Add acknowledgement to incident
+#### Add acknowledgement to an incident
 1. [Open incident in detailed view](#access-detailed-incident-view).
 2. Press `CREATE ACKNOWLEDGEMENT`.
 
@@ -375,7 +375,7 @@ After you [have set the preferred filter parameters for incidents](#decide-which
    <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.46.26.png"/>
     
 
-#### Add ticket URL to incident
+#### Add ticket URL to an incident
 1. [Open incident in detailed view](#access-detailed-incident-view).
 2. Type in/paste in ticket URL into the _Ticket input field_. Note that URL has to be absolute (full website address).
 
@@ -386,7 +386,7 @@ After you [have set the preferred filter parameters for incidents](#decide-which
    <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.44.40.png"/>
     
 
-#### Remove ticket URL from incident
+#### Remove ticket URL from an incident
 1. [Open incident in detailed view](#access-detailed-incident-view).
 2. Remove URL from the _Ticket input field_ and press `SAVE`.
 
@@ -395,7 +395,7 @@ After you [have set the preferred filter parameters for incidents](#decide-which
 
 ### Update several incidents at a time
 
-#### Re-open incidents
+#### Re-open closed (resolved) incidents
 1. Select several incidents in the _Incidents table_ and press `RE-OPEN SELECTED` in the _table toolbar_.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-12 at 08.18.39.png"/>
@@ -404,7 +404,7 @@ After you [have set the preferred filter parameters for incidents](#decide-which
 
    <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.40.51.png"/>
 
-#### Close incidents
+#### Close (resolve) incidents
 1. Select several incidents in the _Incidents table_ and press `CLOSE SELECTED` in the _table toolbar_.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-12 at 08.19.15.png"/>
