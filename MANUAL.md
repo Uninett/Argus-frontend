@@ -63,6 +63,10 @@ Argus is an _alert aggregator_ designed for storing and managing alerts from dif
 Argus is created for **ease of alarm management** and **customizable alarm notifications**.
 
 ## Log into Argus
+Argus supports several login mechanisms:
+* _username-password login_
+* _federated login with OAuth 2.0_
+
 Log in and start using Argus at **/login**.
 <img src="public/screenshots/manual/Screenshot 2022-09-08 at 13.49.23.png"/>
 
