@@ -180,6 +180,8 @@ Each row in the _Incidents_ table is one alarm. In the table, you can see incide
 ### Decide which incidents are shown in the table
 For ease of alarm management, you can filter incidents so that only incidents that match all the preferred parameters are shown in the _Incidents_ table.
 
+Apply the preferred filter by using the _Filter toolbar_. Argus will remember your filter settings from the last login session, and will use those until you change them.
+
 _Filter toolbar_ is available:
 * Below the header in full-screen view.
 
