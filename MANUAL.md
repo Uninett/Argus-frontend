@@ -171,10 +171,14 @@ Each row in the _Incidents_ table is one alarm. In the table, you can see incide
    * If you want table to get updated **every couple of seconds**, press `INTERVAL` in the _Auto Update selector_.
    
      <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.08.45 copy 2.png"/>
+      
+     * You can see the value of a current refresh interval below the _Incidents table_. The refresh interval is displayed **in seconds**.
+
+       <img src="public/screenshots/manual/Screenshot 2022-09-22 at 08.16.17.png"/>
      
-      * You can change the **amount of seconds** for the refresh interval in `/src/config.tsx`.
+     * You can change the value of a refresh interval in `/src/config.tsx`. The refresh interval is stored **in seconds**.
      
-        <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.13.15.png"/>
+       <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.13.15.png"/>
 
 
 ### Decide which incidents are shown in the table
