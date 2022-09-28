@@ -317,7 +317,7 @@ After you [have set the preferred filter parameters for incidents](#decide-which
 
 
 #### Apply existing filter
-1. Click into the _Filter input field_.
+1. Click on the _Filter input field_.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-09 at 14.46.06.png"/>
 
