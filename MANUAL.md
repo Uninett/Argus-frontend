@@ -79,7 +79,7 @@ Log in and start using Argus at **/login**.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-08 at 13.48.07 2.png"/>
 
-### Login using federated login (Feide in example)
+### Login using federated login (Feide in the example below)
 1. Press `LOGIN WITH FEIDE`.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-08 at 13.48.07 3.png"/>
