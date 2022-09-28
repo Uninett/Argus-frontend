@@ -4,7 +4,7 @@
   - [Using username and password](#login-using-username-and-password)
   - [Using federated login](#login-using-federated-login-feide-in-the-example-below)
 - [Manage alarms](#work-with-alarms-in-argus)
-  - [What is incident](#what-is-an-incident-in-argus)
+  - [What is an incident](#what-is-an-incident-in-argus)
   - [Access detailed incident view](#access-detailed-incident-view)
   - [Work with table](#work-with-incidents-table)
     - [Change rows per page](#change-how-many-rows-are-shown-per-incidents-table-page)
