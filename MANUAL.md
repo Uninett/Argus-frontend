@@ -540,7 +540,7 @@ Each timeslot has at least one recurrence by default. In the _Create New Timeslo
 
 ### Delete recurrence
 1. [Go to your timeslots](#access-your-timeslots).
-2. Press `REMOVE` inside one of the existing recurrences either in _Create New Timeslot_ box, or inside one of your existing timeslots.
+2. Press `REMOVE` inside one of the existing recurrences either in the _Create New Timeslot_ box, or inside one of your existing timeslots.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-08 at 12.20.00.png"/>
 
