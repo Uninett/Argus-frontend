@@ -458,7 +458,7 @@ Choose **when**, **where** and **what** alarm notifications you want to receive 
 
 ### Add new notification profile
 1. Select a timeslot for when to receive notifications in the _Timeslot drop-down_. If the drop-down menu is empty, [create a timeslot](#add-new-timeslot) first.
-2. Select what alarms you want to receive notifications about in the _Filter drop-down_. If the drop-down menu is empty, [create a filter first](#save-current-filter).
+2. Select what alarms you want to receive notifications about in the _Filter drop-down_. If the drop-down menu is empty, [create a filter](#save-current-filter) first. Note that if no filter is selected no notification will be sent.
 3. Choose whether you want to receive notifications via SMS or Email in the _Media drop-down_.
 4. Select what phone number(s) you want to receive notifications to in the _Phone number drop-down_. If the drop-down menu is empty, [add a phone number](#add-new-phone-number-in-settings) first.
 5. Press `CREATE`.
