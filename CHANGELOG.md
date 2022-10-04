@@ -6,6 +6,10 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 ### Fixed
 - Fix ARGUS logo clipping part of the name.
 
+- Labeling of "Unacked" chips and buttons is now consistent.
+- Incidents page does not blank out anymore when selecting an old-style filter (filter created before 2023).
+
+
 ### Changed
 - Logo and favicon
 - Add seconds to timestamps in elements of the event feed in detailed incident view
