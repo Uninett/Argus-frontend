@@ -10,8 +10,6 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 - Fix a bug in Timeslot's time pickers where error text is not always removed and "Save"-button is disabled, even after user has provided valid and non-conflicting values (time range where start time is before end time) 
 
 
-- End time to the incident detailed view (for closed incidents only)
-
 ### Changed
 - Logo and favicon
 - Add seconds to timestamps in elements of the event feed in detailed incident view
