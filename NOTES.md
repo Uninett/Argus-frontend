@@ -27,7 +27,7 @@ This file documents changes to Argus-frontend that are important for the users t
 ### Fixed
 - Global state for authentication: clean setting/removal of cookies for both userpass and federated login.
 
-## [v1.5.0]
+## [v1.5.1]
 
 ### Changed
 - Redesigned Notification profile page.
