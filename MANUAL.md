@@ -486,6 +486,11 @@ Add, edit or delete timeslots in _Timeslots_.
 ### What is a timeslot in Argus
 A timeslot is a collection of one or more recurrences with a meaningful name. Saved timeslots can be used when [customizing alarm notifications](#customize-alarm-notifications-in-argus). Each timeslot represents a window (or several windows) of time for when it is OK to receive alarm notifications.
 
+Note that every user has the default timeslot _All the time_:
+
+<img src="public/screenshots/manual/Screenshot 2022-10-06 at 15.01.51.png"/>
+
+
 ### What is a recurrence in Argus
 Recurrences are building blocks for timeslots. Each recurrence represents a time range on selected weekdays for when it is OK to receive alarm notifications.
 A time range can either be:
