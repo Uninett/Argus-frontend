@@ -90,7 +90,7 @@ describe("TimeslotList: Initial render", () => {
 
     const createTimeslotCreateButton = within(createTimeslot).getByRole("button", { name: /create/i });
     expect(createTimeslotCreateButton).toBeInTheDocument();
-    expect(createTimeslotCreateButton).toBeEnabled(); // TODO: should button be disabled before a name is specified?
+    expect(createTimeslotCreateButton).toBeEnabled();
 
     const createTimeslotDeleteButton = within(createTimeslot).getByRole("button", { name: /delete/i });
     expect(createTimeslotDeleteButton).toBeInTheDocument();
@@ -389,17 +389,35 @@ describe("TimeslotList: Update existing timeslot", () => {
   it("fails to update existing timeslot when start time is after end time", async () => {
     const newStartTime = "14:00:00";
 
+    // Mock api put request with expected request body
+    apiMock
+        .onPut(
+            `/api/v1/notificationprofiles/timeslots/${EXISTING_TIMESLOT.pk}/`,
+            expect.objectContaining({
+              // eslint-disable-next-line @typescript-eslint/camelcase
+              time_recurrences: expect.arrayContaining([
+                expect.objectContaining({
+                  start: newStartTime,
+                  end: EXISTING_RECURRENCE.end,
+                }),
+              ]),
+            }),
+        )
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        .reply(400);
+
     // Simulate user actions to update existing timeslot with invalid start time
 
     const existingTimeslot = await screen.findByRole("form", { name: EXISTING_TIMESLOT.name });
 
-    const endTimePicker = within(existingTimeslot).getByRole("textbox", { name: /start time picker/i });
-    userEvent.type(endTimePicker, `{selectall}{backspace}${newStartTime.slice(0, 5)}`);
+    const startTimePicker = within(existingTimeslot).getByRole("textbox", { name: /start time picker/i });
+    userEvent.type(startTimePicker, `{selectall}{backspace}${newStartTime.slice(0, 5)}`);
 
     const saveButton = within(existingTimeslot).getByRole("button", { name: /save/i });
     expect(saveButton).not.toBeEnabled();
 
     // Expect a helper text with correct value to appear
+    expect(startTimePicker).toHaveDisplayValue("14:00")
     expect(within(existingTimeslot).getByText(/must be before end time/i))
       .toBeInTheDocument();
   });

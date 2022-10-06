@@ -29,9 +29,7 @@ export const IncidentDetailsView: React.FC<IncidentDetailsViewPropsType> = () =>
         displayAlert(`Failed to get incident with pk=${pk}`, "error");
         setIncident(null);
       });
-    // FIXME:
-    // eslint-disable-next-line
-  }, [pk]);
+  }, [pk, displayAlert]);
 
   if (incident === undefined) {
     return <Typography>Loading...</Typography>;

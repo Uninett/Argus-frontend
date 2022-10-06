@@ -12,8 +12,8 @@ import type {AutoUpdateMethod} from "../../api/types.d";
 import {useFilters} from "../../api/actions";
 import {useAlerts} from "../../components/alertsnackbar";
 import {useApiState} from "../../state/hooks";
-import SelectedFilterProvider from "../../components/filterprovider"; // TODO: move
-import IncidentsProvider from "../../components/incidentsprovider"; // TODO: move
+import SelectedFilterProvider from "../../components/filterprovider";
+import IncidentsProvider from "../../components/incidentsprovider";
 import {Helmet} from "react-helmet";
 import {FRONTEND_VERSION, SERVER_METADATA, API_VERSION} from "../../config";
 import {useBackground} from "../../hooks";
