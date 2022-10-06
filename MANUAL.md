@@ -41,6 +41,7 @@
   - [Edit notification profile](#edit-existing-notification-profile)
   - [Disable notification profile](#disable-notification-profile)
   - [Delete notification profile](#delete-notification-profile)
+  - [About the available notification media](#about-the-available-notification-media)
 - [Manage notification time](#manage-when-to-receive-notifications-in-argus)
   - [What is a timeslot](#what-is-a-timeslot-in-argus)
   - [What is a recurrence](#what-is-a-recurrence-in-argus)
@@ -459,14 +460,14 @@ Choose **when**, **where** and **what** alarm notifications you want to receive 
 ### Add new notification profile
 1. Select a timeslot for when to receive notifications in the _Timeslot drop-down_. If the drop-down menu is empty, [create a timeslot](#add-new-timeslot) first.
 2. Select what alarms you want to receive notifications about in the _Filter drop-down_. If the drop-down menu is empty, [create a filter](#save-current-filter) first. Note that if no filter is selected no notification will be sent.
-3. Choose whether you want to receive notifications via SMS or Email in the _Media drop-down_.
+3. Choose whether you want to receive notifications [via SMS or Email](#about-the-available-notification-media) in the _Media drop-down_.
 4. Select what phone number(s) you want to receive notifications to in the _Phone number drop-down_. If the drop-down menu is empty, [add a phone number](#add-new-phone-number-in-settings) first.
 5. Press `CREATE`.
 
 ### Edit existing notification profile
 1. Change a timeslot for when to receive notifications in the _Timeslot drop-down_ (if needed).
 2. Change what alarms you want to receive notifications about in the _Filter drop-down_ (if needed).
-3. Change whether you want to receive notifications via SMS or Email in the _Media drop-down_ (if needed).
+3. Change whether you want to receive notifications [via SMS or Email](#about-the-available-notification-media) in the _Media drop-down_ (if needed).
 4. Change what phone number(s) you want to receive notifications to in the _Phone number drop-down_ (if needed).
 5. Press `SAVE`.
 
@@ -476,6 +477,10 @@ Choose **when**, **where** and **what** alarm notifications you want to receive 
 ### Delete notification profile
 1. Press `DISCARD` inside one of your existing notification profiles.
 
+### About the available notification media
+The available notification media in Argus are:
+- SMS: if selected, you will need to specify the phone number.
+- Email: if selected, the notification will be sent to the email address that your account is registered with.
 
 ## Manage when to receive notifications in Argus
 Add, edit or delete timeslots in _Timeslots_.
