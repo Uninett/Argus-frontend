@@ -14,16 +14,16 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 
 
 ### Changed
-- Logo and favicon
+- Logo to the one with eye and text (without TV-frame)
+- Favicon to the one with eye-only
 - Add seconds to timestamps in elements of the event feed in detailed incident view
-
 - Order of events and acknowledgements in feed in detailed incident view. Order is now oldest-first.
-
+- Made docker-compose build more flexible.
 
 
 ### Added
 - End time to the incident detailed view (for closed incidents only)
-
+- SMS media plugin in docker-compose env.
 
 
 
@@ -33,10 +33,13 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 - Flickering of incidents table, and detailed incidents view when Interval update method is selected.
 - Bug with table filtering where selecting tags/sources led to wrong incidents being displayed.
 
+### Added
+- Documented REACT_APP_COOKIE_DOMAIN variable.
 
 ## [v1.5.3]
 ### Fixed
 - Bug where app crashed on Feide logout.
+- Global state for authentication: clean setting/removal of cookies for both userpass and federated login.
 
 
 
@@ -60,9 +63,12 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 
 ### Changed
 - Redesigned Notification profile page.
+- How table filtering works: use CSS for truncating text instead of JS, useUser() hooks, refactoring to make development process better.
 
 
 ### Added
+- Tests for: Login, IncidentView, Notification profiles, Incident table, Incident filter toolbar, Incident update operations (ack, add ticket, open, close).
+- Config flag to hide severity levels.
 - Mobile-view on all Argus pages.
 - Bulk add-ticket-url feature.
 - Incident severity level as one of the filtering options.
