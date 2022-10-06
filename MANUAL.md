@@ -184,7 +184,7 @@ Each row in the _Incidents_ table is one alarm. In the table you can see an inci
 
        <img src="public/screenshots/manual/Screenshot 2022-09-22 at 08.16.17.png"/>
      
-     * You can change the value of a refresh interval in `/src/config.tsx`. The refresh interval is stored **in seconds**.
+     * You can change the value of the refresh interval in `/src/config.tsx`. The refresh interval is stored **in seconds**.
      
        <img src="public/screenshots/manual/Screenshot 2022-09-09 at 10.13.15.png"/>
 
