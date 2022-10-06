@@ -16,15 +16,24 @@ This file documents changes to Argus-frontend that are important for the users t
 - SMS media plugin in docker-compose env.
 
 
-## [Released]
+
+## [v1.5.4]
+
+### Added
+- Documented REACT_APP_COOKIE_DOMAIN variable.
+
+## [v1.5.3]
 
 ### Fixed
 - Global state for authentication: clean setting/removal of cookies for both userpass and federated login.
 
+## [v1.5.0]
+
 ### Changed
+- Redesigned Notification profile page.
 - How table filtering works: use CSS for truncating text instead of JS, useUser() hooks, refactoring to make development process better.
+
 
 ### Added
 - Tests for: Login, IncidentView, Notification profiles, Incident table, Incident filter toolbar, Incident update operations (ack, add ticket, open, close).
 - Config flag to hide severity levels.
-- Documented REACT_APP_COOKIE_DOMAIN variable.
