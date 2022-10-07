@@ -207,6 +207,13 @@ const FilteredIncidentTable = () => {
         nextIconButtonProps={nextButtonProps}
         backIconButtonProps={prevButtonProps}
         SelectProps={selectProps}
+        labelDisplayedRows={({ from, to, count }) => {
+          if (isCursorLoading) {
+            return <Skeleton  width={120} height={30} />
+          } else {
+            return `${from}-${to} of ${count !== -1 ? count : `more than ${to}`}`
+          }
+        }}
       />
     );
   }, [paginationCursor, cursors, virtCursor, isLoading, totalElements, isCursorLoading]);
