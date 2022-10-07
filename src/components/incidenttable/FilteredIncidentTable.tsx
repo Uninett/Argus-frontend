@@ -54,16 +54,6 @@ const DEFAULT_VIRT_CURSOR = {
   totalElements: 0,
 };
 
-type IncidentsFilter = {
-  tags: Tag[];
-  sources: "AllSources" | string[] | undefined;
-  sourcesById: number[] | undefined;
-
-  filter: FilterContent;
-};
-
-type FilteredIncidentsTablePropsType = {};
-
 const FilteredIncidentTable = () => {
   // Keep track of last time a refresh of data was done in order to update on interval.
   const [lastRefresh, setLastRefresh] = useState<{ time: Date; filter: Omit<Filter, "pk" | "name"> } | undefined>(
@@ -108,8 +98,7 @@ const FilteredIncidentTable = () => {
     // Find start of timeframe by removing hours from current datetime
     let timeframeStart;
     if (timeframe.timeframeInHours !== 0) timeframeStart = addHoursToDate(new Date(), -timeframe.timeframeInHours);
-
-    // setIsLoading(true);
+    
     setIsCursorLoading(true);
     api
       .getPaginatedIncidentsFiltered(filter, paginationCursor.current, paginationCursor.pageSize, timeframeStart)
