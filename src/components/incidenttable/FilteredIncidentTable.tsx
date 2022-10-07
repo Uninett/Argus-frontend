@@ -209,7 +209,7 @@ const FilteredIncidentTable = () => {
         SelectProps={selectProps}
         labelDisplayedRows={({ from, to, count }) => {
           if (isCursorLoading) {
-            return <Skeleton  width={150} height={30} />
+            return <Skeleton animation={"wave"} width={150} height={30} />
           } else {
             return `${from}-${to} of ${count !== -1 ? count : `more than ${to}`}`
           }
