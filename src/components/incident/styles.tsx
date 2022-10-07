@@ -81,7 +81,7 @@ export const useStyles = makeStyles((theme: Theme) =>
       borderLeftColor: red["300"],
     },
     feedRoot: {
-      overflow: "scroll",
+      overflowY: "scroll",
       maxHeight: 700,
     },
   }),
