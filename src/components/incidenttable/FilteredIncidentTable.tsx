@@ -7,7 +7,7 @@ import TablePagination from "@material-ui/core/TablePagination";
 import { DEFAULT_AUTO_REFRESH_INTERVAL } from "../../config";
 
 // Api
-import type { Filter, Incident, CursorPaginationResponse, AutoUpdateMethod, FilterContent } from "../../api/types.d";
+import type { Filter, Incident, CursorPaginationResponse, AutoUpdateMethod } from "../../api/types.d";
 import api from "../../api";
 
 // Utils
@@ -25,8 +25,8 @@ import FilteredIncidentsProvider, { matchesFilter, matchesTimeframe } from "../.
 
 // Components
 import { MinimalIncidentTable } from "./IncidentTable";
-import { Tag } from "../../components/tagselector";
 import { useAlerts } from "../alertsnackbar";
+import Skeleton from "@material-ui/lab/Skeleton";
 
 type PaginationCursor = {
   next: string | null;
@@ -99,7 +99,6 @@ const FilteredIncidentTable = () => {
     let timeframeStart;
     if (timeframe.timeframeInHours !== 0) timeframeStart = addHoursToDate(new Date(), -timeframe.timeframeInHours);
     
-    setIsCursorLoading(true);
     api
       .getPaginatedIncidentsFiltered(filter, paginationCursor.current, paginationCursor.pageSize, timeframeStart)
       .then((response: CursorPaginationResponse<Incident>) => {
@@ -151,6 +150,7 @@ const FilteredIncidentTable = () => {
     const handlePreviousPage = () => {
       const previous = cursors?.previous;
       if (previous) {
+        setIsCursorLoading(true)
         setVirtCursor((old) => {
           return { ...old, currentVirtualPage: old.currentVirtualPage - 1 };
         });
@@ -163,6 +163,7 @@ const FilteredIncidentTable = () => {
     const handleNextPage = () => {
       const next = cursors?.next;
       if (next) {
+        setIsCursorLoading(true)
         setVirtCursor((old) => {
           return { ...old, currentVirtualPage: old.currentVirtualPage + 1 };
         });
