@@ -17,9 +17,6 @@ import { WHITE } from "../../colorscheme";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {
-      flexGrow: 1,
-    },
     paper: {
       textAlign: "center",
       color: theme.palette.text.secondary,
@@ -86,9 +83,9 @@ const PhoneNumberComponent: React.FC<PhoneNumberPropsType> = ({
   });
 
   return (
-    <div key={pk} className={classes.root}>
+    <div key={pk}>
       <Paper className={classes.paper}>
-        <form className={classes.root} noValidate autoComplete="off">
+        <form noValidate autoComplete="off">
           <TextField
             error={invalidPhoneNumber}
             required
