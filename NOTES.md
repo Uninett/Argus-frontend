@@ -1,11 +1,22 @@
 # Release Notes
 This file documents changes to Argus-frontend that are important for the users to know.
 
+
 ## [Unreleased]
 
+### Fixed
+- Fix ARGUS logo clipping part of the name.
+- Fix a bug in Timeslot's time pickers where changing start-/end time via icon, leads to wrong values being registered, misleading error text being displayed, and "Save"-button being disabled
+- Fix a bug in Timeslot's time pickers where typing invalid values for both start- and end time (both input fields display error text), disrupts further changes (incl. corrections) of those time values
+- Fix a bug in Timeslot's time pickers where error text is not always removed and "Save"-button is disabled, even after user has provided valid and non-conflicting values (time range where start time is before end time)
+
+- Labeling of "Unacked" chips and buttons is now consistent.
+- Incidents page does not blank out anymore when selecting an old-style filter (filter created before 2023).
+
+
 ### Changed
-- Logo to the one with eye and text (without TV-frame)
-- Favicon to the one with eye-only
+- Logo and favicon
+- Add seconds to timestamps in elements of the event feed in detailed incident view
 
 - Option "None" is default in the phone number selector in notification profiles.
 
@@ -18,3 +29,45 @@ This file documents changes to Argus-frontend that are important for the users t
 
 - Option "None" to the phone number selector in notification profiles.
 
+
+## [v1.5.4]
+### Fixed
+- Flickering of incidents table, and detailed incidents view when Interval update method is selected.
+- Bug with table filtering where selecting tags/sources led to wrong incidents being displayed.
+
+
+## [v1.5.3]
+### Fixed
+- Bug where app crashed on Feide logout.
+
+
+
+## [v1.5.2]
+### Fixed
+- When bulk ack or close/re-open is successfully completed, affected incidents are still selected and multi-action bar does not disappear anymore.
+- Correct re-render of the user icon in the header.
+
+### Changed
+- Polished filter look in the mobile-view.
+
+
+
+## [v1.5.1]
+### Fixed
+- Fix invalid time bug in Safari, where Incidents page was blanked out.
+- All required input fields are correctly marked on all pages.
+- Proper error cause (from backend) is shown in alert snackbars.
+- Frontend does not crash anymore when backend is offline.
+- Proper error handling and error helper texts when working with timeslots and recurrences.
+
+### Changed
+- Redesigned Notification profile page.
+
+
+### Added
+- Mobile-view on all Argus pages.
+- Bulk add-ticket-url feature.
+- Incident severity level as one of the filtering options.
+- Success/error alerts on all bulk-operations on incidents (ack, add-ticket-url, open, close).
+- The ability to filter out older incidents via Timeframe selector.
+- Display of frontend-, backend- and API versions below the incidents table.
