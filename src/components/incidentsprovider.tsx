@@ -85,26 +85,27 @@ export const incidentsReducer = (state: IncidentsStateType, action: IncidentsAct
       newIncidents.forEach((incident: Incident) => {
         lastModifiedInStore[incident.pk] = millis;
       });
-      const allIncidents = [...state.storedIncidents, ...newIncidents].reduce((i: Incident[],
-                                                                               { pk,
-                                                                                 start_time,
-                                                                                 end_time,
-                                                                                 stateful,
-                                                                                 details_url,
-                                                                                 description,
-                                                                                 ticket_url,
-                                                                                 open,
-                                                                                 acked,
-                                                                                 level,
-                                                                                 source,
-                                                                                 source_incident_id,
-                                                                                 tags
-                                                                               }: Incident) => {
-        const incident = i.find(q => q.pk === pk);
-        if (!incident) i.push({ pk, start_time, end_time, stateful, details_url, description, ticket_url, open, acked,
-          level, source, source_incident_id, tags});
-        return i;
-      }, []);
+      const allIncidents = [...state.storedIncidents, ...newIncidents]
+          .reduce((i: Incident[],
+              { pk,
+                start_time,
+                end_time,
+                stateful,
+                details_url,
+                description,
+                ticket_url,
+                open,
+                acked,
+                level,
+                source,
+                source_incident_id,
+                tags
+              }: Incident) => {
+            const incident = i.find(q => q.pk === pk);
+            if (!incident) i.push({ pk, start_time, end_time, stateful, details_url, description, ticket_url, open,
+              acked, level, source, source_incident_id, tags});
+            return i;
+            }, []);
       return { ...state, storedIncidents: allIncidents, lastModifiedInStore, _storedIndexByPk };
     }
     // LoadAll is merely for incidents that are currently in view, i.e. incidents that are
