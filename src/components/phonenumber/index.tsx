@@ -38,6 +38,7 @@ const useStyles = makeStyles((theme: Theme) =>
     form: {
       alignItems: "center",
       display: "flex",
+      justifyContent: "space-between",
     },
   }),
 );
