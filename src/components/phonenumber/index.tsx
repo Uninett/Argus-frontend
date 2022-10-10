@@ -18,7 +18,6 @@ import { WHITE } from "../../colorscheme";
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     paper: {
-      textAlign: "center",
       color: theme.palette.text.secondary,
       minWidth: 30,
     },
