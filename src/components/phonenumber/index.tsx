@@ -29,11 +29,16 @@ const useStyles = makeStyles((theme: Theme) =>
     dangerousButton: {
       background: theme.palette.warning.main,
       color: WHITE,
+      margin: theme.spacing(),
     },
     saveButton: {
       background: theme.palette.primary.main,
       color: WHITE,
+      margin: theme.spacing(),
     },
+    phoneField: {
+      margin: theme.spacing(),
+    }
   }),
 );
 
@@ -90,6 +95,7 @@ const PhoneNumberComponent: React.FC<PhoneNumberPropsType> = ({
             required
             label="Phone number"
             variant="standard"
+            className={classes.phoneField}
             value={phoneNumber}
             onChange={onPhoneNumberChange}
           />
