@@ -34,7 +34,11 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     phoneField: {
       margin: theme.spacing(),
-    }
+    },
+    form: {
+      alignItems: "center",
+      display: "flex",
+    },
   }),
 );
 
@@ -85,7 +89,7 @@ const PhoneNumberComponent: React.FC<PhoneNumberPropsType> = ({
   return (
     <div key={pk}>
       <Paper className={classes.paper}>
-        <form noValidate autoComplete="off">
+        <form className={classes.form} noValidate autoComplete="off">
           <TextField
             error={invalidPhoneNumber}
             required
