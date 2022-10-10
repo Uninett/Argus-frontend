@@ -34,13 +34,6 @@ const useStyles = makeStyles((theme: Theme) =>
       background: theme.palette.primary.main,
       color: WHITE,
     },
-    phoneNumber: {
-      alignItems: "center",
-      padding: theme.spacing(3),
-    },
-    createDeleteButtonGroup: {
-      margin: theme.spacing(1),
-    },
   }),
 );
 
