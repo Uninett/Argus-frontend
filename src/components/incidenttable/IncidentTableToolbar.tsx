@@ -10,7 +10,6 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Tooltip from "@material-ui/core/Tooltip";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
-import FilterListIcon from "@material-ui/icons/FilterList";
 import LinkSharpIcon from "@material-ui/icons/LinkSharp";
 import Typography from "@material-ui/core/Typography";
 
@@ -116,7 +115,7 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
         </Typography>
       )}
 
-      {selectedIncidents.size > 0 ? (
+      {selectedIncidents.size > 0 && (
         <div className="bulk-op-buttons">
           {
             /* NOT IMPLEMENTED */
@@ -207,12 +206,6 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
             />
           )}
         </div>
-      ) : (
-        <Tooltip title="Filter list">
-          <IconButton aria-label="filter list">
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
       )}
     </Toolbar>
   );
