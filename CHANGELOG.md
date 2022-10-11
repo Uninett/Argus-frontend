@@ -20,6 +20,10 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 - Order of events and acknowledgements in feed in detailed incident view. Order is now oldest-first.
 - Made docker-compose build more flexible.
 
+- Make it easier/more obvious to save a profile without a phone number by selecting the option "None".
+- Option "None" is default in the phone number selector in notification profiles.
+
+
 
 ### Added
 - End time to the incident detailed view (for closed incidents only)
@@ -77,5 +81,4 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 - Display of frontend-, backend- and API versions below the incidents table.
 
 
-- Option "None" to the phone number selector in notification profiles.
 
