@@ -615,7 +615,7 @@ class ApiClient {
     return this.resolveOrReject(
         this.authGet<MetadataConfig, never>(`/api/`),
         defaultResolver,
-        (error) =>  new Error(`Failed to post incident ack: ${getErrorCause(error)}`),
+        (error) =>  new Error(`Failed to get metadata config: ${getErrorCause(error)}`),
     )
   }
 
