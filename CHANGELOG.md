@@ -26,6 +26,9 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 - Updated the phonenumber component to have prettier and more sensible css.
 
 
+- Removed useless _Filter List_ button from the incidents table header.
+
+
 ### Added
 - End time to the incident detailed view (for closed incidents only)
 - SMS media plugin in docker-compose env.
