@@ -304,6 +304,10 @@ export const DaySelector: React.FC<DaySelectorPropsType> = ({
           );
         }}
         disabled={disabled}
+        MenuProps={{
+          variant: "menu",
+          getContentAnchorEl: null,
+        }}
       >
         {TIME_RECURRENCE_DAY_IN_ORDER.map((day: TimeRecurrenceDay) => (
           <MenuItem key={day} value={day} selected>
