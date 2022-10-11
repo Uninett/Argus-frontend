@@ -7,7 +7,7 @@ import TablePagination from "@material-ui/core/TablePagination";
 import { DEFAULT_AUTO_REFRESH_INTERVAL } from "../../config";
 
 // Api
-import type { Filter, Incident, CursorPaginationResponse, AutoUpdateMethod, FilterContent } from "../../api/types.d";
+import type { Filter, Incident, CursorPaginationResponse, AutoUpdateMethod } from "../../api/types.d";
 import api from "../../api";
 
 // Utils
@@ -25,8 +25,8 @@ import FilteredIncidentsProvider, { matchesFilter, matchesTimeframe } from "../.
 
 // Components
 import { MinimalIncidentTable } from "./IncidentTable";
-import { Tag } from "../../components/tagselector";
 import { useAlerts } from "../alertsnackbar";
+import Skeleton from "@material-ui/lab/Skeleton";
 
 type PaginationCursor = {
   next: string | null;
@@ -53,16 +53,6 @@ const DEFAULT_VIRT_CURSOR = {
   lastVirtualPage: 0,
   totalElements: 0,
 };
-
-type IncidentsFilter = {
-  tags: Tag[];
-  sources: "AllSources" | string[] | undefined;
-  sourcesById: number[] | undefined;
-
-  filter: FilterContent;
-};
-
-type FilteredIncidentsTablePropsType = {};
 
 const FilteredIncidentTable = () => {
   // Keep track of last time a refresh of data was done in order to update on interval.
@@ -98,6 +88,7 @@ const FilteredIncidentTable = () => {
     next: null,
   });
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isCursorLoading, setIsCursorLoading] = useState<boolean>(false);
 
   const refresh = useCallback(() => {
     const filter: Omit<Filter, "pk" | "name"> = {
@@ -116,10 +107,12 @@ const FilteredIncidentTable = () => {
         setCursors({ previous, next });
         setLastRefresh({ time: new Date(), filter: incidentsFilter });
         setIsLoading(false);
+        setIsCursorLoading(false);
         return response;
       })
       .catch((error: Error) => {
         setIsLoading(false);
+        setIsCursorLoading(false);
         displayAlert(error.message, "error");
       });
   }, [incidentsFilter, timeframe, paginationCursor, loadAllIncidents, displayAlert]);
@@ -157,11 +150,12 @@ const FilteredIncidentTable = () => {
     const handlePreviousPage = () => {
       const previous = cursors?.previous;
       if (previous) {
-        setPaginationCursor((old) => {
-          return { ...old, ...cursors, current: previous };
-        });
+        setIsCursorLoading(true)
         setVirtCursor((old) => {
           return { ...old, currentVirtualPage: old.currentVirtualPage - 1 };
+        });
+        setPaginationCursor((old) => {
+          return { ...old, ...cursors, current: previous };
         });
       }
     };
@@ -169,11 +163,12 @@ const FilteredIncidentTable = () => {
     const handleNextPage = () => {
       const next = cursors?.next;
       if (next) {
-        setPaginationCursor((old) => {
-          return { ...old, ...cursors, current: next };
-        });
+        setIsCursorLoading(true)
         setVirtCursor((old) => {
           return { ...old, currentVirtualPage: old.currentVirtualPage + 1 };
+        });
+        setPaginationCursor((old) => {
+          return { ...old, ...cursors, current: next };
         });
       }
     };
@@ -186,10 +181,10 @@ const FilteredIncidentTable = () => {
       setVirtCursor(DEFAULT_VIRT_CURSOR);
     };
 
-    const disabled = isLoading || false;
+    const disabled = isLoading || isCursorLoading;
 
-    const nextButtonProps = { disabled: disabled || !cursors?.next || false };
-    const prevButtonProps = { disabled: disabled || !cursors?.previous || false };
+    const nextButtonProps = { disabled: disabled || !cursors?.next };
+    const prevButtonProps = { disabled: disabled || !cursors?.previous };
     const selectProps = { disabled };
 
     return (
@@ -212,9 +207,16 @@ const FilteredIncidentTable = () => {
         nextIconButtonProps={nextButtonProps}
         backIconButtonProps={prevButtonProps}
         SelectProps={selectProps}
+        labelDisplayedRows={({ from, to, count }) => {
+          if (isCursorLoading) {
+            return <Skeleton animation={"wave"} width={150} height={30} />
+          } else {
+            return `${from}-${to} of ${count !== -1 ? count : `more than ${to}`}`
+          }
+        }}
       />
     );
-  }, [paginationCursor, cursors, virtCursor, isLoading, totalElements]);
+  }, [paginationCursor, cursors, virtCursor, isLoading, totalElements, isCursorLoading]);
 
   // Reset pagination when any of the filter options are changed.
   // Also set the filter matcher
