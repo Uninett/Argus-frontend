@@ -117,16 +117,6 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
 
       {selectedIncidents.size > 0 && (
         <div className="bulk-op-buttons">
-          {
-            /* NOT IMPLEMENTED */
-            false && (
-              <Tooltip title="Link">
-                <IconButton aria-label="link" className={rootClasses.safeButton}>
-                  <LinkSharpIcon />
-                </IconButton>
-              </Tooltip>
-            )
-          }
           <AddTicketUrl
             onAddTicketUrl={(url: string) => {
               const pks: Incident["pk"][] = [...selectedIncidents.values()];
