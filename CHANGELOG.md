@@ -13,6 +13,8 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 - Labeling of "Unacked" chips and buttons is now consistent.
 - Incidents page does not blank out anymore when selecting an old-style filter (filter created before 2023).
 
+- Fix a bug where the day selector menu for timeslots would jump around when selecting days.
+
 
 ### Changed
 - Logo to the one with eye and text (without TV-frame)
