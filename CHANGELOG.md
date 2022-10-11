@@ -9,15 +9,16 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 - Fix misleading error message on successful incident update. Bug appeared for incidents that were selected by user, but which were on the table page(s) that were out of view.
 - Fix CLOSE/RE-OPEN button so that it does not disappear if user selects incidents on different table pages
 
-- Fix a bug in Timeslot's time pickers where changing start-/end time via icon, leads to wrong values being registered, misleading error text being displayed, and "Save"-button being disabled 
+- Fix a bug in Timeslot's time pickers where changing start-/end time via icon, leads to wrong values being registered, misleading error text being displayed, and "Save"-button being disabled
 - Fix a bug in Timeslot's time pickers where typing invalid values for both start- and end time (both input fields display error text), disrupts further changes (incl. corrections) of those time values
-
 - Fix a bug in Timeslot's time pickers where error text is not always removed and "Save"-button is disabled, even after user has provided valid and non-conflicting values (time range where start time is before end time)
 
 - Fix bug where incidents count was messed up due to user switching between table pages too rapidly
 
 - Labeling of "Unacked" chips and buttons is now consistent.
 - Incidents page does not blank out anymore when selecting an old-style filter (filter created before 2023).
+
+- Fix a bug where the day selector menu for timeslots would jump around when selecting days.
 
 
 
@@ -30,6 +31,8 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 - Add seconds to timestamps in elements of the event feed in detailed incident view
 - Order of events and acknowledgements in feed in detailed incident view. Order is now oldest-first.
 - Made docker-compose build more flexible.
+
+- Updated the phonenumber component to have prettier and more sensible css.
 
 
 ### Added
