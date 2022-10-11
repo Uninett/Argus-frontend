@@ -18,16 +18,15 @@ This file documents changes to Argus-frontend that are important for the users t
 - Logo and favicon
 - Add seconds to timestamps in elements of the event feed in detailed incident view
 
-- Option "None" is default in the phone number selector in notification profiles.
-
 - Order of events and acknowledgements in feed in detailed incident view. Order is now oldest-first.
 
+- Make it easier/more obvious to save a profile without a phone number by selecting the option "None".
+- Option "None" is default in the phone number selector in notification profiles.
 
 
 ### Added
 - End time to the incident detailed view (for closed incidents only)
 
-- Option "None" to the phone number selector in notification profiles.
 
 
 ## [v1.5.4]
