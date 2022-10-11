@@ -38,7 +38,7 @@ const CreateAck: React.FC<CreateAckPropsType> = ({ onSubmitAck, signOffActionPro
   return (
     <SignOffAction
       dialogTitle="Submit acknowledment"
-      dialogContentText="Write a message describing why this incident was acknowledged "
+      dialogContentText="Write a message describing why this incident was acknowledged"
       dialogSubmitText="Submit"
       dialogCancelText="Cancel"
       dialogButtonText="Create acknowledegment"
