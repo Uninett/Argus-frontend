@@ -8,7 +8,6 @@ import {IncidentFilterToolbar} from "../../components/incident/IncidentFilterToo
 
 import type {AutoUpdateMethod} from "../../api/types.d";
 
-// Api
 import api from "../../api";
 
 // Context/Hooks
