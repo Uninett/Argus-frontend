@@ -14,6 +14,8 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 - Incidents page does not blank out anymore when selecting an old-style filter (filter created before 2023).
 
 - Fix a bug where the day selector menu for timeslots would jump around when selecting days.
+- Fix a bug where pressing enter while creating or updating a phone number refreshed the page instead of actually
+creating or updating the phone number.
 
 
 ### Changed
