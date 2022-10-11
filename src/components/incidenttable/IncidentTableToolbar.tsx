@@ -92,7 +92,7 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
   return (
     <Toolbar
       variant="dense"
-      className={`${selectedIncidents.size === 0 
+      className={`${selectedIncidents.size === 0
         ? classes.root : `${classNames(classes.root, classes.selected)} incident-table-toolbar-selected`}
         `}
     >
@@ -173,6 +173,7 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
               dialogButtonText: "Ack",
               ButtonComponent: OutlinedButton,
               buttonProps: { className: "sign-off-button" },
+              ...(selectedIncidents.size > 1 && {dialogContentText: "Write a message describing why the incidents were acknowledged"})
             }}
           />
 
@@ -234,6 +235,7 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
               signOffActionProps={{
                 ButtonComponent: OutlinedButton,
                 buttonProps: { className: "sign-off-button"},
+                ...(selectedIncidents.size > 1 && {dialogContentText: "Write a message describing why the incidents were manually closed"})
               }}
               reopenButtonProps={{ className: "sign-off-button", variant: "outlined"}}
               ButtonComponent={OutlinedButton}
