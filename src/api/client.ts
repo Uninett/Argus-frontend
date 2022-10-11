@@ -36,7 +36,8 @@ import {
   CursorPaginationResponse,
   ApiListener,
   Resolver,
-  ErrorCreator, MetadataConfig,
+  ErrorCreator, 
+  MetadataConfig,
 } from "./types.d";
 
 import auth from "../auth";
