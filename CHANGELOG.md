@@ -16,6 +16,11 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 - Rename the label for the severity level selector from "Max level" to "Max severity level"
 
 
+## fix.bulk-dialogue-fix
+
+### Fixed
+- Fix help text refering to a singular incident when ACK-ing or closing multiple incidents with the bulk operation feature.
+
 
 
 ## [Unreleased]
@@ -40,8 +45,6 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 - Fix a bug where the day selector menu for timeslots would jump around when selecting days.
 - Fix a bug where pressing enter while creating or updating a phone number refreshed the page instead of actually
 creating or updating the phone number.
-
-
 
 
 ### Changed
