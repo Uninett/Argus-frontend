@@ -10,7 +10,6 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Tooltip from "@material-ui/core/Tooltip";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
-import LinkSharpIcon from "@material-ui/icons/LinkSharp";
 import Typography from "@material-ui/core/Typography";
 
 // Api
@@ -23,7 +22,6 @@ import { useIncidents } from "../../api/actions";
 import { useAlerts } from "../alertsnackbar";
 
 // Components
-import { useStyles } from "../incident/styles";
 import CreateAck from "../incident/CreateAckSignOffAction";
 import ManualClose from "../incident/ManualCloseSignOffAction";
 import OutlinedButton from "../buttons/OutlinedButton";
@@ -56,7 +54,6 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
   isLoading,
 }: TableToolbarPropsType) => {
   const classes = useToolbarStyles();
-  const rootClasses = useStyles();
   const displayAlert = useAlerts();
 
   const [, { closeIncident, reopenIncident, acknowledgeIncident, addTicketUrl }] = useIncidents();
