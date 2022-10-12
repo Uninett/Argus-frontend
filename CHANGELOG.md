@@ -1,6 +1,7 @@
 # Changes
 This file documents all changes to Argus-frontend. This file is primarily meant to be read by developers.
 
+
 ## make-timeslots-reusable
 
 ### Changed
@@ -9,7 +10,16 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 - All notification profile changes are handled via PUT endpoint.
 
 
+## fix.severity-level-label
+
+### Changed
+- Rename the label for the severity level selector from "Max level" to "Max severity level"
+
+
+
+
 ## [Unreleased]
+
 
 ### Fixed
 

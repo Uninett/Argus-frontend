@@ -2,11 +2,21 @@
 This file documents changes to Argus-frontend that are important for the users to know.
 
 
+
 ## make-timeslots-reusable
 
 ### Changed
 
 - Allow reuse of timeslots in different notification profiles.
+
+
+
+## fix.severity-level-label
+
+### Changed
+- Rename the label for the severity level selector from "Max level" to "Max severity level"
+
+
 
 
 ## [Unreleased]
