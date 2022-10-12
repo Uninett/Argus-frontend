@@ -258,7 +258,9 @@ const NotificationProfileList = () => {
               variant="contained"
               color="primary"
               startIcon={<AddCircleIcon />}
-              onClick={() => setCreateProfileVisible(true)}
+              onClick={() =>
+                  timeslots.length > 0 ? setCreateProfileVisible(true) : setNoAvailableTimeslotsDialogOpen(true)
+              }
             >
               Create new profile
             </Button>
