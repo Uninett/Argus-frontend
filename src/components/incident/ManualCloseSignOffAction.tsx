@@ -54,6 +54,17 @@ const ManualClose: React.FC<ManualClosePropsType> = ({
     question: "Are you sure you want to close these incidents?",
   }
 
+  const reopenButtonDefaultProps = {
+    title: "Reopen incident",
+    question: "Are you sure you want to reopen this incident?",
+    onConfirm: onManualOpen,
+    ButtonComponent: ButtonComponent,
+  }
+
+  const reopenButtonPluralProps = {
+    title: "Reopen incidents",
+    question: "Are you sure you want to reopen these incidents?",
+  }
 
 
   if (open) {
@@ -67,14 +78,12 @@ const ManualClose: React.FC<ManualClosePropsType> = ({
   } else {
     return (
       <ConfirmationButton
-        title={"Reopen incident"}
-        question={"Are you sure you want to reopen this incident?"}
-        onConfirm={onManualOpen}
-        ButtonComponent={ButtonComponent}
-        buttonProps={{
-            variant: "contained"
-        }}
         className={classes.dangerousButton}
+        buttonProps={{
+            variant: "contained",
+        }}
+        {...reopenButtonDefaultProps}
+        {... (isBulk && reopenButtonPluralProps)}
         {...reopenButtonProps}
       >
         {reopenButtonText}
