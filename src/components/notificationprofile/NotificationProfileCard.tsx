@@ -229,7 +229,7 @@ const NotificationProfileCard = ({
               aria-labelledby={`media-selector-${profileState.pk ? profileState.pk : "create"}-label`}
               multiple
               size="small"
-              value={mediaOptions.filter((mediaOption) => profileState.media?.includes(mediaOption.value))}
+              value={mediaOptions.filter((mediaOption) => profileState.media.includes(mediaOption.value))}
               options={mediaOptions}
               getOptionLabel={(option) => option.label}
               filterSelectedOptions
