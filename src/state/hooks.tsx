@@ -7,6 +7,8 @@ import {
   setAutoUpdateMethod,
   setHasConnectionProblems,
   unsetHasConnectionProblems,
+  setOngoingBulkUpdate,
+  unsetOngoingBulkUpdate,
 } from "../state/reducers/apistate";
 
 import { UserStateType, loginUser, loginTokenUser, logoutUser } from "../state/reducers/user";
@@ -18,6 +20,8 @@ export type UseApiStateActionType = {
   setAutoUpdateMethod: (method: AutoUpdateMethod) => void;
   setHasConnectionProblems: () => void;
   unsetHasConnectionProblems: () => void;
+  setOngoingBulkUpdate: () => void;
+  unsetOngoingBulkUpdate: () => void;
 };
 
 export const useApiState = (): [ApiState, UseApiStateActionType] => {
@@ -31,6 +35,8 @@ export const useApiState = (): [ApiState, UseApiStateActionType] => {
   ]);
   const setHasConnectionProblemsCallback = useCallback(() => dispatch(setHasConnectionProblems()), [dispatch]);
   const unsetHasConnectionProblemsCallback = useCallback(() => dispatch(unsetHasConnectionProblems()), [dispatch]);
+  const setOngoingBulkUpdateCallback = useCallback(() => dispatch(setOngoingBulkUpdate()), [dispatch]);
+  const unsetOngoingBulkUpdateCallback = useCallback(() => dispatch(unsetOngoingBulkUpdate()), [dispatch]);
 
   return [
     apiState,
@@ -38,6 +44,8 @@ export const useApiState = (): [ApiState, UseApiStateActionType] => {
       setAutoUpdateMethod: setAutoUpdateMethodCallback,
       setHasConnectionProblems: setHasConnectionProblemsCallback,
       unsetHasConnectionProblems: unsetHasConnectionProblemsCallback,
+      setOngoingBulkUpdate: setOngoingBulkUpdateCallback,
+      unsetOngoingBulkUpdate: unsetOngoingBulkUpdateCallback,
     },
   ];
 };

@@ -289,8 +289,28 @@ describe('Incidents Page: initial state rendering', () => {
     const tableRows = within(incidentsTable).getAllByRole('row');
     expect(tableRows.length).toBe(3);
 
-    // Check correct rendering of header row
+    // Check correct rendering of table header row
     expect(within(tableRows[0]).getAllByRole('columnheader').length).toBe(7);
+    expect(within(tableRows[0]).getByRole('checkbox', { checked: false }))
+        .toBeInTheDocument();
+    expect(within(tableRows[0])
+        .getByRole('columnheader', { name: /timestamp/i}))
+        .toBeInTheDocument();
+    expect(within(tableRows[0])
+        .getByRole('columnheader', { name: /status/i}))
+        .toBeInTheDocument();
+    expect(within(tableRows[0])
+        .getByRole('columnheader', { name: /severity level/i}))
+        .toBeInTheDocument();
+    expect(within(tableRows[0])
+        .getByRole('columnheader', { name: /source/i}))
+        .toBeInTheDocument();
+    expect(within(tableRows[0])
+        .getByRole('columnheader', { name: /description/i}))
+        .toBeInTheDocument();
+    expect(within(tableRows[0])
+        .getByRole('columnheader', { name: /actions/i}))
+        .toBeInTheDocument();
 
     // Check correct rendering of row 1
     expect(within(tableRows[1]).getAllByRole('cell').length).toBe(7);

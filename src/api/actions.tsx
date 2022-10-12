@@ -20,6 +20,7 @@ import {
 import { IncidentsStateType, useIncidentsContext } from "../components/incidentsprovider";
 
 import { AppContext } from "../state/contexts";
+import {setOngoingBulkUpdate, unsetOngoingBulkUpdate} from "../state/reducers/apistate";
 
 type Dispatch = React.Dispatch<ActionsType>;
 
@@ -82,19 +83,26 @@ export type UseIncidentsActionType = {
   reopenIncident: (pk: Incident["pk"], description?: string) => Promise<Event>;
   acknowledgeIncident: (pk: Incident["pk"], ackBody: AcknowledgementBody) => Promise<Acknowledgement>;
   addTicketUrl: (pk: Incident["pk"], description: string) => Promise<IncidentTicketUrlBody>;
+  bulkAcknowledgeIncidents: (pks: Incident["pk"][], ackBody: AcknowledgementBody) => Promise<Acknowledgement[]>;
+  bulkAddTicketUrl: (pks: Incident["pk"][], description: string) => Promise<IncidentTicketUrlBody[]>;
+  bulkReopenIncidents: (pks: Incident["pk"][], description?: string) => Promise<Event[]>;
+  bulkCloseIncidents: (pks: Incident["pk"][], description?: string) => Promise<Event[]>;
 };
 
 export const useIncidents = (): [IncidentsStateType, UseIncidentsActionType] => {
-  const [state, { loadAllIncidents, closeIncident, reopenIncident, acknowledgeIncident, addTicketUrl }] = useIncidentsContext();
+  const [state, { storeAllIncidents, loadAllIncidents, closeIncident, reopenIncident, acknowledgeIncident, addTicketUrl }] = useIncidentsContext();
+
+  const { dispatch } = useContext(AppContext);
 
   const loadIncidentsFiltered = useCallback(
     (filter: Omit<Filter, "pk" | "name">) => {
       return api.getAllIncidentsFiltered(filter).then((incidents: Incident[]) => {
+        storeAllIncidents(incidents);
         loadAllIncidents(incidents);
         return incidents;
       });
     },
-    [loadAllIncidents],
+    [storeAllIncidents, loadAllIncidents],
   );
 
   const closeIncidentCallback = useCallback(
@@ -133,6 +141,85 @@ export const useIncidents = (): [IncidentsStateType, UseIncidentsActionType] => 
     [addTicketUrl],
   );
 
+  const bulkAcknowledgeIncidentsCallback = useCallback(
+      (async (pks: Incident["pk"][], ackBody: AcknowledgementBody) => {
+        dispatch(setOngoingBulkUpdate());
+        let acks: Acknowledgement[] = [];
+        for (const pk of pks) {
+          await api.postAck(pk, ackBody).then((ack: Acknowledgement) => {
+            acknowledgeIncident(pk);
+            acks.push(ack);
+          }).catch((error) => {
+            dispatch(unsetOngoingBulkUpdate());
+            throw new Error(error);
+          })
+        }
+        dispatch(unsetOngoingBulkUpdate());
+        return acks;
+      }),
+      [dispatch, acknowledgeIncident],
+  );
+
+    const bulkAddTicketUrlCallback = useCallback(
+        (async (pks: Incident["pk"][], ticketUrl: string) => {
+            dispatch(setOngoingBulkUpdate());
+            let responses: IncidentTicketUrlBody[] = [];
+            for (const pk of pks) {
+                await api.patchIncidentTicketUrl(pk, ticketUrl)
+                    .then((response: IncidentTicketUrlBody) => {
+                        addTicketUrl(pk, ticketUrl);
+                        responses.push(response);
+                    }).catch((error) => {
+                        dispatch(unsetOngoingBulkUpdate());
+                        throw new Error(error);
+                })
+            }
+            dispatch(unsetOngoingBulkUpdate());
+            return responses;
+        }),
+        [dispatch, addTicketUrl],
+    );
+
+    const bulkReopenIncidentsCallback = useCallback(
+        (async (pks: Incident["pk"][]) => {
+            dispatch(setOngoingBulkUpdate());
+            let reopenEvents: Event[] = [];
+            for (const pk of pks) {
+                await api.postIncidentReopenEvent(pk)
+                    .then((reopenEvent: Event) => {
+                        reopenIncident(pk);
+                        reopenEvents.push(reopenEvent);
+                    }).catch((error) => {
+                        dispatch(unsetOngoingBulkUpdate());
+                        throw new Error(error);
+                    })
+            }
+            dispatch(unsetOngoingBulkUpdate());
+            return reopenEvents;
+        }),
+        [dispatch, reopenIncident],
+    );
+
+    const bulkCloseIncidentsCallback = useCallback(
+        (async (pks: Incident["pk"][], description?: string) => {
+            dispatch(setOngoingBulkUpdate());
+            let closeEvents: Event[] = [];
+            for (const pk of pks) {
+                await api.postIncidentCloseEvent(pk, description)
+                    .then((closeEvent: Event) => {
+                        closeIncident(pk);
+                        closeEvents.push(closeEvent);
+                    }).catch((error) => {
+                        dispatch(unsetOngoingBulkUpdate());
+                        throw new Error(error);
+                    })
+            }
+            dispatch(unsetOngoingBulkUpdate());
+            return closeEvents;
+        }),
+        [dispatch, closeIncident],
+    );
+
   return [
     state,
     {
@@ -141,6 +228,10 @@ export const useIncidents = (): [IncidentsStateType, UseIncidentsActionType] => 
       reopenIncident: reopenIncidentCallback,
       acknowledgeIncident: acknowledgeIncidentCallback,
       addTicketUrl: addTicketUrlCallback,
+      bulkAcknowledgeIncidents: bulkAcknowledgeIncidentsCallback,
+      bulkAddTicketUrl: bulkAddTicketUrlCallback,
+      bulkReopenIncidents: bulkReopenIncidentsCallback,
+      bulkCloseIncidents: bulkCloseIncidentsCallback,
     },
   ];
 };
