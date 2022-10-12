@@ -78,7 +78,7 @@ const NotificationProfileList = () => {
   // Function for converting NotificationProfile to a keyed object (NotificationProfileKeyed)
   const profileToKeyed = (profile: NotificationProfile): NotificationProfileKeyed => {
     return {
-      name: profile.name,
+      // name: profile.name,
       timeslot: profile.timeslot.pk,
       filters: profile.filters.map((filter: Filter) => filter.pk),
       media: profile.media,
@@ -116,7 +116,7 @@ const NotificationProfileList = () => {
   // Action handlers
   const handleCreate = (profile: NotificationProfileKeyed) => {
     api
-      .postNotificationProfile(profile.name, profile.timeslot, profile.filters, profile.media, profile.active, profile.phone_number)
+      .postNotificationProfile(profile.timeslot, profile.filters, profile.media, profile.active, profile.phone_number)
       .then((newProfile) => {
         // Add the new notification profile to the list
         const newProfileKeyed = profileToKeyed(newProfile);
@@ -132,7 +132,7 @@ const NotificationProfileList = () => {
 
   const handleSave = (profile: NotificationProfileKeyed) => {
     api
-      .putNotificationProfile(profile.name, profile.timeslot, profile.filters, profile.media, profile.active, profile.phone_number)
+      .putNotificationProfile(profile.timeslot, profile.filters, profile.media, profile.active, profile.phone_number)
       .then(() => displayAlert("Notification profile successfully updated", "success"))
       .catch((error: Error) => displayAlert(error.message, "error"));
   };
@@ -174,7 +174,6 @@ const NotificationProfileList = () => {
       .then(() =>
         api
           .postNotificationProfile(
-            profile.name,
             profile.timeslot,
             profile.filters,
             profile.media,
@@ -195,7 +194,6 @@ const NotificationProfileList = () => {
 
   // Default profile provided to NotificationProfileCard-component when creating a new profile
   const newProfile: NotificationProfileKeyed = {
-    name: "",
     timeslot: timeslots.length > 0 ? timeslots[0].pk : 0,
     filters: [],
     media: [],
