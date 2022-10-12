@@ -24,6 +24,7 @@ creating or updating the phone number.
 
 
 
+
 ### Changed
 - Individual success alerts are replaced with a consolidated success message for bulk updates (bulk ack, bulk add/ticket etc.)
 
@@ -44,6 +45,9 @@ creating or updating the phone number.
 ### Added
 
 - End time to the incident detailed view (for closed incidents only)
+
+- User manual.
+
 - SMS media plugin in docker-compose env.
 
 - Select-all-incidents per page feature. Several pages can be selected/de-selected at a time

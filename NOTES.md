@@ -15,6 +15,7 @@ This file documents changes to Argus-frontend that are important for the users t
 - Incidents page does not blank out anymore when selecting an old-style filter (filter created before 2023).
 
 
+
 - Fix misleading error message on successful incident update. Bug appeared for incidents that were selected by user, but which were on the table page(s) that were out of view.
 - Fix CLOSE/RE-OPEN button so that it does not disappear if user selects incidents on different table pages
 
@@ -23,6 +24,7 @@ This file documents changes to Argus-frontend that are important for the users t
 ### Changed
 - Logo and favicon
 - Add seconds to timestamps in elements of the event feed in detailed incident view
+
 
 - Order of events and acknowledgements in feed in detailed incident view. Order is now oldest-first.
 
@@ -43,6 +45,8 @@ This file documents changes to Argus-frontend that are important for the users t
 
 
 - End time to the incident detailed view (for closed incidents only)
+
+- User manual.
 
 
 
