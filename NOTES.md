@@ -40,6 +40,9 @@ This file documents changes to Argus-frontend that are important for the users t
 
 
 
+- Allow reuse of timeslots in different notification profiles.
+
+
 
 ### Added
 

@@ -45,6 +45,10 @@ creating or updating the phone number.
 - Removed useless _Filter List_ button from the incidents table header.
 
 
+- Allow reuse of timeslots in different notification profiles.
+- All notification profile changes are handled via PUT endpoint.
+
+
 ### Added
 
 - End time to the incident detailed view (for closed incidents only)
