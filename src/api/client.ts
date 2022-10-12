@@ -270,7 +270,7 @@ class ApiClient {
         },
       ),
       defaultResolver,
-      (error) => new Error(`Failed to update notification profile ${timeslot}: ${getErrorCause(error)}`),
+      (error) => new Error(`Failed to update notification profile ${profilePK}: ${getErrorCause(error)}`),
     );
   }
 
