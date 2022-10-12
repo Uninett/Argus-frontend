@@ -141,11 +141,7 @@ const NotificationProfileCard = ({
     } else {
       setFilterError(false);
       setUnsavedChanges(false);
-      if (exists && profileState.pk !== profileState.timeslot) {
-        onSaveTimeslotChanged(profileState);
-      } else {
-        onSave(profileState);
-      }
+      onSave(profileState);
     }
   };
 

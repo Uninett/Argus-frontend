@@ -130,10 +130,13 @@ const NotificationProfileList = () => {
   };
 
   const handleSave = (profile: NotificationProfileKeyed) => {
-    api
-      .putNotificationProfile(profile.timeslot, profile.filters, profile.media, profile.active, profile.phone_number)
-      .then(() => displayAlert("Notification profile successfully updated", "success"))
-      .catch((error: Error) => displayAlert(error.message, "error"));
+     if (profile.pk) {
+         api
+             .putNotificationProfile(profile.pk, profile.timeslot, profile.filters, profile.media, profile.active, profile.phone_number)
+             .then(() => displayAlert("Notification profile successfully updated", "success"))
+             .catch((error: Error) => displayAlert(error.message, "error"));
+
+     }
   };
 
   const handleDelete = (profile: NotificationProfileKeyed) => {
