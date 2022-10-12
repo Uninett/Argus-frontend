@@ -170,30 +170,6 @@ const NotificationProfileList = () => {
       .catch((error: Error) => displayAlert(error.message, "error"));
   };
 
-  const handleSaveTimeslotChanged = (profile: NotificationProfileKeyed) => {
-    api
-      .deleteNotificationProfile(Number(profile.pk))
-      .then(() =>
-        api
-          .postNotificationProfile(
-            profile.timeslot,
-            profile.filters,
-            profile.media,
-            profile.active,
-            profile.phone_number,
-          )
-          .then((newProfile) => {
-            // Update notification profile in list
-            const newProfileKeyed = profileToKeyed(newProfile);
-            setProfiles(profiles.map((p) => (p.pk === profile.pk ? newProfileKeyed : p)));
-
-            displayAlert("Notification profile successfully updated", "success");
-          })
-          .catch((error: Error) => displayAlert(error.message, "error")),
-      )
-      .catch((error: Error) => displayAlert(error.message, "error"));
-  };
-
   // Default profile provided to NotificationProfileCard-component when creating a new profile
   const newProfile: NotificationProfileKeyed = {
     timeslot: timeslots.length > 0 ? timeslots[0].pk : 0,
@@ -247,7 +223,6 @@ const NotificationProfileList = () => {
             onSave={handleCreate}
             onDelete={handleDiscard}
             onAddPhoneNumber={() => setAddPhoneNumberDialogOpen(true)}
-            onSaveTimeslotChanged={handleSaveTimeslotChanged}
           />
         </div>
       ) : (
@@ -281,7 +256,6 @@ const NotificationProfileList = () => {
                 onSave={handleSave}
                 onDelete={handleDelete}
                 onAddPhoneNumber={() => setAddPhoneNumberDialogOpen(true)}
-                onSaveTimeslotChanged={handleSaveTimeslotChanged}
               />
             ))
           ) : (
