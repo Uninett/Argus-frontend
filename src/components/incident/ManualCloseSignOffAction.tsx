@@ -34,7 +34,7 @@ const ManualClose: React.FC<ManualClosePropsType> = ({
 }: ManualClosePropsType) => {
   const classes = useStyles();
 
-  const signOffActionpDefaultProps = {
+  const signOffActionDefaultProps = {
     dialogTitle: "Manually close incident",
     dialogContentText: "Write a message describing why the incident was manually closed",
     dialogSubmitText:"Close now",
@@ -51,13 +51,15 @@ const ManualClose: React.FC<ManualClosePropsType> = ({
   const signOffActionPluralProps = {
     dialogTitle: "Manually close incidents",
     dialogContentText: "Write a message describing why the incidents were manually closed",
-    question: "Are you sure you want to close these incident?",
+    question: "Are you sure you want to close these incidents?",
   }
+
+
 
   if (open) {
     return (
       <SignOffAction
-        {...signOffActionpDefaultProps}
+        {...signOffActionDefaultProps}
         {...(isBulk && signOffActionPluralProps)}
         {...signOffActionProps}
       />

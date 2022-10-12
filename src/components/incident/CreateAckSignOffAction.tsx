@@ -52,7 +52,7 @@ const CreateAck: React.FC<CreateAckPropsType> = ({ onSubmitAck, signOffActionPro
 
   const signOffActionPluralProps = {
     dialogContentText: "Write a message describing why the incidents were acknowledged",
-    question: "Are you sure you want to acknowledge these incident?",
+    question: "Are you sure you want to acknowledge these incidents?",
   }
 
   return (
