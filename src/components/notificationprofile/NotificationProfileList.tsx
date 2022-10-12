@@ -204,10 +204,10 @@ const NotificationProfileList = () => {
   // Dialog shown if trying to create a new profile when all timeslots are in use
   const noTimeslotsLeftDialog = (
     <Modal
-      title="No available timeslots left"
+      title="No timeslots available"
       content={
         <Typography>
-          All timeslots are currently in use. Create a new timeslot or delete an existing notification profile if you
+          You have not created any timeslots yet. Create a new timeslot if you
           want to register a new profile.
         </Typography>
       }
