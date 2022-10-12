@@ -1,6 +1,14 @@
 # Changes
 This file documents all changes to Argus-frontend. This file is primarily meant to be read by developers.
 
+## make-timeslots-reusable
+
+### Changed
+
+- Allow reuse of timeslots in different notification profiles.
+- All notification profile changes are handled via PUT endpoint.
+
+
 ## [Unreleased]
 
 ### Fixed
@@ -44,9 +52,6 @@ creating or updating the phone number.
 
 - Removed useless _Filter List_ button from the incidents table header.
 
-
-- Allow reuse of timeslots in different notification profiles.
-- All notification profile changes are handled via PUT endpoint.
 
 
 ### Added
