@@ -92,7 +92,6 @@ const phoneNumbers: PhoneNumber[] = [
 const onSaveMock = jest.fn();
 const onDeleteMock = jest.fn();
 const onAddPhoneNumberMock = jest.fn();
-const onSaveTimeslotChangedMock = jest.fn();
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -111,7 +110,6 @@ describe("Rendering existing profile", () => {
         onSave={onSaveMock}
         onDelete={onDeleteMock}
         onAddPhoneNumber={onAddPhoneNumberMock}
-        onSaveTimeslotChanged={onSaveTimeslotChangedMock}
       />,
     );
   });
@@ -201,7 +199,6 @@ describe("Rendering new profile", () => {
         onSave={onSaveMock}
         onDelete={onDeleteMock}
         onAddPhoneNumber={onAddPhoneNumberMock}
-        onSaveTimeslotChanged={onSaveTimeslotChangedMock}
       />,
     );
   });
@@ -296,7 +293,6 @@ describe("Functionality", () => {
         onSave={onSaveMock}
         onDelete={onDeleteMock}
         onAddPhoneNumber={onAddPhoneNumberMock}
-        onSaveTimeslotChanged={onSaveTimeslotChangedMock}
       />,
     );
   });
@@ -360,8 +356,8 @@ describe("Functionality", () => {
     // Save changes
     userEvent.click(saveButton);
 
-    expect(onSaveTimeslotChangedMock).toHaveBeenCalledTimes(1);
-    expect(onSaveTimeslotChangedMock).toHaveBeenCalledWith(expectedProfile);
+    expect(onSaveMock).toHaveBeenCalledTimes(1);
+    expect(onSaveMock).toHaveBeenCalledWith(expectedProfile);
   });
 
   it("calls onDelete() when delete button is clicked", () => {

@@ -82,8 +82,6 @@ type NotificationProfileCardPropsType = {
   onSave: (profile: NotificationProfileKeyed) => void;
   onDelete: (profile: NotificationProfileKeyed) => void;
   onAddPhoneNumber: () => void;
-
-  onSaveTimeslotChanged: (profile: NotificationProfileKeyed) => void;
 };
 
 const NotificationProfileCard = ({
@@ -96,7 +94,6 @@ const NotificationProfileCard = ({
   onSave,
   onDelete,
   onAddPhoneNumber,
-  onSaveTimeslotChanged,
 }: NotificationProfileCardPropsType) => {
   const style = useStyles();
 
@@ -141,11 +138,7 @@ const NotificationProfileCard = ({
     } else {
       setFilterError(false);
       setUnsavedChanges(false);
-      if (exists && profileState.pk !== profileState.timeslot) {
-        onSaveTimeslotChanged(profileState);
-      } else {
-        onSave(profileState);
-      }
+      onSave(profileState);
     }
   };
 

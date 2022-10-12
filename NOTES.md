@@ -3,11 +3,19 @@ This file documents changes to Argus-frontend that are important for the users t
 
 
 
+## make-timeslots-reusable
+
+### Changed
+
+- Allow reuse of timeslots in different notification profiles.
+
+
 
 ## fix.severity-level-label
 
 ### Changed
 - Rename the label for the severity level selector from "Max level" to "Max severity level"
+
 
 
 
@@ -46,6 +54,9 @@ This file documents changes to Argus-frontend that are important for the users t
 - Option "None" is default in the phone number selector in notification profiles.
 
 - Individual success alerts are replaced with a consolidated success message for bulk updates (bulk ack, bulk add/ticket etc.)
+
+
+
 
 
 

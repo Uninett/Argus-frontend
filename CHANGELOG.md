@@ -2,10 +2,19 @@
 This file documents all changes to Argus-frontend. This file is primarily meant to be read by developers.
 
 
+## make-timeslots-reusable
+
+### Changed
+
+- Allow reuse of timeslots in different notification profiles.
+- All notification profile changes are handled via PUT endpoint.
+
+
 ## fix.severity-level-label
 
 ### Changed
 - Rename the label for the severity level selector from "Max level" to "Max severity level"
+
 
 
 
@@ -52,6 +61,7 @@ creating or updating the phone number.
 - Updated the phonenumber component to have prettier and more sensible css.
 
 - Removed useless _Filter List_ button from the incidents table header.
+
 
 
 ### Added

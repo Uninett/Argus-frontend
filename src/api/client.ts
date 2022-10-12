@@ -249,6 +249,7 @@ class ApiClient {
   }
 
   public putNotificationProfile(
+    profilePK: NotificationProfilePK,
     timeslot: TimeslotPK,
     filters: FilterPK[],
     media: MediaAlternative[],
@@ -258,7 +259,7 @@ class ApiClient {
   ): Promise<NotificationProfile> {
     return this.resolveOrReject(
       this.authPut<NotificationProfileSuccessResponse, NotificationProfileRequest>(
-        `/api/v1/notificationprofiles/${timeslot}/`,
+        `/api/v1/notificationprofiles/${profilePK}/`,
         {
           timeslot: timeslot,
           filters,
@@ -269,7 +270,7 @@ class ApiClient {
         },
       ),
       defaultResolver,
-      (error) => new Error(`Failed to update notification profile ${timeslot}: ${getErrorCause(error)}`),
+      (error) => new Error(`Failed to update notification profile ${profilePK}: ${getErrorCause(error)}`),
     );
   }
 
