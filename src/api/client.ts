@@ -36,7 +36,8 @@ import {
   CursorPaginationResponse,
   ApiListener,
   Resolver,
-  ErrorCreator,
+  ErrorCreator, 
+  MetadataConfig,
 } from "./types.d";
 
 import auth from "../auth";
@@ -608,6 +609,14 @@ class ApiClient {
       defaultResolver,
       (error) => new Error(`Failed to post incident ack: ${getErrorCause(error)}`),
     );
+  }
+
+  public getMetadataConfig() : Promise<MetadataConfig> {
+    return this.resolveOrReject(
+        this.authGet<MetadataConfig, never>(`/api/`),
+        defaultResolver,
+        (error) =>  new Error(`Failed to get metadata config: ${getErrorCause(error)}`),
+    )
   }
 
   private post<T, B, R = AxiosResponse<T>>(url: string, data?: B, config?: AxiosRequestConfig): Promise<R> {
