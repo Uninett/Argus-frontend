@@ -220,7 +220,7 @@ const NotificationProfileList = () => {
     filters: [],
     media: [],
     // eslint-disable-next-line @typescript-eslint/camelcase
-    phone_number: phoneNumbers.length > 0 ? phoneNumbers[0].pk : 0,
+    phone_number: 0,
     active: true,
   };
 

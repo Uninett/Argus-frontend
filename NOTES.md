@@ -26,6 +26,10 @@ This file documents changes to Argus-frontend that are important for the users t
 
 - Order of events and acknowledgements in feed in detailed incident view. Order is now oldest-first.
 
+
+- Make it easier/more obvious to save a profile without a phone number by selecting the option "None".
+- Option "None" is default in the phone number selector in notification profiles.
+
 - Individual success alerts are replaced with a consolidated success message for bulk updates (bulk ack, bulk add/ticket etc.)
 
 
@@ -39,8 +43,6 @@ This file documents changes to Argus-frontend that are important for the users t
 
 
 - End time to the incident detailed view (for closed incidents only)
-
-
 
 
 
@@ -85,5 +87,6 @@ This file documents changes to Argus-frontend that are important for the users t
 - Success/error alerts on all bulk-operations on incidents (ack, add-ticket-url, open, close).
 - The ability to filter out older incidents via Timeframe selector.
 - Display of frontend-, backend- and API versions below the incidents table.
+
 
 

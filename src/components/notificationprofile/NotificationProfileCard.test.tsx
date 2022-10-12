@@ -33,7 +33,7 @@ const newProfile: NotificationProfileKeyed = {
   media: ["EM", "SM"],
   active: true,
   // eslint-disable-next-line @typescript-eslint/camelcase
-  phone_number: 1,
+  phone_number: 0,
 };
 
 const timeslots: Timeslot[] = [
@@ -155,9 +155,14 @@ describe("Rendering existing profile", () => {
 
     userEvent.click(phoneNumberSelector);
 
-    const phoneNumberOption1 = screen.getByRole("option", { name: phoneNumbers[0].phone_number });
-    const phoneNumberOption2 = screen.getByRole("option", { name: phoneNumbers[1].phone_number });
+    // Expect length to be: all saved phone numbers plus "None"
+    expect(screen.getAllByRole("option")).toHaveLength(phoneNumbers.length + 1);
 
+    const phoneNumberOptionNone = screen.getByRole("option", {name: /none/i});
+    const phoneNumberOption1 = screen.getByRole("option", {name: phoneNumbers[0].phone_number});
+    const phoneNumberOption2 = screen.getByRole("option", {name: phoneNumbers[1].phone_number});
+
+    expect(phoneNumberOptionNone).toBeInTheDocument();
     expect(phoneNumberOption1).toBeInTheDocument();
     expect(phoneNumberOption2).toBeInTheDocument();
   });
@@ -235,14 +240,24 @@ describe("Rendering new profile", () => {
   });
 
   it("renders the phone number selector correctly", () => {
-    const phoneNumberSelector = screen.getByRole("button", { name: phoneNumbers[0].phone_number });
+    const phoneNumberSelector = screen.getByTestId("phone-number-selector");
     expect(phoneNumberSelector).toBeInTheDocument();
+    // Default phone number value is "None" with a display value of ""
+    expect(phoneNumberSelector).toHaveTextContent(/^/);
 
-    userEvent.click(phoneNumberSelector);
 
-    const phoneNumberOption1 = screen.getByRole("option", { name: phoneNumbers[0].phone_number });
-    const phoneNumberOption2 = screen.getByRole("option", { name: phoneNumbers[1].phone_number });
+    // User opens dropdown with options
+    userEvent.click(within(phoneNumberSelector).getByRole("button"));
 
+
+    // Expect length to be: all saved phone numbers plus "None"
+    expect(screen.getAllByRole("option")).toHaveLength(phoneNumbers.length + 1);
+
+    const phoneNumberOptionNone = screen.getByRole("option", {name: /none/i});
+    const phoneNumberOption1 = screen.getByRole("option", {name: phoneNumbers[0].phone_number});
+    const phoneNumberOption2 = screen.getByRole("option", {name: phoneNumbers[1].phone_number});
+
+    expect(phoneNumberOptionNone).toBeInTheDocument();
     expect(phoneNumberOption1).toBeInTheDocument();
     expect(phoneNumberOption2).toBeInTheDocument();
   });
