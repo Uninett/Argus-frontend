@@ -63,7 +63,7 @@ const FilteredIncidentTable = () => {
   const displayAlert = useAlerts();
 
   // Get the incidents and seleceted filter from context
-  const [{ incidents }, { loadAllIncidents }] = useIncidentsContext();
+  const [{ incidents }, { storeAllIncidents, loadAllIncidents }] = useIncidentsContext();
   const [{ incidentsFilter }] = useSelectedFilter();
 
   const [{ autoUpdateMethod }] = useApiState();
@@ -102,6 +102,7 @@ const FilteredIncidentTable = () => {
     api
       .getPaginatedIncidentsFiltered(filter, paginationCursor.current, paginationCursor.pageSize, timeframeStart)
       .then((response: CursorPaginationResponse<Incident>) => {
+        storeAllIncidents(response.results);
         loadAllIncidents(response.results);
         const { previous, next } = response;
         setCursors({ previous, next });
@@ -115,7 +116,7 @@ const FilteredIncidentTable = () => {
         setIsCursorLoading(false);
         displayAlert(error.message, "error");
       });
-  }, [incidentsFilter, timeframe, paginationCursor, loadAllIncidents, displayAlert]);
+  }, [incidentsFilter, timeframe, paginationCursor, storeAllIncidents, loadAllIncidents, displayAlert]);
 
   useEffect(() => {
     refresh();
@@ -268,6 +269,7 @@ const FilteredIncidentTable = () => {
           isLoading={isLoading}
           isLoadingRealtime={false}
           paginationComponent={paginationComponent}
+          currentPage={paginationComponent.props.page}
         />
       </FilteredIncidentsProvider>
       <p>
