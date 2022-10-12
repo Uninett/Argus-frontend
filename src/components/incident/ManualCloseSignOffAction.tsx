@@ -83,7 +83,7 @@ const ManualClose: React.FC<ManualClosePropsType> = ({
             variant: "contained",
         }}
         {...reopenButtonDefaultProps}
-        {... (isBulk && reopenButtonPluralProps)}
+        {...(isBulk && reopenButtonPluralProps)}
         {...reopenButtonProps}
       >
         {reopenButtonText}
