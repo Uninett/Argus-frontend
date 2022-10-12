@@ -16,15 +16,24 @@ export type IncidentsStateType = {
 
   // _indexByPk indexes the incident pk to index in incidents
   _indexByPk: { [pk: number]: Index };
+
+  // Incidents that ever appeared in view in between app refreshes
+  storedIncidents: Incident[];
+  lastModifiedInStore: { [pk: number]: number };
+  _storedIndexByPk: { [pk: number]: Index };
 };
 
 const initialIncidentsState: IncidentsStateType = {
   incidents: [],
   lastModified: {},
   _indexByPk: {},
+  storedIncidents: [],
+  lastModifiedInStore: {},
+  _storedIndexByPk: {},
 };
 
 export enum IncidentsType {
+  StoreAll = "STORE_ALL_INCIDENTS",
   LoadAll = "LOAD_ALL_INCIDENTS",
   ModifyIncident = "MODIFY_INCIDENT",
   RemoveIncident = "REMOVE_INCIDENT",
@@ -32,6 +41,7 @@ export enum IncidentsType {
 }
 
 export type IncidentsPayload = {
+  [IncidentsType.StoreAll]: Incident[];
   [IncidentsType.LoadAll]: Incident[];
   [IncidentsType.ModifyIncident]: Incident;
   [IncidentsType.RemoveIncident]: Incident["pk"];
@@ -53,12 +63,53 @@ export const incidentsReducer = (state: IncidentsStateType, action: IncidentsAct
     return { ...state.lastModified, [pk]: new Date().getTime() };
   };
 
+  const findStoredIncidentIndex = (pk: Incident["pk"]): Index | null => {
+    if (pk in state._storedIndexByPk) return state._storedIndexByPk[pk];
+    return null;
+  };
+
   const findIncidentIndex = (pk: Incident["pk"]): Index | null => {
     if (pk in state._indexByPk) return state._indexByPk[pk];
     return null;
   };
 
   switch (action.type) {
+    // StoreAll is for saving incidents that ever appeared in view in between app refreshes,
+    // i.e. incidents that could be present in several table pages (not necessarily only
+    // in the one that is currently in user's view)
+    case IncidentsType.StoreAll: {
+      const newIncidents: Incident[] = action.payload;
+      const _storedIndexByPk = createIncidentsIndex(newIncidents);
+      const millis = new Date().getTime();
+      const lastModifiedInStore: { [pk: number]: number } = {};
+      newIncidents.forEach((incident: Incident) => {
+        lastModifiedInStore[incident.pk] = millis;
+      });
+      const allIncidents = [...state.storedIncidents, ...newIncidents]
+          .reduce((i: Incident[],
+              { pk,
+                start_time,
+                end_time,
+                stateful,
+                details_url,
+                description,
+                ticket_url,
+                open,
+                acked,
+                level,
+                source,
+                source_incident_id,
+                tags
+              }: Incident) => {
+            const incident = i.find(q => q.pk === pk);
+            if (!incident) i.push({ pk, start_time, end_time, stateful, details_url, description, ticket_url, open,
+              acked, level, source, source_incident_id, tags});
+            return i;
+            }, []);
+      return { ...state, storedIncidents: allIncidents, lastModifiedInStore, _storedIndexByPk };
+    }
+    // LoadAll is merely for incidents that are currently in view, i.e. incidents that are
+    // present in a current table page only
     case IncidentsType.LoadAll: {
       const incidents = action.payload;
       const _indexByPk = createIncidentsIndex(incidents);
@@ -67,60 +118,99 @@ export const incidentsReducer = (state: IncidentsStateType, action: IncidentsAct
       incidents.forEach((incident: Incident) => {
         lastModified[incident.pk] = millis;
       });
-      return { incidents, lastModified, _indexByPk };
+      return { ...state, incidents, lastModified, _indexByPk };
     }
 
     case IncidentsType.ModifyIncident: {
       const incident: Incident = action.payload;
       const index: Index | null = findIncidentIndex(incident.pk);
-      if (index === null) {
+      const storedIndex: Index | null = findStoredIncidentIndex(incident.pk);
+      if (storedIndex === null) {
         // Doesn't exist :(
         return incidentsReducer(state, { type: IncidentsType.AddIncident, payload: incident });
       }
 
-      const { incidents } = state;
-      const newIncidents = incidents.slice(0);
-      newIncidents[index] = incident;
-      return { ...state, incidents: newIncidents, lastModified: createUpdatedLM(incident.pk) };
+      const { storedIncidents } = state;
+      const newStoredIncidents = storedIncidents.slice(0);
+      newStoredIncidents[storedIndex] = incident;
+      if (index === null) {
+        return { ...state, storedIncidents: newStoredIncidents, lastModifiedInStore: createUpdatedLM(incident.pk) };
+      } else {
+        const { incidents } = state;
+        const newIncidents = incidents.slice(0);
+        newIncidents[index] = incident;
+        return { ...state, incidents: newIncidents, storedIncidents: newStoredIncidents,
+          lastModified: createUpdatedLM(incident.pk), lastModifiedInStore: createUpdatedLM(incident.pk) };
+      }
     }
 
     case IncidentsType.RemoveIncident: {
       const pk: Incident["pk"] = action.payload;
       const index: Index | null = findIncidentIndex(pk);
-      if (index === null) {
+      const storedIndex: Index | null = findStoredIncidentIndex(pk);
+      if (storedIndex === null) {
         // Doesn't exist :(
         console.warn(`Trying to remove incident ${pk} that doesn't exist, ignoring.`);
         return state;
       }
 
-      const incidents = [...state.incidents];
-      incidents.splice(index, 1);
+      const storedIncidents = [...state.storedIncidents];
+      storedIncidents.splice(storedIndex, 1);
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { [pk]: removedIndex, ..._indexByPk } = createIncidentsIndex(incidents);
+      const { [pk]: removedIndex, ..._storedIndexByPk } = createIncidentsIndex(storedIncidents);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { [pk]: removedLM, ...lastModified } = state.lastModified;
-      return { incidents: incidents, lastModified, _indexByPk };
+      const { [pk]: removedLM, ...lastModifiedInStore } = state.lastModifiedInStore;
+      if (index === null) {
+        return { ...state, storedIncidents: storedIncidents, lastModifiedInStore, _storedIndexByPk };
+      } else {
+        const incidents = [...state.incidents];
+        incidents.splice(index, 1);
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { [pk]: removedIndex, ..._indexByPk } = createIncidentsIndex(incidents);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { [pk]: removedLM, ...lastModified } = state.lastModified;
+        return { ...state, incidents, storedIncidents: storedIncidents, lastModified, lastModifiedInStore,
+          _indexByPk, _storedIndexByPk };
+      }
     }
 
     case IncidentsType.AddIncident: {
       const incident: Incident = action.payload;
       const index: Index | null = findIncidentIndex(incident.pk);
-      if (index !== null) {
+      const storedIndex: Index | null = findStoredIncidentIndex(incident.pk);
+      if (storedIndex !== null) {
         // Already exists :(
         console.warn(`Trying to add incident ${incident} that already exists, passing to modify instead.`);
         return incidentsReducer(state, { type: IncidentsType.ModifyIncident, payload: incident });
       }
 
-      const incidents = [...state.incidents, incident];
-      const lastModified = createUpdatedLM(incident.pk);
-      const _indexByPk = { ...state._indexByPk, [incident.pk]: state.incidents.length };
+      const storedIncidents = [...state.storedIncidents, incident];
+      const lastModifiedInStore = createUpdatedLM(incident.pk);
+      const _storedIndexByPk = { ...state._storedIndexByPk, [incident.pk]: state.storedIncidents.length };
 
-      return {
-        incidents,
-        lastModified,
-        _indexByPk,
-      };
+      if (index === null) {
+        return {
+          ...state,
+          storedIncidents,
+          lastModifiedInStore,
+          _storedIndexByPk,
+        };
+      } else {
+        const incidents = [...state.incidents, incident];
+        const lastModified = createUpdatedLM(incident.pk);
+        const _indexByPk = { ...state._indexByPk, [incident.pk]: state.incidents.length };
+        return {
+          ...state,
+          incidents,
+          storedIncidents,
+          lastModified,
+          lastModifiedInStore,
+          _indexByPk,
+          _storedIndexByPk,
+        };
+      }
     }
 
     default:
@@ -131,6 +221,9 @@ export const incidentsReducer = (state: IncidentsStateType, action: IncidentsAct
 // Actions
 
 type Dispatch = React.Dispatch<IncidentsActions>;
+
+export const storeAllIncidents = (dispatch: Dispatch, incidents: Incident[]) =>
+    dispatch({ type: IncidentsType.StoreAll, payload: incidents });
 
 export const loadAllIncidents = (dispatch: Dispatch, incidents: Incident[]) =>
   dispatch({ type: IncidentsType.LoadAll, payload: incidents });
@@ -159,8 +252,23 @@ const findIncidentByPk = (state: IncidentsStateType, pk: Incident["pk"]): Incide
   return undefined;
 };
 
+const findStoredIncidentByPk = (state: IncidentsStateType, pk: Incident["pk"]): Incident | undefined => {
+  if (pk in state._storedIndexByPk) {
+    const index = state._storedIndexByPk[pk];
+    const incident = state.storedIncidents[index];
+    if (incident.pk !== pk) {
+      // index is invalid.
+      throw new Error(
+          `_indexByPk is invalid, index ${index} points to wrong index: expected ${pk} but got ${incident.pk}`,
+      );
+    }
+    return incident;
+  }
+  return undefined;
+};
+
 export const closeIncident = (state: IncidentsStateType, dispatch: Dispatch, pk: Incident["pk"]) => {
-  const incident: Incident | undefined = findIncidentByPk(state, pk);
+  const incident: Incident | undefined = findStoredIncidentByPk(state, pk);
   if (!incident) {
     throw new Error(`Unable to close incident with pk: ${pk}, couldn't find incident`);
   }
@@ -168,7 +276,7 @@ export const closeIncident = (state: IncidentsStateType, dispatch: Dispatch, pk:
 };
 
 export const reopenIncident = (state: IncidentsStateType, dispatch: Dispatch, pk: Incident["pk"]) => {
-  const incident: Incident | undefined = findIncidentByPk(state, pk);
+  const incident: Incident | undefined = findStoredIncidentByPk(state, pk);
   if (!incident) {
     throw new Error(`Unable to reopen incident with pk: ${pk}, couldn't find incident`);
   }
@@ -176,7 +284,7 @@ export const reopenIncident = (state: IncidentsStateType, dispatch: Dispatch, pk
 };
 
 export const addTicket = (state: IncidentsStateType, dispatch: Dispatch, pk: Incident["pk"], ticketUrl: string) => {
-  const incident: Incident | undefined = findIncidentByPk(state, pk);
+  const incident: Incident | undefined = findStoredIncidentByPk(state, pk);
   if (!incident) {
     throw new Error(`Unable to add ticket to incident with pk: ${pk}, couldn't find incident`);
   }
@@ -199,6 +307,7 @@ export const IncidentsProvider = ({ children }: { children?: React.ReactNode }) 
 };
 
 export type IncidentsActionsType = {
+  storeAllIncidents: (incidents: Incident[]) => void;
   loadAllIncidents: (incidents: Incident[]) => void;
   modifyIncident: (incident: Incident) => void;
   removeIncident: (pk: Incident["pk"]) => void;
@@ -206,6 +315,7 @@ export type IncidentsActionsType = {
 
   // Helpers
   incidentByPk: (pk: Incident["pk"]) => Incident | undefined;
+  storedIncidentByPk: (pk: Incident["pk"]) => Incident | undefined;
   closeIncident: (pk: Incident["pk"]) => void;
   reopenIncident: (pk: Incident["pk"]) => void;
   acknowledgeIncident: (pk: Incident["pk"]) => void;
@@ -217,6 +327,10 @@ export type IncidentsActionsType = {
 export const useIncidentsContext = (): [IncidentsStateType, IncidentsActionsType] => {
   const { state, dispatch } = useContext(IncidentsContext);
 
+  const storeAllIncidentsCallback = useCallback((incidents: Incident[]) => storeAllIncidents(dispatch, incidents), [
+    dispatch,
+  ]);
+
   const loadAllIncidentsCallback = useCallback((incidents: Incident[]) => loadAllIncidents(dispatch, incidents), [
     dispatch,
   ]);
@@ -226,6 +340,10 @@ export const useIncidentsContext = (): [IncidentsStateType, IncidentsActionsType
   const addIncidentCallback = useCallback((incident: Incident) => addIncident(dispatch, incident), [dispatch]);
 
   const incidentByPkCallback = useCallback((pk: Incident["pk"]): Incident | undefined => findIncidentByPk(state, pk), [
+    state,
+  ]);
+
+  const storedIncidentByPkCallback = useCallback((pk: Incident["pk"]): Incident | undefined => findStoredIncidentByPk(state, pk), [
     state,
   ]);
 
@@ -246,7 +364,7 @@ export const useIncidentsContext = (): [IncidentsStateType, IncidentsActionsType
 
   const acknowledgeIncidentCallback = useCallback(
     (pk: Incident["pk"]) => {
-      const incident = findIncidentByPk(state, pk);
+      const incident = findStoredIncidentByPk(state, pk);
       if (incident === undefined) {
         throw new Error(`Unable to acknowledge incident with pk: ${pk}, couldn't find it`);
       }
@@ -258,6 +376,7 @@ export const useIncidentsContext = (): [IncidentsStateType, IncidentsActionsType
   return [
     state,
     {
+      storeAllIncidents: storeAllIncidentsCallback,
       loadAllIncidents: loadAllIncidentsCallback,
       modifyIncident: modifyIncidentCallback,
       removeIncident: removeIncidentCallback,
@@ -265,6 +384,7 @@ export const useIncidentsContext = (): [IncidentsStateType, IncidentsActionsType
 
       // Helpers
       incidentByPk: incidentByPkCallback,
+      storedIncidentByPk: storedIncidentByPkCallback,
       closeIncident: closeIncidentCallback,
       reopenIncident: reopenIncidentCallback,
       acknowledgeIncident: acknowledgeIncidentCallback,

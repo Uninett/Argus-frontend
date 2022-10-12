@@ -5,6 +5,7 @@ This file documents changes to Argus-frontend that are important for the users t
 ## [Unreleased]
 
 ### Fixed
+
 - Fix ARGUS logo clipping part of the name.
 - Fix a bug in Timeslot's time pickers where changing start-/end time via icon, leads to wrong values being registered, misleading error text being displayed, and "Save"-button being disabled
 - Fix a bug in Timeslot's time pickers where typing invalid values for both start- and end time (both input fields display error text), disrupts further changes (incl. corrections) of those time values
@@ -15,6 +16,11 @@ This file documents changes to Argus-frontend that are important for the users t
 
 
 
+- Fix misleading error message on successful incident update. Bug appeared for incidents that were selected by user, but which were on the table page(s) that were out of view.
+- Fix CLOSE/RE-OPEN button so that it does not disappear if user selects incidents on different table pages
+
+
+
 ### Changed
 - Logo and favicon
 - Add seconds to timestamps in elements of the event feed in detailed incident view
@@ -22,9 +28,18 @@ This file documents changes to Argus-frontend that are important for the users t
 
 - Order of events and acknowledgements in feed in detailed incident view. Order is now oldest-first.
 
+- Individual success alerts are replaced with a consolidated success message for bulk updates (bulk ack, bulk add/ticket etc.)
+
+
+
 
 
 ### Added
+
+- Select-all-incidents per page feature. Several pages can be selected/de-selected at a time
+- Info bar that drops below the app header while any of the bulk operations (bulk ack, bulk re-open etc.) is ongoing
+
+
 - End time to the incident detailed view (for closed incidents only)
 
 - User manual.
@@ -74,4 +89,5 @@ This file documents changes to Argus-frontend that are important for the users t
 - Success/error alerts on all bulk-operations on incidents (ack, add-ticket-url, open, close).
 - The ability to filter out older incidents via Timeframe selector.
 - Display of frontend-, backend- and API versions below the incidents table.
+
 
