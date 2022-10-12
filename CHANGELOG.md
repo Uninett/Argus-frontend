@@ -47,6 +47,8 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 creating or updating the phone number.
 
 
+
+
 ### Changed
 
 - Individual success alerts are replaced with a consolidated success message for bulk updates (bulk ack, bulk add/ticket etc.)
