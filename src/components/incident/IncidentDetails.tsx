@@ -450,6 +450,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                         open={incident.open}
                         onManualClose={handleManualClose}
                         onManualOpen={handleManualOpen}
+                        isBulk={false}
                       />
                     </CenterContainer>
                   </ListItem>
@@ -473,6 +474,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
             <CenterContainer>
               <CreateAck
                 key={(acks || []).length}
+                isBulk={false}
                 onSubmitAck={(ack: AcknowledgementBody) => {
                   api
                     .postAck(incident.pk, ack)
@@ -622,11 +624,13 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                         open={incident.open}
                         onManualClose={handleManualClose}
                         onManualOpen={handleManualOpen}
+                        isBulk={false}
                       />
                     </Grid>
                     <Grid item className="ack-button-container">
                       <CreateAck
                         key={(acks || []).length}
+                        isBulk={false}
                         onSubmitAck={(ack: AcknowledgementBody) => {
                           api
                             .postAck(incident.pk, ack)
