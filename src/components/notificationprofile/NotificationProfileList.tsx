@@ -78,7 +78,6 @@ const NotificationProfileList = () => {
   // Function for converting NotificationProfile to a keyed object (NotificationProfileKeyed)
   const profileToKeyed = (profile: NotificationProfile): NotificationProfileKeyed => {
     return {
-      // name: profile.name,
       timeslot: profile.timeslot.pk,
       filters: profile.filters.map((filter: Filter) => filter.pk),
       media: profile.media,
