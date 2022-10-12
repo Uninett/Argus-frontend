@@ -218,7 +218,7 @@ const NotificationProfileCard = ({
               )}
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={2} className={style.gridItem}>
+          <Grid item xs={12} sm={6} md={3} className={style.gridItem}>
             <Typography
               id={`media-selector-${profileState.pk ? profileState.pk : "create"}-label`}
               className={style.itemHeader}
