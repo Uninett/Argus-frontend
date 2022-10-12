@@ -602,7 +602,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
           </ToolbarItem>
 
           {SHOW_SEVERITY_LEVELS && (
-            <ToolbarItem title="Max severity level selector" name="Max level" className={`${classNames(style.medium)} lg-xl-severity-selector`}>
+            <ToolbarItem title="Max severity level selector" name="Max severity level" className={`${classNames(style.medium)} lg-xl-severity-selector`}>
               <DropdownMenu
                 selected={optionalOr(selectedFilter?.incidentsFilter?.filter?.maxlevel, 5)}
                 onChange={(maxlevel: SeverityLevelNumber) => setSelectedFilter({ filterContent: { maxlevel } })}
@@ -719,7 +719,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     {SHOW_SEVERITY_LEVELS && (
-                      <ToolbarItem title="Max severity level selector" name="Max level" className={classNames(style.medium)}>
+                      <ToolbarItem title="Max severity level selector" name="Max severity level" className={classNames(style.medium)}>
                         <DropdownMenu
                           selected={optionalOr(selectedFilter?.incidentsFilter?.filter?.maxlevel, 5)}
                           onChange={(maxlevel: SeverityLevelNumber) => setSelectedFilter({ filterContent: { maxlevel } })}
