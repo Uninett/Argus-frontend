@@ -22,6 +22,7 @@ This file documents changes to Argus-frontend that are important for the users t
 
 
 ### Changed
+
 - Logo and favicon
 - Add seconds to timestamps in elements of the event feed in detailed incident view
 
@@ -29,11 +30,13 @@ This file documents changes to Argus-frontend that are important for the users t
 - Order of events and acknowledgements in feed in detailed incident view. Order is now oldest-first.
 
 
+- Removed useless _Filter List_ button from the incidents table header.
+
+
 - Make it easier/more obvious to save a profile without a phone number by selecting the option "None".
 - Option "None" is default in the phone number selector in notification profiles.
 
 - Individual success alerts are replaced with a consolidated success message for bulk updates (bulk ack, bulk add/ticket etc.)
-
 
 
 

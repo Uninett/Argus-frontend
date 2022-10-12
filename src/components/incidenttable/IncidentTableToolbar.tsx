@@ -10,8 +10,6 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Tooltip from "@material-ui/core/Tooltip";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
-import FilterListIcon from "@material-ui/icons/FilterList";
-import LinkSharpIcon from "@material-ui/icons/LinkSharp";
 import Typography from "@material-ui/core/Typography";
 
 // Api
@@ -24,7 +22,6 @@ import { useIncidents } from "../../api/actions";
 import { useAlerts } from "../alertsnackbar";
 
 // Components
-import { useStyles } from "../incident/styles";
 import CreateAck from "../incident/CreateAckSignOffAction";
 import ManualClose from "../incident/ManualCloseSignOffAction";
 import OutlinedButton from "../buttons/OutlinedButton";
@@ -57,7 +54,6 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
   isLoading,
 }: TableToolbarPropsType) => {
   const classes = useToolbarStyles();
-  const rootClasses = useStyles();
   const displayAlert = useAlerts();
 
   const [, { closeIncident, reopenIncident, acknowledgeIncident, addTicketUrl,
@@ -117,18 +113,8 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
         </Typography>
       )}
 
-      {selectedIncidents.size > 0 ? (
+      {selectedIncidents.size > 0 && (
         <div className="bulk-op-buttons">
-          {
-            /* NOT IMPLEMENTED */
-            false && (
-              <Tooltip title="Link">
-                <IconButton aria-label="link" className={rootClasses.safeButton}>
-                  <LinkSharpIcon />
-                </IconButton>
-              </Tooltip>
-            )
-          }
           <AddTicketUrl
             onAddTicketUrl={(url: string) => {
               const pks: Incident["pk"][] = [...selectedIncidents.values()];
@@ -254,12 +240,6 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
             />
           )}
         </div>
-      ) : (
-        <Tooltip title="Filter list">
-          <IconButton aria-label="filter list">
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
       )}
     </Toolbar>
   );

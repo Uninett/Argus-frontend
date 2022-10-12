@@ -4,6 +4,7 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 ## [Unreleased]
 
 ### Fixed
+
 - Fix ARGUS logo clipping part of the name.
 
 - Fix misleading error message on successful incident update. Bug appeared for incidents that were selected by user, but which were on the table page(s) that were out of view.
@@ -26,6 +27,7 @@ creating or updating the phone number.
 
 
 ### Changed
+
 - Individual success alerts are replaced with a consolidated success message for bulk updates (bulk ack, bulk add/ticket etc.)
 
 - Logo to the one with eye and text (without TV-frame)
@@ -40,6 +42,7 @@ creating or updating the phone number.
 
 - Updated the phonenumber component to have prettier and more sensible css.
 
+- Removed useless _Filter List_ button from the incidents table header.
 
 
 ### Added
