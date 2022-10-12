@@ -173,7 +173,7 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
             signOffActionProps={{
               dialogButtonText: "Ack",
               ButtonComponent: OutlinedButton,
-              buttonProps: { className: "sign-off-button" }
+              buttonProps: { className: "sign-off-button" },
             }}
           />
 
@@ -235,7 +235,7 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
               isBulk={ selectedIncidents.size > 1 }
               signOffActionProps={{
                 ButtonComponent: OutlinedButton,
-                buttonProps: { className: "sign-off-button"}
+                buttonProps: { className: "sign-off-button" },
               }}
               reopenButtonProps={{ className: "sign-off-button", variant: "outlined"}}
               ButtonComponent={OutlinedButton}
