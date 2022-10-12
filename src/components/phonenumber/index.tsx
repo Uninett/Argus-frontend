@@ -89,7 +89,15 @@ const PhoneNumberComponent: React.FC<PhoneNumberPropsType> = ({
   return (
     <div key={pk}>
       <Paper className={classes.paper}>
-        <form className={classes.form} noValidate autoComplete="off">
+        <form
+          className={classes.form}
+          noValidate autoComplete="off"
+          onSubmit={(event) => {
+            event.preventDefault();
+            setUpdateLoading(true);
+            onSave(pk, phoneNumber);
+          }}
+        >
           <TextField
             error={invalidPhoneNumber}
             required
@@ -103,12 +111,9 @@ const PhoneNumberComponent: React.FC<PhoneNumberPropsType> = ({
             variant="contained"
             size="small"
             className={classes.saveButton}
-            onClick={() => {
-              setUpdateLoading(true);
-              onSave(pk, phoneNumber);
-            }}
             disabled={!hasChanged || invalidPhoneNumber}
             startIcon={updateLoading ? <Spinning shouldSpin /> : <SaveIcon />}
+            type="submit"
           >
             {exists ? "Save" : "Create"}
           </Button>

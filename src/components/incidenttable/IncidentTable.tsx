@@ -84,6 +84,7 @@ type MUIIncidentTablePropsType = {
   isLoadingRealtime?: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   paginationComponent?: any;
+  currentPage: number;
 };
 
 const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
@@ -93,6 +94,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
   isRealtime = false,
   isLoadingRealtime = true,
   paginationComponent,
+  currentPage
 }: MUIIncidentTablePropsType) => {
   const style = useStyles();
 
@@ -100,6 +102,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
   type RowExpansionState = Set<Incident["pk"]>;
   const [selectedIncidents, setSelectedIncidents] = useState<SelectionState>(new Set<Incident["pk"]>([]));
   const [expandedIncidents, setExpandedIncidents] = useState<RowExpansionState>(new Set<Incident["pk"]>([]));
+  const [isSelectAll, setIsSelectAll] = useState<Map<number, boolean>>(new Map<number, boolean>([[currentPage, false]]));
 
   type IncidentOrderableFields = Pick<Incident, "start_time">;
 
@@ -124,6 +127,30 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
     });
   };
 
+
+  const handleSelectAllIncidents = () => {
+    setSelectedIncidents((oldSelectedIncidents: SelectionState) => {
+      const newSelectedIncidents = new Set<Incident["pk"]>(oldSelectedIncidents);
+      if (isSelectAll.get(currentPage)) {
+        setIsSelectAll(() => {
+          const newPageSelectionStatus = new Map<number, boolean>(isSelectAll);
+          newPageSelectionStatus.set(currentPage, false);
+          return newPageSelectionStatus;
+        });
+        incidents.map((i) => newSelectedIncidents.delete(i.pk))
+        return newSelectedIncidents;
+      } else {
+        setIsSelectAll(() => {
+          const newPageSelectionStatus = new Map<number, boolean>(isSelectAll);
+          newPageSelectionStatus.set(currentPage, true);
+          return newPageSelectionStatus;
+        });
+        incidents.map((i) => newSelectedIncidents.add(i.pk))
+        return newSelectedIncidents;
+      }
+    });
+  };
+
   const handleExpandIncident = (incident: Incident) => {
     setExpandedIncidents((oldExpandedIncidents: RowExpansionState) => {
       const newExpandedIncidents = new Set<Incident["pk"]>(oldExpandedIncidents);
@@ -140,6 +167,12 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
 
   const handleClearSelection = useCallback(() => {
     setSelectedIncidents(new Set<Incident["pk"]>([]))
+    setIsSelectAll(() => {
+      const newPageSelectionStatus = new Map<number, boolean>(isSelectAll);
+      newPageSelectionStatus.set(currentPage, false);
+      return newPageSelectionStatus;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -164,7 +197,18 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                     : style.tableRowHeadNormal,
                 )} incidents-table-row incidents-table-header-row`}
               >
-                {multiSelect && <TableCell></TableCell>}
+                {multiSelect &&
+                    <TableCell
+                        padding="checkbox"
+                        onClick={() => handleSelectAllIncidents()}
+                    >
+                      <Checkbox
+                          disabled={isLoading}
+                          checked={isSelectAll.get(currentPage)}
+                      />
+                    </TableCell>
+                }
+
                 <TableCell className="timestamp-cell">Timestamp</TableCell>
                 <TableCell>Status</TableCell>
                 {SHOW_SEVERITY_LEVELS && <TableCell>Severity level</TableCell>}
@@ -186,7 +230,18 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                     : style.tableRowHeadNormal,
                 )} incidents-table-row incidents-table-header-row`}
               >
-                {multiSelect && <TableCell></TableCell>}
+                {multiSelect &&
+                    <TableCell
+                        padding="checkbox"
+                        onClick={() => handleSelectAllIncidents()}
+                    >
+                      <Checkbox
+                          disabled={isLoading}
+                          checked={isSelectAll.get(currentPage)}
+                      />
+                    </TableCell>
+                }
+
                 <TableCell className="timestamp-cell">Time</TableCell>
                 <TableCell>State</TableCell>
                 <TableCell>Actions</TableCell>
@@ -208,7 +263,18 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                     : style.tableRowHeadNormal,
                 )} incidents-table-row incidents-table-header-row`}
               >
-                {multiSelect && <TableCell></TableCell>}
+                {multiSelect &&
+                    <TableCell
+                        padding="checkbox"
+                        onClick={() => handleSelectAllIncidents()}
+                    >
+                      <Checkbox
+                          disabled={isLoading}
+                          checked={isSelectAll.get(currentPage)}
+                      />
+                    </TableCell>
+                }
+
                 <TableCell className="timestamp-cell">Time</TableCell>
                 <TableCell>State</TableCell>
                 <TableCell>Source</TableCell>
@@ -461,6 +527,7 @@ export type MinimalIncidentTablePropsType = {
   isLoadingRealtime: boolean;
 
   paginationComponent?: MUIIncidentTablePropsType["paginationComponent"];
+  currentPage: number;
 };
 
 export const MinimalIncidentTable = ({
@@ -468,6 +535,7 @@ export const MinimalIncidentTable = ({
   isRealtime,
   isLoadingRealtime,
   paginationComponent,
+  currentPage
 }: MinimalIncidentTablePropsType) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -540,6 +608,7 @@ export const MinimalIncidentTable = ({
           incidents={incidents}
           onShowDetail={handleShowDetail}
           paginationComponent={paginationComponent}
+          currentPage={currentPage}
         />
       </div>
     </ClickAwayListener>

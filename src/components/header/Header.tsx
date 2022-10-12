@@ -43,6 +43,9 @@ const useStyles = makeStyles((theme: Theme) =>
     rootNetworkError: {
       backgroundColor: theme.palette.error.dark,
     },
+    rootInfoMessage: {
+        backgroundColor: theme.palette.warning.dark,
+    },
     grow: { flexGrow: 1 },
     rightAligned: { marginRight: theme.spacing(2) },
     navWrapper: {
@@ -111,6 +114,17 @@ const useStyles = makeStyles((theme: Theme) =>
       alignItems: "center",
       fontWeight: "bold",
       color: "white",
+    },
+    infoContainer: {
+        display: "flex",
+        flexFlow: "column wrap",
+        alignItems: "center",
+        margin: "4px",
+    },
+    infoTypography: {
+        alignItems: "center",
+        fontWeight: "bold",
+        color: "white",
     },
   }),
 );
@@ -331,6 +345,15 @@ const Header: React.FC<HeaderPropsType> = () => {
             </Typography>
           </div>
         </AppBar>
+      )}
+      {apiState.isOngoingBulkUpdate && (
+          <AppBar className={classNames(style.root, style.rootInfoMessage)} position="relative">
+              <div className={style.infoContainer}>
+                  <Typography className={style.infoTypography}>
+                      Performing bulk operation... Please wait.
+                  </Typography>
+              </div>
+          </AppBar>
       )}
 
       {renderMenu}
