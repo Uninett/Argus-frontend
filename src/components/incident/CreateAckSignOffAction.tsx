@@ -36,7 +36,7 @@ const CreateAck: React.FC<CreateAckPropsType> = ({ onSubmitAck, signOffActionPro
     setSelectedDate(date);
   };
 
-  const signOffActionpDefaultProps = {
+  const signOffActionDefaultProps = {
     dialogTitle: "Submit acknowledment",
     dialogContentText: "Write a message describing why this incident was acknowledged",
     dialogSubmitText: "Submit",
@@ -57,7 +57,7 @@ const CreateAck: React.FC<CreateAckPropsType> = ({ onSubmitAck, signOffActionPro
 
   return (
     <SignOffAction
-      {...signOffActionpDefaultProps}
+      {...signOffActionDefaultProps}
       {...(isBulk && signOffActionPluralProps)}
       {...signOffActionProps}
     >
