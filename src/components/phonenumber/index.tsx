@@ -17,29 +17,27 @@ import { WHITE } from "../../colorscheme";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {
-      flexGrow: 1,
-    },
     paper: {
-      padding: theme.spacing(1),
-      textAlign: "center",
       color: theme.palette.text.secondary,
       minWidth: 30,
     },
     dangerousButton: {
       background: theme.palette.warning.main,
       color: WHITE,
+      margin: theme.spacing(),
     },
     saveButton: {
       background: theme.palette.primary.main,
       color: WHITE,
+      margin: theme.spacing(),
     },
-    phoneNumber: {
+    phoneField: {
+      margin: theme.spacing(),
+    },
+    form: {
       alignItems: "center",
-      padding: theme.spacing(3),
-    },
-    createDeleteButtonGroup: {
-      margin: theme.spacing(1),
+      display: "flex",
+      justifyContent: "space-between",
     },
   }),
 );
@@ -89,14 +87,23 @@ const PhoneNumberComponent: React.FC<PhoneNumberPropsType> = ({
   });
 
   return (
-    <div key={pk} className={classes.root}>
+    <div key={pk}>
       <Paper className={classes.paper}>
-        <form className={classes.root} noValidate autoComplete="off">
+        <form
+          className={classes.form}
+          noValidate autoComplete="off"
+          onSubmit={(event) => {
+            event.preventDefault();
+            setUpdateLoading(true);
+            onSave(pk, phoneNumber);
+          }}
+        >
           <TextField
             error={invalidPhoneNumber}
             required
             label="Phone number"
             variant="standard"
+            className={classes.phoneField}
             value={phoneNumber}
             onChange={onPhoneNumberChange}
           />
@@ -104,12 +111,9 @@ const PhoneNumberComponent: React.FC<PhoneNumberPropsType> = ({
             variant="contained"
             size="small"
             className={classes.saveButton}
-            onClick={() => {
-              setUpdateLoading(true);
-              onSave(pk, phoneNumber);
-            }}
             disabled={!hasChanged || invalidPhoneNumber}
             startIcon={updateLoading ? <Spinning shouldSpin /> : <SaveIcon />}
+            type="submit"
           >
             {exists ? "Save" : "Create"}
           </Button>

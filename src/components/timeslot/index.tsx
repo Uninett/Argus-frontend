@@ -128,37 +128,57 @@ export const TimeslotRecurrenceComponent: React.FC<TimeslotRecurrenceComponentPr
   const handleTimeChange = (date: Date | null, isStart: boolean,
                             id: number, recurrence: TimeRecurrence) => {
     if (date) {
-      if (!isValid(date)) {
-        isStart ? setStartTimeError(true) : setEndTimeError(true);
-        isStart ? setStartTimeHelperText('Invalid') : setEndTimeHelperText('Invalid');
-        isStart ?
-          onChange(id, { ...recurrence, start: timeOfDayFromDate(date) }, false)
-          :
-          onChange(id, { ...recurrence, end: timeOfDayFromDate(date) }, false)
-      } else if (isStart && isBefore(parse(recurrence.end, 'HH:mm:ss', new Date()), date)) {
-        setStartTimeError(true);
-        setStartTimeHelperText('Must be before end time');
-        onChange(id, { ...recurrence, start: timeOfDayFromDate(date) }, false);
-      } else if (isBefore(date, parse(recurrence.start, 'HH:mm:ss', new Date()))) {
-        setEndTimeError(true);
-        setEndTimeHelperText('Must be after start time');
-        onChange(id, { ...recurrence, end: timeOfDayFromDate(date) }, false);
+      // parse
+      const newTime = parse(timeOfDayFromDate(date), 'HH:mm:ss', new Date())
+      const startTime = isStart ? newTime : parse(recurrence.start, 'HH:mm:ss', new Date());
+      const endTime = isStart ? parse(recurrence.end, 'HH:mm:ss', new Date()) : newTime;
+
+      const isEndValid = isValid(endTime);
+      const isStartValid = isValid(startTime);
+
+
+      if (!isValid(newTime)) {
+        setStartTimeError(!isStartValid || startTimeError);
+        setEndTimeError(!isEndValid || endTimeError);
+        setStartTimeHelperText(isStart ? "Invalid" : startTimeHelperText);
+        setEndTimeHelperText(isStart ? endTimeHelperText : "Invalid");
+        onChange(id, { ...recurrence, start: timeOfDayFromDate(startTime), end: timeOfDayFromDate(endTime) }, false)
       } else {
-        isStart ? setStartTimeError(false) : setEndTimeError(false);
-        isStart ?
-          onChange(id, { ...recurrence, start: timeOfDayFromDate(date) }, !endTimeError)
-          :
-          onChange(id, { ...recurrence, end: timeOfDayFromDate(date) }, !startTimeError)
+        if (isEndValid && isStartValid) {
+          if (isBefore(startTime, endTime)) {
+            setStartTimeError(false);
+            setEndTimeError(false);
+            setStartTimeHelperText("Required");
+            setEndTimeHelperText("Required");
+            onChange(id, { ...recurrence, start: timeOfDayFromDate(startTime), end: timeOfDayFromDate(endTime) }, true)
+          } else {
+            setStartTimeError(isStart);
+            setEndTimeError(!isStart);
+            setStartTimeHelperText(isStart ? "Must be before end time" : "Required");
+            setEndTimeHelperText(isStart ? "Required" : "Must be after start time");
+            onChange(id, { ...recurrence, start: timeOfDayFromDate(startTime), end: timeOfDayFromDate(endTime) }, false)
+          }
+        } else {
+          setStartTimeError(!isStartValid);
+          setEndTimeError(!isEndValid);
+          setStartTimeHelperText(isStartValid ? "Required" : startTimeHelperText);
+          setEndTimeHelperText(isEndValid ? "Required" : endTimeHelperText);
+          onChange(id, { ...recurrence, start: timeOfDayFromDate(startTime), end: timeOfDayFromDate(endTime) }, false)
+        }
       }
     } else {
-      isStart ? setStartTimeError(true) : setEndTimeError(true);
-      isStart ? setStartTimeHelperText('Required') : setEndTimeHelperText('Required');
-      isStart ?
-        onChange(id, { ...recurrence, start: "" }, false)
-        :
-        onChange(id, { ...recurrence, end: "" }, false)
+      if (isStart) {
+        setStartTimeError(true);
+        setStartTimeHelperText('Required');
+        onChange(id, { ...recurrence, start: "" }, false);
+      } else {
+        setEndTimeError(true);
+        setEndTimeHelperText('Required');
+        onChange(id, { ...recurrence, end: "" }, false);
+      }
     }
   };
+
 
   // eslint-disable-next-line @typescript-eslint/camelcase
   const allDay = recurrence.all_day;
@@ -284,6 +304,10 @@ export const DaySelector: React.FC<DaySelectorPropsType> = ({
           );
         }}
         disabled={disabled}
+        MenuProps={{
+          variant: "menu",
+          getContentAnchorEl: null,
+        }}
       >
         {TIME_RECURRENCE_DAY_IN_ORDER.map((day: TimeRecurrenceDay) => (
           <MenuItem key={day} value={day} selected>

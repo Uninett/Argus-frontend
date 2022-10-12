@@ -261,7 +261,11 @@ const NotificationProfileCard = ({
                 className={style.phoneNumberSelect}
                 value={profileState.phone_number ? profileState.phone_number : ""}
                 onChange={handlePhoneNumberChange}
+                data-testid="phone-number-selector"
               >
+                <MenuItem value={""}>
+                  <em>None</em>
+                </MenuItem>
                 {phoneNumbers.map((phoneNumber: PhoneNumber) => (
                   <MenuItem key={phoneNumber.pk} value={phoneNumber.pk}>
                     {phoneNumber.phone_number}

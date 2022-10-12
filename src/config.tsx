@@ -1,5 +1,3 @@
-import axios from "axios";
-
 export const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "";
 export const ENABLE_WEBSOCKETS_SUPPORT = process.env.REACT_APP_ENABLE_WEBSOCKETS_SUPPORT === "true" || false;
 export const BACKEND_WS_URL = process.env.REACT_APP_BACKEND_WS_URL || "";
@@ -49,25 +47,5 @@ export const TIMESTAMP_FORMAT = "{date} {time}{timezone_offset}";
 
 // Flag used to toggle whether severity levels will be shown in the frontend or not
 export const SHOW_SEVERITY_LEVELS = true;
-
-export interface MetadataConfig {
-  'server-version': string;
-  'api-version': {
-    stable: string;
-    unstable: string;
-  };
-  'jsonapi-schema': {
-    stable: string;
-    v1: string;
-    v2: string;
-  }
-}
-export const SERVER_METADATA = async () => {
-  const metadata: MetadataConfig =
-      await axios.get(`${BACKEND_URL}/api/`)
-          .then(response => Promise.resolve(response.data))
-          .catch(error => Promise.reject(error));
-  return metadata;
-}
 
 

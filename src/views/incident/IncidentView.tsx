@@ -8,6 +8,8 @@ import {IncidentFilterToolbar} from "../../components/incident/IncidentFilterToo
 
 import type {AutoUpdateMethod} from "../../api/types.d";
 
+import api from "../../api";
+
 // Context/Hooks
 import {useFilters} from "../../api/actions";
 import {useAlerts} from "../../components/alertsnackbar";
@@ -15,7 +17,7 @@ import {useApiState} from "../../state/hooks";
 import SelectedFilterProvider from "../../components/filterprovider";
 import IncidentsProvider from "../../components/incidentsprovider";
 import {Helmet} from "react-helmet";
-import {FRONTEND_VERSION, SERVER_METADATA, API_VERSION} from "../../config";
+import {FRONTEND_VERSION, API_VERSION} from "../../config";
 import {useBackground} from "../../hooks";
 
 const IncidentComponent = ({ autoUpdateMethod }: { autoUpdateMethod: AutoUpdateMethod }) => {
@@ -40,8 +42,8 @@ const IncidentView: React.FC<IncidentViewPropsType> = () => {
 
   useBackground("");
 
-  const getServerMetadata = async () => {
-    return await SERVER_METADATA()
+  const getServerMetadata = () => {
+    return api.getMetadataConfig()
         .then(data => {
           setApiVersion(data["api-version"].stable ?
               `${data["api-version"].stable}(stable)` :

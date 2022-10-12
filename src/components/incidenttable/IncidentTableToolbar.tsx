@@ -10,8 +10,6 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Tooltip from "@material-ui/core/Tooltip";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
-import FilterListIcon from "@material-ui/icons/FilterList";
-import LinkSharpIcon from "@material-ui/icons/LinkSharp";
 import Typography from "@material-ui/core/Typography";
 
 // Api
@@ -24,7 +22,6 @@ import { useIncidents } from "../../api/actions";
 import { useAlerts } from "../alertsnackbar";
 
 // Components
-import { useStyles } from "../incident/styles";
 import CreateAck from "../incident/CreateAckSignOffAction";
 import ManualClose from "../incident/ManualCloseSignOffAction";
 import OutlinedButton from "../buttons/OutlinedButton";
@@ -57,11 +54,11 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
   isLoading,
 }: TableToolbarPropsType) => {
   const classes = useToolbarStyles();
-  const rootClasses = useStyles();
   const displayAlert = useAlerts();
 
-  const [, { closeIncident, reopenIncident, acknowledgeIncident, addTicketUrl }] = useIncidents();
-  const [, { incidentByPk }] = useIncidentsContext();
+  const [, { closeIncident, reopenIncident, acknowledgeIncident, addTicketUrl,
+    bulkAcknowledgeIncidents, bulkAddTicketUrl, bulkReopenIncidents, bulkCloseIncidents }] = useIncidents();
+  const [, { storedIncidentByPk }] = useIncidentsContext();
 
   // XXX: In the future there should be better seperation of components, and this
   // shouldn't be needed here. Now it's used to clear selection when the filter changes.
@@ -71,7 +68,7 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
     const pks: Incident["pk"][] = [...selectedIncidents.keys()];
     if (pks.length === 0) return "mixed"; // no all state
 
-    const incidentsMap = pks.map(incidentByPk);
+    const incidentsMap = pks.map(storedIncidentByPk);
     const firstState = incidentsMap[0]?.open ? "open" : "closed";
 
     const allSame = incidentsMap.every((incident?: Incident) => {
@@ -86,7 +83,7 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
       return firstState;
     }
     return "mixed";
-  }, [selectedIncidents, incidentByPk]);
+  }, [selectedIncidents, storedIncidentByPk]);
 
   useEffect(() => {
     onClearSelection();
@@ -116,29 +113,30 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
         </Typography>
       )}
 
-      {selectedIncidents.size > 0 ? (
+      {selectedIncidents.size > 0 && (
         <div className="bulk-op-buttons">
-          {
-            /* NOT IMPLEMENTED */
-            false && (
-              <Tooltip title="Link">
-                <IconButton aria-label="link" className={rootClasses.safeButton}>
-                  <LinkSharpIcon />
-                </IconButton>
-              </Tooltip>
-            )
-          }
           <AddTicketUrl
             onAddTicketUrl={(url: string) => {
               const pks: Incident["pk"][] = [...selectedIncidents.values()];
-              pks.forEach((pk: Incident["pk"]) => {
-                addTicketUrl(pk, url)
-                  .then(() => {
-                    onClearSelection();
-                    displayAlert(`Updated ticket URL`, "success");
-                  })
-                  .catch((error) => displayAlert(`Failed to update ticket URL - ${error}`, "error"));
-              });
+              if (pks.length > 1) {
+                bulkAddTicketUrl(pks, url)
+                    .then((res) => {
+                      onClearSelection();
+                      displayAlert(`Updated ${res.length}/${pks.length} ticket URL(s)`, "success");
+                    })
+                    .catch((error) => {
+                      displayAlert(`Failed to update ticket URL(s) - ${error}`, "error");
+                    });
+              } else {
+                pks.forEach((pk: Incident["pk"]) => {
+                  addTicketUrl(pk, url)
+                      .then(() => {
+                        onClearSelection();
+                        displayAlert(`Updated ticket URL`, "success");
+                      })
+                      .catch((error) => displayAlert(`Failed to update ticket URL - ${error}`, "error"));
+                });
+              }
             }}
             signOffActionProps={{
               ButtonComponent: OutlinedButton,
@@ -150,14 +148,26 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
             onSubmitAck={(ackBody: AcknowledgementBody) => {
               console.log("acknowledegment of all incidents", selectedIncidents);
               const pks: Incident["pk"][] = [...selectedIncidents.values()];
-              pks.forEach((pk: Incident["pk"]) => {
-                acknowledgeIncident(pk, ackBody)
-                  .then(() => {
-                    onClearSelection();
-                    displayAlert(`Submitted acknowledgment(s)`, "success");
-                  })
-                  .catch((error) => displayAlert(`Failed to submit acknowledgments(s) - ${error}`, "error"));
-              });
+              if (pks.length > 1) {
+                bulkAcknowledgeIncidents(pks, ackBody)
+                    .then((acks) => {
+                      onClearSelection();
+                      displayAlert(`Submitted ${acks.length}/${pks.length} acknowledgment(s)`, "success");
+                    }).catch((error) => {
+                      displayAlert(`Failed to submit acknowledgments(s) - ${error}`, "error");
+                });
+              } else {
+                pks.forEach((pk: Incident["pk"]) => {
+                  acknowledgeIncident(pk, ackBody)
+                      .then(() => {
+                        onClearSelection();
+                        displayAlert(`Submitted acknowledgment`, "success");
+                      })
+                      .catch((error) => {
+                        displayAlert(`Failed to submit acknowledgment - ${error}`, "error")
+                      });
+                });
+              }
             }}
             signOffActionProps={{
               dialogButtonText: "Ack",
@@ -172,29 +182,52 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
               onManualClose={(msg: string) => {
                 console.log("closing of all incidents", selectedIncidents);
                 const pks: Incident["pk"][] = [...selectedIncidents.values()];
-                pks.forEach((pk: Incident["pk"]) => {
-                  closeIncident(pk, msg)
-                    .then(() => {
-                      onClearSelection();
-                      displayAlert(`Closed incident(s)`, "success");
-                    })
-                    .catch((error) => displayAlert(`Failed to close incident(s) - ${error}`, "error"));
-                });
+                if (pks.length > 1) {
+                  bulkCloseIncidents(pks, msg)
+                      .then((res) => {
+                        onClearSelection();
+                        displayAlert(`Closed ${res.length}/${pks.length} incident(s)`, "success");
+                      })
+                      .catch((error) => {
+                        displayAlert(`Failed to close incident(s) - ${error}`, "error");
+                      });
+                } else {
+                  pks.forEach((pk: Incident["pk"]) => {
+                    closeIncident(pk, msg)
+                        .then(() => {
+                          onClearSelection();
+                          displayAlert(`Closed incident`, "success");
+                        })
+                        .catch((error) => displayAlert(`Failed to close incident - ${error}`, "error"));
+                  });
+                }
               }}
               onManualOpen={() => {
                 console.log("reopening of all incidents", selectedIncidents);
                 const pks: Incident["pk"][] = [...selectedIncidents.values()];
-                pks.forEach((pk: Incident["pk"]) => {
-                  reopenIncident(pk)
-                    .then(() => {
-                      onClearSelection();
-                      displayAlert(`Reopened incident(s)`, "success");
-                    })
-                    .catch((error) => {
-                      console.log(error);
-                      displayAlert(`Failed to reopen incident(s) - ${error}`, "error")
-                    });
-                });
+                if (pks.length > 1) {
+                  bulkReopenIncidents(pks)
+                      .then((res) => {
+                        onClearSelection();
+                        displayAlert(`Reopened ${res.length}/${pks.length} incident(s)`, "success");
+                      })
+                      .catch((error) => {
+                        displayAlert(`Failed to reopen incident(s) - ${error}`, "error");
+                      });
+
+                } else {
+                  pks.forEach((pk: Incident["pk"]) => {
+                    reopenIncident(pk)
+                        .then(() => {
+                          onClearSelection();
+                          displayAlert(`Reopened incident`, "success");
+                        })
+                        .catch((error) => {
+                          console.log(error);
+                          displayAlert(`Failed to reopen incident - ${error}`, "error")
+                        });
+                  });
+                }
               }}
               reopenButtonText="Re-open selected"
               closeButtonText="Close selected"
@@ -207,12 +240,6 @@ export const TableToolbar: React.FC<TableToolbarPropsType> = ({
             />
           )}
         </div>
-      ) : (
-        <Tooltip title="Filter list">
-          <IconButton aria-label="filter list">
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
       )}
     </Toolbar>
   );

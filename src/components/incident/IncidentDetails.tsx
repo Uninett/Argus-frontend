@@ -54,14 +54,16 @@ import {Hidden} from "@material-ui/core";
 type IncidentDetailsListItemPropsType = {
   title: string;
   detail: string | React.ReactNode;
+  html_title_attr?: string
 };
 
 const IncidentDetailsListItem: React.FC<IncidentDetailsListItemPropsType> = ({
   title,
   detail,
+  html_title_attr
 }: IncidentDetailsListItemPropsType) => {
   return (
-    <ListItem>
+    <ListItem title={html_title_attr}>
       <ListItemText primary={title} secondary={detail} />
     </ListItem>
   );
@@ -248,23 +250,39 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
     setEventsPromise(api.getIncidentEvents(incident.pk));
   }, [setAcksPromise, setEventsPromise, incident]);
 
+  // chronological order is oldest-first
   const chronoAcks = useMemo<Acknowledgement[]>(() => {
     return [...(acks || [])].sort((first: Acknowledgement, second: Acknowledgement) => {
       const firstTime = Date.parse(first.event.timestamp);
       const secondTime = Date.parse(second.event.timestamp);
       if (firstTime < secondTime) {
-        return 1;
-      } else if (firstTime > secondTime) {
         return -1;
+      } else if (firstTime > secondTime) {
+        return 1;
       }
       if (first.expiration && second.expiration) {
         const firstExpires = Date.parse(first.expiration);
         const secondExpires = Date.parse(second.expiration);
-        return firstExpires < secondExpires ? 1 : firstExpires > secondExpires ? -1 : 0;
+        return firstExpires < secondExpires ? -1 : firstExpires > secondExpires ? 1 : 0;
       }
-      return first.expiration ? 1 : -1;
+      return first.expiration ? -1 : 1;
     });
   }, [acks]);
+
+  // chronological order is oldest-first
+  const chronoEvents = useMemo<Event[]>(() => {
+    return [...(events || [])].sort((first: Event, second: Event) => {
+      const firstTime = Date.parse(first.timestamp);
+      const secondTime = Date.parse(second.timestamp);
+      if (firstTime < secondTime) {
+        return -1;
+      } else if (firstTime > secondTime) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+  }, [events]);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleManualClose = (msg: string) => {
@@ -374,28 +392,38 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
             </Card>
           </Grid>
 
-          <Grid item>
+          <Grid item data-testid={"primary-details-container"}>
             <Card>
               <CardContent>
                 <Typography color="textSecondary" gutterBottom>
                   Primary details (#{incident.pk})
                 </Typography>
                 <List>
-                  <IncidentDetailsListItem title="Description" detail={incident.description} />
+                  <IncidentDetailsListItem title="Description" detail={incident.description} html_title_attr={"description-item"}/>
                   <IncidentDetailsListItem
                     title="Start time"
                     detail={formatTimestamp(incident.start_time, { withSeconds: true })}
+                    html_title_attr={"start-time-item"}
                   />
+                  {(incident.stateful && incident.end_time !== undefined && incident.end_time !== "infinity") &&
+                      <IncidentDetailsListItem
+                          title="End time"
+                          detail={formatTimestamp(incident.end_time, { withSeconds: true })}
+                          html_title_attr={"end-time-item"}
+                      />
+                  }
                   {incident.stateful && (
                     <IncidentDetailsListItem
                       title="Duration"
                       detail={formatDuration(incident.start_time, incident.end_time || undefined)}
+                      html_title_attr={"duration-item"}
                     />
                   )}
-                  <IncidentDetailsListItem title="Source" detail={incident.source.name} />
+                  <IncidentDetailsListItem title="Source" detail={incident.source.name} html_title_attr={"source-item"}/>
                   <IncidentDetailsListItem
                     title="Details URL"
                     detail={hyperlinkIfAbsoluteUrl(incident.details_url) || "–"}
+                    html_title_attr={"details-url-item"}
                   />
 
                   <TicketModifiableField
@@ -414,8 +442,9 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                           displayAlert(`Failed to updated ticket URL ${error}`, "error");
                         });
                     }}
+                    data-testid={"ticket-modification-interactive-item"}
                   />
-                  <ListItem>
+                  <ListItem data-testid={"details-button-interactive-item"}>
                     <CenterContainer>
                       <ManualClose
                         open={incident.open}
@@ -468,9 +497,10 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
               Related events
             </Typography>
             <List>
-              {(events || [])
-                  .filter((event: Event) => event.type.value !== "ACK")
-                  .map((event: Event) => <EventListItem key={event.pk} event={event} />)
+              {
+                chronoEvents
+                    .filter((event: Event) => event.type.value !== "ACK")
+                    .map((event: Event) => <EventListItem key={event.pk} event={event} />)
               }
             </List>
           </Grid>
@@ -515,35 +545,47 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
               </Grid>
             </Grid>
 
-            <Grid item className="primary-details-container-sm">
+            <Grid item className="primary-details-container-sm" data-testid={"primary-details-container-sm"}>
               <Typography color="textSecondary" gutterBottom>
                 Primary details (#{incident.pk})
               </Typography>
               <Grid className="primary-details-container-sm" container alignItems="baseline" alignContent="stretch" spacing={0} wrap="wrap">
                 <Grid item sm={6} xs={12}>
-                  <IncidentDetailsListItem title="Description" detail={incident.description} />
+                  <IncidentDetailsListItem title="Description" detail={incident.description} html_title_attr={"description-sm-item"}/>
                 </Grid>
                 <Grid item sm={6} xs={12}>
                   <IncidentDetailsListItem
                     title="Start time"
                     detail={formatTimestamp(incident.start_time, { withSeconds: true })}
+                    html_title_attr={"start-time-sm-item"}
                   />
                 </Grid>
+                {(incident.stateful && incident.end_time !== undefined && incident.end_time !== "infinity") && (
+                    <Grid item sm={6} xs={12}>
+                      <IncidentDetailsListItem
+                          title="End time"
+                          detail={formatTimestamp(incident.end_time, { withSeconds: true })}
+                          html_title_attr={"end-time-sm-item"}
+                      />
+                    </Grid>
+                )}
                 {incident.stateful && (
                   <Grid item sm={6} xs={12}>
                     <IncidentDetailsListItem
                       title="Duration"
                       detail={formatDuration(incident.start_time, incident.end_time || undefined)}
+                      html_title_attr={"duration-sm-item"}
                     />
                   </Grid>
                 )}
                 <Grid item sm={6} xs={12}>
-                  <IncidentDetailsListItem title="Source" detail={incident.source.name} />
+                  <IncidentDetailsListItem title="Source" detail={incident.source.name} html_title_attr={"source-sm-item"}/>
                 </Grid>
                 <Grid item sm={6} xs={12}>
                   <IncidentDetailsListItem
                     title="Details URL"
                     detail={hyperlinkIfAbsoluteUrl(incident.details_url) || "–"}
+                    html_title_attr={"details-url-sm-item"}
                   />
                 </Grid>
               </Grid>
@@ -556,7 +598,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                     Actions
                   </Typography>
                   <Grid container spacing={1} direction="row" wrap="wrap" justify="center" alignItems="center" alignContent="stretch">
-                    <Grid item sm={12} className="add-ticket-container">
+                    <Grid item sm={12} className="add-ticket-container" data-testid={"ticket-modification-sm-interactive-item"}>
                       <TicketModifiableField
                         url={incident.ticket_url}
                         saveChange={(url?: string) => {
@@ -575,7 +617,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                         }}
                       />
                     </Grid>
-                    <Grid item className="close-button-container">
+                    <Grid item className="close-button-container" data-testid={"details-button-sm-interactive-item"}>
                       <ManualClose
                         open={incident.open}
                         onManualClose={handleManualClose}
@@ -634,9 +676,10 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                       <EventListItem event={defaultEvent} />
                     </Skeleton>
                   ))) ||
-                (events || [])
-                  .filter((event: Event) => event.type.value !== "ACK")
-                  .map((event: Event) => <EventListItem key={event.pk} event={event} />)}
+                    chronoEvents
+                        .filter((event: Event) => event.type.value !== "ACK")
+                        .map((event: Event) => <EventListItem key={event.pk} event={event} />)
+                }
               </List>
             </Grid>
           </Grid>

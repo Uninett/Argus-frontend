@@ -272,3 +272,16 @@ export type CursorPaginationResponse<T> = {
  */
 
 export type AutoUpdateMethod = "never" | "realtime" | "interval";
+
+export interface MetadataConfig {
+  'server-version': string;
+  'api-version': {
+    stable: string;
+    unstable: string;
+  };
+  'jsonapi-schema': {
+    stable: string;
+    v1: string;
+    v2: string;
+  }
+}
