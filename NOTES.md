@@ -4,6 +4,12 @@ This file documents changes to Argus-frontend that are important for the users t
 
 ## [Unreleased]
 
+## [v1.6.1] - 2022-10-13
+
+### Fixed
+
+- Show correct version number
+
 ## [v1.6.0] - 2022-10-13
 
 ### Fixed
