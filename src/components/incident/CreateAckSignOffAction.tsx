@@ -15,9 +15,10 @@ import SignOffAction, { SignOffActionPropsType } from "./SignOffAction";
 type CreateAckPropsType = {
   onSubmitAck: (ack: AcknowledgementBody) => void;
   signOffActionProps?: Partial<SignOffActionPropsType>;
+  isBulk: boolean;
 };
 
-const CreateAck: React.FC<CreateAckPropsType> = ({ onSubmitAck, signOffActionProps = {} }: CreateAckPropsType) => {
+const CreateAck: React.FC<CreateAckPropsType> = ({ onSubmitAck, signOffActionProps = {}, isBulk }: CreateAckPropsType) => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   const handleSubmit = (msg: string) => {
@@ -35,19 +36,29 @@ const CreateAck: React.FC<CreateAckPropsType> = ({ onSubmitAck, signOffActionPro
     setSelectedDate(date);
   };
 
+  const signOffActionDefaultProps = {
+    dialogTitle: "Submit acknowledment",
+    dialogContentText: "Write a message describing why this incident was acknowledged",
+    dialogSubmitText: "Submit",
+    dialogCancelText: "Cancel",
+    dialogButtonText: "Create acknowledegment",
+    dialogInputLabel: "Acknowledgment message",
+    isDialogInputRequired:false,
+    dialogInputType: "text",
+    title: "Submit acknowledment",
+    question: "Are you sure you want to acknowledge this incident?",
+    onSubmit: handleSubmit,
+  }
+
+  const signOffActionPluralProps = {
+    dialogContentText: "Write a message describing why the incidents were acknowledged",
+    question: "Are you sure you want to acknowledge these incidents?",
+  }
+
   return (
     <SignOffAction
-      dialogTitle="Submit acknowledment"
-      dialogContentText="Write a message describing why this incident was acknowledged "
-      dialogSubmitText="Submit"
-      dialogCancelText="Cancel"
-      dialogButtonText="Create acknowledegment"
-      dialogInputLabel="Acknowledgment message"
-      isDialogInputRequired={false}
-      dialogInputType="text"
-      title="Submit acknowledment"
-      question="Are you sure you want to acknowledge this incident?"
-      onSubmit={handleSubmit}
+      {...signOffActionDefaultProps}
+      {...(isBulk && signOffActionPluralProps)}
       {...signOffActionProps}
     >
       <MuiPickersUtilsProvider utils={DateFnsUtils}>

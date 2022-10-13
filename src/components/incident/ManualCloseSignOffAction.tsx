@@ -18,6 +18,7 @@ type ManualClosePropsType = {
   signOffActionProps?: Partial<SignOffActionPropsType>;
   reopenButtonProps?: Partial<ButtonProps>;
   ButtonComponent?: React.ElementType<{ onClick: ButtonProps["onClick"] }>;
+  isBulk: boolean;
 };
 
 const ManualClose: React.FC<ManualClosePropsType> = ({
@@ -29,37 +30,60 @@ const ManualClose: React.FC<ManualClosePropsType> = ({
   signOffActionProps = {},
   reopenButtonProps = {},
   ButtonComponent = Button,
+  isBulk,
 }: ManualClosePropsType) => {
   const classes = useStyles();
+
+  const signOffActionDefaultProps = {
+    dialogTitle: "Manually close incident",
+    dialogContentText: "Write a message describing why the incident was manually closed",
+    dialogSubmitText:"Close now",
+    dialogCancelText:"Cancel",
+    dialogButtonText: closeButtonText,
+    dialogInputLabel: "Closing message",
+    isDialogInputRequired: false,
+    dialogInputType: "text",
+    title: "Manually close incident",
+    question: "Are you sure you want to close this incident?",
+    onSubmit: onManualClose,
+  }
+
+  const signOffActionPluralProps = {
+    dialogTitle: "Manually close incidents",
+    dialogContentText: "Write a message describing why the incidents were manually closed",
+    question: "Are you sure you want to close these incidents?",
+  }
+
+  const reopenButtonDefaultProps = {
+    title: "Reopen incident",
+    question: "Are you sure you want to reopen this incident?",
+    onConfirm: onManualOpen,
+    ButtonComponent: ButtonComponent,
+  }
+
+  const reopenButtonPluralProps = {
+    title: "Reopen incidents",
+    question: "Are you sure you want to reopen these incidents?",
+  }
+
 
   if (open) {
     return (
       <SignOffAction
-        dialogTitle="Manually close incident"
-        dialogContentText="Write a message describing why the incident was manually closed"
-        dialogSubmitText="Close now"
-        dialogCancelText="Cancel"
-        dialogButtonText={closeButtonText}
-        dialogInputLabel="Closing message"
-        isDialogInputRequired={false}
-        dialogInputType="text"
-        title="Manually close incident"
-        question="Are you sure you want to close this incident?"
-        onSubmit={onManualClose}
+        {...signOffActionDefaultProps}
+        {...(isBulk && signOffActionPluralProps)}
         {...signOffActionProps}
       />
     );
   } else {
     return (
       <ConfirmationButton
-        title={"Reopen incident"}
-        question={"Are you sure you want to reopen this incident?"}
-        onConfirm={onManualOpen}
-        ButtonComponent={ButtonComponent}
-        buttonProps={{
-            variant: "contained"
-        }}
         className={classes.dangerousButton}
+        buttonProps={{
+            variant: "contained",
+        }}
+        {...reopenButtonDefaultProps}
+        {...(isBulk && reopenButtonPluralProps)}
         {...reopenButtonProps}
       >
         {reopenButtonText}
