@@ -76,3 +76,13 @@ CMD ["nginx", "-g", "daemon off;"]
 The first stage builds a set of static files based on your build arguments. The
 second stage copies the produced file tree and serves it using an nginx web
 server.
+
+## Limitations
+
+This is not a complete Argus environment.  This image only provides the
+single-page user interface application to operate against an [Argus API
+server](https://github.com/Uninett/Argus). The API server also has dependencies
+to other services.
+
+For a full production environment example, take a look at
+https://github.com/Uninett/argus-docker
