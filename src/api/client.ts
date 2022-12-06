@@ -362,6 +362,14 @@ class ApiClient {
     );
   }
 
+  public putCreateTicketEvent(incidentPK: number): Promise<IncidentTicketUrlBody> {
+    return this.resolveOrReject(
+        this.authPut<IncidentTicketUrlBody, never>(`/api/v2/incidents/${incidentPK}/ticket/`),
+        defaultResolver,
+        (error) => new Error(`Failed to create ticket from incident ${incidentPK}: ${getErrorCause(error)}`),
+    );
+  }
+
   public getPaginatedIncidentsFiltered(
     filter: Omit<Filter, "pk" | "name">,
     cursor: string | null,
