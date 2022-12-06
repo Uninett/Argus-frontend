@@ -51,6 +51,7 @@ import { Alert } from "@material-ui/lab";
 
 import "./IncidentDetails.css";
 import {Hidden} from "@material-ui/core";
+import CreateTicket from "./GenerateTicketSignOffAction";
 type IncidentDetailsListItemPropsType = {
   title: string;
   detail: string | React.ReactNode;
@@ -311,6 +312,19 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
       });
   };
 
+  const handleCreateTicket = () => {
+    api
+        .putCreateTicketEvent(incident.pk)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        .then(({ ticket_url }: IncidentTicketUrlBody) => {
+          displayAlert(`Created ticket from incident ${incident.pk}`, "success");
+          onIncidentChange({ ...incident, ticket_url });
+        })
+        .catch((error) => {
+          displayAlert(`Failed to create ticket from incident ${incident.pk} - ${error}`, "error");
+        });
+  };
+
   const ackExpiryDate = undefined;
 
   const tags = useMemo(
@@ -451,6 +465,12 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                         onManualClose={handleManualClose}
                         onManualOpen={handleManualOpen}
                         isBulk={false}
+                      />
+                    </CenterContainer>
+                    <CenterContainer>
+                      <CreateTicket
+                          onCreateTicket={handleCreateTicket}
+                          isBulk={false}
                       />
                     </CenterContainer>
                   </ListItem>
@@ -617,6 +637,12 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                               displayAlert(`Failed to updated ticket URL ${error}`, "error");
                             });
                         }}
+                      />
+                    </Grid>
+                    <Grid item className="create-ticket-button-container">
+                      <CreateTicket
+                          onCreateTicket={handleCreateTicket}
+                          isBulk={false}
                       />
                     </Grid>
                     <Grid item className="close-button-container" data-testid={"details-button-sm-interactive-item"}>
