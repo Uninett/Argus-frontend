@@ -51,7 +51,7 @@ import { Alert } from "@material-ui/lab";
 
 import "./IncidentDetails.css";
 import {Hidden} from "@material-ui/core";
-import CreateTicket from "./GenerateTicketSignOffAction";
+import CreateTicket from "./CreateTicketSignOffAction";
 type IncidentDetailsListItemPropsType = {
   title: string;
   detail: string | React.ReactNode;
