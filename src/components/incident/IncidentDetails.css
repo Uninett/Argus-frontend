@@ -1,9 +1,10 @@
+.ticket-url-input-field {
+    width: 70%;
+}
+
 @media (max-width: 959px) {
     .incident-detailed-lg {
         display: none !important;
-    }
-    .ticket-url-input-field {
-        width: 70% !important;
     }
 }
 
@@ -14,7 +15,7 @@
     .ack-button-container button,
     .create-ticket-button-container button,
     .add-ticket-container {
-        min-width: 100% !important;
+        width: 100% !important;
     }
 }
 
