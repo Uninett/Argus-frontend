@@ -41,9 +41,6 @@ const CreateTicket: React.FC<CreateTicketPropsType> = ({
     return(
         <ConfirmationButton
             className={classes.dangerousButton}
-            buttonProps={{
-                variant: "contained",
-            }}
             {...createTicketButtonDefaultProps}
             {...(isBulk && createTicketButtonPluralProps)}
             {...createTicketButtonProps}
