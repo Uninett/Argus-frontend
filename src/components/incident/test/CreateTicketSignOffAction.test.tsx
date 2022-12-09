@@ -3,19 +3,22 @@
 import React from "react";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import CreateTicket from "../CreateTicketSignOffAction";
+import {ModifyTicketButton} from "../ModifyTicketAction";
+
+const onCreateTicketMock = jest.fn();
+const onSaveTicketMock = jest.fn();
 
 describe('Singular Create Ticket confirmation dialog test suite', () => {
 
     let createTicketConfirmationDialog: HTMLElement;
 
-    const onCreateTicketMock = jest.fn();
-
     beforeEach(() => {
 
         createTicketConfirmationDialog = render(
-            <CreateTicket
+            <ModifyTicketButton
                 onCreateTicket={onCreateTicketMock}
+                onSaveTicket={onSaveTicketMock}
+                ticketUrl={""}
                 isBulk={false}
             />).container;
     });
@@ -38,7 +41,7 @@ describe('Singular Create Ticket confirmation dialog test suite', () => {
         expect(dialogTitle).toBeInTheDocument();
         expect(dialogTitle).toBeVisible();
 
-        const dialogQuestion = within(createTicketDialog).getByText(/are you sure you want to create ticket from this incident?/i);
+        const dialogQuestion = within(createTicketDialog).getByText(/are you sure you want to automatically generate ticket from this incident?/i);
         expect(dialogQuestion).toBeInTheDocument();
         expect(dialogQuestion).toBeVisible();
 
@@ -57,12 +60,12 @@ describe('Bulk Create Ticket confirmation dialog test suite', () => {
 
     let createTicketConfirmationDialog: HTMLElement;
 
-    const onCreateTicketMock = jest.fn();
-
     beforeEach(() => {
         createTicketConfirmationDialog = render(
-            <CreateTicket
+            <ModifyTicketButton
                 onCreateTicket={onCreateTicketMock}
+                onSaveTicket={onSaveTicketMock}
+                ticketUrl={""}
                 isBulk={true}
             />).container;
     });
@@ -85,7 +88,7 @@ describe('Bulk Create Ticket confirmation dialog test suite', () => {
         expect(dialogTitle).toBeInTheDocument();
         expect(dialogTitle).toBeVisible();
 
-        const dialogQuestion = within(createTicketDialog).getByText(/are you sure you want to create tickets from the selected incidents?/i);
+        const dialogQuestion = within(createTicketDialog).getByText(/are you sure you want to automatically generate tickets from the selected incidents?/i);
         expect(dialogQuestion).toBeInTheDocument();
         expect(dialogQuestion).toBeVisible();
 
