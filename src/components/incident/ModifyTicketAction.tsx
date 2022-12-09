@@ -5,7 +5,7 @@ import Button, { ButtonProps } from "@material-ui/core/Button";
 import { useStyles } from "./styles";
 
 import ConfirmationButton from "../../components/buttons/ConfirmationButton";
-import {hyperlinkIfAbsoluteUrl, isValidUrl, useStateWithDynamicDefault} from "../../utils";
+import {hyperlinkIfAbsoluteUrl, isValidUrl} from "../../utils";
 import ListItem from "@material-ui/core/ListItem";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
@@ -29,11 +29,11 @@ export const TicketModifiableField: React.FC<TicketModifiableFieldPropsType> = (
 
     useEffect(() => {
         initTicketState(urlProp);
-    }, [urlProp])
+    }, [urlProp, initTicketState])
 
     useEffect(() => {
         resetTicketState()
-    }, [urlProp])
+    }, [urlProp, resetTicketState])
 
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,12 +97,12 @@ export const ModifyTicketButton: React.FC<ModifyTicketButtonPropsType> = ({
 
     useEffect(() => {
         initTicketState(urlProp);
-    }, [urlProp])
+    }, [urlProp, initTicketState])
 
 
     useEffect(() => {
         resetTicketState()
-    }, [urlProp])
+    }, [urlProp, resetTicketState])
 
     const handleEditTicket = () => {
         manuallyEditTicket();

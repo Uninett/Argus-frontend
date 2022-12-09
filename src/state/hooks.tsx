@@ -1,6 +1,6 @@
 import {useCallback, useContext} from "react";
 
-import type {AutoUpdateMethod, User, Token, IncidentTicketUrlBody} from "../api/types.d";
+import type {AutoUpdateMethod, User, Token} from "../api/types.d";
 
 import {
   ApiState,
