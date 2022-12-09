@@ -51,8 +51,7 @@ export const ticketReducer = (state: TicketStateType, action: TicketActions) => 
                 ticketUrl: action.payload
             };
         case TicketType.ResetTicketState:
-            return {...initialTicketState};
-            // return {...state, isChangedUrl: false, isInvalidAbsoluteUrl: false, isManuallyEditingTicket: false};
+            return {...state, isChangedUrl: false, isInvalidAbsoluteUrl: false, isManuallyEditingTicket: false};
         case TicketType.ChangeUrl:
             return {...state, isChangedUrl: true, ticketUrl: action.payload, isManuallyEditingTicket: true};
         case TicketType.InvalidUrl:

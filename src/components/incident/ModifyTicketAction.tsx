@@ -25,10 +25,14 @@ export const TicketModifiableField: React.FC<TicketModifiableFieldPropsType> = (
                                                                              ticketUrl: urlProp
                                                                          }: TicketModifiableFieldPropsType) => {
 
-    const [ticketUrl, { initTicketState, changeUrl }] = useTicket();
+    const [ticketUrl, { initTicketState, changeUrl, resetTicketState }] = useTicket();
 
     useEffect(() => {
         initTicketState(urlProp);
+    }, [urlProp])
+
+    useEffect(() => {
+        resetTicketState()
     }, [urlProp])
 
 
@@ -93,6 +97,11 @@ export const ModifyTicketButton: React.FC<ModifyTicketButtonPropsType> = ({
 
     useEffect(() => {
         initTicketState(urlProp);
+    }, [urlProp])
+
+
+    useEffect(() => {
+        resetTicketState()
     }, [urlProp])
 
     const handleEditTicket = () => {
