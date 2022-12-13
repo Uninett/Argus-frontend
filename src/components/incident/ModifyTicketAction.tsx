@@ -157,8 +157,8 @@ export const ModifyTicketButton: React.FC<ModifyTicketButtonPropsType> = ({
                     }
                 }}
             >
-                {(ticketUrl.incidentTicketUrl && !ticketUrl.isManuallyEditingTicket) && "Edit Ticket"}
-                {(ticketUrl.isManuallyEditingTicket) && "Save Ticket"}
+                {(ticketUrl.incidentTicketUrl && !ticketUrl.isManuallyEditingTicket) && "Edit Ticket Url"}
+                {(ticketUrl.isManuallyEditingTicket) && "Save Ticket Url"}
             </Button>
         );
     }
