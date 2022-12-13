@@ -248,6 +248,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
         .then(({ ticket_url }: IncidentTicketUrlBody) => {
           displayAlert(`Created ticket from incident ${incident.pk}`, "success");
           onIncidentChange({ ...incident, ticket_url });
+          window.open(ticket_url, '_blank', 'noopener,noreferrer');
         })
         .catch((error) => {
           displayAlert(`Failed to create ticket from incident ${incident.pk} - ${error}`, "error");
