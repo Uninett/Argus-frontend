@@ -64,10 +64,18 @@ const useStyles = makeStyles((theme: Theme) =>
     dangerousButton: {
       background: theme.palette.warning.main,
       color: WHITE,
+      '&:hover': {
+        backgroundColor: `${theme.palette.warning.main}`,
+        opacity: 0.7
+      },
     },
     safeButton: {
       background: theme.palette.primary.main,
       color: WHITE,
+      '&:hover': {
+        backgroundColor: `${theme.palette.primary.main}`,
+        opacity: 0.7
+      },
     },
     createDeleteButtonGroup: {
       margin: theme.spacing(1),
