@@ -29,11 +29,11 @@ export const useStyles = makeStyles((theme: Theme) =>
     },
     dangerousButton: {
       background: theme.palette.warning.main,
-      color: WHITE,
+      color: "#FFFFFF !important",
     },
     safeButton: {
       background: theme.palette.primary.main,
-      color: WHITE,
+      color: "#FFFFFF !important",
     },
     message: {
       backgroundColor: theme.palette.background.paper,

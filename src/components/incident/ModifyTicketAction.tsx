@@ -148,7 +148,7 @@ export const ModifyTicketButton: React.FC<ModifyTicketButtonPropsType> = ({
     } else {
         return(
             <Button
-                className={classes.dangerousButton}
+                className={classes.safeButton}
                 onClick={() => {
                     if (ticketUrl.incidentTicketUrl && !ticketUrl.isManuallyEditingTicket) {
                         handleEditTicket();
