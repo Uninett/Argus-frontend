@@ -79,9 +79,6 @@ const ManualClose: React.FC<ManualClosePropsType> = ({
     return (
       <ConfirmationButton
         className={classes.dangerousButton}
-        buttonProps={{
-            variant: "contained",
-        }}
         {...reopenButtonDefaultProps}
         {...(isBulk && reopenButtonPluralProps)}
         {...reopenButtonProps}
