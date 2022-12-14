@@ -250,9 +250,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
           onIncidentChange({ ...incident, ticket_url });
           window.open(ticket_url, '_blank', 'noopener,noreferrer');
         })
-        .catch((error) => {
-          displayAlert(`Failed to create ticket from incident ${incident.pk} - ${error}`, "error");
-        });
+        .catch((error) => {});
   };
 
   const handleSaveTicket = (url?: string) => {

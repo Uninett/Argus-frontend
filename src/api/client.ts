@@ -113,7 +113,7 @@ class ApiClient {
       });
   }
 
-  public registerInterceptors(unauthorizedCallback: CB, serverErrorCallback: CB) {
+  public registerInterceptors(unauthorizedCallback: CB, serverErrorCallback: CB, pluginErrorCallback: CB) {
     this.api.interceptors.response.use(
       (response) => response,
       (error) => {
@@ -121,10 +121,19 @@ class ApiClient {
           debuglog(error);
 
           const { status } = error.response;
+          const { url } = error.response.config; // endpoint relative url that was requested
+          const { data } = error.response; // error cause message
+          
           if (status === 401) {
             unauthorizedCallback(error.response, error);
           } else if (status >= 500 && status <= 599) {
             serverErrorCallback(error.response, error);
+          } else if (url.includes('/automatic-ticket/') && (status >= 500 && status <= 599)) {
+            pluginErrorCallback(error.response, error);
+          } else if (url.includes('/automatic-ticket/') && data.includes('No path to')) {
+            pluginErrorCallback(error.response, error);
+          } else if (url.includes('/automatic-ticket/')) {
+            pluginErrorCallback(error.response, 'Please, create ticket manually')
           }
         }
         return Promise.reject(error);
@@ -366,7 +375,7 @@ class ApiClient {
     return this.resolveOrReject(
         this.authPut<IncidentTicketUrlBody, never>(`/api/v2/incidents/${incidentPK}/automatic-ticket/`),
         defaultResolver,
-        (error) => new Error(`Failed to create ticket from incident ${incidentPK}: ${getErrorCause(error)}`),
+        (error) => error,
     );
   }
 

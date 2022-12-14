@@ -13,6 +13,7 @@ import { useAlerts } from "../components/alertsnackbar";
 
 import { setHasConnectionProblems, unsetHasConnectionProblems } from "../state/reducers/apistate";
 import {logoutUser} from "../state/reducers/user";
+import {getErrorCause} from "../api/utils";
 
 export const ApiInterceptor = ({ children }: { children?: React.ReactNode }) => {
   const history = useHistory();
@@ -31,6 +32,9 @@ export const ApiInterceptor = ({ children }: { children?: React.ReactNode }) => 
       (response, error) => {
         displayAlert(`Api Server Error: ${error}`, "error");
       },
+        (response, error) => {
+          displayAlert(`Plugin Error: ${getErrorCause(error)}`, "error");
+        },
     );
 
     const listenerId = api.subscribe((event: ApiEvent) => {
