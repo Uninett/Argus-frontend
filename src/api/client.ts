@@ -364,7 +364,7 @@ class ApiClient {
 
   public putCreateTicketEvent(incidentPK: number): Promise<IncidentTicketUrlBody> {
     return this.resolveOrReject(
-        this.authPut<IncidentTicketUrlBody, never>(`/api/v2/incidents/${incidentPK}/ticket/`),
+        this.authPut<IncidentTicketUrlBody, never>(`/api/v2/incidents/${incidentPK}/automatic-ticket/`),
         defaultResolver,
         (error) => new Error(`Failed to create ticket from incident ${incidentPK}: ${getErrorCause(error)}`),
     );
