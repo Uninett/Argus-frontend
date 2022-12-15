@@ -9,6 +9,11 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 
 
 
+- Visual feedback (table loading) when changing incident filter parameters, and when navigating incident table pages
+
+
+
+
 ## [v1.6.1] - 2022-10-13
 
 ### Fixed
