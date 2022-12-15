@@ -27,13 +27,20 @@ export const TicketModifiableField: React.FC<TicketModifiableFieldPropsType> = (
 
     const [ticketUrl, { initTicketState, changeUrl, resetTicketState }] = useTicket();
 
+    // On mount
     useEffect(() => {
         initTicketState(urlProp);
-    }, [urlProp, initTicketState])
+    }, [])
 
+    // On unmount
+    useEffect(() => () => {
+        resetTicketState(null)
+    }, [])
+
+    // On incident ticket url update (effectively, on successful API call)
     useEffect(() => {
-        resetTicketState()
-    }, [urlProp, resetTicketState])
+        initTicketState(urlProp);
+    }, [urlProp])
 
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -95,14 +102,21 @@ export const ModifyTicketButton: React.FC<ModifyTicketButtonPropsType> = ({
 
     const [ticketUrl, { initTicketState, invalidUrl, manuallyEditTicket, resetTicketState }] = useTicket();
 
+    // On mount
     useEffect(() => {
         initTicketState(urlProp);
-    }, [urlProp, initTicketState])
+    }, [])
 
 
+    // On unmount
+    useEffect(() => () => {
+        resetTicketState(null)
+    }, [])
+
+    // On incident ticket url update (effectively, on successful API call)
     useEffect(() => {
-        resetTicketState()
-    }, [urlProp, resetTicketState])
+        initTicketState(urlProp);
+    }, [urlProp])
 
     const handleEditTicket = () => {
         manuallyEditTicket();
@@ -113,13 +127,13 @@ export const ModifyTicketButton: React.FC<ModifyTicketButtonPropsType> = ({
             invalidUrl();
         } else if (ticketUrl.isChangedUrl) {
             onSaveTicket(ticketUrl.ticketUrl || undefined);
-            resetTicketState();
+        } else {
+            resetTicketState(ticketUrl.incidentTicketUrl || undefined);
         }
     }
 
     const handleCreateTicket = () => {
         onCreateTicket();
-        resetTicketState();
     }
 
     const createTicketButtonDefaultProps = {
