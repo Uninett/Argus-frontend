@@ -130,7 +130,7 @@ class ApiClient {
             serverErrorCallback(error.response, error);
           } else if (url.includes('/automatic-ticket/') && (status >= 500 && status <= 599)) {
             pluginErrorCallback(error.response, error);
-          } else if (url.includes('/automatic-ticket/') && data.includes('No path to')) {
+          } else if (url.includes('/automatic-ticket/') && typeof data === 'string' && data.includes('No path to')) {
             pluginErrorCallback(error.response, error);
           } else if (url.includes('/automatic-ticket/')) {
             pluginErrorCallback(error.response, 'Please, create ticket manually')
