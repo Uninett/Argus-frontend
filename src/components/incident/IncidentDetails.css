@@ -1,23 +1,28 @@
+.ticket-url-input-field {
+    width: 100%;
+}
+
 @media (max-width: 959px) {
     .incident-detailed-lg {
         display: none !important;
-    }
-    .ticket-url-input-field {
-        width: 70% !important;
     }
 }
 
 @media (max-width: 599px) {
     .close-button-container, .ack-button-container,
+    .create-ticket-button-container,
     .close-button-container button,
     .ack-button-container button,
+    .create-ticket-button-container button,
     .add-ticket-container {
-        min-width: 100% !important;
+        width: 100% !important;
     }
 }
 
 @media (max-width: 360px) {
-    .ack-button-container button, .close-button-container button {
+    .ack-button-container button,
+    .close-button-container button,
+    .create-ticket-button-container button {
         min-height: 3rem !important;
     }
     .ticket-input-button-container {

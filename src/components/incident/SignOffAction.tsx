@@ -129,7 +129,7 @@ const SignOffAction: React.FC<SignOffActionPropsType> = ({
           <Button onClick={handleClose} className={classes.safeButton}>
             {dialogCancelText}
           </Button>
-          <CloseButton onClick={onConfirm} variant="contained" className={classes.dangerousButton}>
+          <CloseButton onClick={onConfirm} className={classes.dangerousButton}>
             {dialogSubmitText}
           </CloseButton>
         </DialogActions>

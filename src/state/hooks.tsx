@@ -1,6 +1,6 @@
 import {useCallback, useContext} from "react";
 
-import type { AutoUpdateMethod, User, Token } from "../api/types.d";
+import type {AutoUpdateMethod, User, Token} from "../api/types.d";
 
 import {
   ApiState,
@@ -15,6 +15,14 @@ import { UserStateType, loginUser, loginTokenUser, logoutUser } from "../state/r
 
 import { AppContext } from "../state/contexts";
 import { setTimeframe, TimeframeStateType } from "./reducers/timeframe";
+import {
+  changeUrl,
+  initTicketState,
+  invalidUrl,
+  manuallyEditTicket,
+  resetTicketState,
+  TicketStateType
+} from "./reducers/ticketurl";
 
 export type UseApiStateActionType = {
   setAutoUpdateMethod: (method: AutoUpdateMethod) => void;
@@ -97,6 +105,39 @@ export const useTimeframe = (): [TimeframeStateType, UseTimeframeActionType] => 
     timeframe,
     {
       setTimeframe: setTimeframeCallback,
+    },
+  ];
+};
+
+// Ticket actions
+export type UseTicketActionType = {
+  initTicketState: (ticketUrl: string | undefined) => void;
+  changeUrl: (url: string | undefined) => void;
+  invalidUrl: () => void;
+  manuallyEditTicket: () => void;
+  resetTicketState: (url: string | undefined | null) => void;
+};
+
+export const useTicket = (): [TicketStateType, UseTicketActionType] => {
+  const {
+    state: { ticketState },
+    dispatch,
+  } = useContext(AppContext);
+
+  const initTicketStateCallback = useCallback((ticketUrl: string | undefined) => dispatch(initTicketState(ticketUrl)), [dispatch]);
+  const changeUrlCallback = useCallback((url: string | undefined) => dispatch(changeUrl(url)), [dispatch]);
+  const invalidUrlCallback = useCallback(() => dispatch(invalidUrl()), [dispatch]);
+  const manuallyEditTicketCallback = useCallback(() => dispatch(manuallyEditTicket()), [dispatch]);
+  const resetTicketStateCallback = useCallback((url: string | undefined | null) => dispatch(resetTicketState(url)), [dispatch]);
+
+  return [
+    ticketState,
+    {
+      initTicketState: initTicketStateCallback,
+      changeUrl: changeUrlCallback,
+      invalidUrl: invalidUrlCallback,
+      manuallyEditTicket: manuallyEditTicketCallback,
+      resetTicketState: resetTicketStateCallback,
     },
   ];
 };

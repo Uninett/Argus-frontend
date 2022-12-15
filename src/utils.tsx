@@ -1,4 +1,4 @@
-import { useState, useEffect, Dispatch, SetStateAction, useRef } from "react";
+import React, { useState, useEffect, Dispatch, SetStateAction, useRef } from "react";
 
 import format from "date-fns/format";
 import formatDistance from "date-fns/formatDistance";
@@ -278,4 +278,13 @@ export function isValidUrl(value: string): Boolean {
     return false;
   }
   return true;
+}
+
+export function hyperlinkIfAbsoluteUrl(url: string, title?: string): string | JSX.Element {
+  const urlTitle = title || url;
+  if (isValidUrl(url)) {
+    return <a href={url}>{urlTitle}</a>;
+  } else {
+    return url;
+  }
 }

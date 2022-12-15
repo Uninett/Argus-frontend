@@ -29,11 +29,19 @@ export const useStyles = makeStyles((theme: Theme) =>
     },
     dangerousButton: {
       background: theme.palette.warning.main,
-      color: WHITE,
+      color: "#FFFFFF !important",
+        '&:hover': {
+            backgroundColor: `${theme.palette.warning.main} !important`,
+            opacity: 0.7
+        },
     },
     safeButton: {
       background: theme.palette.primary.main,
-      color: WHITE,
+      color: "#FFFFFF !important",
+        '&:hover': {
+            backgroundColor: `${theme.palette.primary.main} !important`,
+            opacity: 0.7
+        },
     },
     message: {
       backgroundColor: theme.palette.background.paper,

@@ -1,11 +1,13 @@
 /**  * @jest-environment jsdom-sixteen  */
 
 import React from "react";
-import { render, screen, within } from "@testing-library/react";
+import {render, screen, waitFor, within} from "@testing-library/react";
 
 import IncidentDetails from "../IncidentDetails";
-import { Incident, IncidentTag, SourceSystem } from "../../../api/types";
+import {Incident, IncidentTag, IncidentTicketUrlBody, SourceSystem} from "../../../api/types";
 import * as utils from "../../../utils";
+import userEvent from "@testing-library/user-event";
+import client from "../../../api/client";
 
 // Utils
 const formatDurationSpy = jest.spyOn(utils, "formatDuration");
@@ -73,6 +75,24 @@ let statelessIncidentMock: Incident = {
 
     source: sourceSystemMock,
     source_incident_id: '3001',
+
+    tags: incidentTagsMock
+}
+
+let incidentWithoutTicketMock: Incident = {
+    level: 1,
+    pk: 4000,
+    start_time: '2021-06-28 08:29:06',
+    end_time: 'infinity',
+    stateful: true,
+    details_url: '',
+    description: 'Test incident without ticket',
+    ticket_url: '',
+    open: true,
+    acked: false,
+
+    source: sourceSystemMock,
+    source_incident_id: '4001',
 
     tags: incidentTagsMock
 }
@@ -178,3 +198,129 @@ describe('Incident Details: end time and duration are displayed correctly, depen
         expect(durationItem).not.toBeInTheDocument()
     });
 });
+
+describe('Incident Details: Create Ticket button',() => {
+    const generatedTicketUrlMockValue = "https://create-ticket-test.com/";
+
+    const createTicketSpy = jest.spyOn(client, 'putCreateTicketEvent');
+
+
+    beforeEach(() => {
+        jest.spyOn(console, 'error').mockImplementation(() => {});
+
+        onIncidentChange.mockImplementation((incident: Incident) => { return incident});
+        createTicketSpy.mockResolvedValue({ ticket_url: generatedTicketUrlMockValue } as IncidentTicketUrlBody)
+        jest.spyOn(client, 'getIncident').mockResolvedValue(incidentWithoutTicketMock);
+        jest.spyOn(client, 'getUser')
+            .mockResolvedValue({username: 'username', first_name: 'test', last_name: 'test', email: 'test'})
+        jest.spyOn(client, 'getIncidentEvents').mockResolvedValue([])
+        jest.spyOn(client, 'getIncidentAcks').mockResolvedValue([])
+    })
+
+    afterEach(() => {
+        jest.clearAllMocks();
+        jest.resetAllMocks();
+    })
+
+    it("should render Create Ticket button when incident does not have a ticket url", async () => {
+        await waitFor(() => {
+            render(
+                <IncidentDetails
+                    incident={incidentWithoutTicketMock}
+                    onIncidentChange={onIncidentChange}
+                />
+            )
+        })
+
+        const createTicketButton = screen.getByRole('button', {name: /create ticket/i});
+        expect(createTicketButton).toBeInTheDocument();
+    });
+
+    it("should correctly call create-ticket endpoint after user clicks on Create Ticket button " +
+        "and then confirms action in the dialog", async () => {
+
+        await waitFor(() => {
+            render(
+                <IncidentDetails
+                    incident={incidentWithoutTicketMock}
+                    onIncidentChange={onIncidentChange}
+                />
+            )
+        })
+
+
+        // Ticket URL field is empty in incidents primary details
+        const primaryDetailsContainer = screen.getByTestId(/primary-details-container/i)
+        expect(primaryDetailsContainer).toBeInTheDocument();
+        const ticketUrlField = await within(primaryDetailsContainer).findByRole("textbox");
+        expect(ticketUrlField).toBeInTheDocument();
+        expect(ticketUrlField).toHaveTextContent(/^/); // empty string
+
+        // User clicks on the Create Ticket button
+        const createTicketButton = screen.getByRole('button', {name: /create ticket/i});
+        userEvent.click(createTicketButton);
+
+        // Create Ticket confirmation dialog appears on the screen
+        const createTicketDialog = screen.getByRole('dialog')
+        expect(createTicketDialog).toBeInTheDocument();
+        expect(within(createTicketDialog).getByText(/are you sure you want to automatically generate ticket from this incident?/i)).toBeInTheDocument();
+        const dialogSubmitButton = within(createTicketDialog).getByRole('button', {name: /yes/i});
+        expect(dialogSubmitButton).toBeInTheDocument();
+
+        // User confirms create ticket action
+        userEvent.click(dialogSubmitButton);
+
+        //Create Ticket confirmation dialog disappears
+        expect(createTicketDialog).not.toBeInTheDocument();
+
+        // Create ticket endpoint was called with correct incident pk
+        expect(createTicketSpy).toHaveBeenCalledTimes(1)
+        expect(createTicketSpy).toHaveBeenCalledWith(4000)
+        expect(createTicketSpy).toHaveReturnedWith(Promise.resolve({ticket_url: generatedTicketUrlMockValue}))
+
+        await waitFor(() => expect(onIncidentChange).toHaveBeenCalledWith({...incidentWithoutTicketMock, ticket_url: generatedTicketUrlMockValue}))
+    });
+
+    it("should not call create-ticket endpoint to the incident after user clicks on Create Ticket button " +
+        "and then cancels action in the dialog", async () => {
+        await waitFor(() => {
+            render(
+                <IncidentDetails
+                    incident={incidentWithoutTicketMock}
+                    onIncidentChange={onIncidentChange}
+                />
+            )
+        })
+
+        // Ticket URL field is empty in incidents primary details
+        const primaryDetailsContainer = screen.getByTestId(/primary-details-container/i)
+        expect(primaryDetailsContainer).toBeInTheDocument();
+        const ticketUrlField = within(primaryDetailsContainer).getByRole("textbox");
+        expect(ticketUrlField).toBeInTheDocument();
+        expect(ticketUrlField).toHaveTextContent(/^/); // empty string
+
+        // User clicks on the Create Ticket button
+        const createTicketButton = screen.getByRole('button', {name: /create ticket/i});
+        userEvent.click(createTicketButton);
+
+        // Create Ticket confirmation dialog appears on the screen
+        const createTicketDialog = screen.getByRole('dialog')
+        expect(createTicketDialog).toBeInTheDocument();
+        expect(within(createTicketDialog).getByText(/are you sure you want to automatically generate ticket from this incident?/i)).toBeInTheDocument();
+        const dialogCancelButton = within(createTicketDialog).getByRole('button', {name: /no/i});
+        expect(dialogCancelButton).toBeInTheDocument();
+
+        // User cancels create ticket action
+        userEvent.click(dialogCancelButton);
+
+        // Create Ticket confirmation dialog disappears
+        expect(createTicketDialog).not.toBeInTheDocument();
+
+        // Ticket URL field is still empty
+        expect(ticketUrlField).toHaveTextContent(/^/); // empty string
+
+        // Create ticket endpoint was not called
+        expect(createTicketSpy).toHaveBeenCalledTimes(0);
+    });
+});
+

@@ -1,8 +1,6 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import "react-table/react-table.css";
 
-import Button from "@material-ui/core/Button";
-import SaveIcon from "@material-ui/icons/Save";
 import Grid from "@material-ui/core/Grid";
 
 import List from "@material-ui/core/List";
@@ -14,12 +12,11 @@ import Chip from "@material-ui/core/Chip";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 
-import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 
 import Skeleton from "@material-ui/lab/Skeleton";
 
-import { useStateWithDynamicDefault } from "../../utils";
+import {hyperlinkIfAbsoluteUrl} from "../../utils";
 import { formatDuration, formatTimestamp, isValidUrl } from "../../utils";
 
 import CenterContainer from "../../components/centercontainer";
@@ -47,17 +44,17 @@ import { AckedItem, LevelItem, OpenItem, TicketItem } from "./Chips";
 import { useAlerts } from "../alertsnackbar";
 import { useApiIncidentAcks, useApiIncidentEvents } from "../../api/hooks";
 import { SHOW_SEVERITY_LEVELS } from "../../config";
-import { Alert } from "@material-ui/lab";
 
 import "./IncidentDetails.css";
 import {Hidden} from "@material-ui/core";
+import {ModifyTicketButton, TicketModifiableField} from "./ModifyTicketAction";
 type IncidentDetailsListItemPropsType = {
   title: string;
   detail: string | React.ReactNode;
   html_title_attr?: string
 };
 
-const IncidentDetailsListItem: React.FC<IncidentDetailsListItemPropsType> = ({
+export const IncidentDetailsListItem: React.FC<IncidentDetailsListItemPropsType> = ({
   title,
   detail,
   html_title_attr
@@ -102,14 +99,6 @@ type TagChipPropsType = {
   small?: boolean;
 };
 
-const hyperlinkIfAbsoluteUrl = (url: string, title?: string) => {
-  const urlTitle = title || url;
-  if (isValidUrl(url)) {
-    return <a href={url}>{urlTitle}</a>;
-  } else {
-    return url;
-  }
-};
 
 const TagChip: React.FC<TagChipPropsType> = ({ tag, small }: TagChipPropsType) => {
   if (isValidUrl(tag.value)) {
@@ -124,65 +113,6 @@ const TagChip: React.FC<TagChipPropsType> = ({ tag, small }: TagChipPropsType) =
     );
   }
   return <Chip size={(small && "small") || undefined} label={`${tag.key}=${tag.value}`} />;
-};
-
-type TicketModifiableFieldPropsType = {
-  url?: string;
-  saveChange: (newUrl?: string) => void;
-};
-
-const TicketModifiableField: React.FC<TicketModifiableFieldPropsType> = ({
-  url: urlProp,
-  saveChange,
-}: TicketModifiableFieldPropsType) => {
-  const classes = useStyles();
-
-  const [changeUrl, setChangeUrl] = useState<boolean>(false);
-  const [url, setUrl] = useStateWithDynamicDefault<string | undefined>(urlProp);
-  const [invalidAbsoluteUrl, setInvalidAbsoluteUrl] = useState<boolean>(false);
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUrl(event.target.value);
-    setChangeUrl(true);
-  };
-
-  const handleSave = () => {
-    // If url is empty string ("") store it as undefined.
-    if (url && changeUrl && !isValidUrl(url)) {
-      setInvalidAbsoluteUrl(true);
-    } else if (changeUrl) {
-      saveChange(url || undefined);
-      setInvalidAbsoluteUrl(false);
-      setChangeUrl(false);
-    }
-  };
-
-  return (
-    <ListItem>
-      <Grid container direction="row" wrap="wrap">
-        <Grid item container direction="row" wrap="nowrap" justify="space-between" className="ticket-input-button-container">
-          <TextField
-            label="Ticket"
-            value={url || ""}
-            onChange={handleChange}
-            error={invalidAbsoluteUrl}
-            helperText={invalidAbsoluteUrl && "Invalid absolute URL"}
-            className="ticket-url-input-field"
-          />
-          {changeUrl && (
-            <Button className={classes.safeButton} endIcon={<SaveIcon />} onClick={handleSave}>
-              Save
-            </Button>
-          )}
-        </Grid>
-        {changeUrl && (
-          <Grid item>
-            <Alert severity="info">Leave this field empty in order to remove ticket urls from the selected incidents</Alert>
-          </Grid>
-        )}
-      </Grid>
-    </ListItem>
-  );
 };
 
 type AckListItemPropsType = {
@@ -311,6 +241,33 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
       });
   };
 
+  const handleCreateTicket = () => {
+    api
+        .putCreateTicketEvent(incident.pk)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        .then(({ ticket_url }: IncidentTicketUrlBody) => {
+          displayAlert(`Created ticket from incident ${incident.pk}`, "success");
+          onIncidentChange({ ...incident, ticket_url });
+          window.open(ticket_url, '_blank', 'noopener,noreferrer');
+        })
+        .catch((error) => {});
+  };
+
+  const handleSaveTicket = (url?: string) => {
+    api
+        .patchIncidentTicketUrl(incident.pk, url || "")
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        .then(({ ticket_url }: IncidentTicketUrlBody) => {
+          displayAlert(`Updated ticket URL for ${incident.pk}`, "success");
+
+          // eslint-disable-next-line @typescript-eslint/camelcase
+          onIncidentChange({ ...incident, ticket_url });
+        })
+        .catch((error) => {
+          displayAlert(`Failed to updated ticket URL ${error}`, "error");
+        });
+  };
+
   const ackExpiryDate = undefined;
 
   const tags = useMemo(
@@ -425,25 +382,10 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                     detail={hyperlinkIfAbsoluteUrl(incident.details_url) || "–"}
                     html_title_attr={"details-url-item"}
                   />
-
                   <TicketModifiableField
-                    url={incident.ticket_url}
-                    saveChange={(url?: string) => {
-                      api
-                        .patchIncidentTicketUrl(incident.pk, url || "")
-                        // eslint-disable-next-line @typescript-eslint/camelcase
-                        .then(({ ticket_url }: IncidentTicketUrlBody) => {
-                          displayAlert(`Updated ticket URL for ${incident.pk}`, "success");
-
-                          // eslint-disable-next-line @typescript-eslint/camelcase
-                          onIncidentChange({ ...incident, ticket_url });
-                        })
-                        .catch((error) => {
-                          displayAlert(`Failed to updated ticket URL ${error}`, "error");
-                        });
-                    }}
-                    data-testid={"ticket-modification-interactive-item"}
-                  />
+                      ticketUrl={incident.ticket_url}
+                      isBulk={false}>
+                  </TicketModifiableField>
                   <ListItem data-testid={"details-button-interactive-item"}>
                     <CenterContainer>
                       <ManualClose
@@ -452,6 +394,15 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                         onManualOpen={handleManualOpen}
                         isBulk={false}
                       />
+                    </CenterContainer>
+                    <CenterContainer>
+                      <ModifyTicketButton
+                          onCreateTicket={handleCreateTicket}
+                          onSaveTicket={handleSaveTicket}
+                          ticketUrl={incident.ticket_url}
+                          isBulk={false}>
+
+                      </ModifyTicketButton>
                     </CenterContainer>
                   </ListItem>
                 </List>
@@ -602,22 +553,17 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                   <Grid container spacing={1} direction="row" wrap="wrap" justify="center" alignItems="center" alignContent="stretch">
                     <Grid item sm={12} className="add-ticket-container" data-testid={"ticket-modification-sm-interactive-item"}>
                       <TicketModifiableField
-                        url={incident.ticket_url}
-                        saveChange={(url?: string) => {
-                          api
-                            .patchIncidentTicketUrl(incident.pk, url || "")
-                            // eslint-disable-next-line @typescript-eslint/camelcase
-                            .then(({ ticket_url }: IncidentTicketUrlBody) => {
-                              displayAlert(`Updated ticket URL for ${incident.pk}`, "success");
-
-                              // eslint-disable-next-line @typescript-eslint/camelcase
-                              onIncidentChange({ ...incident, ticket_url });
-                            })
-                            .catch((error) => {
-                              displayAlert(`Failed to updated ticket URL ${error}`, "error");
-                            });
-                        }}
-                      />
+                          ticketUrl={incident.ticket_url}
+                          isBulk={false}>
+                      </TicketModifiableField>
+                    </Grid>
+                    <Grid item className="create-ticket-button-container">
+                      <ModifyTicketButton
+                          onCreateTicket={handleCreateTicket}
+                          onSaveTicket={handleSaveTicket}
+                          ticketUrl={incident.ticket_url}
+                          isBulk={false}>
+                      </ModifyTicketButton>
                     </Grid>
                     <Grid item className="close-button-container" data-testid={"details-button-sm-interactive-item"}>
                       <ManualClose
