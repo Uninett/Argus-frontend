@@ -30,16 +30,19 @@ export const TicketModifiableField: React.FC<TicketModifiableFieldPropsType> = (
     // On mount
     useEffect(() => {
         initTicketState(urlProp);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     // On unmount
     useEffect(() => () => {
         resetTicketState(null)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     // On incident ticket url update (effectively, on successful API call)
     useEffect(() => {
         initTicketState(urlProp);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [urlProp])
 
 
@@ -105,17 +108,20 @@ export const ModifyTicketButton: React.FC<ModifyTicketButtonPropsType> = ({
     // On mount
     useEffect(() => {
         initTicketState(urlProp);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
 
     // On unmount
     useEffect(() => () => {
         resetTicketState(null)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     // On incident ticket url update (effectively, on successful API call)
     useEffect(() => {
         initTicketState(urlProp);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [urlProp])
 
     const handleEditTicket = () => {
