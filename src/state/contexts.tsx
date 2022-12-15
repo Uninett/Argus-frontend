@@ -14,7 +14,7 @@ export type InitialStateType = {
   user: UserStateType;
   apiState: ApiState;
   timeframe: TimeframeStateType;
-  ticketUrl: TicketStateType;
+  ticketState: TicketStateType;
 };
 
 const initialState: InitialStateType = {
@@ -22,7 +22,7 @@ const initialState: InitialStateType = {
   user: initialUserState,
   apiState: initialApiState,
   timeframe: initialTimeframeState,
-  ticketUrl: initialTicketState,
+  ticketState: initialTicketState,
 };
 
 export type ActionsType = FilterActions | UserActions | ApiStateActions | TimeframeActions | TicketActions /*  | AnotherAction ... */;
@@ -35,12 +35,12 @@ const AppContext = createContext<{
   dispatch: () => null,
 });
 
-const mainReducer = ({ filters, user, apiState, timeframe, ticketUrl }: InitialStateType, action: ActionsType) => ({
+const mainReducer = ({ filters, user, apiState, timeframe, ticketState }: InitialStateType, action: ActionsType) => ({
   filters: filterReducer(filters, action as FilterActions),
   user: userReducer(user, action as UserActions),
   apiState: apiStateReducer(apiState, action as ApiStateActions),
   timeframe: timeframeReducer(timeframe, action as TimeframeActions),
-  ticketUrl: ticketReducer(ticketUrl, action as TicketActions),
+  ticketState: ticketReducer(ticketState, action as TicketActions),
 });
 
 const AppProvider: React.FC = ({ children }: { children?: React.ReactNode }) => {
