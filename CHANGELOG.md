@@ -3,6 +3,12 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 
 ## [Unreleased]
 
+
+### Added
+- Create ticket feature
+
+
+
 ## [v1.6.1] - 2022-10-13
 
 ### Fixed
