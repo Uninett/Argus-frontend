@@ -115,12 +115,12 @@ export type UseTicketActionType = {
   changeUrl: (url: string | undefined) => void;
   invalidUrl: () => void;
   manuallyEditTicket: () => void;
-  resetTicketState: () => void;
+  resetTicketState: (url: string | undefined | null) => void;
 };
 
 export const useTicket = (): [TicketStateType, UseTicketActionType] => {
   const {
-    state: { ticketUrl },
+    state: { ticketState },
     dispatch,
   } = useContext(AppContext);
 
@@ -128,10 +128,10 @@ export const useTicket = (): [TicketStateType, UseTicketActionType] => {
   const changeUrlCallback = useCallback((url: string | undefined) => dispatch(changeUrl(url)), [dispatch]);
   const invalidUrlCallback = useCallback(() => dispatch(invalidUrl()), [dispatch]);
   const manuallyEditTicketCallback = useCallback(() => dispatch(manuallyEditTicket()), [dispatch]);
-  const resetTicketStateCallback = useCallback(() => dispatch(resetTicketState()), [dispatch]);
+  const resetTicketStateCallback = useCallback((url: string | undefined | null) => dispatch(resetTicketState(url)), [dispatch]);
 
   return [
-    ticketUrl,
+    ticketState,
     {
       initTicketState: initTicketStateCallback,
       changeUrl: changeUrlCallback,

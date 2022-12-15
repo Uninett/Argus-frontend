@@ -28,7 +28,7 @@ type TicketPayload = {
     [TicketType.ChangeUrl]: string | undefined;
     [TicketType.InvalidUrl]: undefined;
     [TicketType.ManuallyEditTicket]: undefined;
-    [TicketType.ResetTicketState]: undefined;
+    [TicketType.ResetTicketState]: string | undefined | null;
 };
 
 export const initialTicketState: TicketStateType = {
@@ -46,18 +46,22 @@ export const ticketReducer = (state: TicketStateType, action: TicketActions) => 
     switch (action.type) {
         case TicketType.InitTicketState:
             return {
-                ...state,
+                ...initialTicketState,
                 incidentTicketUrl: action.payload,
                 ticketUrl: action.payload
             };
         case TicketType.ResetTicketState:
-            return {...state, isChangedUrl: false, isInvalidAbsoluteUrl: false, isManuallyEditingTicket: false};
+            if (action.payload === null) { // hard reset (on unmount)
+                return { ...initialTicketState }
+            } else { // soft reset (on save without any changes to the ticket url)
+                return { ...state, isChangedUrl: false, isInvalidAbsoluteUrl: false, isManuallyEditingTicket: false }
+            }
         case TicketType.ChangeUrl:
             return {...state, isChangedUrl: true, ticketUrl: action.payload, isManuallyEditingTicket: true};
         case TicketType.InvalidUrl:
             return {...state, isInvalidAbsoluteUrl: true}
         case TicketType.ManuallyEditTicket:
-            return {...state, isManuallyEditingTicket: true}
+            return {...state, ticketUrl: state.incidentTicketUrl, isManuallyEditingTicket: true}
         default:
             return {...state};
     }
@@ -67,4 +71,4 @@ export const initTicketState = makeAction<TicketType.InitTicketState, string | u
 export const changeUrl = makeAction<TicketType.ChangeUrl, string | undefined>(TicketType.ChangeUrl);
 export const invalidUrl = makeActionWithoutPayload<TicketType.InvalidUrl>(TicketType.InvalidUrl);
 export const manuallyEditTicket = makeActionWithoutPayload<TicketType.ManuallyEditTicket>(TicketType.ManuallyEditTicket);
-export const resetTicketState = makeActionWithoutPayload<TicketType.ResetTicketState>(TicketType.ResetTicketState);
+export const resetTicketState = makeAction<TicketType.ResetTicketState, string | undefined | null>(TicketType.ResetTicketState);
