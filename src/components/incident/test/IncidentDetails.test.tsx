@@ -236,7 +236,7 @@ describe('Incident Details: Create Ticket button',() => {
         expect(createTicketButton).toBeInTheDocument();
     });
 
-    it("should add ticket to the incident after user clicks on Create Ticket button " +
+    it("should correctly call create-ticket endpoint after user clicks on Create Ticket button " +
         "and then confirms action in the dialog", async () => {
 
         await waitFor(() => {
@@ -281,7 +281,7 @@ describe('Incident Details: Create Ticket button',() => {
         await waitFor(() => expect(onIncidentChange).toHaveBeenCalledWith({...incidentWithoutTicketMock, ticket_url: generatedTicketUrlMockValue}))
     });
 
-    it("should not add ticket to the incident after user clicks on Create Ticket button " +
+    it("should not call create-ticket endpoint to the incident after user clicks on Create Ticket button " +
         "and then cancels action in the dialog", async () => {
         await waitFor(() => {
             render(
@@ -323,3 +323,4 @@ describe('Incident Details: Create Ticket button',() => {
         expect(createTicketSpy).toHaveBeenCalledTimes(0);
     });
 });
+
