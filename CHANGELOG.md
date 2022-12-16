@@ -3,15 +3,17 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 
 ## [Unreleased]
 
-
 ### Added
-- Create ticket feature
-
 
 
 - Visual feedback (table loading) when changing incident filter parameters, and when navigating incident table pages
 
 
+
+## [v1.7.0] - 2022-12-16
+
+### Added
+- Create ticket feature
 
 
 ## [v1.6.1] - 2022-10-13
