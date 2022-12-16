@@ -26,6 +26,20 @@ export interface AuthTokenSuccessResponse {
 }
 
 /*
+ * Configured login methods
+ */
+
+// Each enum represents key value in API response's dict
+export enum KnownLoginMethodType {
+  FEIDE = "dataporten_feide",
+}
+
+// Using TS index signatures since key values are dynamic
+export type ConfiguredLoginMethodsResponse = {
+  [key: string]: string;
+}
+
+/*
  * Notification profiles
  */
 export type TimeRecurrenceDay = 1 | 2 | 3 | 4 | 5 | 6 | 7;
