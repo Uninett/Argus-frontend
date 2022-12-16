@@ -8,12 +8,9 @@ import { TextFieldProps } from "@material-ui/core/TextField";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 
 // Api
-import type { User } from "../../api/types.d";
+import type {ConfiguredLoginMethodsResponse, User} from "../../api/types.d";
 import api from "../../api";
 import auth from "../../auth";
-
-// Config
-import { BACKEND_URL } from "../../config";
 
 // Contexts/Hooks
 import { useUser } from "../../state/hooks";
@@ -23,6 +20,7 @@ import OutlinedTextField from "../../components/textfields/OutlinedTextField";
 import Button from "../../components/buttons/OutlinedButton";
 import Logo from "../../components/logo/Logo";
 import {Cookies} from "react-cookie";
+import {KnownLoginMethodType} from "../../api/types.d";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -98,6 +96,28 @@ const LoginForm: React.FC<{}> = () => {
   const [password, setPassword] = useState<string>("");
 
   const [loginFailed, setLoginFailed] = useState<boolean>(false);
+
+  const [feideLoginUrl, setFeideLoginUrl] = useState<string | undefined>(undefined);
+
+  // On mount
+  useEffect(() => {
+      api.getConfiguredLoginMethods()
+          .then((res: ConfiguredLoginMethodsResponse) => {
+              setFeideLoginUrl(res[KnownLoginMethodType.FEIDE]);
+          })
+          .catch((error) => {
+              setFeideLoginUrl(undefined);
+          })
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+
+    // On unmount
+  useEffect(() => () => {
+      setFeideLoginUrl(undefined);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
 
   const logUserOut = async () => {
     setLoginFailed(true);
@@ -181,18 +201,22 @@ const LoginForm: React.FC<{}> = () => {
           Login
         </Button>
       </div>
-      <div className={style.divider}>
-        <Typography color="textSecondary">OR</Typography>
-      </div>
-      <div className={style.loginWithFeideContainer}>
-        <Button
-          className={style.loginWithFeideButton}
-          variant="outlined"
-          href={`${BACKEND_URL}/oidc/login/dataporten_feide/`}
-        >
-          Login with Feide
-        </Button>
-      </div>
+        {feideLoginUrl !== undefined && (
+            <>
+                <div className={style.divider}>
+                    <Typography color="textSecondary">OR</Typography>
+                </div>
+                <div className={style.loginWithFeideContainer}>
+                    <Button
+                        className={style.loginWithFeideButton}
+                        variant="outlined"
+                        href={feideLoginUrl}
+                    >
+                        Federated Login
+                    </Button>
+                </div>
+            </>
+        )}
     </form>
   );
 };
