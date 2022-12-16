@@ -38,6 +38,7 @@ import {
   Resolver,
   ErrorCreator, 
   MetadataConfig,
+  ConfiguredLoginMethodsResponse,
 } from "./types.d";
 
 import auth from "../auth";
@@ -177,6 +178,15 @@ class ApiClient {
       this.post<AuthTokenSuccessResponse, AuthTokenRequest>("/api/v1/token-auth/", { username, password }),
       (data: AuthTokenSuccessResponse) => data.token,
       defaultError,
+    );
+  }
+
+
+  public getConfiguredLoginMethods(): Promise<ConfiguredLoginMethodsResponse> {
+    return this.resolveOrReject(
+        this.get<ConfiguredLoginMethodsResponse, never>("/login-methods/"),
+        (res: ConfiguredLoginMethodsResponse) => res,
+        defaultError,
     );
   }
 
