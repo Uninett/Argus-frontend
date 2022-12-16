@@ -1,22 +1,37 @@
 /**  * @jest-environment jsdom-sixteen  */
 
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import {render, screen, waitFor} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import MockAdapter from "axios-mock-adapter";
 import { Router } from "react-router-dom";
 import { createMemoryHistory } from "history";
+import { KnownLoginMethodType } from "../../api/types.d";
 
 import LoginForm from "./Login";
 import api from "../../api";
 import auth from "../../auth";
+import client from "../../api";
 
 
 const authTokenSpy = jest.spyOn(auth, 'token');
 const authIsAuthenticatedSpy = jest.spyOn(auth, 'isAuthenticated');
+const getConfiguredLoginMethodsSpy = jest.spyOn(client, 'getConfiguredLoginMethods');
 
 const apiMock = new MockAdapter(api.api);
 const flushPromises = () => new Promise(setImmediate);
+
+const FEIDE_URL_TEST_VALUE = "link_to_feide"
+
+beforeAll(() => {
+  getConfiguredLoginMethodsSpy
+      .mockResolvedValue({ [KnownLoginMethodType.FEIDE]: FEIDE_URL_TEST_VALUE });
+})
+
+afterAll(() => {
+  jest.clearAllMocks();
+  jest.resetAllMocks();
+})
 
 describe("Render LoginForm", () => {
   it("renders the Logo", () => {
@@ -39,8 +54,11 @@ describe("Render LoginForm", () => {
     expect(screen.getByRole("button")).toBeInTheDocument();
   });
 
-  it("renders the Link to Feide login", () => {
-    render(<LoginForm />);
+  it("renders the Link to Feide login", async () => {
+    await waitFor(() => {
+      render(<LoginForm/>);
+    })
+
     expect(screen.getByRole("link")).toBeInTheDocument();
   });
 });
@@ -62,9 +80,12 @@ describe("Functionality of Components", () => {
     expect(screen.getByDisplayValue("password1")).toBeInTheDocument();
   });
 
-  it("will redirect to Feide login when link is clicked", () => {
-    render(<LoginForm />);
-    expect(screen.getByRole("link")).toHaveAttribute("href", "/oidc/login/dataporten_feide/");
+  it("will redirect to Feide login when link is clicked", async () => {
+    await waitFor(() => {
+      render(<LoginForm/>);
+    })
+
+    expect(screen.getByRole("link")).toHaveAttribute("href", FEIDE_URL_TEST_VALUE);
   });
 });
 
