@@ -145,15 +145,26 @@ export const useIncidents = (): [IncidentsStateType, UseIncidentsActionType] => 
       (async (pks: Incident["pk"][], ackBody: AcknowledgementBody) => {
         dispatch(setOngoingBulkUpdate());
         let acks: Acknowledgement[] = [];
-        for (const pk of pks) {
-          await api.postAck(pk, ackBody).then((ack: Acknowledgement) => {
-            acknowledgeIncident(pk);
-            acks.push(ack);
-          }).catch((error) => {
-            dispatch(unsetOngoingBulkUpdate());
-            throw new Error(error);
-          })
-        }
+        await api.bulkPostAck(pks, ackBody)
+            .then(({changes}) => {
+                for (const pk of pks) {
+                    acknowledgeIncident(pk);
+                    acks.push(changes);
+                }
+            }).catch((error) => {
+                dispatch(unsetOngoingBulkUpdate());
+                throw new Error(error);
+            })
+        // let acks: Acknowledgement[] = [];
+        // for (const pk of pks) {
+        //   await api.postAck(pk, ackBody).then((ack: Acknowledgement) => {
+        //     acknowledgeIncident(pk);
+        //     acks.push(ack);
+        //   }).catch((error) => {
+        //     dispatch(unsetOngoingBulkUpdate());
+        //     throw new Error(error);
+        //   })
+        // }
         dispatch(unsetOngoingBulkUpdate());
         return acks;
       }),
@@ -164,16 +175,27 @@ export const useIncidents = (): [IncidentsStateType, UseIncidentsActionType] => 
         (async (pks: Incident["pk"][], ticketUrl: string) => {
             dispatch(setOngoingBulkUpdate());
             let responses: IncidentTicketUrlBody[] = [];
-            for (const pk of pks) {
-                await api.patchIncidentTicketUrl(pk, ticketUrl)
-                    .then((response: IncidentTicketUrlBody) => {
+            await api.bulkPatchIncidentTicketUrl(pks, ticketUrl)
+                .then(({changes}) => {
+                    for (const pk of pks) {
                         addTicketUrl(pk, ticketUrl);
-                        responses.push(response);
-                    }).catch((error) => {
-                        dispatch(unsetOngoingBulkUpdate());
-                        throw new Error(error);
-                })
-            }
+                        responses.push(changes);
+                    }
+                }).catch((error) => {
+                    dispatch(unsetOngoingBulkUpdate());
+                    throw new Error(error);
+                });
+
+            // for (const pk of pks) {
+            //     await api.patchIncidentTicketUrl(pk, ticketUrl)
+            //         .then((response: IncidentTicketUrlBody) => {
+            //             addTicketUrl(pk, ticketUrl);
+            //             responses.push(response);
+            //         }).catch((error) => {
+            //             dispatch(unsetOngoingBulkUpdate());
+            //             throw new Error(error);
+            //     })
+            // }
             dispatch(unsetOngoingBulkUpdate());
             return responses;
         }),
@@ -184,16 +206,28 @@ export const useIncidents = (): [IncidentsStateType, UseIncidentsActionType] => 
         (async (pks: Incident["pk"][]) => {
             dispatch(setOngoingBulkUpdate());
             let reopenEvents: Event[] = [];
-            for (const pk of pks) {
-                await api.postIncidentReopenEvent(pk)
-                    .then((reopenEvent: Event) => {
+
+            await api.bulkPostIncidentReopenEvent(pks)
+                .then(({changes}) => {
+                    for (const pk of pks) {
                         reopenIncident(pk);
-                        reopenEvents.push(reopenEvent);
-                    }).catch((error) => {
-                        dispatch(unsetOngoingBulkUpdate());
-                        throw new Error(error);
-                    })
-            }
+                        reopenEvents.push(changes);
+                    }
+                }).catch((error) => {
+                    dispatch(unsetOngoingBulkUpdate());
+                    throw new Error(error);
+                });
+
+            // for (const pk of pks) {
+            //     await api.postIncidentReopenEvent(pk)
+            //         .then((reopenEvent: Event) => {
+            //             reopenIncident(pk);
+            //             reopenEvents.push(reopenEvent);
+            //         }).catch((error) => {
+            //             dispatch(unsetOngoingBulkUpdate());
+            //             throw new Error(error);
+            //         })
+            // }
             dispatch(unsetOngoingBulkUpdate());
             return reopenEvents;
         }),
@@ -204,16 +238,29 @@ export const useIncidents = (): [IncidentsStateType, UseIncidentsActionType] => 
         (async (pks: Incident["pk"][], description?: string) => {
             dispatch(setOngoingBulkUpdate());
             let closeEvents: Event[] = [];
-            for (const pk of pks) {
-                await api.postIncidentCloseEvent(pk, description)
-                    .then((closeEvent: Event) => {
+
+            await api.bulkPostIncidentCloseEvent(pks, description)
+                .then(({changes}) => {
+                    for (const pk of pks) {
                         closeIncident(pk);
-                        closeEvents.push(closeEvent);
-                    }).catch((error) => {
-                        dispatch(unsetOngoingBulkUpdate());
-                        throw new Error(error);
-                    })
-            }
+                        closeEvents.push(changes);
+                    }
+                }).catch((error) => {
+                    dispatch(unsetOngoingBulkUpdate());
+                    throw new Error(error);
+                });
+
+
+            // for (const pk of pks) {
+            //     await api.postIncidentCloseEvent(pk, description)
+            //         .then((closeEvent: Event) => {
+            //             closeIncident(pk);
+            //             closeEvents.push(closeEvent);
+            //         }).catch((error) => {
+            //             dispatch(unsetOngoingBulkUpdate());
+            //             throw new Error(error);
+            //         })
+            // }
             dispatch(unsetOngoingBulkUpdate());
             return closeEvents;
         }),
