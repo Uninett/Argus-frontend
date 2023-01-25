@@ -36,8 +36,13 @@ import {
   CursorPaginationResponse,
   ApiListener,
   Resolver,
-  ErrorCreator, 
+  ErrorCreator,
   MetadataConfig,
+  IncidentPK,
+  BulkEventWithoutDescriptionBody,
+  BulkEventResponse,
+  BulkEventBody,
+  BulkAcknowledgementBody,
 } from "./types.d";
 
 import auth from "../auth";
@@ -379,6 +384,71 @@ class ApiClient {
     );
   }
 
+  // Bulk actions on incidents
+  public bulkPostIncidentReopenEvent(pks: IncidentPK[]): Promise<{ changes: Event }> {
+    return this.resolveOrReject(
+        this.authPost<{ changes: Event }, BulkEventWithoutDescriptionBody>(`/api/v2/incidents/events/bulk/`, {
+          ids: pks,
+          event: {
+            type: EventType.REOPEN
+          }
+        }),
+        defaultResolver,
+        (error) => {
+          throw new Error(`Failed to bulk post incident reopen event: ${getErrorCause(error)}`)
+        },
+    );
+  }
+
+  public bulkPostIncidentCloseEvent(pks: IncidentPK[], description?: string): Promise<{ changes: Event }> {
+    return this.resolveOrReject(
+        this.authPost<{ changes: Event }, BulkEventBody | BulkEventWithoutDescriptionBody>(
+            `/api/v2/incidents/events/bulk/`,
+            description
+                ?
+                {
+                  ids: pks,
+                  event: {
+                    type: EventType.CLOSE,
+                    description,
+                  }
+                }
+                :
+                {
+                  ids: pks,
+                  event: {
+                    type: EventType.CLOSE
+                  }
+                },
+        ),
+        defaultResolver,
+        (error) => new Error(`Failed to bulk post incident close event: ${getErrorCause(error)}`),
+    );
+  }
+
+  public bulkPatchIncidentTicketUrl(pks: IncidentPK[], ticketUrl: string): Promise<{ changes: IncidentTicketUrlBody }> {
+    return this.resolveOrReject(
+        this.authPost<{ changes: IncidentTicketUrlBody }, IncidentTicketUrlBody & { ids: IncidentPK[]}>(`/api/v2/incidents/ticket_url/bulk/`, {
+          // eslint-disable-next-line @typescript-eslint/camelcase
+          ids: pks,
+          ticket_url: ticketUrl,
+        }),
+        defaultResolver,
+        (error) => new Error(`Failed to bulk put incident ticket url: ${getErrorCause(error)}`),
+    );
+  }
+
+  public bulkPostAck(pks: IncidentPK[], ack: AcknowledgementBody): Promise<{ changes: Acknowledgement }> {
+    return this.resolveOrReject(
+        this.authPost<{ changes: Acknowledgement }, { ids: IncidentPK[], ack: AcknowledgementBody }>(`/api/v2/incidents/acks/bulk/`, {
+          ids: pks,
+          ack
+        }),
+        defaultResolver,
+        (error) => new Error(`Failed to bulk post incident ack: ${getErrorCause(error)}`),
+    );
+  }
+
   public getPaginatedIncidentsFiltered(
     filter: Omit<Filter, "pk" | "name">,
     cursor: string | null,
@@ -623,7 +693,7 @@ class ApiClient {
   // Acknowledgements
   public postAck(incidentPK: number, ack: AcknowledgementBody): Promise<Acknowledgement> {
     return this.resolveOrReject(
-      this.authPost<Acknowledgement, AcknowledgementBody>(`/api/v1/incidents/${incidentPK}/acks/`, ack),
+      this.authPost<Acknowledgement, AcknowledgementBody>(`/api/v2/incidents/${incidentPK}/acks/`, ack),
       defaultResolver,
       (error) => new Error(`Failed to post incident ack: ${getErrorCause(error)}`),
     );
