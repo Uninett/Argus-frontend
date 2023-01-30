@@ -96,11 +96,13 @@ export const NewDestinationFields: React.FC<NewDestinationFieldsPropsType> = ({
     // On selected media change
     useEffect( () => () => {
         resetState();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedMediaValue]);
 
     // On unmount
     useEffect( () => () => {
         resetState();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [] );
 
     const handleTitleChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
@@ -153,23 +155,20 @@ export const NewDestinationFields: React.FC<NewDestinationFieldsPropsType> = ({
             {properties.map((property: DestinationComponentMediaProperty, index) => {
                 const { property_name, required, title } = property;
 
-                if (property) {
-                    return (
-                        <TextField
-                            error={{...propertyValues.get(property.property_name)}.isInvalid || false}
-                            required={required}
-                            label={title}
-                            variant="standard"
-                            className={classes.phoneField}
-                            value={isReset ? "" : {...propertyValues.get(property.property_name)}.value || ""}
-                            onChange={(event) => handlePropertyChange(event, property_name, required)}
-                            key={`${property_name}-${index}`}
-                            type={property.format ? property.format : "text"}
-                            helperText={{...propertyValues.get(property.property_name)}.isInvalid ? "Required" : ""}
-                        />
-                    );
-                }
-
+                return (
+                    <TextField
+                        error={{...propertyValues.get(property.property_name)}.isInvalid || false}
+                        required={required}
+                        label={title}
+                        variant="standard"
+                        className={classes.phoneField}
+                        value={isReset ? "" : {...propertyValues.get(property.property_name)}.value || ""}
+                        onChange={(event) => handlePropertyChange(event, property_name, required)}
+                        key={`${property_name}-${index}`}
+                        type={property.format ? property.format : "text"}
+                        helperText={{...propertyValues.get(property.property_name)}.isInvalid ? "Required" : ""}
+                    />
+                );
             })}
         </div>
     );
@@ -202,11 +201,13 @@ const NewDestinationComponent: React.FC<NewDestinationComponentPropsType> = ({
     // On mount
     useEffect(() => {
         fetchMediaSchemas();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // On unmount
     useEffect(() => () => {
         resetState();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // On reset changes
@@ -217,6 +218,7 @@ const NewDestinationComponent: React.FC<NewDestinationComponentPropsType> = ({
     // On configured media update
     useEffect(() => {
         fetchMediaSchemas();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [configuredMedia]);
 
     // On media schemas update
@@ -249,6 +251,7 @@ const NewDestinationComponent: React.FC<NewDestinationComponentPropsType> = ({
             })
         })
 
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mediaSchemas, setMediaSchemas]);
 
     const fetchMediaSchemas = () => {

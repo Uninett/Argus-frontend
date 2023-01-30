@@ -58,6 +58,7 @@ const DestinationGroup: React.FC<DestinationGroupPropsType> = ({
     // On mount
     useEffect(() => {
         fetchMediaSchema();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // On media schema update
@@ -78,6 +79,7 @@ const DestinationGroup: React.FC<DestinationGroupPropsType> = ({
             }
 
         })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mediaSchema, setMediaSchema]);
 
     const fetchMediaSchema = () => {

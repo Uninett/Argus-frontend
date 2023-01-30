@@ -105,17 +105,6 @@ const DestinationsList: React.FC = () => {
     const [open, setOpen] = React.useState(false);
 
 
-    // On mount
-    useEffect(() => {
-        getConfiguredMedia();
-    }, []);
-
-    // On known media types update
-    useEffect(() => {
-        fetchAllDestinations();
-    }, [knownMediaTypes]);
-
-
     const getConfiguredMedia = () => {
         api.getAllMedia()
             .then((res: Media[]) => {
@@ -135,6 +124,18 @@ const DestinationsList: React.FC = () => {
                 displayAlertSnackbar(msg, "error");
             }),)
     }
+
+    // On mount
+    useEffect(() => {
+        getConfiguredMedia();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    // On known media types update
+    useEffect(() => {
+        fetchAllDestinations();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [knownMediaTypes]);
 
     const createNewDestination = (newDestination: NewDestination) => {
         api.postDestination(newDestination)
