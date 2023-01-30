@@ -36,8 +36,8 @@ import {
   CursorPaginationResponse,
   ApiListener,
   Resolver,
-  ErrorCreator, 
-  MetadataConfig,
+  ErrorCreator,
+  MetadataConfig, Media, Destination, MediaSchema, DestinationPK, DestinationRequest, NewDestination,
 } from "./types.d";
 
 import auth from "../auth";
@@ -316,6 +316,57 @@ class ApiClient {
       .catch((error) => {
         return Promise.reject(new Error(`Failed to delete notification profile ${profile}: ${getErrorCause(error)}`));
       });
+  }
+
+  // Destinations
+  public getAllMedia(): Promise<Media[]> {
+    return this.resolveOrReject(
+        this.authGet<Media[], never>(`/api/v2/notificationprofiles/media/`),
+        defaultResolver,
+        (error) => new Error(`Failed to get configured media: ${getErrorCause(error)}`),
+    );
+  }
+
+  public getAllDestinations(): Promise<Destination[]> {
+    return this.resolveOrReject(
+        this.authGet<Destination[], never>(`/api/v2/notificationprofiles/destinations/`),
+        defaultResolver,
+        (error) => new Error(`Failed to get destinations: ${getErrorCause(error)}`),
+    );
+  }
+
+  public getMediaSchemaBySlug(slug: string): Promise<MediaSchema> {
+    return this.resolveOrReject(
+        this.authGet<MediaSchema, string>(`/api/v2/notificationprofiles/media/${slug}/json_schema/`),
+        defaultResolver,
+        (error) => new Error(`Failed to get media schema of type ${slug}: ${getErrorCause(error)}`),
+    );
+  }
+
+  // Create new destination
+  public postDestination(destination: NewDestination): Promise<Destination> {
+    return this.resolveOrReject(
+        this.authPost<Destination, NewDestination>(`/api/v2/notificationprofiles/destinations/`, destination),
+        defaultResolver,
+        (error) => new Error(`Failed to create destination ${destination.label}: ${getErrorCause(error)}`),
+    );
+  }
+
+  public deleteDestination(destinationPk: DestinationPK): Promise<void> {
+    return this.resolveOrReject(
+        this.authDelete<never, DestinationPK>(`/api/v2/notificationprofiles/destinations/${destinationPk}`),
+        defaultResolver,
+        (error) => new Error(`Failed to delete destination ${destinationPk}: ${getErrorCause(error)}`),
+    );
+  }
+
+  // Update existing destination destination
+  public putDestination(destination: DestinationRequest): Promise<Destination> {
+    return this.resolveOrReject(
+        this.authPatch<Destination, DestinationRequest>(`/api/v2/notificationprofiles/destinations/${destination.pk}/`, destination),
+        defaultResolver,
+        (error) => new Error(`Failed to update destination ${destination.pk}: ${getErrorCause(error)}`),
+    );
   }
 
   public postIncidentReopenEvent(pk: number): Promise<Event> {
