@@ -27,3 +27,4 @@ export const WHITE = "#FFFFFF";
 export const RED = "#dc0000";
 export const ORANGE = "#fd8c00";
 export const YELLOW = "#fdc500";
+export const BEIGE = "#f7ede2";
