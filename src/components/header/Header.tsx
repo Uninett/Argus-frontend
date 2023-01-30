@@ -249,6 +249,9 @@ const Header: React.FC<HeaderPropsType> = () => {
       <MenuItem onClick={handleMenuClose} component={Link} to="/settings">
         Settings
       </MenuItem>
+      <MenuItem onClick={handleMenuClose} component={Link} to="/destinations">
+          Destinations
+      </MenuItem>
       <MenuItem onClick={handleLogout}>Logout</MenuItem>
     </Menu>
   );

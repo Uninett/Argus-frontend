@@ -24,6 +24,7 @@ import ApiInterceptor from "./components/apiinterceptor";
 
 import { MUI_THEME } from "./colorscheme";
 import { AlertSnackbarProvider } from "./components/alertsnackbar";
+import DestinationsView from "./views/destinations/DestinationsView";
 
 // eslint-disable-next-line
 const withHeader = (Component: any) => {
@@ -51,6 +52,7 @@ const App = () => {
               <ProtectedRoute path="/notificationprofiles" component={withHeader(NotificationProfileView)} />
               <ProtectedRoute path="/timeslots" component={withHeader(TimeslotView)} />
               <ProtectedRoute path="/settings" component={withHeader(SettingsView)} />
+              <ProtectedRoute path="/destinations" component={withHeader(DestinationsView)} />
               <Route path="/login" component={LoginView} />
               <Route
                 path="*"
