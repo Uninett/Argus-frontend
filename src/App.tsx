@@ -12,7 +12,6 @@ import IncidentDetailsView from "./views/incident/IncidentDetailView";
 import IncidentView from "./views/incident/IncidentView";
 import LoginView from "./views/login/LoginView";
 import NotificationProfileView from "./views/notificationprofile/NotificationProfileView";
-import SettingsView from "./views/settings/SettingsView";
 import TimeslotView from "./views/timeslot/TimeslotView";
 
 // MUI
@@ -51,7 +50,6 @@ const App = () => {
               <ProtectedRoute exact path="/incidents" component={withHeader(IncidentView)} />
               <ProtectedRoute path="/notificationprofiles" component={withHeader(NotificationProfileView)} />
               <ProtectedRoute path="/timeslots" component={withHeader(TimeslotView)} />
-              <ProtectedRoute path="/settings" component={withHeader(SettingsView)} />
               <ProtectedRoute path="/destinations" component={withHeader(DestinationsView)} />
               <Route path="/login" component={LoginView} />
               <Route
