@@ -262,6 +262,7 @@ const NotificationProfileCard = ({
             <Typography className={style.itemHeader}>Destinations</Typography>
             <div className={style.phoneNumber}>
               <Select
+                  data-testid="destinations-selector"
                   className={style.phoneNumberSelect}
                   labelId="destinations-selector"
                   id="destinations-selector"
