@@ -78,7 +78,6 @@ export interface FilterString {
   // show?: "open" | "closed" | "both";
 }
 
-export type MediaAlternative = "EM" | "SM";
 
 export type PhoneNumberPK = number;
 
@@ -96,9 +95,8 @@ export type NotificationProfilePK = number;
 export interface NotificationProfileKeyed {
   timeslot: TimeslotPK;
   filters: FilterPK[];
-  media: MediaAlternative[];
   active: boolean;
-  phone_number: PhoneNumber["pk"] | null;
+  destinations: Destination[] | null;
   pk?: NotificationProfilePK;
 }
 
@@ -106,10 +104,14 @@ export interface NotificationProfile {
   pk: number;
   timeslot: Timeslot;
   filters: Filter[];
-  media: MediaAlternative[];
   active: boolean;
-  phone_number: PhoneNumber | null;
+  destinations: Destination[] | null;
 }
+
+export type NotificationProfileRequest = Omit<NotificationProfileKeyed, "destinations"> & { destinations: DestinationPK[] | null };
+export type NotificationProfileSuccessResponse = NotificationProfile;
+export type GetNotificationProfileRequest = Pick<NotificationProfile, "pk">;
+export type DeleteNotificationProfileRequest = Pick<NotificationProfile, "pk">;
 
 /*
  * Destinations
@@ -127,6 +129,13 @@ export type MediaProperty = {
   type: string; // value type
   description?: string;
   format?: string;
+}
+
+export enum KnownProperties {
+  PHONE_NUMBER = "phone_number",
+  EMAIL = "email_address",
+  SYNCED = "synced",
+  MS_TEAMS = "webhook",
 }
 
 export type MediaSchema = {
@@ -265,11 +274,6 @@ export type IncidentsFilterOptions = {
   filter: FilterContent;
   // NOT COMPLETE
 };
-
-export type NotificationProfileRequest = NotificationProfileKeyed;
-export type NotificationProfileSuccessResponse = NotificationProfile;
-export type GetNotificationProfileRequest = Pick<NotificationProfileRequest, "timeslot">;
-export type DeleteNotificationProfileRequest = Pick<NotificationProfileRequest, "timeslot">;
 
 export type FilterRequest = {
   name: string;
