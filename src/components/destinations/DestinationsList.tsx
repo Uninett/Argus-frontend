@@ -141,7 +141,11 @@ const DestinationsList: React.FC = () => {
         api.postDestination(newDestination)
             .then((destination: Destination) => {
                 createDestination(destination)
-                displayAlertSnackbar(`Created new destination: ${destination.suggested_label}`, "success");
+                displayAlertSnackbar(`Created new destination: 
+                ${destination.label !== undefined && destination.label !== null ? 
+                        destination.label : 
+                        destination.suggested_label}`,
+                    "success");
             })
             .catch(
                 defaultErrorHandler((msg: string) => {
@@ -154,7 +158,7 @@ const DestinationsList: React.FC = () => {
         api.putDestination(newDestination)
             .then((destination: Destination) => {
                 modifyDestination(destination);
-                displayAlertSnackbar(`Created new destination: ${destination.suggested_label}`, "success");
+                displayAlertSnackbar(`Updated destination: ${destination.suggested_label}`, "success");
             })
             .catch(
                 defaultErrorHandler((msg: string) => {
