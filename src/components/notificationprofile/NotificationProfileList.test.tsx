@@ -5,9 +5,7 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
     Filter,
-    MediaAlternative,
     NotificationProfile,
-    NotificationProfileKeyed,
     PhoneNumber,
     Timeslot
 } from "../../api/types";
@@ -76,13 +74,13 @@ describe("Rendering profile list with no existing timeslots", () => {
             .onGet("/api/v1/auth/user/")
             // eslint-disable-next-line @typescript-eslint/camelcase
             .reply(200, { username: "test", first_name: "test", last_name: "test", email: "test" })
-            .onGet("/api/v1/notificationprofiles/")
+            .onGet("/api/v2/notificationprofiles/")
             .reply(200, [] as NotificationProfile[])
-            .onGet("/api/v1/notificationprofiles/timeslots/")
+            .onGet("/api/v2/notificationprofiles/timeslots/")
             .reply(200, [] as Timeslot[])
-            .onGet("/api/v1/notificationprofiles/filters/")
+            .onGet("/api/v2/notificationprofiles/filters/")
             .reply(200, filters as Filter[])
-            .onGet("/api/v1/auth/phone-number/")
+            .onGet("/api/v2/auth/phone-number/")
             .reply(200, phoneNumbers as PhoneNumber[]);
 
         render(
