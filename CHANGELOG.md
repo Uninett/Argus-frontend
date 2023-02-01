@@ -10,6 +10,15 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 
 
 
+
+### Changed
+
+
+- _Settings_ are replaced with _Destinations_. User may now create/update/delete emails and other media (that are configured), in addition to phone numbers.
+
+
+
+
 ## [v1.7.0] - 2022-12-16
 
 ### Added
