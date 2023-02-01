@@ -42,14 +42,6 @@ import Input from "@material-ui/core/Input";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 6.5 + ITEM_PADDING_TOP,
-      width: 350,
-    },
-  },
-};
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -271,7 +263,16 @@ const NotificationProfileCard = ({
                   onChange={handleDestinationsChange}
                   input={<Input/>}
                   renderValue={(selected) => (destinationPKsToDestinations(selected as DestinationPK[], destinations)).map(d => d.suggested_label).join(', ')}
-                  MenuProps={MenuProps}
+                  MenuProps={{
+                    variant: "menu",
+                    getContentAnchorEl: null,
+                    PaperProps: {
+                      style: {
+                        maxHeight: ITEM_HEIGHT * 6.5 + ITEM_PADDING_TOP,
+                        width: 350,
+                      },
+                    },
+                  }}
               >
 
                 {Array.from(destinations).map(([slug, dests]) => {
