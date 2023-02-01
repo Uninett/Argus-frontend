@@ -22,6 +22,7 @@ const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         phoneField: {
             margin: theme.spacing(),
+            width: "90%",
         },
         form: {
             alignItems: "center",
@@ -45,10 +46,12 @@ const useStyles = makeStyles((theme: Theme) =>
         dangerousButton: {
             background: theme.palette.warning.main,
             color: WHITE,
+            margin: "0 4px",
         },
         saveButton: {
             background: theme.palette.primary.main,
             color: WHITE,
+            margin: "0 4px",
         },
         destination: {
             alignItems: "center",
