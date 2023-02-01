@@ -78,7 +78,7 @@ const DestinationComponent: React.FC<DestinationComponentPropsType> = ({
 
     // On destination update
     useEffect(() => {
-        setTitle(destination.label);
+        setTitle(destination.label === null ? "" : destination.label);
         setPropertyValues((prevState) => {
             const newValues = new Map<string, {value: string, isInvalid: boolean}>(prevState)
 
@@ -122,7 +122,7 @@ const DestinationComponent: React.FC<DestinationComponentPropsType> = ({
             }
             const newDestination: DestinationRequest = {
                 pk: destination.pk,
-                label: title,
+                label: title === "" ? null : title,
                 settings: settings,
                 media: destination.media.slug
             }
@@ -141,7 +141,7 @@ const DestinationComponent: React.FC<DestinationComponentPropsType> = ({
         } else if (hasTitleChanges) {
             const newDestination: DestinationRequest = {
                 pk: destination.pk,
-                label: title,
+                label: title === "" ? null : title,
                 media: destination.media.slug
             }
             onSave(newDestination);

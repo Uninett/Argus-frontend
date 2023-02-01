@@ -279,7 +279,7 @@ const NewDestinationComponent: React.FC<NewDestinationComponentPropsType> = ({
         }
         const newDestination: NewDestination = {
             media: selectedMediaValue,
-            label: title,
+            label: title === "" ? null : title,
             settings: settings,
         }
 

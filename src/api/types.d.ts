@@ -143,7 +143,7 @@ export type MediaSchema = {
 
 export type DestinationRequest = {
   pk: DestinationPK;
-  label?: string | undefined; // title given by user
+  label?: string | undefined | null; // title given by user
   media: string; // media slug
   settings?: DestinationSettings;
 }
@@ -154,14 +154,14 @@ export type DestinationSettings = {
 
 export type Destination = {
   pk: DestinationPK;
-  label: string | undefined; // title given by user
+  label: string | undefined | null; // title given by user
   media: Media;
   settings: DestinationSettings
   suggested_label: string;
 }
 
 export type NewDestination = {
-  label: string | undefined; // title given by user
+  label: string | undefined | null; // title given by user
   media: string; // media slug
   settings: DestinationSettings;
 }
