@@ -11,7 +11,6 @@ import {
   Filter,
   FilterPK,
   FilterString,
-  MediaAlternative,
   PhoneNumberPK,
   PhoneNumber,
   PhoneNumberRequest,
@@ -241,17 +240,17 @@ class ApiClient {
   }
 
   // NotificationProfile
-  public getNotificationProfile(timeslot: TimeslotPK): Promise<NotificationProfile> {
+  public getNotificationProfile(pk: NotificationProfilePK): Promise<NotificationProfileSuccessResponse> {
     return this.resolveOrReject(
-      this.authGet<NotificationProfile, GetNotificationProfileRequest>(`/api/v1/notificationprofile/${timeslot}/`),
+      this.authGet<NotificationProfileSuccessResponse, GetNotificationProfileRequest>(`/api/v2/notificationprofile/${pk}/`),
       defaultResolver,
       (error) => new Error(`Failed to get notification profile: ${getErrorCause(error)}`),
     );
   }
 
-  public getAllNotificationProfiles(): Promise<NotificationProfile[]> {
+  public getAllNotificationProfiles(): Promise<NotificationProfileSuccessResponse[]> {
     return this.resolveOrReject(
-      this.authGet<NotificationProfile[], GetNotificationProfileRequest>(`/api/v1/notificationprofiles/`),
+      this.authGet<NotificationProfileSuccessResponse[], GetNotificationProfileRequest>(`/api/v2/notificationprofiles/`),
       defaultResolver,
       (error) => new Error(`Failed to get notification profiles: ${getErrorCause(error)}`),
     );
@@ -261,21 +260,19 @@ class ApiClient {
     profilePK: NotificationProfilePK,
     timeslot: TimeslotPK,
     filters: FilterPK[],
-    media: MediaAlternative[],
     active: boolean,
     // eslint-disable-next-line @typescript-eslint/camelcase
-    phone_number?: PhoneNumberPK | null,
-  ): Promise<NotificationProfile> {
+    destinations?: DestinationPK[] | null,
+  ): Promise<NotificationProfileSuccessResponse> {
     return this.resolveOrReject(
       this.authPut<NotificationProfileSuccessResponse, NotificationProfileRequest>(
-        `/api/v1/notificationprofiles/${profilePK}/`,
+        `/api/v2/notificationprofiles/${profilePK}/`,
         {
           timeslot: timeslot,
           filters,
-          media,
           active,
           // eslint-disable-next-line @typescript-eslint/camelcase
-          phone_number: phone_number || null,
+          destinations: destinations || null,
         },
       ),
       defaultResolver,
@@ -286,35 +283,33 @@ class ApiClient {
   public postNotificationProfile(
     timeslot: TimeslotPK,
     filters: FilterPK[],
-    media: MediaAlternative[],
     active: boolean,
     // eslint-disable-next-line
-    phone_number?: PhoneNumberPK | null,
-  ): Promise<NotificationProfile> {
+    destinations?: DestinationPK[] | null,
+  ): Promise<NotificationProfileSuccessResponse> {
     return this.resolveOrReject(
-      this.authPost<NotificationProfileSuccessResponse, NotificationProfileRequest>(`/api/v1/notificationprofiles/`, {
+      this.authPost<NotificationProfileSuccessResponse, NotificationProfileRequest>(`/api/v2/notificationprofiles/`, {
         // eslint-disable-next-line
         timeslot: timeslot,
         filters,
-        media,
         active,
         // eslint-disable-next-line
-        phone_number: phone_number || null,
+        destinations: destinations || null,
       }),
       defaultResolver,
-      (error) => new Error(`Failed to create notification profile ${timeslot}: ${getErrorCause(error)}`),
+      (error) => new Error(`Failed to create notification profile: ${getErrorCause(error)}`),
     );
   }
 
-  public deleteNotificationProfile(profile: NotificationProfilePK): Promise<boolean> {
+  public deleteNotificationProfile(profilePK: NotificationProfilePK): Promise<boolean> {
     return this.authDelete<NotificationProfileSuccessResponse, DeleteNotificationProfileRequest>(
-      `/api/v1/notificationprofiles/${profile}/`,
+      `/api/v2/notificationprofiles/${profilePK}/`,
     )
       .then(() => {
         return Promise.resolve(true);
       })
       .catch((error) => {
-        return Promise.reject(new Error(`Failed to delete notification profile ${profile}: ${getErrorCause(error)}`));
+        return Promise.reject(new Error(`Failed to delete notification profile ${profilePK}: ${getErrorCause(error)}`));
       });
   }
 
