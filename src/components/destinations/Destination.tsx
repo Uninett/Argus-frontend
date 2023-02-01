@@ -179,13 +179,13 @@ const DestinationComponent: React.FC<DestinationComponentPropsType> = ({
             >
                 <Tooltip title={"Must be unique per media type"} arrow placement="top" disableHoverListener>
                     <TextField
-                        error={false}
                         label="Title"
                         variant="standard"
                         className={classes.phoneField}
                         value={title}
                         onChange={onTitleChange}
                         key={`title-of-${destination.pk}`}
+                        id={`title-of-${destination.pk}`}
                     />
                 </Tooltip>
 
@@ -201,7 +201,8 @@ const DestinationComponent: React.FC<DestinationComponentPropsType> = ({
                             onChange={(event) => {
                                 handlePropertyChange(event, property.property_name, property.required)
                             }}
-
+                            key={`${property.property_name}-of-${destination.pk}`}
+                            id={`${property.property_name}-of-${destination.pk}`}
                         />
                     );
                 })}

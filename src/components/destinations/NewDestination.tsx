@@ -152,6 +152,7 @@ export const NewDestinationFields: React.FC<NewDestinationFieldsPropsType> = ({
                     value={isReset ? "" : title || ""}
                     onChange={(event) => handleTitleChange(event)}
                     key={`title-of-${selectedMediaValue}`}
+                    id={`title-of-${selectedMediaValue}`}
                 />
             </Tooltip>
 
@@ -168,6 +169,7 @@ export const NewDestinationFields: React.FC<NewDestinationFieldsPropsType> = ({
                         value={isReset ? "" : {...propertyValues.get(property.property_name)}.value || ""}
                         onChange={(event) => handlePropertyChange(event, property_name, required)}
                         key={`${property_name}-${index}`}
+                        id={`${property_name}-${index}`}
                         type={property.format ? property.format : "text"}
                         helperText={{...propertyValues.get(property.property_name)}.isInvalid ? "Required" : ""}
                     />
