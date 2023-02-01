@@ -159,8 +159,8 @@ const DestinationComponent: React.FC<DestinationComponentPropsType> = ({
 
 
     const RemoveDestinationButton = makeConfirmationButton({
-        title: `Discard`,
-        question: "Are you sure you want to discard changes?",
+        title: `Delete`,
+        question: "Are you sure you want to delete destination?",
         onConfirm: () => {
             setDeleteLoading(true);
             onDelete(destination, destination.suggested_label)
