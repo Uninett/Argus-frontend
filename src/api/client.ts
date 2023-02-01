@@ -16,7 +16,6 @@ import {
   PhoneNumberRequest,
   PhoneNumberSuccessResponse,
   NotificationProfilePK,
-  NotificationProfile,
   Incident,
   Event,
   EventType,

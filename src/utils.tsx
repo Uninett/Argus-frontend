@@ -4,7 +4,7 @@ import format from "date-fns/format";
 import formatDistance from "date-fns/formatDistance";
 
 // Api
-import type {Incident, User, Token, DestinationSettings} from "./api/types.d";
+import type {Incident, User, Token} from "./api/types.d";
 import api from "./api";
 import auth from "./auth";
 
@@ -305,7 +305,7 @@ export const destinationPKsToDestinations = (destinationPKs: DestinationPK[] | n
   if (destinationPKs !== null) {
     destinationsMapToArray(destinations)
         .filter((d) => destinationPKs.indexOf(d.pk) !== -1)
-        .map((d) => {
+        .forEach((d) => {
           if (res.indexOf(d) === -1) {
             res.push(d);
           }
