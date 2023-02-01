@@ -177,15 +177,18 @@ const DestinationComponent: React.FC<DestinationComponentPropsType> = ({
                     event.preventDefault();
                 }}
             >
-                <TextField
-                    error={false}
-                    label="Title"
-                    variant="standard"
-                    className={classes.phoneField}
-                    value={title}
-                    onChange={onTitleChange}
-                    key={`title-of-${destination.pk}`}
-                />
+                <Tooltip title={"Must be unique per media type"} arrow placement="top" disableHoverListener>
+                    <TextField
+                        error={false}
+                        label="Title"
+                        variant="standard"
+                        className={classes.phoneField}
+                        value={title}
+                        onChange={onTitleChange}
+                        key={`title-of-${destination.pk}`}
+                    />
+                </Tooltip>
+
                 {[...properties.values()].map((property: DestinationComponentMediaProperty) => {
                     return (
                         <TextField

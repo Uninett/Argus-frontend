@@ -16,6 +16,7 @@ import {Radio, RadioGroup} from "@material-ui/core";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormControl from "@material-ui/core/FormControl";
 import {useStateWithDynamicDefault} from "../../utils";
+import Tooltip from "@material-ui/core/Tooltip";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -143,14 +144,16 @@ export const NewDestinationFields: React.FC<NewDestinationFieldsPropsType> = ({
 
     return (
         <div>
-            <TextField
-                label="Title"
-                variant="standard"
-                className={classes.phoneField}
-                value={isReset ? "" : title || ""}
-                onChange={(event) => handleTitleChange(event)}
-                key={`title-of-${selectedMediaValue}`}
-            />
+            <Tooltip title={"Must be unique per media type"} arrow placement="top" disableHoverListener>
+                <TextField
+                    label="Title"
+                    variant="standard"
+                    className={classes.phoneField}
+                    value={isReset ? "" : title || ""}
+                    onChange={(event) => handleTitleChange(event)}
+                    key={`title-of-${selectedMediaValue}`}
+                />
+            </Tooltip>
 
             {properties.map((property: DestinationComponentMediaProperty, index) => {
                 const { property_name, required, title } = property;
