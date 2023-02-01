@@ -108,7 +108,7 @@ const DestinationGroup: React.FC<DestinationGroupPropsType> = ({
                 <AccordionDetails>
                     <List>
                         {destinations?.map((dest) => (
-                            <ListItem button key={dest.pk}>
+                            <ListItem button key={dest.pk} disableTouchRipple={true}>
                                 <DestinationComponent
                                     properties={destinationProperties}
                                     destination={dest}
