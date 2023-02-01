@@ -362,7 +362,7 @@ const NewDestinationComponent: React.FC<NewDestinationComponentPropsType> = ({
                                     className={classes.saveButton}
                                     onClick={handleCreateClick}
                                     startIcon={<SaveIcon />}
-                                    disabled={!hasChanged || isInvalidDestination || false}
+                                    disabled={!hasChanged || isInvalidDestination}
                                 >
                                     Create
                                 </Button>
@@ -371,6 +371,7 @@ const NewDestinationComponent: React.FC<NewDestinationComponentPropsType> = ({
                                     size="small"
                                     className={classes.dangerousButton}
                                     startIcon={<DeleteIcon />}
+                                    disabled={!hasChanged}
                                 >
                                     Discard
                                 </RemoveDestinationButton>
