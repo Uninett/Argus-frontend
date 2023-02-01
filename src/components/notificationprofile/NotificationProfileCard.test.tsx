@@ -3,39 +3,19 @@
 import React from "react";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { Filter, MediaAlternative, NotificationProfileKeyed, PhoneNumber, Timeslot } from "../../api/types";
+import {
+  Destination,
+  Filter,
+  KnownProperties,
+  Media,
+  NotificationProfileKeyed,
+  PhoneNumber,
+  Timeslot
+} from "../../api/types";
 import NotificationProfileCard from "./NotificationProfileCard";
+import {destinationPKsToDestinations} from "../../utils";
 
 // MOCK DATA INPUT TO COMPONENT
-const existingProfile1: NotificationProfileKeyed = {
-  pk: 1,
-  timeslot: 1,
-  filters: [1, 2],
-  media: ["EM", "SM"],
-  active: true,
-  // eslint-disable-next-line @typescript-eslint/camelcase
-  phone_number: 1,
-};
-
-const existingProfile2: NotificationProfileKeyed = {
-  pk: 1,
-  timeslot: 1,
-  filters: [1],
-  media: ["EM"],
-  active: true,
-  // eslint-disable-next-line @typescript-eslint/camelcase
-  phone_number: 1,
-};
-
-const newProfile: NotificationProfileKeyed = {
-  timeslot: 1,
-  filters: [1, 2],
-  media: ["EM", "SM"],
-  active: true,
-  // eslint-disable-next-line @typescript-eslint/camelcase
-  phone_number: 0,
-};
-
 const timeslots: Timeslot[] = [
   {
     pk: 1,
@@ -68,25 +48,84 @@ const filters: Filter[] = [
   },
 ];
 
-const mediaOptions: { label: string; value: MediaAlternative }[] = [
-  { label: "Email", value: "EM" },
-  { label: "SMS", value: "SM" },
+const media: Media[] = [
+  { slug: "email", name: "Email" },
+  { slug: "sms", name: "SMS" },
+  { slug: "ms_teams", name: "MS Teams" },
 ];
 
-const phoneNumbers: PhoneNumber[] = [
+const destinationsArray: Destination[] = [
   {
     pk: 1,
-    user: 1,
-    // eslint-disable-next-line @typescript-eslint/camelcase
-    phone_number: "+4712345678",
+    label: "test_sms",
+    media: media[1],
+    suggested_label: "SMS: +4747474747",
+    settings: {
+      phone_number: "+4747474747"
+    }
   },
   {
     pk: 2,
-    user: 1,
-    // eslint-disable-next-line @typescript-eslint/camelcase
-    phone_number: "+4787654321",
+    label: "test_email",
+    media: media[0],
+    suggested_label: "Email: test@test.test",
+    settings: {
+      email_address: "test@test.test",
+      synced: false
+    }
   },
-];
+  {
+    pk: 3,
+    label: "test_email_synced",
+    media: media[0],
+    suggested_label: "Email: synced@test.test",
+    settings: {
+      email_address: "synced@test.test",
+      synced: true
+    }
+  },
+  {
+    pk: 4,
+    label: "test_msteams",
+    media: media[2],
+    suggested_label: "MS Teams: MS TEAMS #4",
+    settings: {
+      webhook: "https://test.test"
+    }
+  },
+]
+
+const existingProfile1: NotificationProfileKeyed = {
+  pk: 1,
+  timeslot: 1,
+  filters: [1, 2],
+  active: true,
+  // eslint-disable-next-line @typescript-eslint/camelcase
+  destinations: [destinationsArray[0]],
+};
+
+const existingProfile2: NotificationProfileKeyed = {
+  pk: 1,
+  timeslot: 1,
+  filters: [1],
+  active: true,
+  // eslint-disable-next-line @typescript-eslint/camelcase
+  destinations: [destinationsArray[1], destinationsArray[2]],
+};
+
+const newProfile: NotificationProfileKeyed = {
+  timeslot: 1,
+  filters: [1, 2],
+  active: true,
+  // eslint-disable-next-line @typescript-eslint/camelcase
+  destinations: [destinationsArray[3]],
+};
+
+const destinationsMap = new Map<Media["slug"], Destination[]>([
+  ["sms", [destinationsArray[0]]],
+  ["email", [destinationsArray[1], destinationsArray[2]]],
+  ["ms_teams", [destinationsArray[3]]],
+])
 
 // MOCK FUNCTIONS
 const onSaveMock = jest.fn();
@@ -104,8 +143,8 @@ describe("Rendering existing profile", () => {
         profile={existingProfile1}
         timeslots={timeslots}
         filters={filters}
-        mediaOptions={mediaOptions}
-        phoneNumbers={phoneNumbers}
+        mediaOptions={media}
+        destinations={destinationsMap}
         exists={true}
         onSave={onSaveMock}
         onDelete={onDeleteMock}
@@ -137,32 +176,24 @@ describe("Rendering existing profile", () => {
     expect(selectedFilter2).toBeInTheDocument();
   });
 
-  it("renders the media selector correctly", () => {
-    const mediaSelector = screen.getByRole("combobox", { name: /media/i });
-    const selectedMedia1 = screen.getByText(mediaOptions[0].label);
-    const selectedMedia2 = screen.getByText(mediaOptions[1].label);
+  it("renders the destinations selector correctly", () => {
+    const destinationsSelector = screen.getByRole("button", { name: destinationsArray[0].suggested_label });
+    expect(destinationsSelector).toBeInTheDocument();
 
-    expect(mediaSelector).toBeInTheDocument();
-    expect(selectedMedia1).toBeInTheDocument();
-    expect(selectedMedia2).toBeInTheDocument();
-  });
+    userEvent.click(destinationsSelector);
 
-  it("renders the phone number selector correctly", () => {
-    const phoneNumberSelector = screen.getByRole("button", { name: phoneNumbers[0].phone_number });
-    expect(phoneNumberSelector).toBeInTheDocument();
+    // Expect length to be: all saved destinations
+    expect(within(screen.getByRole("listbox")).getAllByRole("checkbox")).toHaveLength(destinationsArray.length);
 
-    userEvent.click(phoneNumberSelector);
+    const destinationOption1 = screen.getByRole("option", {name: destinationsArray[0].settings["phone_number"] as string});
+    const destinationOption2 = screen.getByRole("option", {name: destinationsArray[1].settings["email_address"] as string});
+    const destinationOption3 = screen.getByRole("option", {name: destinationsArray[2].settings["email_address"] as string});
+    const destinationOption4 = screen.getByRole("option", {name: destinationsArray[3].settings["webhook"] as string});
 
-    // Expect length to be: all saved phone numbers plus "None"
-    expect(screen.getAllByRole("option")).toHaveLength(phoneNumbers.length + 1);
-
-    const phoneNumberOptionNone = screen.getByRole("option", {name: /none/i});
-    const phoneNumberOption1 = screen.getByRole("option", {name: phoneNumbers[0].phone_number});
-    const phoneNumberOption2 = screen.getByRole("option", {name: phoneNumbers[1].phone_number});
-
-    expect(phoneNumberOptionNone).toBeInTheDocument();
-    expect(phoneNumberOption1).toBeInTheDocument();
-    expect(phoneNumberOption2).toBeInTheDocument();
+    expect(destinationOption1).toBeInTheDocument();
+    expect(destinationOption2).toBeInTheDocument();
+    expect(destinationOption3).toBeInTheDocument();
+    expect(destinationOption4).toBeInTheDocument();
   });
 
   it("renders the active checkbox correctly", () => {
@@ -193,8 +224,8 @@ describe("Rendering new profile", () => {
         profile={newProfile}
         timeslots={timeslots}
         filters={filters}
-        mediaOptions={mediaOptions}
-        phoneNumbers={phoneNumbers}
+        mediaOptions={media}
+        destinations={destinationsMap}
         exists={false}
         onSave={onSaveMock}
         onDelete={onDeleteMock}
@@ -226,37 +257,25 @@ describe("Rendering new profile", () => {
     expect(selectedFilter2).toBeInTheDocument();
   });
 
-  it("renders the media selector correctly", () => {
-    const mediaSelector = screen.getByRole("combobox", { name: /media/i });
-    const selectedMedia1 = screen.getByText(mediaOptions[0].label);
-    const selectedMedia2 = screen.getByText(mediaOptions[1].label);
-
-    expect(mediaSelector).toBeInTheDocument();
-    expect(selectedMedia1).toBeInTheDocument();
-    expect(selectedMedia2).toBeInTheDocument();
-  });
-
-  it("renders the phone number selector correctly", () => {
-    const phoneNumberSelector = screen.getByTestId("phone-number-selector");
+  it("renders the destinations selector correctly", () => {
+    const phoneNumberSelector = screen.getByTestId("destinations-selector");
     expect(phoneNumberSelector).toBeInTheDocument();
-    // Default phone number value is "None" with a display value of ""
-    expect(phoneNumberSelector).toHaveTextContent(/^/);
-
 
     // User opens dropdown with options
     userEvent.click(within(phoneNumberSelector).getByRole("button"));
 
+    // Expect length to be: all saved destinations
+    expect(within(screen.getByRole("listbox")).getAllByRole("checkbox")).toHaveLength(destinationsArray.length);
 
-    // Expect length to be: all saved phone numbers plus "None"
-    expect(screen.getAllByRole("option")).toHaveLength(phoneNumbers.length + 1);
+    const destinationOption1 = screen.getByRole("option", {name: destinationsArray[0].settings["phone_number"] as string});
+    const destinationOption2 = screen.getByRole("option", {name: destinationsArray[1].settings["email_address"] as string});
+    const destinationOption3 = screen.getByRole("option", {name: destinationsArray[2].settings["email_address"] as string});
+    const destinationOption4 = screen.getByRole("option", {name: destinationsArray[3].settings["webhook"] as string});
 
-    const phoneNumberOptionNone = screen.getByRole("option", {name: /none/i});
-    const phoneNumberOption1 = screen.getByRole("option", {name: phoneNumbers[0].phone_number});
-    const phoneNumberOption2 = screen.getByRole("option", {name: phoneNumbers[1].phone_number});
-
-    expect(phoneNumberOptionNone).toBeInTheDocument();
-    expect(phoneNumberOption1).toBeInTheDocument();
-    expect(phoneNumberOption2).toBeInTheDocument();
+    expect(destinationOption1).toBeInTheDocument();
+    expect(destinationOption2).toBeInTheDocument();
+    expect(destinationOption3).toBeInTheDocument();
+    expect(destinationOption4).toBeInTheDocument();
   });
 
   it("renders the active checkbox correctly", () => {
@@ -287,8 +306,8 @@ describe("Functionality", () => {
         profile={existingProfile2}
         timeslots={timeslots}
         filters={filters}
-        mediaOptions={mediaOptions}
-        phoneNumbers={phoneNumbers}
+        mediaOptions={media}
+        destinations={destinationsMap}
         exists={true}
         onSave={onSaveMock}
         onDelete={onDeleteMock}
@@ -301,18 +320,15 @@ describe("Functionality", () => {
     const expectedProfile = {
       ...existingProfile2,
       filters: [1, 2],
-      media: ["EM", "SM"],
       // eslint-disable-next-line @typescript-eslint/camelcase
-      phone_number: 2,
+      destinations: [destinationsArray[1], destinationsArray[2], destinationsArray[3]],
       active: false,
     };
 
     const saveButton = screen.getByRole("button", { name: /save/i });
     const filterSelector = screen.getByRole("combobox", { name: /filters/i });
-    const mediaSelector = screen.getByRole("combobox", { name: /media/i });
-    const phoneNumberSelector = screen.getByRole("button", { name: phoneNumbers[0].phone_number });
+    const destinationsSelector = screen.getByRole("button", { name: `${destinationsArray[1].suggested_label}, ${destinationsArray[2].suggested_label}` });
     const filterDropdownButton = within(filterSelector).getByRole("button", { name: /open/i });
-    const mediaDropdownButton = within(mediaSelector).getByRole("button", { name: /open/i });
     const activeCheckbox = screen.getByRole("checkbox", { name: /active/i });
 
     // Add filter
@@ -320,15 +336,10 @@ describe("Functionality", () => {
     const filterOption2 = screen.getByRole("option", { name: filters[1].name });
     userEvent.click(filterOption2);
 
-    // Add media option
-    userEvent.click(mediaDropdownButton);
-    const mediaOption2 = screen.getByRole("option", { name: mediaOptions[1].label });
-    userEvent.click(mediaOption2);
-
-    // Change phone number
-    userEvent.click(phoneNumberSelector);
-    const phoneNumberOption2 = screen.getByRole("option", { name: phoneNumbers[1].phone_number });
-    userEvent.click(phoneNumberOption2);
+    // Change destination
+    userEvent.click(destinationsSelector);
+    const destinationOption4 = screen.getByRole("option", {name: destinationsArray[3].settings["webhook"] as string});
+    userEvent.click(destinationOption4);
 
     // Uncheck active
     userEvent.click(activeCheckbox);
