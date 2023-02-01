@@ -137,34 +137,44 @@ const DestinationsList: React.FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [knownMediaTypes]);
 
-    const createNewDestination = (newDestination: NewDestination) => {
-        api.postDestination(newDestination)
-            .then((destination: Destination) => {
-                createDestination(destination)
-                displayAlertSnackbar(`Created new destination: 
-                ${destination.label !== undefined && destination.label !== null ? 
-                        destination.label : 
-                        destination.suggested_label}`,
-                    "success");
-            })
-            .catch(
-                defaultErrorHandler((msg: string) => {
-                    displayAlertSnackbar(msg, "error");
-                }),
-            );
+    const createNewDestination = (newDestination: NewDestination): Promise<void> => {
+        return new Promise<void>((resolve, reject) => {
+            api.postDestination(newDestination)
+                .then((destination: Destination) => {
+                    createDestination(destination)
+                    displayAlertSnackbar(`Created new destination: 
+                ${destination.label !== undefined && destination.label !== null ?
+                            destination.label :
+                            destination.suggested_label}`,
+                        "success");
+                    resolve();
+                })
+                .catch(
+                    defaultErrorHandler((msg: string) => {
+                        displayAlertSnackbar(msg, "error");
+                        reject();
+                    }),
+                );
+
+        })
     };
 
-    const updateExistingDestination = (newDestination: DestinationRequest) => {
-        api.putDestination(newDestination)
-            .then((destination: Destination) => {
-                modifyDestination(destination);
-                displayAlertSnackbar(`Updated destination: ${destination.suggested_label}`, "success");
-            })
-            .catch(
-                defaultErrorHandler((msg: string) => {
-                    displayAlertSnackbar(msg, "error");
-                }),
-            );
+    const updateExistingDestination = (newDestination: DestinationRequest): Promise<void> => {
+        return new Promise<void>((resolve, reject) => {
+            api.putDestination(newDestination)
+                .then((destination: Destination) => {
+                    modifyDestination(destination);
+                    displayAlertSnackbar(`Updated destination: ${destination.suggested_label}`, "success");
+                    resolve();
+                })
+                .catch(
+                    defaultErrorHandler((msg: string) => {
+                        displayAlertSnackbar(msg, "error");
+                        reject();
+                    }),
+                );
+        })
+
     };
 
     const removeDestination = (destination: Destination, label: string) => {

@@ -186,7 +186,7 @@ type NewDestinationComponentPropsType = {
     destination?: NewDestination;
     configuredMedia: Media[];
 
-    onCreate: (destination: NewDestination) => void;
+    onCreate: (destination: NewDestination) => Promise<void>;
 };
 
 const NewDestinationComponent: React.FC<NewDestinationComponentPropsType> = ({
@@ -278,9 +278,6 @@ const NewDestinationComponent: React.FC<NewDestinationComponentPropsType> = ({
     };
 
     const handleCreateClick = ()  => {
-        setIsDiscard(true)
-        resetState();
-
         let settings: DestinationSettings = {};
         for (const entry of propertyValues.entries()) {
             settings[entry[0]] = entry[1].value
@@ -291,7 +288,12 @@ const NewDestinationComponent: React.FC<NewDestinationComponentPropsType> = ({
             settings: settings,
         }
 
-        onCreate(newDestination);
+        onCreate(newDestination)
+            .then(() => {
+                setIsDiscard(true)
+                resetState();
+            })
+            .catch();
     };
 
     const handleDiscardClick = ()  => {

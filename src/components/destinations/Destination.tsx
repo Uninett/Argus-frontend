@@ -56,7 +56,7 @@ type DestinationComponentPropsType = {
     properties: DestinationComponentMediaProperty[];
     destination: Destination;
 
-    onSave: (destination: DestinationRequest) => void;
+    onSave: (destination: DestinationRequest) => Promise<void>;
     onDelete: (destination: Destination, label: string) => void;
 };
 
@@ -115,39 +115,41 @@ const DestinationComponent: React.FC<DestinationComponentPropsType> = ({
     };
 
     const handleSaveClick = ()  => {
+        let settings: DestinationSettings = {};
+        let newDestination: DestinationRequest = {} as DestinationRequest;
+
         if (hasTitleChanges && hasPropertyValueChanges) {
-            let settings: DestinationSettings = {};
             for (const entry of propertyValues.entries()) {
                 settings[entry[0]] = entry[1].value
             }
-            const newDestination: DestinationRequest = {
+            newDestination = {
                 pk: destination.pk,
                 label: title === "" ? null : title,
                 settings: settings,
                 media: destination.media.slug
             }
-            onSave(newDestination);
         } else if (hasPropertyValueChanges) {
-            let settings: DestinationSettings = {};
             for (const entry of propertyValues.entries()) {
                 settings[entry[0]] = entry[1].value
             }
-            const newDestination: DestinationRequest = {
+            newDestination = {
                 pk: destination.pk,
                 settings: settings,
                 media: destination.media.slug
             }
-            onSave(newDestination);
-        } else if (hasTitleChanges) {
-            const newDestination: DestinationRequest = {
+        } else if (hasTitleChanges){
+            newDestination = {
                 pk: destination.pk,
                 label: title === "" ? null : title,
                 media: destination.media.slug
             }
-            onSave(newDestination);
         }
 
-        resetState();
+        onSave(newDestination)
+            .then(() => {
+                resetState();
+            })
+            .catch();
     };
 
 

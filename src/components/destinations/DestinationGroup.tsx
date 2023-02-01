@@ -31,7 +31,7 @@ type DestinationGroupPropsType = {
     media: Media;
     destinations: Destination[] | undefined;
 
-    onDestinationUpdate: (destination: DestinationRequest) => void;
+    onDestinationUpdate: (destination: DestinationRequest) => Promise<void>;
     onDestinationDelete: (destination: Destination, label: string) => void;
 };
 
