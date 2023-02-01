@@ -23,6 +23,9 @@ const useStyles = makeStyles((theme: Theme) =>
             fontSize: theme.typography.pxToRem(20),
             fontWeight: theme.typography.fontWeightMedium,
         },
+        destinationGroup: {
+            margin: "1em 0",
+        }
     }),
 );
 
@@ -96,6 +99,7 @@ const DestinationGroup: React.FC<DestinationGroupPropsType> = ({
     return (
         <div className={classes.root}>
             <Accordion
+                className={classes.destinationGroup}
                 expanded={expanded === 'panel1' || expanded === true}
                 onChange={handleChange('panel1')}>
                 <AccordionSummary
