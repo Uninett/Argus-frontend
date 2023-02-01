@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 
 import MenuItem from "@material-ui/core/MenuItem";
 import TextField from "@material-ui/core/TextField";
@@ -27,9 +27,29 @@ import type {
   Filter,
   Timeslot,
   TimeslotPK,
-  MediaAlternative,
-  PhoneNumber,
+  Media, DestinationPK,
 } from "../../api/types";
+import {Destination} from "../../api/types";
+import {
+  destinationPKsToDestinations,
+  destinationPKToSettingsValue,
+  mediaSlugToMediaName
+} from "../../utils";
+import Tooltip from "@material-ui/core/Tooltip";
+import {ListSubheader} from "@material-ui/core";
+import ListItemText from "@material-ui/core/ListItemText";
+import Input from "@material-ui/core/Input";
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 6.5 + ITEM_PADDING_TOP,
+      width: 350,
+    },
+  },
+};
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -56,6 +76,7 @@ const useStyles = makeStyles(() =>
     phoneNumberSelect: {
       flexGrow: 1,
       marginRight: "10px",
+      overflowX: "hidden",
     },
     buttonGroup: {
       marginLeft: "auto",
@@ -68,6 +89,17 @@ const useStyles = makeStyles(() =>
     addPhoneNumberButton: {
       padding: "4px",
     },
+    formControl: {
+      minWidth: 120,
+      maxWidth: 300,
+    },
+    chips: {
+      display: 'flex',
+      flexWrap: 'wrap',
+    },
+    chip: {
+      margin: 2,
+    },
   }),
 );
 
@@ -75,8 +107,8 @@ type NotificationProfileCardPropsType = {
   profile: NotificationProfileKeyed;
   timeslots: Timeslot[];
   filters: Filter[];
-  mediaOptions: { label: string; value: MediaAlternative }[];
-  phoneNumbers: PhoneNumber[];
+  destinations: Map<Media["slug"], Destination[]>;
+  mediaOptions: Media[];
   exists: boolean;
 
   onSave: (profile: NotificationProfileKeyed) => void;
@@ -88,8 +120,7 @@ const NotificationProfileCard = ({
   profile,
   timeslots,
   filters,
-  mediaOptions,
-  phoneNumbers,
+  destinations, mediaOptions,
   exists,
   onSave,
   onDelete,
@@ -101,6 +132,26 @@ const NotificationProfileCard = ({
   const [profileState, setProfileState] = useState<NotificationProfileKeyed>(profile);
   const [unsavedChanges, setUnsavedChanges] = useState<boolean>(false);
   const [filterError, setFilterError] = useState<boolean>(false);
+  const [selectedDestinations, setSelectedDestinations] = useState<DestinationPK[]>([]);
+
+  // On mount
+  useEffect(() => {
+    if (exists) {
+      if (profile.destinations !== null) {
+        setSelectedDestinations(profile.destinations.map(d => d.pk))
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // On selected destinations update
+  useEffect(() => {
+    setProfileState({
+      ...profileState,
+      destinations: destinationPKsToDestinations(selectedDestinations, destinations),
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedDestinations]);
 
   // Action handlers
   const handleTimeslotChange = (event: React.ChangeEvent<{ value: unknown }>) => {
@@ -113,18 +164,13 @@ const NotificationProfileCard = ({
     setProfileState({ ...profileState, filters: (value as Filter[]).map((filter: Filter) => filter.pk) });
   };
 
-  const handleMediaChange = (event: React.ChangeEvent<{}>, value: unknown) => {
+  const handleDestinationsChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setUnsavedChanges(true);
     setProfileState({
       ...profileState,
-      media: (value as { label: string; value: MediaAlternative }[]).map((mediaOption) => mediaOption.value),
-    });
-  };
-
-  const handlePhoneNumberChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setUnsavedChanges(true);
-    // eslint-disable-next-line @typescript-eslint/camelcase
-    setProfileState({ ...profileState, phone_number: event.target.value as number });
+      destinations: destinationPKsToDestinations(event.target.value as DestinationPK[], destinations)
+    })
+    setSelectedDestinations(event.target.value as DestinationPK[])
   };
 
   const handleActiveChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -211,43 +257,49 @@ const NotificationProfileCard = ({
               )}
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={3} className={style.gridItem}>
-            <Typography
-              id={`media-selector-${profileState.pk ? profileState.pk : "create"}-label`}
-              className={style.itemHeader}
-            >
-              Media
-            </Typography>
-            <Autocomplete
-              aria-labelledby={`media-selector-${profileState.pk ? profileState.pk : "create"}-label`}
-              multiple
-              size="small"
-              value={mediaOptions.filter((mediaOption) => profileState.media.includes(mediaOption.value))}
-              options={mediaOptions}
-              getOptionLabel={(option) => option.label}
-              filterSelectedOptions
-              onChange={handleMediaChange}
-              renderInput={(params) => <TextField {...params} variant="standard" placeholder="Filter Name" />}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3} className={style.gridItem}>
-            <Typography className={style.itemHeader}>Phone number</Typography>
+
+          <Grid item xs={12} sm={6} md={6} className={style.gridItem}>
+            <Typography className={style.itemHeader}>Destinations</Typography>
             <div className={style.phoneNumber}>
               <Select
-                className={style.phoneNumberSelect}
-                value={profileState.phone_number ? profileState.phone_number : ""}
-                onChange={handlePhoneNumberChange}
-                data-testid="phone-number-selector"
+                  className={style.phoneNumberSelect}
+                  labelId="destinations-selector"
+                  id="destinations-selector"
+                  multiple
+                  value={selectedDestinations}
+                  onChange={handleDestinationsChange}
+                  input={<Input/>}
+                  renderValue={(selected) => (destinationPKsToDestinations(selected as DestinationPK[], destinations)).map(d => d.suggested_label).join(', ')}
+                  MenuProps={MenuProps}
               >
-                <MenuItem value={""}>
-                  <em>None</em>
-                </MenuItem>
-                {phoneNumbers.map((phoneNumber: PhoneNumber) => (
-                  <MenuItem key={phoneNumber.pk} value={phoneNumber.pk}>
-                    {phoneNumber.phone_number}
-                  </MenuItem>
-                ))}
+
+                {Array.from(destinations).map(([slug, dests]) => {
+                  return [
+                    <ListSubheader>{mediaSlugToMediaName(slug, mediaOptions)}</ListSubheader>,
+                    dests.map(destination => (
+                          <MenuItem key={destination.pk} value={destination.pk}>
+                            <Checkbox checked={selectedDestinations.indexOf(destination.pk) > -1} />
+                            <Tooltip
+                                title={destinationPKToSettingsValue(destination.pk, destinations)}
+                                arrow
+                                disableTouchListener
+                                placement="bottom-start"
+                            >
+                              <ListItemText primary={
+                                destination.label ?
+                                    destination.label :
+                                    (destination.suggested_label ?
+                                        destination.suggested_label :
+                                        destinationPKToSettingsValue(destination.pk, destinations))
+                              } />
+                            </Tooltip>
+                          </MenuItem>
+                    ))
+                  ]
+                })}
+
               </Select>
+
               <IconButton
                 aria-label="Add phone number"
                 className={style.addPhoneNumberButton}
