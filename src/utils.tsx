@@ -4,7 +4,7 @@ import format from "date-fns/format";
 import formatDistance from "date-fns/formatDistance";
 
 // Api
-import type { Incident, User, Token } from "./api/types.d";
+import type {Incident, User, Token, DestinationSettings} from "./api/types.d";
 import api from "./api";
 import auth from "./auth";
 
@@ -17,6 +17,7 @@ import {
   TIMESTAMP_TIME_NO_SECONDS,
   TIMESTAMP_TIMEZONE_OFFSET_FORMAT,
 } from "./config";
+import {Destination, DestinationPK, KnownProperties, Media} from "./api/types.d";
 
 export type ErrorType = string | Error;
 
@@ -288,3 +289,54 @@ export function hyperlinkIfAbsoluteUrl(url: string, title?: string): string | JS
     return url;
   }
 }
+
+export const destinationsMapToArray = (destinations: Map<Media["slug"], Destination[]>) : Destination[] => {
+  let consolidatedDestinations: Destination[] = [];
+  for (const ds of destinations.values()) {
+    consolidatedDestinations.push(...ds)
+  }
+  return consolidatedDestinations;
+}
+
+export const destinationPKsToDestinations = (destinationPKs: DestinationPK[] | null,
+                                      destinations: Map<Media["slug"], Destination[]>)
+    : Destination[] => {
+  let res: Destination[] = [];
+  if (destinationPKs !== null) {
+    destinationsMapToArray(destinations)
+        .filter((d) => destinationPKs.indexOf(d.pk) !== -1)
+        .map((d) => {
+          if (res.indexOf(d) === -1) {
+            res.push(d);
+          }
+        })
+  }
+  return res;
+};
+
+export const destinationPKToSettingsValue = (destinationPK: DestinationPK | null,
+                                             destinations: Map<Media["slug"], Destination[]>)
+    : string => {
+  let res: string = "";
+  if (destinationPK !== null) {
+    for (const destEntry of destinations.entries()) {
+      if (destEntry[1].filter(d => d.pk === destinationPK)) {
+        const dest = destEntry[1].filter(d => d.pk === destinationPK)[0];
+        if (dest !== undefined) {
+          if (dest.settings[KnownProperties.PHONE_NUMBER] !== undefined) {
+            res = dest.settings[KnownProperties.PHONE_NUMBER] as string
+          } else if (dest.settings[KnownProperties.EMAIL] !== undefined) {
+            res = dest.settings[KnownProperties.EMAIL] as string
+          } else if (dest.settings[KnownProperties.MS_TEAMS] !== undefined) {
+            res = dest.settings[KnownProperties.MS_TEAMS] as string
+          }
+        }
+      }
+    }
+  }
+  return res;
+};
+
+export const mediaSlugToMediaName = (slug: Media["slug"], existingMediaArray: Media[]): Media["name"] => {
+  return existingMediaArray.filter((m) => m.slug === slug).map(m => m.name)[0];
+};
