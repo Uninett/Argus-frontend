@@ -10,6 +10,17 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 
 
 
+### Changed
+
+
+- Switched to API v.2 calls for notification profiles
+- The structure of notification profiles: removed the _Media_-selector, replaced the _Phone number_-selector with the _Destinations_-selector. User can now select multiple destinations per notification profile.
+
+
+
+
+
+
 ## [v1.7.0] - 2022-12-16
 
 ### Added
