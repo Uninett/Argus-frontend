@@ -29,6 +29,7 @@ const CreateAck: React.FC<CreateAckPropsType> = ({ onSubmitAck, signOffActionPro
       },
       expiration: selectedDate && selectedDate.toISOString(),
       timestamp: new Date().toISOString(),
+      description: msg,
     });
     setSelectedDate(null);
   };
