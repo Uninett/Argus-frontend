@@ -131,6 +131,8 @@ export interface IncidentTag {
   tag: string;
 }
 
+export type IncidentPK = number;
+
 export interface Incident {
   pk: number;
   start_time: string;
@@ -178,12 +180,38 @@ export interface Event {
   description: string;
 }
 
+export interface BulkEventResponse {
+  changes: {
+    actor: EventActor;
+    timestamp: Timestamp;
+    type: EventTypeTuple;
+    description: string;
+  }
+}
+
 export type EventBody = {
   type: EventType;
   description: string;
 };
 
+export type BulkEventBody = {
+  ids: IncidentPK[];
+  event: {
+    type: EventType;
+    description: string;
+  }
+  timestamp: Timestamp;
+};
+
 export type EventWithoutDescriptionBody = Omit<EventBody, "description">;
+
+export type BulkEventWithoutDescriptionBody = {
+  ids: IncidentPK[];
+  event: {
+    type: EventType;
+  },
+  timestamp: Timestamp;
+}
 
 export type IncidentTicketUrlBody = {
   ticket_url: string;
@@ -229,12 +257,20 @@ export interface Acknowledgement {
   expiration: Timestamp | undefined | null;
 }
 
+
 export type AcknowledgementEventBody = {
   description: string;
   timestamp: Timestamp;
 };
 
 export type AcknowledgementBody = {
+  event: AcknowledgementEventBody;
+  expiration: Timestamp | undefined | null;
+  timestamp: Timestamp;
+};
+
+export type BulkAcknowledgementBody = {
+  ids: IncidentPK[],
   event: AcknowledgementEventBody;
   expiration: Timestamp | undefined | null;
 };
