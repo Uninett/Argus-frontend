@@ -3,12 +3,12 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 
 ## [Unreleased]
 
+## [v1.8.0] - 2023-02-02
+
 ### Added
 
-
+- Use backend bulk endpoints to speed up updating incidents in bulk
 - Visual feedback (table loading) when changing incident filter parameters, and when navigating incident table pages
-
-
 
 ## [v1.7.0] - 2022-12-16
 
