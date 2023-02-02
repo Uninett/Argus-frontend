@@ -92,6 +92,10 @@ const useStyles = makeStyles(() =>
     chip: {
       margin: 2,
     },
+    mediaSubheader: {
+      zIndex: 1,
+      backgroundColor: "#fff",
+    },
   }),
 );
 
@@ -277,7 +281,7 @@ const NotificationProfileCard = ({
 
                 {Array.from(destinations).map(([slug, dests]) => {
                   return [
-                    <ListSubheader>{mediaSlugToMediaName(slug, mediaOptions)}</ListSubheader>,
+                    <ListSubheader className={style.mediaSubheader}>{mediaSlugToMediaName(slug, mediaOptions)}</ListSubheader>,
                     dests.map(destination => (
                           <MenuItem key={destination.pk} value={destination.pk}>
                             <Checkbox checked={selectedDestinations.indexOf(destination.pk) > -1} />
