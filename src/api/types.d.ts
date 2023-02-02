@@ -260,6 +260,7 @@ export interface Acknowledgement {
 
 export type AcknowledgementEventBody = {
   description: string;
+  timestamp: Timestamp;
 };
 
 export type AcknowledgementBody = {
