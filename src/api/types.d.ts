@@ -180,16 +180,6 @@ export interface Event {
   description: string;
 }
 
-export interface BulkEvent {
-  ids: IncidentPK[];
-  event: {
-    actor: EventActor;
-    timestamp: Timestamp;
-    type: EventTypeTuple;
-    description: string;
-  }
-}
-
 export interface BulkEventResponse {
   changes: {
     actor: EventActor;
@@ -210,6 +200,7 @@ export type BulkEventBody = {
     type: EventType;
     description: string;
   }
+  timestamp: Timestamp;
 };
 
 export type EventWithoutDescriptionBody = Omit<EventBody, "description">;
@@ -218,7 +209,8 @@ export type BulkEventWithoutDescriptionBody = {
   ids: IncidentPK[];
   event: {
     type: EventType;
-  }
+  },
+  timestamp: Timestamp;
 }
 
 export type IncidentTicketUrlBody = {
@@ -268,12 +260,12 @@ export interface Acknowledgement {
 
 export type AcknowledgementEventBody = {
   description: string;
-  timestamp: Timestamp;
 };
 
 export type AcknowledgementBody = {
   event: AcknowledgementEventBody;
   expiration: Timestamp | undefined | null;
+  timestamp: Timestamp;
 };
 
 export type BulkAcknowledgementBody = {

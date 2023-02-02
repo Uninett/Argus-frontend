@@ -40,9 +40,8 @@ import {
   MetadataConfig,
   IncidentPK,
   BulkEventWithoutDescriptionBody,
-  BulkEventResponse,
   BulkEventBody,
-  BulkAcknowledgementBody,
+  Timestamp,
 } from "./types.d";
 
 import auth from "../auth";
@@ -356,7 +355,7 @@ class ApiClient {
         description
           ? {
               type: EventType.CLOSE,
-              description,
+              description
             }
           : { type: EventType.CLOSE },
       ),
@@ -385,14 +384,16 @@ class ApiClient {
   }
 
   // Bulk actions on incidents
-  public bulkPostIncidentReopenEvent(pks: IncidentPK[]): Promise<{ changes: Event }> {
+  public bulkPostIncidentReopenEvent(pks: IncidentPK[], timestamp: Timestamp): Promise<{ changes: Event }> {
     return this.resolveOrReject(
         this.authPost<{ changes: Event }, BulkEventWithoutDescriptionBody>(`/api/v2/incidents/events/bulk/`, {
           ids: pks,
           event: {
             type: EventType.REOPEN
-          }
-        }),
+          },
+          timestamp,
+        }
+        ),
         defaultResolver,
         (error) => {
           throw new Error(`Failed to bulk post incident reopen event: ${getErrorCause(error)}`)
@@ -400,7 +401,7 @@ class ApiClient {
     );
   }
 
-  public bulkPostIncidentCloseEvent(pks: IncidentPK[], description?: string): Promise<{ changes: Event }> {
+  public bulkPostIncidentCloseEvent(pks: IncidentPK[], timestamp: Timestamp,  description?: string): Promise<{ changes: Event }> {
     return this.resolveOrReject(
         this.authPost<{ changes: Event }, BulkEventBody | BulkEventWithoutDescriptionBody>(
             `/api/v2/incidents/events/bulk/`,
@@ -411,14 +412,16 @@ class ApiClient {
                   event: {
                     type: EventType.CLOSE,
                     description,
-                  }
+                  },
+                  timestamp,
                 }
                 :
                 {
                   ids: pks,
                   event: {
                     type: EventType.CLOSE
-                  }
+                  },
+                  timestamp,
                 },
         ),
         defaultResolver,
