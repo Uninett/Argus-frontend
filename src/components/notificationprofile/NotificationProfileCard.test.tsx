@@ -11,7 +11,6 @@ import {
   Timeslot
 } from "../../api/types";
 import NotificationProfileCard from "./NotificationProfileCard";
-import {destinationPKsToDestinations} from "../../utils";
 
 // MOCK DATA INPUT TO COMPONENT
 const timeslots: Timeslot[] = [
@@ -49,7 +48,6 @@ const filters: Filter[] = [
 const media: Media[] = [
   { slug: "email", name: "Email" },
   { slug: "sms", name: "SMS" },
-  { slug: "ms_teams", name: "MS Teams" },
 ];
 
 const destinationsArray: Destination[] = [
@@ -82,15 +80,6 @@ const destinationsArray: Destination[] = [
       synced: true
     }
   },
-  {
-    pk: 4,
-    label: "test_msteams",
-    media: media[2],
-    suggested_label: "MS Teams: MS TEAMS #4",
-    settings: {
-      webhook: "https://test.test"
-    }
-  },
 ]
 
 const existingProfile1: NotificationProfileKeyed = {
@@ -121,8 +110,7 @@ const newProfile: NotificationProfileKeyed = {
 
 const destinationsMap = new Map<Media["slug"], Destination[]>([
   ["sms", [destinationsArray[0]]],
-  ["email", [destinationsArray[1], destinationsArray[2]]],
-  ["ms_teams", [destinationsArray[3]]],
+  ["email", [destinationsArray[1], destinationsArray[2]]]
 ])
 
 // MOCK FUNCTIONS
@@ -186,12 +174,10 @@ describe("Rendering existing profile", () => {
     const destinationOption1 = screen.getByRole("option", {name: destinationsArray[0].settings["phone_number"] as string});
     const destinationOption2 = screen.getByRole("option", {name: destinationsArray[1].settings["email_address"] as string});
     const destinationOption3 = screen.getByRole("option", {name: destinationsArray[2].settings["email_address"] as string});
-    const destinationOption4 = screen.getByRole("option", {name: destinationsArray[3].settings["webhook"] as string});
 
     expect(destinationOption1).toBeInTheDocument();
     expect(destinationOption2).toBeInTheDocument();
     expect(destinationOption3).toBeInTheDocument();
-    expect(destinationOption4).toBeInTheDocument();
   });
 
   it("renders the active checkbox correctly", () => {
@@ -268,12 +254,10 @@ describe("Rendering new profile", () => {
     const destinationOption1 = screen.getByRole("option", {name: destinationsArray[0].settings["phone_number"] as string});
     const destinationOption2 = screen.getByRole("option", {name: destinationsArray[1].settings["email_address"] as string});
     const destinationOption3 = screen.getByRole("option", {name: destinationsArray[2].settings["email_address"] as string});
-    const destinationOption4 = screen.getByRole("option", {name: destinationsArray[3].settings["webhook"] as string});
 
     expect(destinationOption1).toBeInTheDocument();
     expect(destinationOption2).toBeInTheDocument();
     expect(destinationOption3).toBeInTheDocument();
-    expect(destinationOption4).toBeInTheDocument();
   });
 
   it("renders the active checkbox correctly", () => {
@@ -319,7 +303,7 @@ describe("Functionality", () => {
       ...existingProfile2,
       filters: [1, 2],
       // eslint-disable-next-line @typescript-eslint/camelcase
-      destinations: [destinationsArray[1], destinationsArray[2], destinationsArray[3]],
+      destinations: [destinationsArray[0], destinationsArray[1], destinationsArray[2]],
       active: false,
     };
 
@@ -336,7 +320,7 @@ describe("Functionality", () => {
 
     // Change destination
     userEvent.click(destinationsSelector);
-    const destinationOption4 = screen.getByRole("option", {name: destinationsArray[3].settings["webhook"] as string});
+    const destinationOption4 = screen.getByRole("option", {name: destinationsArray[0].settings["phone_number"] as string});
     userEvent.click(destinationOption4);
 
     // Uncheck active
