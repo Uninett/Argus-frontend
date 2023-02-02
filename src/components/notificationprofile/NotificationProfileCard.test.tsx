@@ -6,10 +6,8 @@ import userEvent from "@testing-library/user-event";
 import {
   Destination,
   Filter,
-  KnownProperties,
   Media,
   NotificationProfileKeyed,
-  PhoneNumber,
   Timeslot
 } from "../../api/types";
 import NotificationProfileCard from "./NotificationProfileCard";
