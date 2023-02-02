@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme: Theme) =>
                 duration: theme.transitions.duration.leavingScreen,
             }),
             position: "absolute",
-            top: "80px",
+            top: "75px",
             background: theme.palette.grey["200"],
             color: theme.palette.primary.dark,
             height: "100px",
@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme: Theme) =>
         drawerPaper: {
             width: drawerWidth,
             position: "absolute",
-            top: "80px",
+            top: "75px",
             background: theme.palette.grey["200"],
         },
         drawerHeader: {
