@@ -267,6 +267,7 @@ export type AcknowledgementBody = {
   event: AcknowledgementEventBody;
   expiration: Timestamp | undefined | null;
   timestamp: Timestamp;
+  description: string;
 };
 
 export type BulkAcknowledgementBody = {
