@@ -4,6 +4,12 @@ This file documents changes to Argus-frontend that are important for the users t
 
 ## [Unreleased]
 
+## [v1.8.0] - 2023-02-15
+
+### Fixed
+
+- Ensure that description is stored properly when acking, both in bulk and directly
+
 ## [v1.8.0] - 2023-02-02
 
 ### Added
