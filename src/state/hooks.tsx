@@ -1,6 +1,6 @@
 import {useCallback, useContext} from "react";
 
-import type {AutoUpdateMethod, User, Token} from "../api/types.d";
+import type {AutoUpdateMethod, User, Token, Media, Destination} from "../api/types.d";
 
 import {
   ApiState,
@@ -23,6 +23,13 @@ import {
   resetTicketState,
   TicketStateType
 } from "./reducers/ticketurl";
+import {
+  createDestination, deleteDestination,
+  DestinationsStateType,
+  fetchConfiguredMedia,
+  loadDestinations,
+  modifyDestination
+} from "./reducers/destinations";
 
 export type UseApiStateActionType = {
   setAutoUpdateMethod: (method: AutoUpdateMethod) => void;
@@ -138,6 +145,42 @@ export const useTicket = (): [TicketStateType, UseTicketActionType] => {
       invalidUrl: invalidUrlCallback,
       manuallyEditTicket: manuallyEditTicketCallback,
       resetTicketState: resetTicketStateCallback,
+    },
+  ];
+};
+
+/*
+ * Destination
+ */
+export type UseDestinationsActionType = {
+  fetchConfiguredMedia: (configuredMedia: Media[]) => void;
+  loadDestinations: (destinations: Destination[]) => void;
+  modifyDestination: (destination: Destination) => void;
+  createDestination: (destination: Destination) => void;
+  deleteDestination: (destination: Destination) => void;
+};
+
+export const useDestinations = (): [DestinationsStateType, UseDestinationsActionType] => {
+  const {
+    state: { destinationsState },
+    dispatch,
+  } = useContext(AppContext);
+
+  const fetchConfiguredMediaCallback = useCallback((configuredMedia: Media[]) => dispatch(fetchConfiguredMedia(configuredMedia)), [dispatch]);
+  const loadDestinationsCallback = useCallback((destinations: Destination[]) => dispatch(loadDestinations(destinations)), [dispatch]);
+  const modifyDestinationCallback = useCallback((destination: Destination) => dispatch(modifyDestination(destination)), [dispatch]);
+  const createDestinationCallback = useCallback((destination: Destination) => dispatch(createDestination(destination)), [dispatch]);
+  const deleteDestinationCallback = useCallback((destination: Destination) => dispatch(deleteDestination(destination)), [dispatch]);
+
+
+  return [
+    destinationsState,
+    {
+      fetchConfiguredMedia: fetchConfiguredMediaCallback,
+      loadDestinations: loadDestinationsCallback,
+      modifyDestination: modifyDestinationCallback,
+      createDestination: createDestinationCallback,
+      deleteDestination: deleteDestinationCallback,
     },
   ];
 };

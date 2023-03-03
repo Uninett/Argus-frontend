@@ -112,6 +112,62 @@ export interface NotificationProfile {
 }
 
 /*
+ * Destinations
+ */
+
+export type DestinationPK = number;
+
+export type Media = {
+  slug: string;
+  name: string;
+}
+
+export type MediaProperty = {
+  title: string;
+  type: string; // value type
+  description?: string;
+  format?: string;
+}
+
+export type MediaSchema = {
+  json_schema: {
+    $id: string;
+    description: string;
+    properties: {
+      [property_name: string]: MediaProperty;
+    };
+    required: KnownProperties[] | undefined;
+    title: string;
+  }
+}
+
+export type DestinationRequest = {
+  pk: DestinationPK;
+  label?: string | undefined; // title given by user
+  media: string; // media slug
+  settings?: DestinationSettings;
+}
+
+export type DestinationSettings = {
+  [property_name: string]: string | boolean;
+};
+
+export type Destination = {
+  pk: DestinationPK;
+  label: string | undefined; // title given by user
+  media: Media;
+  settings: DestinationSettings
+  suggested_label: string;
+}
+
+export type NewDestination = {
+  label: string | undefined; // title given by user
+  media: string; // media slug
+  settings: DestinationSettings;
+}
+
+
+/*
  * Incidents
  */
 
