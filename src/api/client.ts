@@ -35,7 +35,13 @@ import {
   ApiListener,
   Resolver,
   ErrorCreator,
-  MetadataConfig, Media, Destination, MediaSchema, DestinationPK, DestinationRequest, NewDestination,
+  MetadataConfig,
+  Media,
+  Destination,
+  MediaSchema,
+  DestinationPK,
+  DestinationRequest,
+  NewDestination,
   IncidentPK,
   BulkEventWithoutDescriptionBody,
   BulkEventBody,
@@ -125,17 +131,17 @@ class ApiClient {
           const { status } = error.response;
           const { url } = error.response.config; // endpoint relative url that was requested
           const { data } = error.response; // error cause message
-          
+
           if (status === 401) {
             unauthorizedCallback(error.response, error);
           } else if (status >= 500 && status <= 599) {
             serverErrorCallback(error.response, error);
-          } else if (url.includes('/automatic-ticket/') && (status >= 500 && status <= 599)) {
+          } else if (url.includes("/automatic-ticket/") && status >= 500 && status <= 599) {
             pluginErrorCallback(error.response, error);
-          } else if (url.includes('/automatic-ticket/') && typeof data === 'string' && data.includes('No path to')) {
+          } else if (url.includes("/automatic-ticket/") && typeof data === "string" && data.includes("No path to")) {
             pluginErrorCallback(error.response, error);
-          } else if (url.includes('/automatic-ticket/')) {
-            pluginErrorCallback(error.response, 'Please, create ticket manually')
+          } else if (url.includes("/automatic-ticket/")) {
+            pluginErrorCallback(error.response, "Please, create ticket manually");
           }
         }
         return Promise.reject(error);
@@ -245,7 +251,9 @@ class ApiClient {
   // NotificationProfile
   public getNotificationProfile(pk: NotificationProfilePK): Promise<NotificationProfileSuccessResponse> {
     return this.resolveOrReject(
-      this.authGet<NotificationProfileSuccessResponse, GetNotificationProfileRequest>(`/api/v2/notificationprofile/${pk}/`),
+      this.authGet<NotificationProfileSuccessResponse, GetNotificationProfileRequest>(
+        `/api/v2/notificationprofile/${pk}/`,
+      ),
       defaultResolver,
       (error) => new Error(`Failed to get notification profile: ${getErrorCause(error)}`),
     );
@@ -253,7 +261,9 @@ class ApiClient {
 
   public getAllNotificationProfiles(): Promise<NotificationProfileSuccessResponse[]> {
     return this.resolveOrReject(
-      this.authGet<NotificationProfileSuccessResponse[], GetNotificationProfileRequest>(`/api/v2/notificationprofiles/`),
+      this.authGet<NotificationProfileSuccessResponse[], GetNotificationProfileRequest>(
+        `/api/v2/notificationprofiles/`,
+      ),
       defaultResolver,
       (error) => new Error(`Failed to get notification profiles: ${getErrorCause(error)}`),
     );
@@ -319,51 +329,54 @@ class ApiClient {
   // Destinations
   public getAllMedia(): Promise<Media[]> {
     return this.resolveOrReject(
-        this.authGet<Media[], never>(`/api/v2/notificationprofiles/media/`),
-        defaultResolver,
-        (error) => new Error(`Failed to get configured media: ${getErrorCause(error)}`),
+      this.authGet<Media[], never>(`/api/v2/notificationprofiles/media/`),
+      defaultResolver,
+      (error) => new Error(`Failed to get configured media: ${getErrorCause(error)}`),
     );
   }
 
   public getAllDestinations(): Promise<Destination[]> {
     return this.resolveOrReject(
-        this.authGet<Destination[], never>(`/api/v2/notificationprofiles/destinations/`),
-        defaultResolver,
-        (error) => new Error(`Failed to get destinations: ${getErrorCause(error)}`),
+      this.authGet<Destination[], never>(`/api/v2/notificationprofiles/destinations/`),
+      defaultResolver,
+      (error) => new Error(`Failed to get destinations: ${getErrorCause(error)}`),
     );
   }
 
   public getMediaSchemaBySlug(slug: string): Promise<MediaSchema> {
     return this.resolveOrReject(
-        this.authGet<MediaSchema, string>(`/api/v2/notificationprofiles/media/${slug}/json_schema/`),
-        defaultResolver,
-        (error) => new Error(`Failed to get media schema of type ${slug}: ${getErrorCause(error)}`),
+      this.authGet<MediaSchema, string>(`/api/v2/notificationprofiles/media/${slug}/json_schema/`),
+      defaultResolver,
+      (error) => new Error(`Failed to get media schema of type ${slug}: ${getErrorCause(error)}`),
     );
   }
 
   // Create new destination
   public postDestination(destination: NewDestination): Promise<Destination> {
     return this.resolveOrReject(
-        this.authPost<Destination, NewDestination>(`/api/v2/notificationprofiles/destinations/`, destination),
-        defaultResolver,
-        (error) => new Error(`Failed to create destination ${destination.label}: ${getErrorCause(error)}`),
+      this.authPost<Destination, NewDestination>(`/api/v2/notificationprofiles/destinations/`, destination),
+      defaultResolver,
+      (error) => new Error(`Failed to create destination ${destination.label}: ${getErrorCause(error)}`),
     );
   }
 
   public deleteDestination(destinationPk: DestinationPK): Promise<void> {
     return this.resolveOrReject(
-        this.authDelete<never, DestinationPK>(`/api/v2/notificationprofiles/destinations/${destinationPk}`),
-        defaultResolver,
-        (error) => new Error(`Failed to delete destination ${destinationPk}: ${getErrorCause(error)}`),
+      this.authDelete<never, DestinationPK>(`/api/v2/notificationprofiles/destinations/${destinationPk}`),
+      defaultResolver,
+      (error) => new Error(`Failed to delete destination ${destinationPk}: ${getErrorCause(error)}`),
     );
   }
 
   // Update existing destination destination
   public putDestination(destination: DestinationRequest): Promise<Destination> {
     return this.resolveOrReject(
-        this.authPatch<Destination, DestinationRequest>(`/api/v2/notificationprofiles/destinations/${destination.pk}/`, destination),
-        defaultResolver,
-        (error) => new Error(`Failed to update destination ${destination.pk}: ${getErrorCause(error)}`),
+      this.authPatch<Destination, DestinationRequest>(
+        `/api/v2/notificationprofiles/destinations/${destination.pk}/`,
+        destination,
+      ),
+      defaultResolver,
+      (error) => new Error(`Failed to update destination ${destination.pk}: ${getErrorCause(error)}`),
     );
   }
 
@@ -372,7 +385,7 @@ class ApiClient {
       this.authPost<Event, EventWithoutDescriptionBody>(`/api/v1/incidents/${pk}/events/`, { type: EventType.REOPEN }),
       defaultResolver,
       (error) => {
-        throw new Error(`Failed to post incident reopen event: ${getErrorCause(error)}`)
+        throw new Error(`Failed to post incident reopen event: ${getErrorCause(error)}`);
       },
     );
   }
@@ -400,7 +413,7 @@ class ApiClient {
         description
           ? {
               type: EventType.CLOSE,
-              description
+              description,
             }
           : { type: EventType.CLOSE },
       ),
@@ -422,78 +435,85 @@ class ApiClient {
 
   public putCreateTicketEvent(incidentPK: number): Promise<IncidentTicketUrlBody> {
     return this.resolveOrReject(
-        this.authPut<IncidentTicketUrlBody, never>(`/api/v2/incidents/${incidentPK}/automatic-ticket/`),
-        defaultResolver,
-        (error) => error,
+      this.authPut<IncidentTicketUrlBody, never>(`/api/v2/incidents/${incidentPK}/automatic-ticket/`),
+      defaultResolver,
+      (error) => error,
     );
   }
 
   // Bulk actions on incidents
   public bulkPostIncidentReopenEvent(pks: IncidentPK[], timestamp: Timestamp): Promise<{ changes: Event }> {
     return this.resolveOrReject(
-        this.authPost<{ changes: Event }, BulkEventWithoutDescriptionBody>(`/api/v2/incidents/events/bulk/`, {
-          ids: pks,
-          event: {
-            type: EventType.REOPEN
-          },
-          timestamp,
-        }
-        ),
-        defaultResolver,
-        (error) => {
-          throw new Error(`Failed to bulk post incident reopen event: ${getErrorCause(error)}`)
+      this.authPost<{ changes: Event }, BulkEventWithoutDescriptionBody>(`/api/v2/incidents/events/bulk/`, {
+        ids: pks,
+        event: {
+          type: EventType.REOPEN,
         },
+        timestamp,
+      }),
+      defaultResolver,
+      (error) => {
+        throw new Error(`Failed to bulk post incident reopen event: ${getErrorCause(error)}`);
+      },
     );
   }
 
-  public bulkPostIncidentCloseEvent(pks: IncidentPK[], timestamp: Timestamp,  description?: string): Promise<{ changes: Event }> {
+  public bulkPostIncidentCloseEvent(
+    pks: IncidentPK[],
+    timestamp: Timestamp,
+    description?: string,
+  ): Promise<{ changes: Event }> {
     return this.resolveOrReject(
-        this.authPost<{ changes: Event }, BulkEventBody | BulkEventWithoutDescriptionBody>(
-            `/api/v2/incidents/events/bulk/`,
-            description
-                ?
-                {
-                  ids: pks,
-                  event: {
-                    type: EventType.CLOSE,
-                    description,
-                  },
-                  timestamp,
-                }
-                :
-                {
-                  ids: pks,
-                  event: {
-                    type: EventType.CLOSE
-                  },
-                  timestamp,
-                },
-        ),
-        defaultResolver,
-        (error) => new Error(`Failed to bulk post incident close event: ${getErrorCause(error)}`),
+      this.authPost<{ changes: Event }, BulkEventBody | BulkEventWithoutDescriptionBody>(
+        `/api/v2/incidents/events/bulk/`,
+        description
+          ? {
+              ids: pks,
+              event: {
+                type: EventType.CLOSE,
+                description,
+              },
+              timestamp,
+            }
+          : {
+              ids: pks,
+              event: {
+                type: EventType.CLOSE,
+              },
+              timestamp,
+            },
+      ),
+      defaultResolver,
+      (error) => new Error(`Failed to bulk post incident close event: ${getErrorCause(error)}`),
     );
   }
 
   public bulkPatchIncidentTicketUrl(pks: IncidentPK[], ticketUrl: string): Promise<{ changes: IncidentTicketUrlBody }> {
     return this.resolveOrReject(
-        this.authPost<{ changes: IncidentTicketUrlBody }, IncidentTicketUrlBody & { ids: IncidentPK[]}>(`/api/v2/incidents/ticket_url/bulk/`, {
+      this.authPost<{ changes: IncidentTicketUrlBody }, IncidentTicketUrlBody & { ids: IncidentPK[] }>(
+        `/api/v2/incidents/ticket_url/bulk/`,
+        {
           // eslint-disable-next-line @typescript-eslint/camelcase
           ids: pks,
           ticket_url: ticketUrl,
-        }),
-        defaultResolver,
-        (error) => new Error(`Failed to bulk put incident ticket url: ${getErrorCause(error)}`),
+        },
+      ),
+      defaultResolver,
+      (error) => new Error(`Failed to bulk put incident ticket url: ${getErrorCause(error)}`),
     );
   }
 
   public bulkPostAck(pks: IncidentPK[], ack: AcknowledgementBody): Promise<{ changes: Acknowledgement }> {
     return this.resolveOrReject(
-        this.authPost<{ changes: Acknowledgement }, { ids: IncidentPK[], ack: AcknowledgementBody }>(`/api/v2/incidents/acks/bulk/`, {
+      this.authPost<{ changes: Acknowledgement }, { ids: IncidentPK[]; ack: AcknowledgementBody }>(
+        `/api/v2/incidents/acks/bulk/`,
+        {
           ids: pks,
-          ack
-        }),
-        defaultResolver,
-        (error) => new Error(`Failed to bulk post incident ack: ${getErrorCause(error)}`),
+          ack,
+        },
+      ),
+      defaultResolver,
+      (error) => new Error(`Failed to bulk post incident ack: ${getErrorCause(error)}`),
     );
   }
 
@@ -632,8 +652,8 @@ class ApiClient {
               filter.maxlevel = undefined;
             }
 
-            filter.sourceSystemIds = definition.sourceSystemIds
-            filter.tags = definition.tags
+            filter.sourceSystemIds = definition.sourceSystemIds;
+            filter.tags = definition.tags;
 
             return {
               pk: resp.pk,
@@ -653,7 +673,7 @@ class ApiClient {
     };
 
     const filterString = JSON.stringify(definition) as string;
-    console.log(filterString)
+    console.log(filterString);
 
     return this.resolveOrReject(
       this.authPost<FilterSuccessResponse, FilterRequest>(`/api/v1/notificationprofiles/filters/`, {
@@ -674,7 +694,7 @@ class ApiClient {
     };
 
     const filterString = JSON.stringify(definition) as string;
-    console.log(filterString)
+    console.log(filterString);
 
     return this.resolveOrReject(
       this.authPut<FilterSuccessResponse, FilterRequest>(`/api/v1/notificationprofiles/filters/${filter.pk}/`, {
@@ -747,12 +767,12 @@ class ApiClient {
     );
   }
 
-  public getMetadataConfig() : Promise<MetadataConfig> {
+  public getMetadataConfig(): Promise<MetadataConfig> {
     return this.resolveOrReject(
-        this.authGet<MetadataConfig, never>(`/api/`),
-        defaultResolver,
-        (error) =>  new Error(`Failed to get metadata config: ${getErrorCause(error)}`),
-    )
+      this.authGet<MetadataConfig, never>(`/api/`),
+      defaultResolver,
+      (error) => new Error(`Failed to get metadata config: ${getErrorCause(error)}`),
+    );
   }
 
   private post<T, B, R = AxiosResponse<T>>(url: string, data?: B, config?: AxiosRequestConfig): Promise<R> {
