@@ -111,8 +111,8 @@ export const NewDestinationFields: React.FC<NewDestinationFieldsPropsType> = ({
   useEffect(
     () => () => {
       resetState();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [selectedMediaValue],
   );
 
@@ -120,8 +120,8 @@ export const NewDestinationFields: React.FC<NewDestinationFieldsPropsType> = ({
   useEffect(
     () => () => {
       resetState();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
 
@@ -236,8 +236,8 @@ const NewDestinationComponent: React.FC<NewDestinationComponentPropsType> = ({ c
   useEffect(
     () => () => {
       resetState();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
 
