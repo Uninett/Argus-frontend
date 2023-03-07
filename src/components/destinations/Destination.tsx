@@ -17,6 +17,7 @@ const useStyles = makeStyles((theme: Theme) =>
     paper: {
       color: theme.palette.text.secondary,
       minWidth: 30,
+      cursor: "default",
     },
     dangerousButton: {
       background: theme.palette.warning.main,
@@ -43,6 +44,7 @@ const useStyles = makeStyles((theme: Theme) =>
       alignItems: "center",
       display: "flex",
       justifyContent: "space-between",
+      cursor: "default",
     },
   }),
 );

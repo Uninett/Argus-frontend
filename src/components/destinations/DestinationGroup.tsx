@@ -27,6 +27,9 @@ const useStyles = makeStyles((theme: Theme) =>
     destinationGroup: {
       margin: "1em 0",
     },
+    accordionRow: {
+      cursor: "default",
+    },
   }),
 );
 
@@ -116,7 +119,7 @@ const DestinationGroup: React.FC<DestinationGroupPropsType> = ({
         <AccordionDetails>
           <List>
             {destinations?.map((dest) => (
-              <ListItem button key={dest.pk} disableTouchRipple={true}>
+              <ListItem className={classes.accordionRow} button key={dest.pk} disableTouchRipple={true}>
                 <DestinationComponent
                   properties={destinationProperties}
                   destination={dest}
