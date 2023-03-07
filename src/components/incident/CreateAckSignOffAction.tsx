@@ -22,12 +22,15 @@ const CreateAck: React.FC<CreateAckPropsType> = ({ onSubmitAck, signOffActionPro
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   const handleSubmit = (msg: string) => {
+    const timestamp = new Date().toISOString()
     onSubmitAck({
       event: {
         description: msg,
-        timestamp: new Date().toISOString(),
+       timestamp,
       },
       expiration: selectedDate && selectedDate.toISOString(),
+      timestamp,
+      description: msg,
     });
     setSelectedDate(null);
   };

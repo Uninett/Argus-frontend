@@ -737,15 +737,7 @@ describe('Incidents Table: reflects incident modifications', () => {
       userEvent.click(unackedStateBtn);
 
       apiMock
-        .onPost('/api/v1/incidents/1000/acks/',
-          // expect.objectContaining({
-          //   event: {
-          //     description: 'Acknowledged',
-          //     timestamp: '2021-09-28 08:29:06'
-          //   },
-          //   expiration: null
-          // })
-        )
+        .onPost('/api/v2/incidents/1000/acks/')
         .reply(201, {
           pk: 1000,
           event: {
