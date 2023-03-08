@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme: Theme) =>
     dangerousButton: {
       background: theme.palette.warning.main,
       color: WHITE,
-      margin: "0 4px",
+      margin: "0 8px 0 0",
       "&:disabled": {
         cursor: "not-allowed",
         pointerEvents: "all !important",
@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme: Theme) =>
     saveButton: {
       background: theme.palette.primary.main,
       color: WHITE,
-      margin: "0 4px",
+      margin: "0 10px 0 0",
       "&:disabled": {
         cursor: "not-allowed",
         pointerEvents: "all !important",
@@ -75,6 +75,9 @@ const useStyles = makeStyles((theme: Theme) =>
       },
     },
     checked: {},
+    buttonContainer: {
+      margin: theme.spacing(),
+    },
   }),
 );
 
@@ -391,7 +394,7 @@ const NewDestinationComponent: React.FC<NewDestinationComponentPropsType> = ({ c
                   />
                 )}
               </Grid>
-              <Grid item>
+              <Grid item className={classes.buttonContainer}>
                 <Button
                   variant="contained"
                   size="small"
