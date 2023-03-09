@@ -77,6 +77,8 @@ const useStyles = makeStyles((theme: Theme) =>
     checked: {},
     buttonContainer: {
       margin: theme.spacing(),
+      display: "flex",
+      flexWrap: "nowrap",
     },
   }),
 );
