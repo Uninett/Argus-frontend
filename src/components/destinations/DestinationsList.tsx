@@ -177,7 +177,14 @@ const DestinationsList: React.FC = () => {
         .putDestination(newDestination)
         .then((destination: Destination) => {
           modifyDestination(destination);
-          displayAlertSnackbar(`Updated destination: ${destination.suggested_label}`, "success");
+          displayAlertSnackbar(
+            `Updated destination: ${
+              destination.label !== undefined && destination.label !== null
+                ? destination.label
+                : destination.suggested_label
+            }`,
+            "success",
+          );
           resolve();
         })
         .catch(
@@ -194,7 +201,12 @@ const DestinationsList: React.FC = () => {
       .deleteDestination(destination.pk)
       .then(() => {
         deleteDestination(destination);
-        displayAlertSnackbar(`Deleted destination: ${label}`, "warning");
+        displayAlertSnackbar(
+          `Deleted destination: ${
+            destination.label !== undefined && destination.label !== null ? destination.label : label
+          }`,
+          "warning",
+        );
       })
       .catch(
         defaultErrorHandler((msg: string) => {
@@ -263,7 +275,6 @@ const DestinationsList: React.FC = () => {
         {[...destinations.keys()].map((mediaType: string) => {
           return (
             <DestinationGroup
-              // todo fix this
               name={configuredMedia.filter((e) => e.slug === mediaType)[0].name}
               media={configuredMedia.filter((e) => e.slug === mediaType)[0]}
               destinations={destinations.get(mediaType)}
