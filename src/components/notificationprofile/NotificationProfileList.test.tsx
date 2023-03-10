@@ -4,10 +4,9 @@ import React from "react";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
-    Filter,
-    MediaAlternative,
+    Destination,
+    Filter, Media,
     NotificationProfile,
-    NotificationProfileKeyed,
     PhoneNumber,
     Timeslot
 } from "../../api/types";
@@ -40,20 +39,42 @@ const filters: Filter[] = [
     },
 ];
 
-const phoneNumbers: PhoneNumber[] = [
+const media: Media[] = [
+    { slug: "email", name: "Email" },
+    { slug: "sms", name: "SMS" },
+];
+
+const destinationsArray: Destination[] = [
     {
         pk: 1,
-        user: 1,
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        phone_number: "+4712345678",
+        label: "test_sms",
+        media: media[1],
+        suggested_label: "SMS: +4747474747",
+        settings: {
+            phone_number: "+4747474747"
+        }
     },
     {
         pk: 2,
-        user: 1,
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        phone_number: "+4787654321",
+        label: "test_email",
+        media: media[0],
+        suggested_label: "Email: test@test.test",
+        settings: {
+            email_address: "test@test.test",
+            synced: false
+        }
     },
-];
+    {
+        pk: 3,
+        label: "test_email_synced",
+        media: media[0],
+        suggested_label: "Email: synced@test.test",
+        settings: {
+            email_address: "synced@test.test",
+            synced: true
+        }
+    },
+]
 
 
 // For avoiding authentication errors
@@ -76,14 +97,14 @@ describe("Rendering profile list with no existing timeslots", () => {
             .onGet("/api/v1/auth/user/")
             // eslint-disable-next-line @typescript-eslint/camelcase
             .reply(200, { username: "test", first_name: "test", last_name: "test", email: "test" })
-            .onGet("/api/v1/notificationprofiles/")
+            .onGet("/api/v2/notificationprofiles/")
             .reply(200, [] as NotificationProfile[])
-            .onGet("/api/v1/notificationprofiles/timeslots/")
+            .onGet("/api/v2/notificationprofiles/timeslots/")
             .reply(200, [] as Timeslot[])
-            .onGet("/api/v1/notificationprofiles/filters/")
+            .onGet("/api/v2/notificationprofiles/filters/")
             .reply(200, filters as Filter[])
-            .onGet("/api/v1/auth/phone-number/")
-            .reply(200, phoneNumbers as PhoneNumber[]);
+            .onGet("/api/v2/notificationprofiles/destinations/")
+            .reply(200, destinationsArray as Destination[]);
 
         render(
             <NotificationProfileList/>,
