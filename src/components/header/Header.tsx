@@ -246,8 +246,8 @@ const Header: React.FC<HeaderPropsType> = () => {
   const menuId = "primary-search-account-menu";
   const renderMenu = (
     <Menu anchorEl={anchorEl} id={menuId} open={isMenuOpen} onClose={handleMenuClose}>
-      <MenuItem onClick={handleMenuClose} component={Link} to="/settings">
-        Settings
+      <MenuItem onClick={handleMenuClose} component={Link} to="/destinations">
+          Destinations
       </MenuItem>
       <MenuItem onClick={handleLogout}>Logout</MenuItem>
     </Menu>
