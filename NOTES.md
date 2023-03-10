@@ -17,10 +17,13 @@ This file documents changes to Argus-frontend that are important for the users t
 - Use backend bulk endpoints to speed up updating incidents in bulk
 - Visual feedback (table loading) when changing incident filter parameters, and when navigating incident table pages
 
+
 ### Changed
 
 
+- The structure of notification profiles: removed the _Media_-selector, replaced the _Phone number_-selector with the _Destinations_-selector. User can now select multiple destinations per notification profile.
 - _Settings_ are replaced with _Destinations_. It is now possible to create/update/delete emails and other media (that are configured), in addition to phone numbers.
+
 
 
 

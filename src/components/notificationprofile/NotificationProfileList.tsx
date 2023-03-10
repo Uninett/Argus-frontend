@@ -14,13 +14,13 @@ import { useAlerts } from "../alertsnackbar";
 import api from "../../api";
 
 import type {
-  NotificationProfile,
-  NotificationProfileKeyed,
-  Filter,
-  Timeslot,
-  MediaAlternative,
-  PhoneNumber,
+    NotificationProfile,
+    NotificationProfileKeyed,
+    Filter,
+    Timeslot,
+    PhoneNumber, Media, Destination,
 } from "../../api/types";
+import {useDestinations} from "../../state/hooks";
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -53,6 +53,8 @@ const NotificationProfileList = () => {
   const displayAlert = useAlerts();
 
   // State
+  const [{configuredMedia, destinations}, { fetchConfiguredMedia, loadDestinations }] = useDestinations();
+
   const [timeslots, setTimeslots] = useState<Timeslot[]>([]);
   const [filters, setFilters] = useState<Filter[]>([]);
   const [profiles, setProfiles] = useState<NotificationProfileKeyed[]>([]);
@@ -64,29 +66,47 @@ const NotificationProfileList = () => {
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const mediaOptions: { label: string; value: MediaAlternative }[] = [
-    {
-      label: "Email",
-      value: "EM",
-    },
-    {
-      label: "SMS",
-      value: "SM",
-    },
-  ];
-
   // Function for converting NotificationProfile to a keyed object (NotificationProfileKeyed)
   const profileToKeyed = (profile: NotificationProfile): NotificationProfileKeyed => {
     return {
       timeslot: profile.timeslot.pk,
       filters: profile.filters.map((filter: Filter) => filter.pk),
-      media: profile.media,
       active: profile.active,
       // eslint-disable-next-line @typescript-eslint/camelcase
-      phone_number: profile.phone_number ? profile.phone_number.pk : null,
+      // phone_number: profile.phone_number ? profile.phone_number.pk : null,
+      destinations: profile.destinations ? profile.destinations : null,
       pk: profile.pk,
     };
   };
+
+    // On mount
+    useEffect(() => {
+        getConfiguredMedia();
+        fetchAllDestinations();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const getConfiguredMedia = () => {
+        api.getAllMedia()
+            .then((res: Media[]) => {
+                fetchConfiguredMedia(res);
+            })
+            .catch((error) => {
+                displayAlert(error.message, "error");
+                setIsLoading(false);
+            });
+    }
+
+    const fetchAllDestinations = () => {
+        api.getAllDestinations()
+            .then((res: Destination[]) => {
+                loadDestinations(res);
+            })
+            .catch((error) => {
+                displayAlert(error.message, "error");
+                setIsLoading(false);
+            });
+    }
 
   // Fetch data from API on mount
   useEffect(() => {
@@ -98,7 +118,8 @@ const NotificationProfileList = () => {
     ])
       .then(([timeslotResponse, filterResponse, profileResponse, phoneNumberResponse]) => {
         // Convert response to keyed profile
-        const keyedProfileResponse = profileResponse.map((profile) => profileToKeyed(profile));
+        const keyedProfileResponse = profileResponse
+            .map((profile) => profileToKeyed(profile));
 
         setTimeslots(timeslotResponse);
         setFilters(filterResponse);
@@ -115,7 +136,7 @@ const NotificationProfileList = () => {
   // Action handlers
   const handleCreate = (profile: NotificationProfileKeyed) => {
     api
-      .postNotificationProfile(profile.timeslot, profile.filters, profile.media, profile.active, profile.phone_number)
+      .postNotificationProfile(profile.timeslot, profile.filters, profile.active, profile.destinations?.map(d => d.pk))
       .then((newProfile) => {
         // Add the new notification profile to the list
         const newProfileKeyed = profileToKeyed(newProfile);
@@ -132,7 +153,7 @@ const NotificationProfileList = () => {
   const handleSave = (profile: NotificationProfileKeyed) => {
      if (profile.pk) {
          api
-             .putNotificationProfile(profile.pk, profile.timeslot, profile.filters, profile.media, profile.active, profile.phone_number)
+             .putNotificationProfile(profile.pk, profile.timeslot, profile.filters, profile.active, profile.destinations?.map(d => d.pk))
              .then(() => displayAlert("Notification profile successfully updated", "success"))
              .catch((error: Error) => displayAlert(error.message, "error"));
 
@@ -174,9 +195,8 @@ const NotificationProfileList = () => {
   const newProfile: NotificationProfileKeyed = {
     timeslot: timeslots.length > 0 ? timeslots[0].pk : 0,
     filters: [],
-    media: [],
     // eslint-disable-next-line @typescript-eslint/camelcase
-    phone_number: 0,
+    destinations: null,
     active: true,
   };
 
@@ -217,8 +237,8 @@ const NotificationProfileList = () => {
             profile={newProfile}
             timeslots={timeslots}
             filters={filters}
-            mediaOptions={mediaOptions}
-            phoneNumbers={phoneNumbers}
+            destinations={destinations}
+            mediaOptions={configuredMedia}
             exists={false}
             onSave={handleCreate}
             onDelete={handleDiscard}
@@ -250,8 +270,8 @@ const NotificationProfileList = () => {
                 profile={profile}
                 timeslots={timeslots}
                 filters={filters}
-                mediaOptions={mediaOptions}
-                phoneNumbers={phoneNumbers}
+                destinations={destinations}
+                mediaOptions={configuredMedia}
                 exists={true}
                 onSave={handleSave}
                 onDelete={handleDelete}
