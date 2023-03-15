@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme: Theme) =>
         pointerEvents: "all !important",
       },
     },
-    phoneField: {
+    propertyField: {
       margin: theme.spacing(),
     },
     form: {
@@ -191,7 +191,7 @@ const DestinationComponent: React.FC<DestinationComponentPropsType> = ({
           <TextField
             label="Title"
             variant="standard"
-            className={classes.phoneField}
+            className={classes.propertyField}
             value={title}
             onChange={onTitleChange}
             key={`title-of-${destination.pk}`}
@@ -206,7 +206,7 @@ const DestinationComponent: React.FC<DestinationComponentPropsType> = ({
               required={property.required}
               label={property.title}
               variant="standard"
-              className={classes.phoneField}
+              className={classes.propertyField}
               value={{ ...propertyValues.get(property.property_name) }.value}
               onChange={(event) => {
                 handlePropertyChange(event, property.property_name, property.required);

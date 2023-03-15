@@ -11,10 +11,6 @@ import {
   Filter,
   FilterPK,
   FilterString,
-  PhoneNumberPK,
-  PhoneNumber,
-  PhoneNumberRequest,
-  PhoneNumberSuccessResponse,
   NotificationProfilePK,
   Incident,
   Event,
@@ -206,45 +202,6 @@ class ApiClient {
       this.authGet<User, {}>(`/api/v1/auth/users/${userPK}/`),
       defaultResolver,
       (error) => new Error(`Failed to get user: ${getErrorCause(error)}`),
-    );
-  }
-
-  // Phone number
-  public getAllPhoneNumbers(): Promise<PhoneNumber[]> {
-    return this.resolveOrReject(
-      this.authGet<PhoneNumber[], never>(`/api/v1/auth/phone-number/`),
-      defaultResolver,
-      (error) => new Error(`Failed to get phone numbers: ${getErrorCause(error)}`),
-    );
-  }
-
-  public putPhoneNumber(phoneNumberPK: PhoneNumberPK, phoneNumber: string): Promise<PhoneNumber> {
-    return this.resolveOrReject(
-      this.authPut<PhoneNumberSuccessResponse, PhoneNumberRequest>(`/api/v1/auth/phone-number/${phoneNumberPK}/`, {
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        phone_number: phoneNumber,
-      }),
-      defaultResolver,
-      (error) => new Error(`Failed to put phone number: ${getErrorCause(error)}`),
-    );
-  }
-
-  public postPhoneNumber(phoneNumber: string): Promise<PhoneNumber> {
-    return this.resolveOrReject(
-      this.authPost<PhoneNumberSuccessResponse, PhoneNumberRequest>(`/api/v1/auth/phone-number/`, {
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        phone_number: phoneNumber,
-      }),
-      defaultResolver,
-      (error) => new Error(`Failed to create phone number ${phoneNumber}: ${getErrorCause(error)}`),
-    );
-  }
-
-  public deletePhoneNumber(pk: PhoneNumberPK): Promise<void> {
-    return this.resolveOrReject(
-      this.authDelete<never, never>(`/api/v1/auth/phone-number/${pk}/`),
-      defaultResolver,
-      (error) => new Error(`Failed to delete phone number ${pk}: ${getErrorCause(error)}`),
     );
   }
 

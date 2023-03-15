@@ -20,7 +20,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    phoneField: {
+    propertyField: {
       margin: theme.spacing(),
       width: "90%",
     },
@@ -177,7 +177,7 @@ export const NewDestinationFields: React.FC<NewDestinationFieldsPropsType> = ({
         <TextField
           label="Title"
           variant="standard"
-          className={classes.phoneField}
+          className={classes.propertyField}
           value={isReset ? "" : title || ""}
           onChange={(event) => handleTitleChange(event)}
           key={`title-of-${selectedMediaValue}`}
@@ -194,7 +194,7 @@ export const NewDestinationFields: React.FC<NewDestinationFieldsPropsType> = ({
             required={required}
             label={title}
             variant="standard"
-            className={classes.phoneField}
+            className={classes.propertyField}
             value={isReset ? "" : { ...propertyValues.get(property.property_name) }.value || ""}
             onChange={(event) => handlePropertyChange(event, property_name, required)}
             key={`${property_name}-${index}`}
@@ -213,9 +213,15 @@ type NewDestinationComponentPropsType = {
   configuredMedia: Media[];
 
   onCreate: (destination: NewDestination) => Promise<void>;
+
+  isModal?: boolean;
 };
 
-const NewDestinationComponent: React.FC<NewDestinationComponentPropsType> = ({ configuredMedia, onCreate }) => {
+const NewDestinationComponent: React.FC<NewDestinationComponentPropsType> = ({
+  configuredMedia,
+  onCreate,
+  isModal,
+}) => {
   const classes = useStyles();
 
   const [mediaSchemas, setMediaSchemas] = useState<MediaSchema[]>([]);
@@ -353,11 +359,13 @@ const NewDestinationComponent: React.FC<NewDestinationComponentPropsType> = ({ c
   return (
     <div className={classes.root}>
       <Grid container spacing={2}>
-        <Grid item>
-          <Typography gutterBottom variant="h5" component="div">
-            Create new destination
-          </Typography>
-        </Grid>
+        {!isModal && (
+          <Grid item>
+            <Typography gutterBottom variant="h5" component="div">
+              Create new destination
+            </Typography>
+          </Grid>
+        )}
 
         <Grid item container spacing={5}>
           <Grid item>
@@ -400,7 +408,7 @@ const NewDestinationComponent: React.FC<NewDestinationComponentPropsType> = ({ c
               <Grid item className={classes.buttonContainer}>
                 <Button
                   variant="contained"
-                  size="small"
+                  size={isModal ? "large" : "small"}
                   className={classes.saveButton}
                   onClick={handleCreateClick}
                   startIcon={<SaveIcon />}
@@ -410,7 +418,7 @@ const NewDestinationComponent: React.FC<NewDestinationComponentPropsType> = ({ c
                 </Button>
                 <RemoveDestinationButton
                   variant="contained"
-                  size="small"
+                  size={isModal ? "large" : "small"}
                   className={classes.dangerousButton}
                   startIcon={<DeleteIcon />}
                   disabled={!hasChanged}
