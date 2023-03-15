@@ -8,19 +8,21 @@ import { createStyles, makeStyles } from "@material-ui/core/styles";
 
 import Modal from "../modal/Modal";
 import NotificationProfileCard from "./NotificationProfileCard";
-import AddPhoneNumberDialog from "./AddPhoneNumberDialog";
 import { useAlerts } from "../alertsnackbar";
 
 import api from "../../api";
 
 import type {
-    NotificationProfile,
-    NotificationProfileKeyed,
-    Filter,
-    Timeslot,
-    PhoneNumber, Media, Destination,
+  NotificationProfile,
+  NotificationProfileKeyed,
+  Filter,
+  Timeslot,
+  Media,
+  Destination,
 } from "../../api/types";
-import {useDestinations} from "../../state/hooks";
+import { useDestinations } from "../../state/hooks";
+import AddDestinationDialog from "./AddDestinationDialog";
+import { NewDestination } from "../../api/types";
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -53,16 +55,18 @@ const NotificationProfileList = () => {
   const displayAlert = useAlerts();
 
   // State
-  const [{configuredMedia, destinations}, { fetchConfiguredMedia, loadDestinations }] = useDestinations();
+  const [
+    { configuredMedia, destinations },
+    { fetchConfiguredMedia, loadDestinations, createDestination },
+  ] = useDestinations();
 
   const [timeslots, setTimeslots] = useState<Timeslot[]>([]);
   const [filters, setFilters] = useState<Filter[]>([]);
   const [profiles, setProfiles] = useState<NotificationProfileKeyed[]>([]);
-  const [phoneNumbers, setPhoneNumbers] = useState<PhoneNumber[]>([]);
 
   const [createProfileVisible, setCreateProfileVisible] = useState<boolean>(false);
   const [noAvailableTimeslotsDialogOpen, setNoAvailableTimeslotsDialogOpen] = useState<boolean>(false);
-  const [addPhoneNumberDialogOpen, setAddPhoneNumberDialogOpen] = useState<boolean>(false);
+  const [addDestinationDialogOpen, setAddDestinationDialogOpen] = useState<boolean>(false);
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -73,58 +77,52 @@ const NotificationProfileList = () => {
       filters: profile.filters.map((filter: Filter) => filter.pk),
       active: profile.active,
       // eslint-disable-next-line @typescript-eslint/camelcase
-      // phone_number: profile.phone_number ? profile.phone_number.pk : null,
       destinations: profile.destinations ? profile.destinations : null,
       pk: profile.pk,
     };
   };
 
-    // On mount
-    useEffect(() => {
-        getConfiguredMedia();
-        fetchAllDestinations();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+  // On mount
+  useEffect(() => {
+    getConfiguredMedia();
+    fetchAllDestinations();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-    const getConfiguredMedia = () => {
-        api.getAllMedia()
-            .then((res: Media[]) => {
-                fetchConfiguredMedia(res);
-            })
-            .catch((error) => {
-                displayAlert(error.message, "error");
-                setIsLoading(false);
-            });
-    }
+  const getConfiguredMedia = () => {
+    api
+      .getAllMedia()
+      .then((res: Media[]) => {
+        fetchConfiguredMedia(res);
+      })
+      .catch((error) => {
+        displayAlert(error.message, "error");
+        setIsLoading(false);
+      });
+  };
 
-    const fetchAllDestinations = () => {
-        api.getAllDestinations()
-            .then((res: Destination[]) => {
-                loadDestinations(res);
-            })
-            .catch((error) => {
-                displayAlert(error.message, "error");
-                setIsLoading(false);
-            });
-    }
+  const fetchAllDestinations = () => {
+    api
+      .getAllDestinations()
+      .then((res: Destination[]) => {
+        loadDestinations(res);
+      })
+      .catch((error) => {
+        displayAlert(error.message, "error");
+        setIsLoading(false);
+      });
+  };
 
   // Fetch data from API on mount
   useEffect(() => {
-    Promise.all([
-      api.getAllTimeslots(),
-      api.getAllFilters(),
-      api.getAllNotificationProfiles(),
-      api.getAllPhoneNumbers(),
-    ])
-      .then(([timeslotResponse, filterResponse, profileResponse, phoneNumberResponse]) => {
+    Promise.all([api.getAllTimeslots(), api.getAllFilters(), api.getAllNotificationProfiles()])
+      .then(([timeslotResponse, filterResponse, profileResponse]) => {
         // Convert response to keyed profile
-        const keyedProfileResponse = profileResponse
-            .map((profile) => profileToKeyed(profile));
+        const keyedProfileResponse = profileResponse.map((profile) => profileToKeyed(profile));
 
         setTimeslots(timeslotResponse);
         setFilters(filterResponse);
         setProfiles(keyedProfileResponse);
-        setPhoneNumbers(phoneNumberResponse);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -136,7 +134,12 @@ const NotificationProfileList = () => {
   // Action handlers
   const handleCreate = (profile: NotificationProfileKeyed) => {
     api
-      .postNotificationProfile(profile.timeslot, profile.filters, profile.active, profile.destinations?.map(d => d.pk))
+      .postNotificationProfile(
+        profile.timeslot,
+        profile.filters,
+        profile.active,
+        profile.destinations?.map((d) => d.pk),
+      )
       .then((newProfile) => {
         // Add the new notification profile to the list
         const newProfileKeyed = profileToKeyed(newProfile);
@@ -151,13 +154,18 @@ const NotificationProfileList = () => {
   };
 
   const handleSave = (profile: NotificationProfileKeyed) => {
-     if (profile.pk) {
-         api
-             .putNotificationProfile(profile.pk, profile.timeslot, profile.filters, profile.active, profile.destinations?.map(d => d.pk))
-             .then(() => displayAlert("Notification profile successfully updated", "success"))
-             .catch((error: Error) => displayAlert(error.message, "error"));
-
-     }
+    if (profile.pk) {
+      api
+        .putNotificationProfile(
+          profile.pk,
+          profile.timeslot,
+          profile.filters,
+          profile.active,
+          profile.destinations?.map((d) => d.pk),
+        )
+        .then(() => displayAlert("Notification profile successfully updated", "success"))
+        .catch((error: Error) => displayAlert(error.message, "error"));
+    }
   };
 
   const handleDelete = (profile: NotificationProfileKeyed) => {
@@ -180,15 +188,29 @@ const NotificationProfileList = () => {
     setCreateProfileVisible(false);
   };
 
-  const handleAddPhoneNumber = (phoneNumber: string) => {
-    api
-      .postPhoneNumber(phoneNumber)
-      .then((phoneNumber) => {
-        displayAlert("Phone number successfully added", "success");
-        setPhoneNumbers([...phoneNumbers, phoneNumber]);
-        setAddPhoneNumberDialogOpen(false);
-      })
-      .catch((error: Error) => displayAlert(error.message, "error"));
+  const handleAddDestination = (newDestination: NewDestination): Promise<void> => {
+    return new Promise<void>((resolve, reject) => {
+      api
+        .postDestination(newDestination)
+        .then((destination: Destination) => {
+          createDestination(destination);
+          displayAlert(
+            `Created new destination: 
+                ${
+                  destination.label !== undefined && destination.label !== null
+                    ? destination.label
+                    : destination.suggested_label
+                }`,
+            "success",
+          );
+          setAddDestinationDialogOpen(false);
+          resolve();
+        })
+        .catch((error: Error) => {
+          displayAlert(error.message, "error");
+          reject();
+        });
+    });
   };
 
   // Default profile provided to NotificationProfileCard-component when creating a new profile
@@ -206,8 +228,7 @@ const NotificationProfileList = () => {
       title="No timeslots available"
       content={
         <Typography>
-          You have not created any timeslots yet. Create a new timeslot if you
-          want to register a new profile.
+          You have not created any timeslots yet. Create a new timeslot if you want to register a new profile.
         </Typography>
       }
       actions={
@@ -242,7 +263,7 @@ const NotificationProfileList = () => {
             exists={false}
             onSave={handleCreate}
             onDelete={handleDiscard}
-            onAddPhoneNumber={() => setAddPhoneNumberDialogOpen(true)}
+            onAddDestination={() => setAddDestinationDialogOpen(true)}
           />
         </div>
       ) : (
@@ -257,7 +278,7 @@ const NotificationProfileList = () => {
               color="primary"
               startIcon={<AddCircleIcon />}
               onClick={() =>
-                  timeslots.length > 0 ? setCreateProfileVisible(true) : setNoAvailableTimeslotsDialogOpen(true)
+                timeslots.length > 0 ? setCreateProfileVisible(true) : setNoAvailableTimeslotsDialogOpen(true)
               }
             >
               Create new profile
@@ -275,7 +296,7 @@ const NotificationProfileList = () => {
                 exists={true}
                 onSave={handleSave}
                 onDelete={handleDelete}
-                onAddPhoneNumber={() => setAddPhoneNumberDialogOpen(true)}
+                onAddDestination={() => setAddDestinationDialogOpen(true)}
               />
             ))
           ) : (
@@ -285,10 +306,11 @@ const NotificationProfileList = () => {
           )}
         </div>
       )}
-      <AddPhoneNumberDialog
-        open={addPhoneNumberDialogOpen}
-        onSave={handleAddPhoneNumber}
-        onCancel={() => setAddPhoneNumberDialogOpen(false)}
+      <AddDestinationDialog
+        open={addDestinationDialogOpen}
+        configuredMedia={configuredMedia}
+        onSave={handleAddDestination}
+        onCancel={() => setAddDestinationDialogOpen(false)}
       />
       {noTimeslotsLeftDialog}
     </>

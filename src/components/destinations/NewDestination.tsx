@@ -32,6 +32,7 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       flexGrow: 1,
       padding: "2em 0 0 2em",
+      overflow: "hidden",
     },
     paper: {
       p: 2,
