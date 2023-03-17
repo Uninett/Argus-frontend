@@ -78,18 +78,6 @@ export interface FilterString {
   // show?: "open" | "closed" | "both";
 }
 
-
-export type PhoneNumberPK = number;
-
-export interface PhoneNumber {
-  pk: PhoneNumberPK;
-  user: number;
-  phone_number: string;
-}
-
-export type PhoneNumberRequest = Omit<PhoneNumber, "pk" | "user">;
-export type PhoneNumberSuccessResponse = PhoneNumber;
-
 export type NotificationProfilePK = number;
 
 export interface NotificationProfileKeyed {
@@ -108,7 +96,9 @@ export interface NotificationProfile {
   destinations: Destination[] | null;
 }
 
-export type NotificationProfileRequest = Omit<NotificationProfileKeyed, "destinations"> & { destinations: DestinationPK[] | null };
+export type NotificationProfileRequest = Omit<NotificationProfileKeyed, "destinations"> & {
+  destinations: DestinationPK[] | null;
+};
 export type NotificationProfileSuccessResponse = NotificationProfile;
 export type GetNotificationProfileRequest = Pick<NotificationProfile, "pk">;
 export type DeleteNotificationProfileRequest = Pick<NotificationProfile, "pk">;
@@ -122,14 +112,14 @@ export type DestinationPK = number;
 export type Media = {
   slug: string;
   name: string;
-}
+};
 
 export type MediaProperty = {
   title: string;
   type: string; // value type
   description?: string;
   format?: string;
-}
+};
 
 export enum KnownProperties {
   PHONE_NUMBER = "phone_number",
@@ -147,15 +137,15 @@ export type MediaSchema = {
     };
     required: KnownProperties[] | undefined;
     title: string;
-  }
-}
+  };
+};
 
 export type DestinationRequest = {
   pk: DestinationPK;
   label?: string | undefined | null; // title given by user
   media: string; // media slug
   settings?: DestinationSettings;
-}
+};
 
 export type DestinationSettings = {
   [property_name: string]: string | boolean;
@@ -165,16 +155,15 @@ export type Destination = {
   pk: DestinationPK;
   label: string | undefined | null; // title given by user
   media: Media;
-  settings: DestinationSettings
+  settings: DestinationSettings;
   suggested_label: string;
-}
+};
 
 export type NewDestination = {
   label: string | undefined | null; // title given by user
   media: string; // media slug
   settings: DestinationSettings;
-}
-
+};
 
 /*
  * Incidents
@@ -251,7 +240,7 @@ export interface BulkEventResponse {
     timestamp: Timestamp;
     type: EventTypeTuple;
     description: string;
-  }
+  };
 }
 
 export type EventBody = {
@@ -264,7 +253,7 @@ export type BulkEventBody = {
   event: {
     type: EventType;
     description: string;
-  }
+  };
   timestamp: Timestamp;
 };
 
@@ -274,9 +263,9 @@ export type BulkEventWithoutDescriptionBody = {
   ids: IncidentPK[];
   event: {
     type: EventType;
-  },
+  };
   timestamp: Timestamp;
-}
+};
 
 export type IncidentTicketUrlBody = {
   ticket_url: string;
@@ -317,7 +306,6 @@ export interface Acknowledgement {
   expiration: Timestamp | undefined | null;
 }
 
-
 export type AcknowledgementEventBody = {
   description: string;
   timestamp: Timestamp;
@@ -331,7 +319,7 @@ export type AcknowledgementBody = {
 };
 
 export type BulkAcknowledgementBody = {
-  ids: IncidentPK[],
+  ids: IncidentPK[];
   event: AcknowledgementEventBody;
   expiration: Timestamp | undefined | null;
 };
@@ -369,14 +357,14 @@ export type CursorPaginationResponse<T> = {
 export type AutoUpdateMethod = "never" | "realtime" | "interval";
 
 export interface MetadataConfig {
-  'server-version': string;
-  'api-version': {
+  "server-version": string;
+  "api-version": {
     stable: string;
     unstable: string;
   };
-  'jsonapi-schema': {
+  "jsonapi-schema": {
     stable: string;
     v1: string;
     v2: string;
-  }
+  };
 }

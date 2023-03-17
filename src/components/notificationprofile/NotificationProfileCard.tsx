@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 
 import MenuItem from "@material-ui/core/MenuItem";
 import TextField from "@material-ui/core/TextField";
@@ -22,21 +22,11 @@ import { createStyles, makeStyles } from "@material-ui/core/styles";
 
 import { makeConfirmationButton } from "../buttons/ConfirmationButton";
 
-import type {
-  NotificationProfileKeyed,
-  Filter,
-  Timeslot,
-  TimeslotPK,
-  Media, DestinationPK,
-} from "../../api/types";
-import {Destination} from "../../api/types";
-import {
-  destinationPKsToDestinations,
-  destinationPKToSettingsValue,
-  mediaSlugToMediaName
-} from "../../utils";
+import type { NotificationProfileKeyed, Filter, Timeslot, TimeslotPK, Media, DestinationPK } from "../../api/types";
+import { Destination } from "../../api/types";
+import { destinationPKsToDestinations, destinationPKToSettingsValue, mediaSlugToMediaName } from "../../utils";
 import Tooltip from "@material-ui/core/Tooltip";
-import {ListSubheader} from "@material-ui/core";
+import { ListSubheader } from "@material-ui/core";
 import ListItemText from "@material-ui/core/ListItemText";
 import Input from "@material-ui/core/Input";
 
@@ -61,11 +51,11 @@ const useStyles = makeStyles(() =>
       paddingBottom: "5px",
       fontWeight: 600,
     },
-    phoneNumber: {
+    destination: {
       display: "flex",
       alignItems: "flex-start",
     },
-    phoneNumberSelect: {
+    destinationSelect: {
       flexGrow: 1,
       marginRight: "10px",
       overflowX: "hidden",
@@ -78,7 +68,7 @@ const useStyles = makeStyles(() =>
       color: "white",
       backgroundColor: "var(--warning)",
     },
-    addPhoneNumberButton: {
+    addDestinationButton: {
       padding: "4px",
     },
     formControl: {
@@ -86,8 +76,8 @@ const useStyles = makeStyles(() =>
       maxWidth: 300,
     },
     chips: {
-      display: 'flex',
-      flexWrap: 'wrap',
+      display: "flex",
+      flexWrap: "wrap",
     },
     chip: {
       margin: 2,
@@ -109,18 +99,19 @@ type NotificationProfileCardPropsType = {
 
   onSave: (profile: NotificationProfileKeyed) => void;
   onDelete: (profile: NotificationProfileKeyed) => void;
-  onAddPhoneNumber: () => void;
+  onAddDestination: () => void;
 };
 
 const NotificationProfileCard = ({
   profile,
   timeslots,
   filters,
-  destinations, mediaOptions,
+  destinations,
+  mediaOptions,
   exists,
   onSave,
   onDelete,
-  onAddPhoneNumber,
+  onAddDestination,
 }: NotificationProfileCardPropsType) => {
   const style = useStyles();
 
@@ -134,7 +125,7 @@ const NotificationProfileCard = ({
   useEffect(() => {
     if (exists) {
       if (profile.destinations !== null) {
-        setSelectedDestinations(profile.destinations.map(d => d.pk))
+        setSelectedDestinations(profile.destinations.map((d) => d.pk));
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -145,7 +136,7 @@ const NotificationProfileCard = ({
     setProfileState({
       ...profileState,
       destinations: destinationPKsToDestinations(selectedDestinations, destinations),
-    })
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDestinations]);
 
@@ -164,9 +155,9 @@ const NotificationProfileCard = ({
     setUnsavedChanges(true);
     setProfileState({
       ...profileState,
-      destinations: destinationPKsToDestinations(event.target.value as DestinationPK[], destinations)
-    })
-    setSelectedDestinations(event.target.value as DestinationPK[])
+      destinations: destinationPKsToDestinations(event.target.value as DestinationPK[], destinations),
+    });
+    setSelectedDestinations(event.target.value as DestinationPK[]);
   };
 
   const handleActiveChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -188,8 +179,8 @@ const NotificationProfileCard = ({
     onDelete(profileState);
   };
 
-  const handleAddPhoneNumber = () => {
-    onAddPhoneNumber();
+  const handleAddDestination = () => {
+    onAddDestination();
   };
 
   // Function that returns a valid timeslot value for the timeslot selector
@@ -256,61 +247,67 @@ const NotificationProfileCard = ({
 
           <Grid item xs={12} sm={6} md={6} className={style.gridItem}>
             <Typography className={style.itemHeader}>Destinations</Typography>
-            <div className={style.phoneNumber}>
+            <div className={style.destination}>
               <Select
-                  data-testid="destinations-selector"
-                  className={style.phoneNumberSelect}
-                  labelId="destinations-selector"
-                  id="destinations-selector"
-                  multiple
-                  value={selectedDestinations}
-                  onChange={handleDestinationsChange}
-                  input={<Input/>}
-                  renderValue={(selected) => (destinationPKsToDestinations(selected as DestinationPK[], destinations)).map(d => d.suggested_label).join(', ')}
-                  MenuProps={{
-                    variant: "menu",
-                    getContentAnchorEl: null,
-                    PaperProps: {
-                      style: {
-                        maxHeight: ITEM_HEIGHT * 6.5 + ITEM_PADDING_TOP,
-                        width: 350,
-                      },
+                data-testid="destinations-selector"
+                className={style.destinationSelect}
+                labelId="destinations-selector"
+                id="destinations-selector"
+                multiple
+                value={selectedDestinations}
+                onChange={handleDestinationsChange}
+                input={<Input />}
+                renderValue={(selected) =>
+                  destinationPKsToDestinations(selected as DestinationPK[], destinations)
+                    .map((d) => d.suggested_label)
+                    .join(", ")
+                }
+                MenuProps={{
+                  variant: "menu",
+                  getContentAnchorEl: null,
+                  PaperProps: {
+                    style: {
+                      maxHeight: ITEM_HEIGHT * 6.5 + ITEM_PADDING_TOP,
+                      width: 350,
                     },
-                  }}
+                  },
+                }}
               >
-
                 {Array.from(destinations).map(([slug, dests]) => {
                   return [
-                    <ListSubheader className={style.mediaSubheader}>{mediaSlugToMediaName(slug, mediaOptions)}</ListSubheader>,
-                    dests.map(destination => (
-                          <MenuItem key={destination.pk} value={destination.pk}>
-                            <Checkbox checked={selectedDestinations.indexOf(destination.pk) > -1} />
-                            <Tooltip
-                                title={destinationPKToSettingsValue(destination.pk, destinations)}
-                                arrow
-                                disableTouchListener
-                                placement="bottom-start"
-                            >
-                              <ListItemText primary={
-                                destination.label ?
-                                    destination.label :
-                                    (destination.suggested_label ?
-                                        destination.suggested_label :
-                                        destinationPKToSettingsValue(destination.pk, destinations))
-                              } />
-                            </Tooltip>
-                          </MenuItem>
-                    ))
-                  ]
+                    <ListSubheader className={style.mediaSubheader}>
+                      {mediaSlugToMediaName(slug, mediaOptions)}
+                    </ListSubheader>,
+                    dests.map((destination) => (
+                      <MenuItem key={destination.pk} value={destination.pk}>
+                        <Checkbox checked={selectedDestinations.indexOf(destination.pk) > -1} />
+                        <Tooltip
+                          title={destinationPKToSettingsValue(destination.pk, destinations)}
+                          arrow
+                          disableTouchListener
+                          placement="bottom-start"
+                        >
+                          <ListItemText
+                            primary={
+                              destination.label
+                                ? destination.label
+                                : destination.suggested_label
+                                ? destination.suggested_label
+                                : destinationPKToSettingsValue(destination.pk, destinations)
+                            }
+                          />
+                        </Tooltip>
+                      </MenuItem>
+                    )),
+                  ];
                 })}
-
               </Select>
 
               <IconButton
-                aria-label="Add phone number"
-                className={style.addPhoneNumberButton}
+                aria-label="Add destination"
+                className={style.addDestinationButton}
                 color="primary"
-                onClick={handleAddPhoneNumber}
+                onClick={handleAddDestination}
               >
                 <AddCircleIcon />
               </IconButton>

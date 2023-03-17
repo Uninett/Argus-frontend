@@ -3,13 +3,7 @@
 import React from "react";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import {
-  Destination,
-  Filter,
-  Media,
-  NotificationProfileKeyed,
-  Timeslot
-} from "../../api/types";
+import { Destination, Filter, Media, NotificationProfileKeyed, Timeslot } from "../../api/types";
 import NotificationProfileCard from "./NotificationProfileCard";
 
 // MOCK DATA INPUT TO COMPONENT
@@ -57,8 +51,8 @@ const destinationsArray: Destination[] = [
     media: media[1],
     suggested_label: "SMS: +4747474747",
     settings: {
-      phone_number: "+4747474747"
-    }
+      phone_number: "+4747474747",
+    },
   },
   {
     pk: 2,
@@ -67,8 +61,8 @@ const destinationsArray: Destination[] = [
     suggested_label: "Email: test@test.test",
     settings: {
       email_address: "test@test.test",
-      synced: false
-    }
+      synced: false,
+    },
   },
   {
     pk: 3,
@@ -77,10 +71,10 @@ const destinationsArray: Destination[] = [
     suggested_label: "Email: synced@test.test",
     settings: {
       email_address: "synced@test.test",
-      synced: true
-    }
+      synced: true,
+    },
   },
-]
+];
 
 const existingProfile1: NotificationProfileKeyed = {
   pk: 1,
@@ -110,13 +104,13 @@ const newProfile: NotificationProfileKeyed = {
 
 const destinationsMap = new Map<Media["slug"], Destination[]>([
   ["sms", [destinationsArray[0]]],
-  ["email", [destinationsArray[1], destinationsArray[2]]]
-])
+  ["email", [destinationsArray[1], destinationsArray[2]]],
+]);
 
 // MOCK FUNCTIONS
 const onSaveMock = jest.fn();
 const onDeleteMock = jest.fn();
-const onAddPhoneNumberMock = jest.fn();
+const onAddDestinationMock = jest.fn();
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -134,7 +128,7 @@ describe("Rendering existing profile", () => {
         exists={true}
         onSave={onSaveMock}
         onDelete={onDeleteMock}
-        onAddPhoneNumber={onAddPhoneNumberMock}
+        onAddDestination={onAddDestinationMock}
       />,
     );
   });
@@ -171,9 +165,15 @@ describe("Rendering existing profile", () => {
     // Expect length to be: all saved destinations
     expect(within(screen.getByRole("listbox")).getAllByRole("checkbox")).toHaveLength(destinationsArray.length);
 
-    const destinationOption1 = screen.getByRole("option", {name: destinationsArray[0].settings["phone_number"] as string});
-    const destinationOption2 = screen.getByRole("option", {name: destinationsArray[1].settings["email_address"] as string});
-    const destinationOption3 = screen.getByRole("option", {name: destinationsArray[2].settings["email_address"] as string});
+    const destinationOption1 = screen.getByRole("option", {
+      name: destinationsArray[0].settings["phone_number"] as string,
+    });
+    const destinationOption2 = screen.getByRole("option", {
+      name: destinationsArray[1].settings["email_address"] as string,
+    });
+    const destinationOption3 = screen.getByRole("option", {
+      name: destinationsArray[2].settings["email_address"] as string,
+    });
 
     expect(destinationOption1).toBeInTheDocument();
     expect(destinationOption2).toBeInTheDocument();
@@ -189,15 +189,15 @@ describe("Rendering existing profile", () => {
   it("renders the buttons correctly", () => {
     const saveButton = screen.getByRole("button", { name: /save/i });
     const deleteButton = screen.getByRole("button", { name: /delete/i });
-    const addPhoneNumberButton = screen.getByRole("button", { name: /add phone number/i });
+    const addDestinationButton = screen.getByRole("button", { name: /add destination/i });
 
     expect(saveButton).toBeInTheDocument();
     expect(deleteButton).toBeInTheDocument();
-    expect(addPhoneNumberButton).toBeInTheDocument();
+    expect(addDestinationButton).toBeInTheDocument();
 
     expect(saveButton).toBeDisabled();
     expect(deleteButton).toBeEnabled();
-    expect(addPhoneNumberButton).toBeEnabled();
+    expect(addDestinationButton).toBeEnabled();
   });
 });
 
@@ -213,7 +213,7 @@ describe("Rendering new profile", () => {
         exists={false}
         onSave={onSaveMock}
         onDelete={onDeleteMock}
-        onAddPhoneNumber={onAddPhoneNumberMock}
+        onAddDestination={onAddDestinationMock}
       />,
     );
   });
@@ -242,18 +242,24 @@ describe("Rendering new profile", () => {
   });
 
   it("renders the destinations selector correctly", () => {
-    const phoneNumberSelector = screen.getByTestId("destinations-selector");
-    expect(phoneNumberSelector).toBeInTheDocument();
+    const destinationsSelector = screen.getByTestId("destinations-selector");
+    expect(destinationsSelector).toBeInTheDocument();
 
     // User opens dropdown with options
-    userEvent.click(within(phoneNumberSelector).getByRole("button"));
+    userEvent.click(within(destinationsSelector).getByRole("button"));
 
     // Expect length to be: all saved destinations
     expect(within(screen.getByRole("listbox")).getAllByRole("checkbox")).toHaveLength(destinationsArray.length);
 
-    const destinationOption1 = screen.getByRole("option", {name: destinationsArray[0].settings["phone_number"] as string});
-    const destinationOption2 = screen.getByRole("option", {name: destinationsArray[1].settings["email_address"] as string});
-    const destinationOption3 = screen.getByRole("option", {name: destinationsArray[2].settings["email_address"] as string});
+    const destinationOption1 = screen.getByRole("option", {
+      name: destinationsArray[0].settings["phone_number"] as string,
+    });
+    const destinationOption2 = screen.getByRole("option", {
+      name: destinationsArray[1].settings["email_address"] as string,
+    });
+    const destinationOption3 = screen.getByRole("option", {
+      name: destinationsArray[2].settings["email_address"] as string,
+    });
 
     expect(destinationOption1).toBeInTheDocument();
     expect(destinationOption2).toBeInTheDocument();
@@ -269,15 +275,15 @@ describe("Rendering new profile", () => {
   it("renders the buttons correctly", () => {
     const createButton = screen.getByRole("button", { name: /create/i });
     const discardButton = screen.getByRole("button", { name: /discard/i });
-    const addPhoneNumberButton = screen.getByRole("button", { name: /add phone number/i });
+    const addDestinationButton = screen.getByRole("button", { name: /add destination/i });
 
     expect(createButton).toBeInTheDocument();
     expect(discardButton).toBeInTheDocument();
-    expect(addPhoneNumberButton).toBeInTheDocument();
+    expect(addDestinationButton).toBeInTheDocument();
 
     expect(createButton).toBeEnabled();
     expect(discardButton).toBeEnabled();
-    expect(addPhoneNumberButton).toBeEnabled();
+    expect(addDestinationButton).toBeEnabled();
   });
 });
 
@@ -293,7 +299,7 @@ describe("Functionality", () => {
         exists={true}
         onSave={onSaveMock}
         onDelete={onDeleteMock}
-        onAddPhoneNumber={onAddPhoneNumberMock}
+        onAddDestination={onAddDestinationMock}
       />,
     );
   });
@@ -309,7 +315,9 @@ describe("Functionality", () => {
 
     const saveButton = screen.getByRole("button", { name: /save/i });
     const filterSelector = screen.getByRole("combobox", { name: /filters/i });
-    const destinationsSelector = screen.getByRole("button", { name: `${destinationsArray[1].suggested_label}, ${destinationsArray[2].suggested_label}` });
+    const destinationsSelector = screen.getByRole("button", {
+      name: `${destinationsArray[1].suggested_label}, ${destinationsArray[2].suggested_label}`,
+    });
     const filterDropdownButton = within(filterSelector).getByRole("button", { name: /open/i });
     const activeCheckbox = screen.getByRole("checkbox", { name: /active/i });
 
@@ -320,7 +328,9 @@ describe("Functionality", () => {
 
     // Change destination
     userEvent.click(destinationsSelector);
-    const destinationOption4 = screen.getByRole("option", {name: destinationsArray[0].settings["phone_number"] as string});
+    const destinationOption4 = screen.getByRole("option", {
+      name: destinationsArray[0].settings["phone_number"] as string,
+    });
     userEvent.click(destinationOption4);
 
     // Uncheck active
@@ -364,12 +374,12 @@ describe("Functionality", () => {
     expect(onDeleteMock).toHaveBeenCalledWith(existingProfile2);
   });
 
-  it("calls onAddPhoneNumber() when add phone number button is clicked", () => {
-    const addPhoneNumberButton = screen.getByRole("button", { name: /add phone number/i });
+  it("calls onAddDestination() when add destination button is clicked", () => {
+    const addDestinationButton = screen.getByRole("button", { name: /add destination/i });
 
-    userEvent.click(addPhoneNumberButton);
+    userEvent.click(addDestinationButton);
 
-    expect(onAddPhoneNumberMock).toHaveBeenCalledTimes(1);
+    expect(onAddDestinationMock).toHaveBeenCalledTimes(1);
   });
 
   it("displays error message when save button is clicked if no filters are selected", () => {
