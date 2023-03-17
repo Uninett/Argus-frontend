@@ -4,14 +4,13 @@ This file documents changes to Argus-frontend that are important for the users t
 
 ## [Unreleased]
 
+## [v1.9.0] - 2023-03-17
+
 ### Changed
 
 - The structure of notification profiles: removed the _Media_-selector, replaced the _Phone number_-selector with the _Destinations_-selector. User can now select multiple destinations per notification profile.
 - _Settings_ are replaced with _Destinations_. It is now possible to create/update/delete email addresses and other destinations (that are configured), in addition to phone numbers.
 - Replaced _add phone number from notification profiles_ feature  with _add destination from notification profiles_ feature.
-
-
-
 
 ## [v1.8.0] - 2023-02-15
 
