@@ -16,7 +16,7 @@ import auth from "../../auth";
 import { BACKEND_URL } from "../../config";
 
 // Contexts/Hooks
-import { useUser } from "../../state/hooks";
+import {useApiState, useUser} from "../../state/hooks";
 
 // Components
 import OutlinedTextField from "../../components/textfields/OutlinedTextField";
@@ -93,17 +93,22 @@ const LoginForm: React.FC<{}> = () => {
   const history = useHistory();
 
   const [, { login, logout }] = useUser();
+  const [apiState] = useApiState();
 
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  const [loginFailed, setLoginFailed] = useState<boolean>(false);
+  const [isWrongCredentials, setIsWrongCredentials] = useState<boolean>(false);
+  const [isError, setIsError] = useState<boolean>(false);
 
   const logUserOut = async () => {
-    setLoginFailed(true);
     logout();
     auth.logout();
   }
+
+  useEffect(() => {
+    !apiState.hasConnectionProblems && setIsWrongCredentials(isError);
+  }, [apiState.hasConnectionProblems, isError]);
 
   useEffect(() => {
     const token = cookies.get("token")
@@ -121,9 +126,11 @@ const LoginForm: React.FC<{}> = () => {
 
     if (auth.token() && auth.token() !== undefined) {
       token = auth.token();
+      setIsError(false);
     } else {
       token = await api.userpassAuth(username, password)
         .catch(async () => {
+          setIsError(true);
           await logUserOut();
         });
     }
@@ -133,10 +140,12 @@ const LoginForm: React.FC<{}> = () => {
         await api
           .authGetCurrentUser()
           .then((resUser: User) => {
+            setIsError(false);
             login(resUser);
             history.push("/");
           })
           .catch(async () => {
+            setIsError(true);
             await logUserOut();
           });
       });
@@ -153,7 +162,7 @@ const LoginForm: React.FC<{}> = () => {
         </div>
         <WhiteOutlinedTextField
           id="username-input"
-          error={loginFailed}
+          error={isWrongCredentials}
           className={style.loginItem}
           variant="outlined"
           label="Username"
@@ -165,8 +174,8 @@ const LoginForm: React.FC<{}> = () => {
         />
         <WhiteOutlinedTextField
           id="password-input"
-          error={loginFailed}
-          helperText={loginFailed && "Wrong username or password"}
+          error={isWrongCredentials}
+          helperText={isWrongCredentials && "Wrong username or password"}
           className={style.loginItem}
           variant="outlined"
           label="Password"
