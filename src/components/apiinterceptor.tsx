@@ -43,8 +43,11 @@ export const ApiInterceptor = ({ children }: { children?: React.ReactNode }) => 
           const { response, error } = event;
           if (!response.response || !response.response.status) {
             dispatch(setHasConnectionProblems());
+            console.error("caught network error", response, error);
+          } else {
+            dispatch(unsetHasConnectionProblems());
+            console.error("caught error", response, error);
           }
-          console.error("caught network error", response, error);
           break;
         }
         case "success": {
