@@ -23,6 +23,7 @@ import OutlinedTextField from "../../components/textfields/OutlinedTextField";
 import Button from "../../components/buttons/OutlinedButton";
 import Logo from "../../components/logo/Logo";
 import {Cookies} from "react-cookie";
+import {useAlerts} from "../alertsnackbar";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -94,12 +95,13 @@ const LoginForm: React.FC<{}> = () => {
 
   const [, { login, logout }] = useUser();
   const [apiState] = useApiState();
+  const displayAlert = useAlerts();
 
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
   const [isWrongCredentials, setIsWrongCredentials] = useState<boolean>(false);
-  const [isError, setIsError] = useState<boolean>(false);
+  const [isUserpassFailed, setIsUserpassFailed] = useState<boolean>(false);
 
   const logUserOut = async () => {
     logout();
@@ -107,8 +109,12 @@ const LoginForm: React.FC<{}> = () => {
   }
 
   useEffect(() => {
-    !apiState.hasConnectionProblems && setIsWrongCredentials(isError);
-  }, [apiState.hasConnectionProblems, isError]);
+    if (apiState.hasConnectionProblems) {
+      setIsWrongCredentials(false);
+    } else {
+      setIsWrongCredentials(isUserpassFailed);
+    }
+  }, [apiState.hasConnectionProblems, isUserpassFailed]);
 
   useEffect(() => {
     const token = cookies.get("token")
@@ -126,28 +132,26 @@ const LoginForm: React.FC<{}> = () => {
 
     if (auth.token() && auth.token() !== undefined) {
       token = auth.token();
-      setIsError(false);
     } else {
       token = await api.userpassAuth(username, password)
         .catch(async () => {
-          setIsError(true);
+          setIsUserpassFailed(true);
           await logUserOut();
         });
     }
 
     if (token) {
+      setIsUserpassFailed(false);
       auth.login(token, async () => {
         await api
           .authGetCurrentUser()
           .then((resUser: User) => {
-            setIsError(false);
             login(resUser);
             history.push("/");
           })
-          .catch(async () => {
-            setIsError(true);
-            await logUserOut();
-          });
+          .catch((error) => {
+            displayAlert(error.message, "error");
+          })
       });
     } else {
       await logUserOut();
