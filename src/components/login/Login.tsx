@@ -149,8 +149,9 @@ const LoginForm: React.FC<{}> = () => {
             login(resUser);
             history.push("/");
           })
-          .catch((error) => {
+          .catch(async (error) => {
             displayAlert(error.message, "error");
+            await logUserOut();
           })
       });
     } else {
