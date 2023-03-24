@@ -29,6 +29,7 @@ import { useApiState, useUser } from "../../state/hooks";
 // Components
 import Menu from "../../components/menu";
 import Logo from "../logo/Logo";
+import AlertAppbar from "../alerts/AlertAppbar";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -39,12 +40,6 @@ const useStyles = makeStyles((theme: Theme) =>
       flexGrow: 1,
       transition: "0.4s",
       zIndex: theme.zIndex.drawer + 1,
-    },
-    rootNetworkError: {
-      backgroundColor: theme.palette.error.dark,
-    },
-    rootInfoMessage: {
-        backgroundColor: theme.palette.warning.dark,
     },
     grow: { flexGrow: 1 },
     rightAligned: { marginRight: theme.spacing(2) },
@@ -103,28 +98,6 @@ const useStyles = makeStyles((theme: Theme) =>
       "&:hover": {
         cursor: "pointer",
       },
-    },
-    errorContainer: {
-      display: "flex",
-      flexFlow: "column wrap",
-      alignItems: "center",
-      margin: "4px",
-    },
-    errorTypography: {
-      alignItems: "center",
-      fontWeight: "bold",
-      color: "white",
-    },
-    infoContainer: {
-        display: "flex",
-        flexFlow: "column wrap",
-        alignItems: "center",
-        margin: "4px",
-    },
-    infoTypography: {
-        alignItems: "center",
-        fontWeight: "bold",
-        color: "white",
     },
   }),
 );
@@ -338,24 +311,15 @@ const Header: React.FC<HeaderPropsType> = () => {
         {mobileView ? displayMobile() : displayDesktop()}
       </AppBar>
       {apiState.hasConnectionProblems && (
-        <AppBar className={classNames(style.root, style.rootNetworkError)} position="relative">
-          <div className={style.errorContainer}>
-            <Typography className={style.errorTypography}>
-              Problems connecting to server... Check your connection.
-            </Typography>
-          </div>
-        </AppBar>
+        <AlertAppbar
+          message={"Problems connecting to server... Check your connection."}
+          severity={"error"}/>
       )}
       {apiState.isOngoingBulkUpdate && (
-          <AppBar className={classNames(style.root, style.rootInfoMessage)} position="relative">
-              <div className={style.infoContainer}>
-                  <Typography className={style.infoTypography}>
-                      Performing bulk operation... Please wait.
-                  </Typography>
-              </div>
-          </AppBar>
+        <AlertAppbar
+          message={"Performing bulk operation... Please wait."}
+          severity={"warning"}/>
       )}
-
       {renderMenu}
 
       {showDropdownNavbar && (

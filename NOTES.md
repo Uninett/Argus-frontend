@@ -4,6 +4,16 @@ This file documents changes to Argus-frontend that are important for the users t
 
 ## [Unreleased]
 
+### Added
+- Handling of both network errors, and errors with fetching existing user in _Login view_ .
+
+
+### Fixed
+- Bug with misleading error message in Login view on connection problems.
+
+
+
+
 ## [v1.9.0] - 2023-03-17
 
 ### Changed
