@@ -8,7 +8,7 @@ import { TextFieldProps } from "@material-ui/core/TextField";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 
 // Api
-import type {ConfiguredLoginMethodsResponse, User} from "../../api/types.d";
+import type {LoginMethod, User} from "../../api/types.d";
 import api from "../../api";
 import auth from "../../auth";
 
@@ -21,7 +21,7 @@ import Button from "../../components/buttons/OutlinedButton";
 import Logo from "../../components/logo/Logo";
 import {Cookies} from "react-cookie";
 import {useAlerts} from "../alertsnackbar";
-import {KnownLoginMethodType} from "../../api/types.d";
+import {KnownLoginMethodName} from "../../api/types.d";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -101,16 +101,16 @@ const LoginForm: React.FC<{}> = () => {
   const [isWrongCredentials, setIsWrongCredentials] = useState<boolean>(false);
   const [isUserpassFailed, setIsUserpassFailed] = useState<boolean>(false);
 
-  const [feideLoginUrl, setFeideLoginUrl] = useState<string | undefined>(undefined);
+  const [configuredLoginMethods, setConfiguredLoginMethods] = useState<LoginMethod[]>([]);
 
   // On mount
   useEffect(() => {
       api.getConfiguredLoginMethods()
-          .then((res: ConfiguredLoginMethodsResponse) => {
-              setFeideLoginUrl(res[KnownLoginMethodType.FEIDE]);
+          .then((res: LoginMethod[]) => {
+              setConfiguredLoginMethods(res);
           })
           .catch((error) => {
-              setFeideLoginUrl(undefined);
+              setConfiguredLoginMethods([]);
           })
       // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -118,7 +118,7 @@ const LoginForm: React.FC<{}> = () => {
 
     // On unmount
   useEffect(() => () => {
-      setFeideLoginUrl(undefined);
+      setConfiguredLoginMethods([]);
       // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -215,22 +215,21 @@ const LoginForm: React.FC<{}> = () => {
           Login
         </Button>
       </div>
-        {feideLoginUrl !== undefined && (
-            <>
-                <div className={style.divider}>
-                    <Typography color="textSecondary">OR</Typography>
-                </div>
-                <div className={style.loginWithFeideContainer}>
-                    <Button
-                        className={style.loginWithFeideButton}
-                        variant="outlined"
-                        href={feideLoginUrl}
-                    >
-                        Federated Login
-                    </Button>
-                </div>
-            </>
-        )}
+      {configuredLoginMethods.length > 1 &&
+        configuredLoginMethods
+          .filter((l) => l.name !== KnownLoginMethodName.USERPASS)
+          .map((loginMethod) => {
+            return [
+              <div className={style.divider}>
+                <Typography color="textSecondary">OR</Typography>
+              </div>,
+              <div className={style.loginWithFeideContainer}>
+                <Button className={style.loginWithFeideButton} variant="outlined" href={loginMethod.url}>
+                  Login with {loginMethod.type}
+                </Button>
+              </div>,
+            ];
+          })}
     </form>
   );
 };
