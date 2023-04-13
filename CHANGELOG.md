@@ -3,10 +3,45 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 
 ## [Unreleased]
 
+### Added
+- Handling of both network errors, and errors with fetching existing user in _Login view_ .
+
+
+### Fixed
+- Bug with misleading error message in Login view on connection problems.
+
+
+
+
+## [v1.9.0] - 2023-03-17
+
+### Changed
+
+- _Settings_ are replaced with _Destinations_. User may now create/update/delete emails and other media (that are configured), in addition to phone numbers.
+- Switched to API v.2 calls for notification profiles
+- The structure of notification profiles: removed the _Media_-selector, replaced the _Phone number_-selector with the _Destinations_-selector. User can now select multiple destinations per notification profile.
+- Replaced _add phone number from notification profiles_ feature  with _add destination from notification profiles_ feature.
+- Removed all use of _phone numbers_, except for phone numbers as a part of _destinations_.
+
+
+## [v1.8.1] - 2023-02-15
+
+### Fixed
+
+- Ensure that description is stored properly when acking, both in bulk and directly
+
+## [v1.8.0] - 2023-02-02
+
+### Added
+
+- Visual feedback (table loading) when changing incident filter parameters, and when navigating incident table pages
+- Use backend bulk endpoints to speed up updating incidents in bulk
+
 ## [v1.7.0] - 2022-12-16
 
 ### Added
 - Create ticket feature
+
 
 ## [v1.6.1] - 2022-10-13
 

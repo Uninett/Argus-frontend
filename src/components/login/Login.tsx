@@ -13,13 +13,14 @@ import api from "../../api";
 import auth from "../../auth";
 
 // Contexts/Hooks
-import { useUser } from "../../state/hooks";
+import {useApiState, useUser} from "../../state/hooks";
 
 // Components
 import OutlinedTextField from "../../components/textfields/OutlinedTextField";
 import Button from "../../components/buttons/OutlinedButton";
 import Logo from "../../components/logo/Logo";
 import {Cookies} from "react-cookie";
+import {useAlerts} from "../alertsnackbar";
 import {KnownLoginMethodType} from "../../api/types.d";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -91,11 +92,14 @@ const LoginForm: React.FC<{}> = () => {
   const history = useHistory();
 
   const [, { login, logout }] = useUser();
+  const [apiState] = useApiState();
+  const displayAlert = useAlerts();
 
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  const [loginFailed, setLoginFailed] = useState<boolean>(false);
+  const [isWrongCredentials, setIsWrongCredentials] = useState<boolean>(false);
+  const [isUserpassFailed, setIsUserpassFailed] = useState<boolean>(false);
 
   const [feideLoginUrl, setFeideLoginUrl] = useState<string | undefined>(undefined);
 
@@ -120,10 +124,17 @@ const LoginForm: React.FC<{}> = () => {
 
 
   const logUserOut = async () => {
-    setLoginFailed(true);
     logout();
     auth.logout();
   }
+
+  useEffect(() => {
+    if (apiState.hasConnectionProblems) {
+      setIsWrongCredentials(false);
+    } else {
+      setIsWrongCredentials(isUserpassFailed);
+    }
+  }, [apiState.hasConnectionProblems, isUserpassFailed]);
 
   useEffect(() => {
     const token = cookies.get("token")
@@ -144,11 +155,13 @@ const LoginForm: React.FC<{}> = () => {
     } else {
       token = await api.userpassAuth(username, password)
         .catch(async () => {
+          setIsUserpassFailed(true);
           await logUserOut();
         });
     }
 
     if (token) {
+      setIsUserpassFailed(false);
       auth.login(token, async () => {
         await api
           .authGetCurrentUser()
@@ -156,9 +169,10 @@ const LoginForm: React.FC<{}> = () => {
             login(resUser);
             history.push("/");
           })
-          .catch(async () => {
+          .catch(async (error) => {
+            displayAlert(error.message, "error");
             await logUserOut();
-          });
+          })
       });
     } else {
       await logUserOut();
@@ -173,7 +187,7 @@ const LoginForm: React.FC<{}> = () => {
         </div>
         <WhiteOutlinedTextField
           id="username-input"
-          error={loginFailed}
+          error={isWrongCredentials}
           className={style.loginItem}
           variant="outlined"
           label="Username"
@@ -185,8 +199,8 @@ const LoginForm: React.FC<{}> = () => {
         />
         <WhiteOutlinedTextField
           id="password-input"
-          error={loginFailed}
-          helperText={loginFailed && "Wrong username or password"}
+          error={isWrongCredentials}
+          helperText={isWrongCredentials && "Wrong username or password"}
           className={style.loginItem}
           variant="outlined"
           label="Password"

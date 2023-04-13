@@ -101,15 +101,19 @@ describe("Functionality of LoginForm", () => {
     expect(message).toBeInTheDocument();
   });
 
-  it("displays error message when authentication is valid, but user is not found", async () => {
-    apiMock.onPost("/api/v1/token-auth/").reply(200, { token: "token" }).onGet("/api/v1/auth/user/").reply(404);
+  it("does not display wrong credentials helper text when authentication is valid, but user is not found", async () => {
+    apiMock
+      .onPost("/api/v1/token-auth/")
+      .reply(200, {token: "token"})
+      .onGet("/api/v1/auth/user/")
+      .reply(400);
 
-    render(<LoginForm />);
+    render(<LoginForm/>);
 
-    await userEvent.click(screen.getByRole("button"));
-    const message = await screen.findByText(/wrong username or password/i);
+    userEvent.click(screen.getByRole("button"));
 
-    expect(message).toBeInTheDocument();
+    const helperText = screen.queryByText(/wrong username or password/i);
+    expect(helperText).toBeNull();
   });
 
   it("redirects the user when login is successful", async () => {

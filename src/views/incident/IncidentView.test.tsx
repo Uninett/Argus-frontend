@@ -545,6 +545,10 @@ describe('Incidents Table: reflects user interactions with Incidents Filter Tool
       // Expect invalid source name to be removed from the input field
       expect(sourcesSelectorInput).toBeEmpty();
 
+      // Expect same incident count as table loading component (8 MUI Skeleton components + header row)
+      expect(await screen.findAllByRole('row'))
+          .toHaveLength(9); 
+
       // Expect same incident count as before typing a non-existing source name
       expect(await screen.findAllByRole('row'))
         .toHaveLength(EXISTING_INCIDENTS.length + 1); // including header row
@@ -733,15 +737,7 @@ describe('Incidents Table: reflects incident modifications', () => {
       userEvent.click(unackedStateBtn);
 
       apiMock
-        .onPost('/api/v1/incidents/1000/acks/',
-          // expect.objectContaining({
-          //   event: {
-          //     description: 'Acknowledged',
-          //     timestamp: '2021-09-28 08:29:06'
-          //   },
-          //   expiration: null
-          // })
-        )
+        .onPost('/api/v2/incidents/1000/acks/')
         .reply(201, {
           pk: 1000,
           event: {

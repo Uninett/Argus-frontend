@@ -127,6 +127,12 @@ const FilteredIncidentTable = () => {
     saveToLocalStorage<PaginationCursor["pageSize"]>(PAGINATION_CURSOR_PAGE_SIZE, paginationCursor.pageSize);
   }, [paginationCursor]);
 
+  // Activate table loading on any incident filter update
+  useEffect(() => {
+    setIsLoading(true)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [incidentsFilter.filter]);
+
   const totalElements = useMemo(() => {
     if (!cursors?.next && incidents) {
       const lastVirtualPage = virtCursor.currentVirtualPage;
@@ -151,6 +157,7 @@ const FilteredIncidentTable = () => {
     const handlePreviousPage = () => {
       const previous = cursors?.previous;
       if (previous) {
+        setIsLoading(true)
         setIsCursorLoading(true)
         setVirtCursor((old) => {
           return { ...old, currentVirtualPage: old.currentVirtualPage - 1 };
@@ -164,6 +171,7 @@ const FilteredIncidentTable = () => {
     const handleNextPage = () => {
       const next = cursors?.next;
       if (next) {
+        setIsLoading(true)
         setIsCursorLoading(true)
         setVirtCursor((old) => {
           return { ...old, currentVirtualPage: old.currentVirtualPage + 1 };
