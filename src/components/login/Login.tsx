@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: theme.spacing(4),
       borderRadius: "10px",
     },
-    loginWithFeideContainer: {
+    alternativeLoginContainer: {
       display: "flex",
       flexDirection: "column",
       flexWrap: "nowrap",
@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: 0,
       margin: 0,
     },
-    loginWithFeideButton: {
+    alternativeLoginButton: {
       padding: theme.spacing(0.5),
       backgroundColor: theme.palette.primary.dark,
       borderRadius: "5px",
@@ -223,8 +223,8 @@ const LoginForm: React.FC<{}> = () => {
               <div className={style.divider}>
                 <Typography color="textSecondary">OR</Typography>
               </div>,
-              <div className={style.loginWithFeideContainer}>
-                <Button className={style.loginWithFeideButton} variant="outlined" href={loginMethod.url}>
+              <div className={style.alternativeLoginContainer}>
+                <Button className={style.alternativeLoginButton} variant="outlined" href={loginMethod.url}>
                   Login with {loginMethod.type}
                 </Button>
               </div>,
