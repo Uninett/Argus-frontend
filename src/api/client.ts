@@ -32,7 +32,6 @@ import {
   Resolver,
   ErrorCreator,
   MetadataConfig,
-  ConfiguredLoginMethodsResponse,
   Media,
   Destination,
   MediaSchema,
@@ -43,6 +42,7 @@ import {
   BulkEventWithoutDescriptionBody,
   BulkEventBody,
   Timestamp,
+  LoginMethod,
 } from "./types.d";
 
 import auth from "../auth";
@@ -186,10 +186,10 @@ class ApiClient {
   }
 
 
-  public getConfiguredLoginMethods(): Promise<ConfiguredLoginMethodsResponse> {
+  public getConfiguredLoginMethods(): Promise<LoginMethod[]> {
     return this.resolveOrReject(
-        this.get<ConfiguredLoginMethodsResponse, never>("/login-methods/"),
-        (res: ConfiguredLoginMethodsResponse) => res,
+        this.get<LoginMethod[], never>("/login-methods/"),
+        (res: LoginMethod[]) => res,
         defaultError,
     );
   }
