@@ -29,14 +29,20 @@ export interface AuthTokenSuccessResponse {
  * Configured login methods
  */
 
-// Each enum represents key value in API response's dict
-export enum KnownLoginMethodType {
+export enum KnownLoginMethodName {
+  USERPASS = "user_pw",
   FEIDE = "dataporten_feide",
 }
 
 // Using TS index signatures since key values are dynamic
 export type ConfiguredLoginMethodsResponse = {
   [key: string]: string;
+}
+
+export type LoginMethod = {
+  type: string;
+  url: string;
+  name: string;
 }
 
 /*
