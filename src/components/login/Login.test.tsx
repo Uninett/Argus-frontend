@@ -6,7 +6,7 @@ import userEvent from "@testing-library/user-event";
 import MockAdapter from "axios-mock-adapter";
 import { Router } from "react-router-dom";
 import { createMemoryHistory } from "history";
-import { KnownLoginMethodType } from "../../api/types.d";
+import {KnownLoginMethodName, LoginMethod} from "../../api/types.d";
 
 import LoginForm from "./Login";
 import api from "../../api";
@@ -21,11 +21,22 @@ const getConfiguredLoginMethodsSpy = jest.spyOn(client, 'getConfiguredLoginMetho
 const apiMock = new MockAdapter(api.api);
 const flushPromises = () => new Promise(setImmediate);
 
-const FEIDE_URL_TEST_VALUE = "link_to_feide"
+const CONFIGURED_LOGIN_METHODS_MOCK: LoginMethod[] = [
+  {
+    type: "userpass",
+    url: "mock_link_to_userpass",
+    name: KnownLoginMethodName.USERPASS,
+  },
+  {
+    type: "feide",
+    url: "mock_link_to_feide",
+    name: KnownLoginMethodName.FEIDE,
+  },
+];
 
 beforeAll(() => {
   getConfiguredLoginMethodsSpy
-      .mockResolvedValue({ [KnownLoginMethodType.FEIDE]: FEIDE_URL_TEST_VALUE });
+      .mockResolvedValue(CONFIGURED_LOGIN_METHODS_MOCK as LoginMethod[]);
 })
 
 afterAll(() => {
@@ -85,7 +96,8 @@ describe("Functionality of Components", () => {
       render(<LoginForm/>);
     })
 
-    expect(screen.getByRole("link")).toHaveAttribute("href", FEIDE_URL_TEST_VALUE);
+    expect(screen.getByRole("link")).toHaveAttribute("href",
+      CONFIGURED_LOGIN_METHODS_MOCK.filter(l => l.name === KnownLoginMethodName.FEIDE)[0].url);
   });
 });
 
