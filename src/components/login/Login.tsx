@@ -181,7 +181,7 @@ const LoginForm: React.FC<{}> = () => {
 
   return (
     <form onSubmit={onSubmit} id="login-form">
-      <div className={style.loginContainer}>
+      <div className={style.loginContainer} data-testid={"default-login-container"}>
         <div className={style.loginItem}>
           <Logo className={style.logo} />
         </div>

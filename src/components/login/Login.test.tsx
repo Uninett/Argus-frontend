@@ -21,22 +21,22 @@ const getConfiguredLoginMethodsSpy = jest.spyOn(client, 'getConfiguredLoginMetho
 const apiMock = new MockAdapter(api.api);
 const flushPromises = () => new Promise(setImmediate);
 
-const CONFIGURED_LOGIN_METHODS_MOCK: LoginMethod[] = [
-  {
+const CONFIGURED_LOGIN_METHODS_MOCK: { [key: string]: LoginMethod } = {
+  [KnownLoginMethodName.DEFAULT]: {
     type: "userpass",
     url: "mock_link_to_userpass",
     name: KnownLoginMethodName.DEFAULT,
   },
-  {
+  [KnownLoginMethodName.FEIDE]: {
     type: "feide",
     url: "mock_link_to_feide",
     name: KnownLoginMethodName.FEIDE,
   },
-];
+};
 
 beforeAll(() => {
   getConfiguredLoginMethodsSpy
-      .mockResolvedValue(CONFIGURED_LOGIN_METHODS_MOCK as LoginMethod[]);
+      .mockResolvedValue(Object.values(CONFIGURED_LOGIN_METHODS_MOCK) as LoginMethod[]);
 })
 
 afterAll(() => {
@@ -65,12 +65,31 @@ describe("Render LoginForm", () => {
     expect(screen.getByRole("button")).toBeInTheDocument();
   });
 
-  it("renders the Link to Feide login", async () => {
+  it("renders the Link to Feide login when Feide login method is configured", async () => {
     await waitFor(() => {
       render(<LoginForm/>);
     })
 
     expect(screen.getByRole("link")).toBeInTheDocument();
+  });
+
+  it("renders only default login container when the only configured method is userpass", async () => {
+    getConfiguredLoginMethodsSpy.mockResolvedValueOnce([
+      CONFIGURED_LOGIN_METHODS_MOCK[KnownLoginMethodName.DEFAULT],
+    ] as LoginMethod[]);
+
+    await waitFor(() => {
+      render(<LoginForm />);
+    });
+
+    const defaultLoginContainer = screen.getByTestId("default-login-container");
+    expect(defaultLoginContainer).toBeInTheDocument();
+
+    const alternativeLoginText = screen.queryByText("OR");
+    const alternativeLoginButtons = screen.queryAllByRole("link");
+
+    expect(alternativeLoginText).toBeNull();
+    expect(alternativeLoginButtons.length).toBe(0);
   });
 });
 
@@ -97,7 +116,7 @@ describe("Functionality of Components", () => {
     })
 
     expect(screen.getByRole("link")).toHaveAttribute("href",
-      CONFIGURED_LOGIN_METHODS_MOCK.filter(l => l.name === KnownLoginMethodName.FEIDE)[0].url);
+      CONFIGURED_LOGIN_METHODS_MOCK[KnownLoginMethodName.FEIDE].url);
   });
 });
 
