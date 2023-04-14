@@ -215,21 +215,22 @@ const LoginForm: React.FC<{}> = () => {
           Login
         </Button>
       </div>
-      {configuredLoginMethods.length > 1 &&
+      {configuredLoginMethods.length > 1 && [
+        <div className={style.divider}>
+          <Typography color="textSecondary">OR</Typography>
+        </div>,
         configuredLoginMethods
-          .filter((l) => l.name !== KnownLoginMethodName.USERPASS)
-          .map((loginMethod) => {
-            return [
-              <div className={style.divider}>
-                <Typography color="textSecondary">OR</Typography>
-              </div>,
+          .filter((l) => l.name !== KnownLoginMethodName.DEFAULT)
+          .map(({ url, type }: LoginMethod) => {
+            return (
               <div className={style.alternativeLoginContainer}>
-                <Button className={style.alternativeLoginButton} variant="outlined" href={loginMethod.url}>
-                  Login with {loginMethod.type}
+                <Button className={style.alternativeLoginButton} variant="outlined" href={url}>
+                  Login with {type}
                 </Button>
-              </div>,
-            ];
-          })}
+              </div>
+            );
+          }),
+      ]}
     </form>
   );
 };
