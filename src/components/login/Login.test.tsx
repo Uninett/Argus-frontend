@@ -25,7 +25,7 @@ const CONFIGURED_LOGIN_METHODS_MOCK: LoginMethod[] = [
   {
     type: "userpass",
     url: "mock_link_to_userpass",
-    name: KnownLoginMethodName.USERPASS,
+    name: KnownLoginMethodName.DEFAULT,
   },
   {
     type: "feide",

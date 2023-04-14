@@ -30,13 +30,8 @@ export interface AuthTokenSuccessResponse {
  */
 
 export enum KnownLoginMethodName {
-  USERPASS = "user_pw",
+  DEFAULT = "user_pw", // userpass login is always available
   FEIDE = "dataporten_feide",
-}
-
-// Using TS index signatures since key values are dynamic
-export type ConfiguredLoginMethodsResponse = {
-  [key: string]: string;
 }
 
 export type LoginMethod = {
