@@ -11,6 +11,14 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 - Bug with misleading error message in Login view on connection problems.
 
 
+### Changed
+
+- Made _LOGIN WITH FEIDE_ button more generic. 
+- _LOGIN WITH FEIDE_ will not render by default anymore. Instead, _LOGIN WITH_ button will only render if there are configured login methods that are other than userpass.
+
+
+
+
 
 
 ## [v1.9.0] - 2023-03-17
