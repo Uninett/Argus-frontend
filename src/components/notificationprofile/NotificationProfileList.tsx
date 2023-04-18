@@ -76,7 +76,7 @@ const NotificationProfileList = () => {
       timeslot: profile.timeslot.pk,
       filters: profile.filters.map((filter: Filter) => filter.pk),
       active: profile.active,
-      // eslint-disable-next-line @typescript-eslint/camelcase
+      // eslint-disable-next-line
       destinations: profile.destinations ? profile.destinations : null,
       pk: profile.pk,
     };
@@ -217,7 +217,7 @@ const NotificationProfileList = () => {
   const newProfile: NotificationProfileKeyed = {
     timeslot: timeslots.length > 0 ? timeslots[0].pk : 0,
     filters: [],
-    // eslint-disable-next-line @typescript-eslint/camelcase
+    // eslint-disable-next-line
     destinations: null,
     active: true,
   };

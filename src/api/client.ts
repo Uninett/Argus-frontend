@@ -241,7 +241,7 @@ class ApiClient {
     timeslot: TimeslotPK,
     filters: FilterPK[],
     active: boolean,
-    // eslint-disable-next-line @typescript-eslint/camelcase
+    // eslint-disable-next-line
     destinations?: DestinationPK[] | null,
   ): Promise<NotificationProfileSuccessResponse> {
     return this.resolveOrReject(
@@ -251,7 +251,7 @@ class ApiClient {
           timeslot: timeslot,
           filters,
           active,
-          // eslint-disable-next-line @typescript-eslint/camelcase
+          // eslint-disable-next-line
           destinations: destinations || null,
         },
       ),
@@ -392,7 +392,7 @@ class ApiClient {
   public patchIncidentTicketUrl(pk: number, ticketUrl: string): Promise<IncidentTicketUrlBody> {
     return this.resolveOrReject(
       this.authPut<IncidentTicketUrlBody, IncidentTicketUrlBody>(`/api/v1/incidents/${pk}/ticket_url/`, {
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line
         ticket_url: ticketUrl,
       }),
       defaultResolver,
@@ -460,7 +460,7 @@ class ApiClient {
       this.authPost<{ changes: IncidentTicketUrlBody }, IncidentTicketUrlBody & { ids: IncidentPK[] }>(
         `/api/v2/incidents/ticket_url/bulk/`,
         {
-          // eslint-disable-next-line @typescript-eslint/camelcase
+          // eslint-disable-next-line
           ids: pks,
           ticket_url: ticketUrl,
         },
@@ -646,7 +646,7 @@ class ApiClient {
       this.authPost<FilterSuccessResponse, FilterRequest>(`/api/v1/notificationprofiles/filters/`, {
         name: filter.name,
         filter: filter.filter,
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line
         filter_string: filterString,
       }),
       defaultResolver,
@@ -668,7 +668,7 @@ class ApiClient {
         name: filter.name,
         filter: filter.filter,
 
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line
         filter_string: filterString,
       }),
       defaultResolver,
@@ -705,7 +705,7 @@ class ApiClient {
     return this.resolveOrReject(
       this.authPut<Timeslot, Omit<Timeslot, "pk">>(`/api/v1/notificationprofiles/timeslots/${timeslotPK}/`, {
         name,
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line
         time_recurrences: timeRecurrences,
       }),
       defaultResolver,
@@ -717,7 +717,7 @@ class ApiClient {
     return this.resolveOrReject(
       this.authPost<Timeslot, Omit<Timeslot, "pk">>(`/api/v1/notificationprofiles/timeslots/`, {
         name,
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line
         time_recurrences: timeRecurrences,
       }),
       defaultResolver,
