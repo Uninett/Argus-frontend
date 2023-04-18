@@ -31,6 +31,7 @@
       - [Manually add ticket to incident](#manually-add-ticket-url-to-an-incident)
       - [Edit ticket URL](#edit-ticket-url)
       - [Remove ticket from incident](#remove-ticket-url-from-an-incident)
+      - [Automatically generate ticket from incident](#automatically-generate-ticket)
   - [Update several incidents](#update-several-incidents-at-a-time)
     - [Re-open incidents](#re-open-closed-resolved-incidents)
     - [Close incidents](#close-resolve-incidents)
@@ -419,6 +420,18 @@ After you [have set the preferred filter parameters for incidents](#decide-which
 3. Remove URL from the _Ticket input field_ and press `SAVE TICKET URL`.
 
    <img src="public/screenshots/manual/Screenshot 2023-04-14 at 10.34.55.png"/>
+
+
+##### Automatically generate ticket
+1. [Open incident in detailed view](#access-detailed-incident-view).
+2. Type/paste in ticket URL into the _Ticket input field_. Note that the URL has to be absolute (full website address).
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.42.35.png"/>
+
+3. Press `SAVE`.
+
+   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.44.40.png"/>
+
 
 
 ### Update several incidents at a time
