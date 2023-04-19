@@ -47,20 +47,20 @@ const NEW_TIMESLOT: Timeslot = {
   time_recurrences: [NEW_RECURRENCE],
 };
 
+// For avoiding authentication errors
 beforeAll(() => {
-  authTokenSpy.mockImplementation(() => "token");
-  authIsAuthenticatedSpy.mockImplementation(() => true);
+  auth.login("token");
 });
-
 afterAll(() => {
-  authTokenSpy.mockReset();
-  authIsAuthenticatedSpy.mockReset();
+  auth.logout();
 });
 
 beforeEach(() => {
+  authTokenSpy.mockImplementation(() => "token");
+  authIsAuthenticatedSpy.mockImplementation(() => true);
   apiMock
     .onGet("/api/v1/notificationprofiles/timeslots/")
-    .reply(200, [EXISTING_TIMESLOT])
+    .reply(200, [EXISTING_TIMESLOT] as Timeslot[])
     .onPost("/api/v1/token-auth/")
     .reply(200, { token: "token" })
     .onGet("/api/v1/auth/user/")
@@ -72,6 +72,9 @@ beforeEach(() => {
 
 afterEach(() => {
   apiMock.reset();
+  authTokenSpy.mockReset();
+  authIsAuthenticatedSpy.mockReset();
+  jest.clearAllMocks();
 });
 
 describe("TimeslotList: Initial render", () => {
