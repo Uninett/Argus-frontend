@@ -41,7 +41,7 @@
     "debug": "react-scripts start",
     "build": "react-scripts build",
     "lint": "eslint src --ext .ts,.tsx,.js",
-    "test": "react-scripts test --silent --env=jest-environment-jsdom-sixteen",
+    "test": "react-scripts test --silent --env=jest-environment-jsdom",
     "format": "prettier --write src",
     "eject": "react-scripts eject"
   },
@@ -71,6 +71,7 @@
     "eslint-config-prettier": "*",
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react-hooks": "*",
+    "jest-environment-jsdom": "^29.5.0",
     "jest-environment-jsdom-sixteen": "^2.0.0",
     "prettier": "*"
   }
