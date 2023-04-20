@@ -40,7 +40,7 @@
     "dockerstart": "cross-env HTTPS=false PORT=8080 react-scripts start",
     "debug": "react-scripts start",
     "build": "react-scripts build",
-    "lint": "eslint src --ext .ts,.tsx,.js",
+    "lint": "eslint -c config.eslint.js src --ext .ts,.tsx,.js",
     "test": "react-scripts test --silent --env=jsdom",
     "format": "prettier --write src",
     "eject": "react-scripts eject"
