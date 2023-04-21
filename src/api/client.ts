@@ -10,7 +10,6 @@ import {
   TimeRecurrence,
   Filter,
   FilterPK,
-  FilterString,
   NotificationProfilePK,
   Incident,
   Event,
@@ -573,14 +572,6 @@ class ApiClient {
     );
   }
 
-  public postFilterPreview(filterDefinition: FilterString): Promise<Incident[]> {
-    return this.resolveOrReject(
-      this.authPost<Incident[], FilterString>(`/api/v1/notificationprofiles/filterpreview/`, filterDefinition),
-      defaultResolver,
-      (error) => new Error(`Failed to get filtered incidents: ${getErrorCause(error)}`),
-    );
-  }
-
   // Filter
   public getAllFilters(): Promise<Filter[]> {
     return this.resolveOrReject(
@@ -588,10 +579,6 @@ class ApiClient {
       (resps: FilterSuccessResponse[]): Filter[] =>
         resps.map(
           (resp: FilterSuccessResponse): Filter => {
-            // NOTE: When the new "filter" field is used we don't need this
-            // anymore:
-            const definition: FilterString = JSON.parse(resp.filter_string);
-
             console.log("got all filters", resp);
 
             // Convert null-values to undefined to make page rerender correctly on state update
@@ -609,9 +596,6 @@ class ApiClient {
               filter.maxlevel = undefined;
             }
 
-            filter.sourceSystemIds = definition.sourceSystemIds;
-            filter.tags = definition.tags;
-
             return {
               pk: resp.pk,
               name: resp.name,
@@ -624,20 +608,10 @@ class ApiClient {
   }
 
   public postFilter(filter: Omit<Filter, "pk">): Promise<FilterSuccessResponse> {
-    const definition: FilterString = {
-      sourceSystemIds: filter.filter.sourceSystemIds ? filter.filter.sourceSystemIds : [],
-      tags: filter.filter.tags ? filter.filter.tags : [],
-    };
-
-    const filterString = JSON.stringify(definition) as string;
-    console.log(filterString);
-
     return this.resolveOrReject(
       this.authPost<FilterSuccessResponse, FilterRequest>(`/api/v1/notificationprofiles/filters/`, {
         name: filter.name,
         filter: filter.filter,
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        filter_string: filterString,
       }),
       defaultResolver,
       (error) => new Error(`Failed to create notification filter ${filter.name}: ${getErrorCause(error)}`),
@@ -645,21 +619,10 @@ class ApiClient {
   }
 
   public putFilter(filter: Filter): Promise<FilterSuccessResponse> {
-    const definition: FilterString = {
-      sourceSystemIds: filter.filter.sourceSystemIds ? filter.filter.sourceSystemIds : [],
-      tags: filter.filter.tags ? filter.filter.tags : [],
-    };
-
-    const filterString = JSON.stringify(definition) as string;
-    console.log(filterString);
-
     return this.resolveOrReject(
       this.authPut<FilterSuccessResponse, FilterRequest>(`/api/v1/notificationprofiles/filters/${filter.pk}/`, {
         name: filter.name,
         filter: filter.filter,
-
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        filter_string: filterString,
       }),
       defaultResolver,
       (error) => new Error(`Failed to update notification filter ${filter.pk}: ${getErrorCause(error)}`),
