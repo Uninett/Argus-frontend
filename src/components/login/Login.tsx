@@ -8,12 +8,9 @@ import { TextFieldProps } from "@material-ui/core/TextField";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 
 // Api
-import type { User } from "../../api/types.d";
+import type {LoginMethod, User} from "../../api/types.d";
 import api from "../../api";
 import auth from "../../auth";
-
-// Config
-import { BACKEND_URL } from "../../config";
 
 // Contexts/Hooks
 import {useApiState, useUser} from "../../state/hooks";
@@ -24,6 +21,7 @@ import Button from "../../components/buttons/OutlinedButton";
 import Logo from "../../components/logo/Logo";
 import {Cookies} from "react-cookie";
 import {useAlerts} from "../alertsnackbar";
+import {KnownLoginMethodName} from "../../api/types.d";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -36,7 +34,7 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: theme.spacing(4),
       borderRadius: "10px",
     },
-    loginWithFeideContainer: {
+    alternativeLoginContainer: {
       display: "flex",
       flexDirection: "column",
       flexWrap: "nowrap",
@@ -44,7 +42,7 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: 0,
       margin: 0,
     },
-    loginWithFeideButton: {
+    alternativeLoginButton: {
       padding: theme.spacing(0.5),
       backgroundColor: theme.palette.primary.dark,
       borderRadius: "5px",
@@ -102,6 +100,28 @@ const LoginForm: React.FC<{}> = () => {
 
   const [isWrongCredentials, setIsWrongCredentials] = useState<boolean>(false);
   const [isUserpassFailed, setIsUserpassFailed] = useState<boolean>(false);
+
+  const [configuredLoginMethods, setConfiguredLoginMethods] = useState<LoginMethod[]>([]);
+
+  // On mount
+  useEffect(() => {
+      api.getConfiguredLoginMethods()
+          .then((res: LoginMethod[]) => {
+              setConfiguredLoginMethods(res);
+          })
+          .catch((error) => {
+              setConfiguredLoginMethods([]);
+          })
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+
+    // On unmount
+  useEffect(() => () => {
+      setConfiguredLoginMethods([]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
 
   const logUserOut = async () => {
     logout();
@@ -161,7 +181,7 @@ const LoginForm: React.FC<{}> = () => {
 
   return (
     <form onSubmit={onSubmit} id="login-form">
-      <div className={style.loginContainer}>
+      <div className={style.loginContainer} data-testid={"default-login-container"}>
         <div className={style.loginItem}>
           <Logo className={style.logo} />
         </div>
@@ -195,18 +215,22 @@ const LoginForm: React.FC<{}> = () => {
           Login
         </Button>
       </div>
-      <div className={style.divider}>
-        <Typography color="textSecondary">OR</Typography>
-      </div>
-      <div className={style.loginWithFeideContainer}>
-        <Button
-          className={style.loginWithFeideButton}
-          variant="outlined"
-          href={`${BACKEND_URL}/oidc/login/dataporten_feide/`}
-        >
-          Login with Feide
-        </Button>
-      </div>
+      {configuredLoginMethods.length > 1 && [
+        <div className={style.divider}>
+          <Typography color="textSecondary">OR</Typography>
+        </div>,
+        configuredLoginMethods
+          .filter((l) => l.name !== KnownLoginMethodName.DEFAULT)
+          .map(({ url, type }: LoginMethod) => {
+            return (
+              <div className={style.alternativeLoginContainer}>
+                <Button className={style.alternativeLoginButton} variant="outlined" href={url}>
+                  Login with {type}
+                </Button>
+              </div>
+            );
+          }),
+      ]}
     </form>
   );
 };
