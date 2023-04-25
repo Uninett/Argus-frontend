@@ -423,15 +423,28 @@ After you [have set the preferred filter parameters for incidents](#decide-which
 
 
 ##### Automatically generate ticket
+Argus supports automatic ticket generation from the incident. This feature needs additional configuration. Read more in the [official Argus documentation](https://argus-server.readthedocs.io/en/latest/ticket-systems.html)
+
 1. [Open incident in detailed view](#access-detailed-incident-view).
-2. Type/paste in ticket URL into the _Ticket input field_. Note that the URL has to be absolute (full website address).
+2. Press `CREATE TICKET`. 
 
-   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.42.35.png"/>
+   <img src="public/screenshots/manual/Screenshot 2023-04-14 at 10.35.50.png"/>
 
-3. Press `SAVE`.
+3. Confirm automatic ticket generation.
 
-   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.44.40.png"/>
+     <img src="public/screenshots/manual/Screenshot 2023-04-14 at 10.36.21.png"/>
 
+
+4. When ticket is successfully generated, the _Ticket input field_ is updated with a new ticket URL, and the ticket itself is opened in a new browser tab.
+
+   <img src="public/screenshots/manual/Screenshot 2023-04-14 at 10.38.19.png"/>
+
+
+Please, check that your ticket system configuration in Argus is complete if you get a following error message: 
+
+  <img src="public/screenshots/manual/Screenshot 2023-04-14 at 10.36.40.png"/>
+
+You can read more about ticket system settings [here](https://argus-server.readthedocs.io/en/latest/ticket-systems/settings.html).
 
 
 ### Update several incidents at a time
