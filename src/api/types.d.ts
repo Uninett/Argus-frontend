@@ -26,6 +26,21 @@ export interface AuthTokenSuccessResponse {
 }
 
 /*
+ * Configured login methods
+ */
+
+export enum KnownLoginMethodName {
+  DEFAULT = "user_pw", // userpass login is always available
+  FEIDE = "dataporten_feide",
+}
+
+export type LoginMethod = {
+  type: string;
+  url: string;
+  name: string;
+}
+
+/*
  * Notification profiles
  */
 export type TimeRecurrenceDay = 1 | 2 | 3 | 4 | 5 | 6 | 7;

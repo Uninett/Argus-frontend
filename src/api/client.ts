@@ -42,6 +42,7 @@ import {
   BulkEventWithoutDescriptionBody,
   BulkEventBody,
   Timestamp,
+  LoginMethod,
 } from "./types.d";
 
 import auth from "../auth";
@@ -181,6 +182,15 @@ class ApiClient {
       this.post<AuthTokenSuccessResponse, AuthTokenRequest>("/api/v1/token-auth/", { username, password }),
       (data: AuthTokenSuccessResponse) => data.token,
       defaultError,
+    );
+  }
+
+
+  public getConfiguredLoginMethods(): Promise<LoginMethod[]> {
+    return this.resolveOrReject(
+        this.get<LoginMethod[], never>("/login-methods/"),
+        (res: LoginMethod[]) => res,
+        defaultError,
     );
   }
 
