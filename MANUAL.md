@@ -407,7 +407,7 @@ After you [have set the preferred filter parameters for incidents](#decide-which
     
 2. Confirm re-opening.
 
-   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.40.51.png"/>
+   <img src="public/screenshots/manual/Screenshot 2023-04-17 at 13.47.24.png"/>
 
 #### Close (resolve) incidents
 1. Select several incidents in the _Incidents table_ and press `CLOSE SELECTED` in the _table toolbar_.
@@ -416,7 +416,7 @@ After you [have set the preferred filter parameters for incidents](#decide-which
     
 2. Press `CLOSE NOW`. Note that you can provide a closing comment if needed.
 
-   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.46.05.png"/>
+   <img src="public/screenshots/manual/Screenshot 2023-04-17 at 13.48.27.png"/>
 
 #### Add acknowledgement to incidents
 1. Select several incidents in the _Incidents table_ and press `ACK` in the _table toolbar_.
@@ -425,7 +425,7 @@ After you [have set the preferred filter parameters for incidents](#decide-which
     
 2. Press `SUBMIT`. Note that you can optionally provide an acknowledgement comment and/or a date when these acknowledgements are no longer relevant.
 
-   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.46.26.png"/>
+   <img src="public/screenshots/manual/Screenshot 2023-04-17 at 13.48.51.png"/>
 
 #### Add ticket URL to incidents
 1. Select several incidents in the _Incidents table_ and press `ADD TICKET` in the _table toolbar_.
