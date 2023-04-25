@@ -270,9 +270,9 @@ _Filter toolbar_ is available:
 The severity level ranges from _1 - Critical_ to _5 - Information_. If you select _max severity level_ to be **5**, all incidents will be displayed in the table. If you select _max severity level_ to be **2**, only incidents with severity **1** and **2** will be displayed in the table.
 
 To change _max severity level_:
-1. Open the _Max level_ drop-down.
+1. Open the _Max severity level_ drop-down.
 
-   <img src="public/screenshots/manual/Screenshot 2022-09-09 at 13.58.35 copy 6.png"/>
+   <img src="public/screenshots/manual/Screenshot 2023-04-21 at 14.01.48.png"/>
    
 2. Select the preferred _max severity_ option.
 
