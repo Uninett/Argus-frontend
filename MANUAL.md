@@ -52,11 +52,11 @@
   - [Add timeslot](#add-new-timeslot)
   - [Edit timeslot](#edit-existing-timeslot)
   - [Delete timeslot](#delete-timeslot)
-- [Manage contact details](#manage-your-contact-details-in-argus)
-  - [Access your contact details](#access-your-contact-details-in-settings)
-  - [Add phone number](#add-new-phone-number-in-settings)
-  - [Edit phone number](#edit-existing-phone-number-in-settings)
-  - [Delete phone number](#delete-phone-number-in-settings)
+- [Manage contact details (destinations)](#manage-your-contact-details-destinations-in-argus)
+  - [Access your destinations](#access-your-destinations-in-settings)
+  - [Add destination](#add-new-destination-in-settings)
+  - [Edit destination](#edit-existing-destination-in-settings)
+  - [Delete destination](#delete-destination-in-settings)
 - [Log out](#log-out-from-argus)
 
 ## What is Argus?
@@ -603,45 +603,59 @@ Each timeslot has at least one recurrence by default. In the _Create New Timeslo
    <img src="public/screenshots/manual/Screenshot 2022-09-08 at 12.56.02.png"/>
 
 
-## Manage your contact details in Argus
-Add, edit or delete phone numbers in your settings. Phone numbers that are present in your settings can be used when [customizing alarm notifications](#customize-alarm-notifications-in-argus).
+## Manage your contact details (destinations) in Argus
+Add, edit or delete contact details, aka destinations, in your settings. Destinations that are present in your settings can be used when [customizing alarm notifications](#customize-alarm-notifications-in-argus).
 
-<img src="public/screenshots/manual/Screenshot 2022-09-08 at 14.00.29.png"/>
+<img src="public/screenshots/manual/Screenshot 2023-04-25 at 18.33.57.png"/>
 
-### Access your contact details in settings
+In Argus, _emails_ and _phone numbers_ are the destinations that are configured by default.
+If you wish to receive notifications to other media, read about configurable media types [here](https://argus-server.readthedocs.io/en/latest/notifications.html#other-notification-plugins).
+
+### Access your destinations in settings
 1. Click on the _user icon_ in the header.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-08 at 13.53.49.png"/>
    
-2. Click on `Settings` in the drop-down menu.
+2. Click on `Destinations` in the drop-down menu.
 
-    <img src="public/screenshots/manual/Screenshot 2022-09-07 at 14.18.11.png"/>
+    <img src="public/screenshots/manual/Screenshot 2023-04-25 at 18.28.29.png"/>
     
-### Add new phone number in settings
-1. [Go to your contact details](#access-your-contact-details-in-settings).
-2. Type in an existing phone number. The phone number **has to include the country code**.
+### Add new destination in settings
+1. [Go to your contact details](#access-your-destinations-in-settings).
+2. Click on the *Plus* button in the _Destinations_ header to open the _Create new destination_ menu.
 
-   <img src="public/screenshots/manual/Screenshot 2022-09-07 at 14.46.13.png"/>
+   <img src="public/screenshots/manual/Screenshot 2023-04-25 at 18.36.27.png"/>
    
-3. Press `CREATE`.
+3. Select destination's media type.
 
-   <img src="public/screenshots/manual/Screenshot 2022-09-07 at 14.46.13 2.png"/>
+   <img src="public/screenshots/manual/Screenshot 2023-04-25 at 18.37.20.png"/>
 
-### Edit existing phone number in settings
-1. [Go to your contact details](#access-your-contact-details-in-settings).
-2. Modify one of the existing phone numbers.
+4. Type in a title (optional), and a destination value (required). Press `CREATE`.
 
-   <img src="public/screenshots/manual/Screenshot 2022-09-08 at 09.48.43.png"/>
+   <img src="public/screenshots/manual/Screenshot 2023-04-25 at 18.38.53.png"/>
+
+
+
+### Edit existing destination in settings
+1. [Go to your contact details](#access-your-destinations-in-settings).
+2. Modify one of the existing destinations.
+
+   <img src="public/screenshots/manual/Screenshot 2023-04-25 at 18.42.40.png"/>
    
 3. Press `SAVE`.
 
-   <img src="public/screenshots/manual/Screenshot 2022-09-08 at 09.48.43 2.png"/>
+   <img src="public/screenshots/manual/Screenshot 2023-04-25 at 18.42.40 copy.png"/>
 
-### Delete phone number in settings
-1. [Go to your contact details](#access-your-contact-details-in-settings).
-2. Press `DELETE` inside one of your saved phone numbers.
+### Delete destination in settings
+1. [Go to your contact details](#access-your-destinations-in-settings).
+2. Press `DELETE` inside one of your saved destinations.
 
-   <img src="public/screenshots/manual/Screenshot 2022-09-08 at 09.54.43.png"/>
+   <img src="public/screenshots/manual/Screenshot 2023-04-25 at 18.43.41.png"/>
+
+Note that some destinations are connected to your Argus user profile, and can not be deleted. The `DELETE` button is disabled for such destinations:
+
+   <img src="public/screenshots/manual/Screenshot 2023-04-25 at 18.45.53.png"/>
+
 
 
 ## Log out from Argus
