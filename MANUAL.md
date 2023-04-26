@@ -36,12 +36,13 @@
     - [Add ticket to incidents](#add-ticket-url-to-incidents)
     - [Remove ticket from incidents](#remove-ticket-url-from-incidents)
 - [Customize notifications](#customize-alarm-notifications-in-argus)
+  - [About components of notification profiles](#about-components-of-notification-profiles)
+  - [About the available notification media](#about-the-available-notification-media)
   - [Access your notification settings](#access-your-notification-profiles)
   - [Add notification profile](#add-new-notification-profile)
   - [Edit notification profile](#edit-existing-notification-profile)
   - [Disable notification profile](#disable-notification-profile)
   - [Delete notification profile](#delete-notification-profile)
-  - [About the available notification media](#about-the-available-notification-media)
 - [Manage notification time](#manage-when-to-receive-notifications-in-argus)
   - [What is a timeslot](#what-is-a-timeslot-in-argus)
   - [What is a recurrence](#what-is-a-recurrence-in-argus)
@@ -452,35 +453,89 @@ After you [have set the preferred filter parameters for incidents](#decide-which
 ## Customize alarm notifications in Argus
 Choose **when**, **where** and **what** alarm notifications you want to receive by creating, editing and deleting _notification profiles_.
 
+  <img src="public/screenshots/manual/Screenshot 2023-04-26 at 14.16.54.png"/>
+
+
+### About components of notification profiles
+1. **Timeslot** allows you to customize **when** you want to receive the alarm notifications. You can choose one timeslot per notification profile. Timeslots are reusable across multiple notification profiles.
+2. **Filter** allows you to customize **what** alarms (incidents) you want to receive the notifications about. You can choose multiple filters per notification profile. Filters are reusable across multiple notification profiles.
+3. **Destination** allows you to customize **where** you want to receive the alarm notifications. You can choose multiple destinations per notification profile. Destinations are reusable across multiple notification profiles. Destinations may be of [different media types](#about-the-available-notification-media).
+
+
+### About the available notification media
+The notification media that are available in Argus by default are:
+- SMS
+- Email
+
+If you wish to receive notifications to other media, read about configurable media types [here](https://argus-server.readthedocs.io/en/latest/notifications.html#other-notification-plugins).
+
+
 ### Access your notification profiles
 1. Press `PROFILES` in the header.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-08 at 13.53.49 2.png"/>
 
 ### Add new notification profile
-1. Select a timeslot for when to receive notifications in the _Timeslot drop-down_. If the drop-down menu is empty, [create a timeslot](#add-new-timeslot) first.
-2. Select what alarms you want to receive notifications about in the _Filter drop-down_. If the drop-down menu is empty, [create a filter](#save-current-filter) first. Note that if no filter is selected no notification will be sent.
-3. Choose whether you want to receive notifications [via SMS or Email](#about-the-available-notification-media) in the _Media drop-down_.
-4. Select what phone number(s) you want to receive notifications to in the _Phone number drop-down_. If the drop-down menu is empty, [add a phone number](#add-new-phone-number-in-settings) first.
-5. Press `CREATE`.
+1. [Go to your notification profiles](#access-your-notification-profiles).
+2. Click on the `CREATE NEW PROFILE` button.
+
+  <img src="public/screenshots/manual/Screenshot 2023-04-26 at 14.19.09.png"/>
+
+3. Select a timeslot for when to receive notifications in the _Timeslot drop-down_. If the drop-down menu is empty, [create a timeslot](#add-new-timeslot) first.
+
+  <img src="public/screenshots/manual/Screenshot 2023-04-26 at 14.19.48.png"/>
+
+4. Select what alarms you want to receive notifications about in the _Filters drop-down_. If the drop-down menu is empty, [create a filter](#save-current-filter) first. Note that if no filter is selected no notification will be sent. You can select multiple filters per notification profile.
+
+  <img src="public/screenshots/manual/Screenshot 2023-04-26 at 14.25.51.png"/>
+
+5. Select what destination(s) you want to receive notifications to in the _Destinations drop-down_. If the drop-down menu is empty, create a new destination by clicking on the _Plus_ button first.
+
+  <img src="public/screenshots/manual/Screenshot 2023-04-26 at 14.26.37.png"/>
+
+6. Press `CREATE`.
+
+  <img src="public/screenshots/manual/Screenshot 2023-04-26 at 14.26.37 copy.png"/>
+
 
 ### Edit existing notification profile
-1. Change a timeslot for when to receive notifications in the _Timeslot drop-down_ (if needed).
-2. Change what alarms you want to receive notifications about in the _Filter drop-down_ (if needed).
-3. Change whether you want to receive notifications [via SMS or Email](#about-the-available-notification-media) in the _Media drop-down_ (if needed).
-4. Change what phone number(s) you want to receive notifications to in the _Phone number drop-down_ (if needed).
+1. [Go to your notification profiles](#access-your-notification-profiles).
+2. Change a timeslot for when to receive notifications in the _Timeslot drop-down_ (if needed).
+
+  <img src="public/screenshots/manual/Screenshot 2023-04-26 at 14.39.44.png"/>
+
+3. Change what alarms you want to receive notifications about in the _Filters drop-down_ (if needed).
+
+  <img src="public/screenshots/manual/Screenshot 2023-04-26 at 14.39.44 copy.png"/>
+
+4. Change what destinations(s) you want to receive notifications to in the _Destinations drop-down_ (if needed).
+
+  <img src="public/screenshots/manual/Screenshot 2023-04-26 at 14.39.44 copy 2.png"/>
+
 5. Press `SAVE`.
 
+  <img src="public/screenshots/manual/Screenshot 2023-04-26 at 14.39.44 copy 3.png"/>
+
+
 ### Disable notification profile
-1. Uncheck the _Active checkbox_ inside one of your existing notification profiles.
+1. [Go to your notification profiles](#access-your-notification-profiles).
+2. Uncheck the _Active checkbox_ inside one of your existing notification profiles.
+
+  <img src="public/screenshots/manual/Screenshot 2023-04-26 at 14.41.01.png"/>
+
+3. Press `SAVE`.
+
+  <img src="public/screenshots/manual/Screenshot 2023-04-26 at 14.41.01 copy.png"/>
+
+
 
 ### Delete notification profile
-1. Press `DISCARD` inside one of your existing notification profiles.
+1. [Go to your notification profiles](#access-your-notification-profiles).
+2. Press `DELETE` inside one of your existing notification profiles.
 
-### About the available notification media
-The available notification media in Argus are:
-- SMS: if selected, you will need to specify the phone number.
-- Email: if selected, the notification will be sent to the email address that your account is registered with.
+  <img src="public/screenshots/manual/Screenshot 2023-04-26 at 14.41.21.png"/>
+
+
 
 ## Manage when to receive notifications in Argus
 Add, edit or delete timeslots in _Timeslots_.
