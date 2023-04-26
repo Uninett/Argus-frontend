@@ -3,6 +3,7 @@
 - [Log in](#log-into-argus)
   - [Using username and password](#login-using-username-and-password)
   - [Using federated login](#login-using-federated-login-feide-in-the-example-below)
+  - [Debugging network errors](#debugging-network-errors-on-login)
 - [Manage alarms](#work-with-alarms-in-argus)
   - [What is an incident](#what-is-an-incident-in-argus)
   - [Access detailed incident view](#access-detailed-incident-view)
@@ -94,6 +95,19 @@ Log in and start using Argus at **/login**.
    <img src="public/screenshots/manual/Screenshot 2022-09-07 at 13.55.48.png" width="354" height="740"/>
 
 4. Continue with the preferred method for two-factor authentication.
+
+### Debugging Network errors on Login
+
+If you get a following error message at the top of the _Login_ page:
+
+  <img src="public/screenshots/manual/Screenshot 2023-04-25 at 17.19.38.png"/>
+
+1. Open _developer console_ in your browser.
+2. Check the error message in the console. 
+   * _Connection refused_ error message indicates that the Argus API server is unavailable. 
+   * _CORS_ error message indicates misconfiguration of the Argus settings.
+
+Please visit [Argus documentation](https://argus-server.readthedocs.io/en/latest/index.html) if you need help with the configuration.
 
 ## Work with alarms in Argus
 **View**, **filter** and **update** alarms that come to Argus from different sources (monitoring systems).
