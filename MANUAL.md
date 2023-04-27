@@ -298,10 +298,10 @@ Note that you can not save this parameter in [stored filters](#work-with-stored-
 
 
 ### Work with stored filters
-After you [have set the preferred filter parameters for incidents](#decide-which-incident-are-shown-in-the-table), you can save your preferences as a _filter_. Stored _filters_ can be used when [customizing alarm notifications](#customize-alarm-notifications-in-argus).
+After you [have set the preferred filter parameters for incidents](#decide-which-incidents-are-shown-in-the-table), you can save your preferences as a _filter_. Stored _filters_ can be used when [customizing alarm notifications](#customize-alarm-notifications-in-argus).
 
 #### Save current filter
-1. [Set the preferred filter parameters](#decide-which-incident-are-shown-in-the-table).
+1. [Set the preferred filter parameters](#decide-which-incidents-are-shown-in-the-table).
 2. Click on the _plus icon_ within the _Filter input field_.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-09 at 14.30.58.png"/>
@@ -311,7 +311,7 @@ After you [have set the preferred filter parameters for incidents](#decide-which
    <img src="public/screenshots/manual/Screenshot 2022-09-09 at 14.31.38.png"/>
 
 #### Modify existing filter
-1. [Make desired changes to filter parameters](#decide-which-incident-are-shown-in-the-table).
+1. [Make desired changes to filter parameters](#decide-which-incidents-are-shown-in-the-table).
 2. Click on the _save icon_ within the _Filter input field_.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-09 at 14.33.09.png"/>
