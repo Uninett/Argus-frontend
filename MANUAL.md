@@ -2,7 +2,7 @@
 - [About Argus](#what-is-argus)
 - [Log in](#log-into-argus)
   - [Using username and password](#login-using-username-and-password)
-  - [Using federated login](#login-using-federated-login-feide-in-the-example-below)
+  - [Using OAuth 2.0](#login-using-oauth-20-feide-in-the-example-below)
 - [Manage alarms](#work-with-alarms-in-argus)
   - [What is an incident](#what-is-an-incident-in-argus)
   - [Access detailed incident view](#access-detailed-incident-view)
@@ -69,21 +69,21 @@ Argus supports several login mechanisms:
 * _federated login with OAuth 2.0_
 
 Log in and start using Argus at **/login**.
-<img src="public/screenshots/manual/Screenshot 2022-09-08 at 13.49.23.png"/>
+<img src="public/screenshots/manual/Screenshot 2023-04-25 at 17.08.07.png"/>
 
 ### Login using username and password
 1. Fill out _username_ and _password_.
 
-   <img src="public/screenshots/manual/Screenshot 2022-09-08 at 13.48.07.png"/>
+   <img src="public/screenshots/manual/Screenshot 2023-04-25 at 17.08.37.png"/>
 
 2. Press `LOGIN`.
 
-   <img src="public/screenshots/manual/Screenshot 2022-09-08 at 13.48.07 2.png"/>
+   <img src="public/screenshots/manual/Screenshot 2023-04-25 at 17.08.37 copy.png"/>
 
-### Login using federated login (Feide in the example below)
-1. Press `LOGIN WITH FEIDE`.
+### Login using OAuth 2.0 (Feide in the example below)
+1. Press `LOGIN WITH OAUTH2`.
 
-   <img src="public/screenshots/manual/Screenshot 2022-09-08 at 13.48.07 3.png"/>
+   <img src="public/screenshots/manual/Screenshot 2023-04-25 at 17.08.37 copy 2.png"/>
 
 2. Select account you want to log in with.
 
