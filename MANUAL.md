@@ -424,7 +424,7 @@ After you [have set the preferred filter parameters for incidents](#decide-which
 
 
 ##### Automatically generate ticket
-Argus supports automatic ticket generation from the incident. This feature needs additional configuration. Read more in the [official Argus documentation](https://argus-server.readthedocs.io/en/latest/ticket-systems.html)
+Argus supports automatic ticket generation from the incident. This feature needs additional configuration. Read more in the [Argus documentation for ticket systems](https://argus-server.readthedocs.io/en/latest/ticket-systems.html).
 
 1. [Open incident in detailed view](#access-detailed-incident-view).
 2. Press `CREATE TICKET`. 
@@ -715,7 +715,7 @@ Add, edit or delete contact details, aka destinations, in your settings. Destina
 <img src="public/screenshots/manual/Screenshot 2023-04-25 at 18.33.57.png"/>
 
 In Argus, _emails_ and _phone numbers_ are the destinations that are configured by default.
-If you wish to receive notifications to other media, read about configurable media types [here](https://argus-server.readthedocs.io/en/latest/notifications.html#other-notification-plugins).
+If you wish to receive notifications to other media, read about configurable media types in the [Argus documentation for notification plugins](https://argus-server.readthedocs.io/en/latest/notifications.html#other-notification-plugins).
 
 ### Access your destinations in settings
 1. Click on the _user icon_ in the header.
