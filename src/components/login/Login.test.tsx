@@ -33,12 +33,12 @@ const CONFIGURED_LOGIN_METHODS_MOCK: { [key: string]: LoginMethod } = {
   },
 };
 
-beforeAll(() => {
+beforeEach(() => {
   getConfiguredLoginMethodsSpy
       .mockResolvedValue(Object.values(CONFIGURED_LOGIN_METHODS_MOCK) as LoginMethod[]);
 })
 
-afterAll(() => {
+afterEach(() => {
   jest.clearAllMocks();
   jest.resetAllMocks();
 })
