@@ -27,8 +27,11 @@
     - [Re-open closed (resolved) incident](#re-open-a-closed-resolved-incident)
     - [Close (resolve) incident](#close-resolve-an-incident)
     - [Acknowledge incident](#add-acknowledgement-to-an-incident)
-    - [Add ticket to incident](#add-ticket-url-to-an-incident)
-    - [Remove ticket from incident](#remove-ticket-url-from-an-incident)
+    - [Update ticket](#update-incident-ticket)
+      - [Manually add ticket to incident](#manually-add-ticket-url-to-an-incident)
+      - [Edit ticket URL](#edit-ticket-url)
+      - [Remove ticket from incident](#remove-ticket-url-from-an-incident)
+      - [Automatically generate ticket from incident](#automatically-generate-ticket)
   - [Update several incidents](#update-several-incidents-at-a-time)
     - [Re-open incidents](#re-open-closed-resolved-incidents)
     - [Close incidents](#close-resolve-incidents)
@@ -378,25 +381,71 @@ After you [have set the preferred filter parameters for incidents](#decide-which
 3. Press `SUBMIT`. Note that you can optionally provide an acknowledgement comment and/or a date when this acknowledgement is no longer relevant.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.46.26.png"/>
-    
 
-#### Add ticket URL to an incident
+
+
+#### Update incident ticket
+
+##### Manually add ticket URL to an incident
 1. [Open incident in detailed view](#access-detailed-incident-view).
 2. Type/paste in ticket URL into the _Ticket input field_. Note that the URL has to be absolute (full website address).
 
-   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.42.35.png"/>
+   <img src="public/screenshots/manual/Screenshot 2023-04-14 at 10.28.48.png"/>
     
-3. Press `SAVE`.
+3. Press `SAVE TICKET URL`.
 
-   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.44.40.png"/>
-    
+   <img src="public/screenshots/manual/Screenshot 2023-04-14 at 10.29.47.png"/>
 
-#### Remove ticket URL from an incident
+
+##### Edit ticket URL
 1. [Open incident in detailed view](#access-detailed-incident-view).
-2. Remove URL from the _Ticket input field_ and press `SAVE`.
+2. Press `EDIT TICKET URL`.
 
-   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.44.59.png"/>
-    
+  <img src="public/screenshots/manual/Screenshot 2023-04-14 at 10.32.36.png"/>
+
+
+3. Type/paste in ticket URL into the _Ticket input field_ and press `SAVE TICKET URL`. Note that the URL has to be absolute (full website address).
+
+  <img src="public/screenshots/manual/Screenshot 2023-04-14 at 10.32.52.png"/>
+
+
+
+##### Remove ticket URL from an incident
+1. [Open incident in detailed view](#access-detailed-incident-view).
+2. Press `EDIT TICKET URL`.
+
+  <img src="public/screenshots/manual/Screenshot 2023-04-14 at 10.32.36.png"/>
+
+
+3. Remove URL from the _Ticket input field_ and press `SAVE TICKET URL`.
+
+   <img src="public/screenshots/manual/Screenshot 2023-04-14 at 10.34.55.png"/>
+
+
+##### Automatically generate ticket
+Argus supports automatic ticket generation from the incident. This feature needs additional configuration. Read more in the [official Argus documentation](https://argus-server.readthedocs.io/en/latest/ticket-systems.html)
+
+1. [Open incident in detailed view](#access-detailed-incident-view).
+2. Press `CREATE TICKET`. 
+
+   <img src="public/screenshots/manual/Screenshot 2023-04-14 at 10.35.50.png"/>
+
+3. Confirm automatic ticket generation.
+
+     <img src="public/screenshots/manual/Screenshot 2023-04-14 at 10.36.21.png"/>
+
+
+4. When ticket is successfully generated, the _Ticket input field_ is updated with a new ticket URL, and the ticket itself is opened in a new browser tab.
+
+   <img src="public/screenshots/manual/Screenshot 2023-04-14 at 10.38.19.png"/>
+
+
+Please, check that your ticket system configuration in Argus is complete if you get a following error message: 
+
+  <img src="public/screenshots/manual/Screenshot 2023-04-14 at 10.36.40.png"/>
+
+You can read more about ticket system settings [here](https://argus-server.readthedocs.io/en/latest/ticket-systems/settings.html).
+
 
 ### Update several incidents at a time
 
@@ -435,7 +484,9 @@ After you [have set the preferred filter parameters for incidents](#decide-which
 2. Type/paste in ticket URL into the _Valid ticket URL field_ and press `SUBMIT`. Note that the URL has to be absolute (full website address).
 
    <img src="public/screenshots/manual/Screenshot 2022-09-12 at 08.20.59.png"/>
-    
+
+#### Edit ticket URL for several incidents
+Same process as [adding ticket URL to incidents](#add-ticket-url-to-incidents).
 
 #### Remove ticket URL from incidents
 1. Select several incidents in the _Incidents table_ and press `ADD TICKET` in the _table toolbar_.
