@@ -2,7 +2,7 @@
 - [About Argus](#what-is-argus)
 - [Log in](#log-into-argus)
   - [Using username and password](#login-using-username-and-password)
-  - [Using federated login](#login-using-federated-login-feide-in-the-example-below)
+  - [Using OAuth 2.0](#login-using-oauth-20-feide-in-the-example-below)
   - [Debugging network errors](#debugging-network-errors-on-login)
 - [Manage alarms](#work-with-alarms-in-argus)
   - [What is an incident](#what-is-an-incident-in-argus)
@@ -28,8 +28,11 @@
     - [Re-open closed (resolved) incident](#re-open-a-closed-resolved-incident)
     - [Close (resolve) incident](#close-resolve-an-incident)
     - [Acknowledge incident](#add-acknowledgement-to-an-incident)
-    - [Add ticket to incident](#add-ticket-url-to-an-incident)
-    - [Remove ticket from incident](#remove-ticket-url-from-an-incident)
+    - [Update ticket](#update-incident-ticket)
+      - [Manually add ticket to incident](#manually-add-ticket-url-to-an-incident)
+      - [Edit ticket URL](#edit-ticket-url)
+      - [Remove ticket from incident](#remove-ticket-url-from-an-incident)
+      - [Automatically generate ticket from incident](#automatically-generate-ticket)
   - [Update several incidents](#update-several-incidents-at-a-time)
     - [Re-open incidents](#re-open-closed-resolved-incidents)
     - [Close incidents](#close-resolve-incidents)
@@ -53,11 +56,11 @@
   - [Add timeslot](#add-new-timeslot)
   - [Edit timeslot](#edit-existing-timeslot)
   - [Delete timeslot](#delete-timeslot)
-- [Manage contact details](#manage-your-contact-details-in-argus)
-  - [Access your contact details](#access-your-contact-details-in-settings)
-  - [Add phone number](#add-new-phone-number-in-settings)
-  - [Edit phone number](#edit-existing-phone-number-in-settings)
-  - [Delete phone number](#delete-phone-number-in-settings)
+- [Manage contact details (destinations)](#manage-your-contact-details-destinations-in-argus)
+  - [Access your destinations](#access-your-destinations-in-settings)
+  - [Add destination](#add-new-destination-in-settings)
+  - [Edit destination](#edit-existing-destination-in-settings)
+  - [Delete destination](#delete-destination-in-settings)
 - [Log out](#log-out-from-argus)
 
 ## What is Argus?
@@ -70,21 +73,21 @@ Argus supports several login mechanisms:
 * _federated login with OAuth 2.0_
 
 Log in and start using Argus at **/login**.
-<img src="public/screenshots/manual/Screenshot 2022-09-08 at 13.49.23.png"/>
+<img src="public/screenshots/manual/Screenshot 2023-04-25 at 17.08.07.png"/>
 
 ### Login using username and password
 1. Fill out _username_ and _password_.
 
-   <img src="public/screenshots/manual/Screenshot 2022-09-08 at 13.48.07.png"/>
+   <img src="public/screenshots/manual/Screenshot 2023-04-25 at 17.08.37.png"/>
 
 2. Press `LOGIN`.
 
-   <img src="public/screenshots/manual/Screenshot 2022-09-08 at 13.48.07 2.png"/>
+   <img src="public/screenshots/manual/Screenshot 2023-04-25 at 17.08.37 copy.png"/>
 
-### Login using federated login (Feide in the example below)
-1. Press `LOGIN WITH FEIDE`.
+### Login using OAuth 2.0 (Feide in the example below)
+1. Press `LOGIN WITH OAUTH2`.
 
-   <img src="public/screenshots/manual/Screenshot 2022-09-08 at 13.48.07 3.png"/>
+   <img src="public/screenshots/manual/Screenshot 2023-04-25 at 17.08.37 copy 2.png"/>
 
 2. Select account you want to log in with.
 
@@ -284,9 +287,9 @@ _Filter toolbar_ is available:
 The severity level ranges from _1 - Critical_ to _5 - Information_. If you select _max severity level_ to be **5**, all incidents will be displayed in the table. If you select _max severity level_ to be **2**, only incidents with severity **1** and **2** will be displayed in the table.
 
 To change _max severity level_:
-1. Open the _Max level_ drop-down.
+1. Open the _Max severity level_ drop-down.
 
-   <img src="public/screenshots/manual/Screenshot 2022-09-09 at 13.58.35 copy 6.png"/>
+   <img src="public/screenshots/manual/Screenshot 2023-04-21 at 14.01.48.png"/>
    
 2. Select the preferred _max severity_ option.
 
@@ -392,25 +395,71 @@ After you [have set the preferred filter parameters for incidents](#decide-which
 3. Press `SUBMIT`. Note that you can optionally provide an acknowledgement comment and/or a date when this acknowledgement is no longer relevant.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.46.26.png"/>
-    
 
-#### Add ticket URL to an incident
+
+
+#### Update incident ticket
+
+##### Manually add ticket URL to an incident
 1. [Open incident in detailed view](#access-detailed-incident-view).
 2. Type/paste in ticket URL into the _Ticket input field_. Note that the URL has to be absolute (full website address).
 
-   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.42.35.png"/>
+   <img src="public/screenshots/manual/Screenshot 2023-04-14 at 10.28.48.png"/>
     
-3. Press `SAVE`.
+3. Press `SAVE TICKET URL`.
 
-   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.44.40.png"/>
-    
+   <img src="public/screenshots/manual/Screenshot 2023-04-14 at 10.29.47.png"/>
 
-#### Remove ticket URL from an incident
+
+##### Edit ticket URL
 1. [Open incident in detailed view](#access-detailed-incident-view).
-2. Remove URL from the _Ticket input field_ and press `SAVE`.
+2. Press `EDIT TICKET URL`.
 
-   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.44.59.png"/>
-    
+  <img src="public/screenshots/manual/Screenshot 2023-04-14 at 10.32.36.png"/>
+
+
+3. Type/paste in ticket URL into the _Ticket input field_ and press `SAVE TICKET URL`. Note that the URL has to be absolute (full website address).
+
+  <img src="public/screenshots/manual/Screenshot 2023-04-14 at 10.32.52.png"/>
+
+
+
+##### Remove ticket URL from an incident
+1. [Open incident in detailed view](#access-detailed-incident-view).
+2. Press `EDIT TICKET URL`.
+
+  <img src="public/screenshots/manual/Screenshot 2023-04-14 at 10.32.36.png"/>
+
+
+3. Remove URL from the _Ticket input field_ and press `SAVE TICKET URL`.
+
+   <img src="public/screenshots/manual/Screenshot 2023-04-14 at 10.34.55.png"/>
+
+
+##### Automatically generate ticket
+Argus supports automatic ticket generation from the incident. This feature needs additional configuration. Read more in the [official Argus documentation](https://argus-server.readthedocs.io/en/latest/ticket-systems.html)
+
+1. [Open incident in detailed view](#access-detailed-incident-view).
+2. Press `CREATE TICKET`. 
+
+   <img src="public/screenshots/manual/Screenshot 2023-04-14 at 10.35.50.png"/>
+
+3. Confirm automatic ticket generation.
+
+     <img src="public/screenshots/manual/Screenshot 2023-04-14 at 10.36.21.png"/>
+
+
+4. When ticket is successfully generated, the _Ticket input field_ is updated with a new ticket URL, and the ticket itself is opened in a new browser tab.
+
+   <img src="public/screenshots/manual/Screenshot 2023-04-14 at 10.38.19.png"/>
+
+
+Please, check that your ticket system configuration in Argus is complete if you get a following error message: 
+
+  <img src="public/screenshots/manual/Screenshot 2023-04-14 at 10.36.40.png"/>
+
+You can read more about ticket system settings [here](https://argus-server.readthedocs.io/en/latest/ticket-systems/settings.html).
+
 
 ### Update several incidents at a time
 
@@ -421,7 +470,7 @@ After you [have set the preferred filter parameters for incidents](#decide-which
     
 2. Confirm re-opening.
 
-   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.40.51.png"/>
+   <img src="public/screenshots/manual/Screenshot 2023-04-17 at 13.47.24.png"/>
 
 #### Close (resolve) incidents
 1. Select several incidents in the _Incidents table_ and press `CLOSE SELECTED` in the _table toolbar_.
@@ -430,7 +479,7 @@ After you [have set the preferred filter parameters for incidents](#decide-which
     
 2. Press `CLOSE NOW`. Note that you can provide a closing comment if needed.
 
-   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.46.05.png"/>
+   <img src="public/screenshots/manual/Screenshot 2023-04-17 at 13.48.27.png"/>
 
 #### Add acknowledgement to incidents
 1. Select several incidents in the _Incidents table_ and press `ACK` in the _table toolbar_.
@@ -439,7 +488,7 @@ After you [have set the preferred filter parameters for incidents](#decide-which
     
 2. Press `SUBMIT`. Note that you can optionally provide an acknowledgement comment and/or a date when these acknowledgements are no longer relevant.
 
-   <img src="public/screenshots/manual/Screenshot 2022-09-12 at 07.46.26.png"/>
+   <img src="public/screenshots/manual/Screenshot 2023-04-17 at 13.48.51.png"/>
 
 #### Add ticket URL to incidents
 1. Select several incidents in the _Incidents table_ and press `ADD TICKET` in the _table toolbar_.
@@ -449,7 +498,9 @@ After you [have set the preferred filter parameters for incidents](#decide-which
 2. Type/paste in ticket URL into the _Valid ticket URL field_ and press `SUBMIT`. Note that the URL has to be absolute (full website address).
 
    <img src="public/screenshots/manual/Screenshot 2022-09-12 at 08.20.59.png"/>
-    
+
+#### Edit ticket URL for several incidents
+Same process as [adding ticket URL to incidents](#add-ticket-url-to-incidents).
 
 #### Remove ticket URL from incidents
 1. Select several incidents in the _Incidents table_ and press `ADD TICKET` in the _table toolbar_.
@@ -617,45 +668,59 @@ Each timeslot has at least one recurrence by default. In the _Create New Timeslo
    <img src="public/screenshots/manual/Screenshot 2022-09-08 at 12.56.02.png"/>
 
 
-## Manage your contact details in Argus
-Add, edit or delete phone numbers in your settings. Phone numbers that are present in your settings can be used when [customizing alarm notifications](#customize-alarm-notifications-in-argus).
+## Manage your contact details (destinations) in Argus
+Add, edit or delete contact details, aka destinations, in your settings. Destinations that are present in your settings can be used when [customizing alarm notifications](#customize-alarm-notifications-in-argus).
 
-<img src="public/screenshots/manual/Screenshot 2022-09-08 at 14.00.29.png"/>
+<img src="public/screenshots/manual/Screenshot 2023-04-25 at 18.33.57.png"/>
 
-### Access your contact details in settings
+In Argus, _emails_ and _phone numbers_ are the destinations that are configured by default.
+If you wish to receive notifications to other media, read about configurable media types [here](https://argus-server.readthedocs.io/en/latest/notifications.html#other-notification-plugins).
+
+### Access your destinations in settings
 1. Click on the _user icon_ in the header.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-08 at 13.53.49.png"/>
    
-2. Click on `Settings` in the drop-down menu.
+2. Click on `Destinations` in the drop-down menu.
 
-    <img src="public/screenshots/manual/Screenshot 2022-09-07 at 14.18.11.png"/>
+    <img src="public/screenshots/manual/Screenshot 2023-04-25 at 18.28.29.png"/>
     
-### Add new phone number in settings
-1. [Go to your contact details](#access-your-contact-details-in-settings).
-2. Type in an existing phone number. The phone number **has to include the country code**.
+### Add new destination in settings
+1. [Go to your contact details](#access-your-destinations-in-settings).
+2. Click on the *Plus* button in the _Destinations_ header to open the _Create new destination_ menu.
 
-   <img src="public/screenshots/manual/Screenshot 2022-09-07 at 14.46.13.png"/>
+   <img src="public/screenshots/manual/Screenshot 2023-04-25 at 18.36.27.png"/>
    
-3. Press `CREATE`.
+3. Select destination's media type.
 
-   <img src="public/screenshots/manual/Screenshot 2022-09-07 at 14.46.13 2.png"/>
+   <img src="public/screenshots/manual/Screenshot 2023-04-25 at 18.37.20.png"/>
 
-### Edit existing phone number in settings
-1. [Go to your contact details](#access-your-contact-details-in-settings).
-2. Modify one of the existing phone numbers.
+4. Type in a title (optional), and a destination value (required). Press `CREATE`.
 
-   <img src="public/screenshots/manual/Screenshot 2022-09-08 at 09.48.43.png"/>
+   <img src="public/screenshots/manual/Screenshot 2023-04-25 at 18.38.53.png"/>
+
+
+
+### Edit existing destination in settings
+1. [Go to your contact details](#access-your-destinations-in-settings).
+2. Modify one of the existing destinations.
+
+   <img src="public/screenshots/manual/Screenshot 2023-04-25 at 18.42.40.png"/>
    
 3. Press `SAVE`.
 
-   <img src="public/screenshots/manual/Screenshot 2022-09-08 at 09.48.43 2.png"/>
+   <img src="public/screenshots/manual/Screenshot 2023-04-25 at 18.42.40 copy.png"/>
 
-### Delete phone number in settings
-1. [Go to your contact details](#access-your-contact-details-in-settings).
-2. Press `DELETE` inside one of your saved phone numbers.
+### Delete destination in settings
+1. [Go to your contact details](#access-your-destinations-in-settings).
+2. Press `DELETE` inside one of your saved destinations.
 
-   <img src="public/screenshots/manual/Screenshot 2022-09-08 at 09.54.43.png"/>
+   <img src="public/screenshots/manual/Screenshot 2023-04-25 at 18.43.41.png"/>
+
+Note that some destinations are connected to your Argus user profile, and can not be deleted. The `DELETE` button is disabled for such destinations:
+
+   <img src="public/screenshots/manual/Screenshot 2023-04-25 at 18.45.53.png"/>
+
 
 
 ## Log out from Argus
