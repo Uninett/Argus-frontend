@@ -17,6 +17,10 @@ This file documents changes to Argus-frontend that are important for the users t
 
 - Made _LOGIN WITH FEIDE_ button more generic.
 - _LOGIN WITH FEIDE_ will not render by default anymore. Instead, _LOGIN WITH_ button will only render if there are configured login methods that are other than userpass.
+- Updated user manual
+
+
+
 
 
 

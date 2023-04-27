@@ -316,10 +316,10 @@ Note that you can not save this parameter in [stored filters](#work-with-stored-
 
 
 ### Work with stored filters
-After you [have set the preferred filter parameters for incidents](#decide-which-incident-are-shown-in-the-table), you can save your preferences as a _filter_. Stored _filters_ can be used when [customizing alarm notifications](#customize-alarm-notifications-in-argus).
+After you [have set the preferred filter parameters for incidents](#decide-which-incidents-are-shown-in-the-table), you can save your preferences as a _filter_. Stored _filters_ can be used when [customizing alarm notifications](#customize-alarm-notifications-in-argus).
 
 #### Save current filter
-1. [Set the preferred filter parameters](#decide-which-incident-are-shown-in-the-table).
+1. [Set the preferred filter parameters](#decide-which-incidents-are-shown-in-the-table).
 2. Click on the _plus icon_ within the _Filter input field_.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-09 at 14.30.58.png"/>
@@ -329,7 +329,7 @@ After you [have set the preferred filter parameters for incidents](#decide-which
    <img src="public/screenshots/manual/Screenshot 2022-09-09 at 14.31.38.png"/>
 
 #### Modify existing filter
-1. [Make desired changes to filter parameters](#decide-which-incident-are-shown-in-the-table).
+1. [Make desired changes to filter parameters](#decide-which-incidents-are-shown-in-the-table).
 2. Click on the _save icon_ within the _Filter input field_.
 
    <img src="public/screenshots/manual/Screenshot 2022-09-09 at 14.33.09.png"/>
@@ -442,7 +442,7 @@ After you [have set the preferred filter parameters for incidents](#decide-which
 
 
 ##### Automatically generate ticket
-Argus supports automatic ticket generation from the incident. This feature needs additional configuration. Read more in the [official Argus documentation](https://argus-server.readthedocs.io/en/latest/ticket-systems.html)
+Argus supports automatic ticket generation from the incident. This feature needs additional configuration. Read more in the [Argus documentation for ticket systems](https://argus-server.readthedocs.io/en/latest/ticket-systems.html).
 
 1. [Open incident in detailed view](#access-detailed-incident-view).
 2. Press `CREATE TICKET`. 
@@ -733,7 +733,7 @@ Add, edit or delete contact details, aka destinations, in your settings. Destina
 <img src="public/screenshots/manual/Screenshot 2023-04-25 at 18.33.57.png"/>
 
 In Argus, _emails_ and _phone numbers_ are the destinations that are configured by default.
-If you wish to receive notifications to other media, read about configurable media types [here](https://argus-server.readthedocs.io/en/latest/notifications.html#other-notification-plugins).
+If you wish to receive notifications to other media, read about configurable media types in the [Argus documentation for notification plugins](https://argus-server.readthedocs.io/en/latest/notifications.html#other-notification-plugins).
 
 ### Access your destinations in settings
 1. Click on the _user icon_ in the header.
