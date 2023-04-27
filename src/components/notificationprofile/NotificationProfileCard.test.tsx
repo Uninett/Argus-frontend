@@ -26,6 +26,7 @@ const filters: Filter[] = [
   {
     pk: 1,
     name: "Filter1",
+    // @ts-ignore
     sourceSystemIds: [],
     tags: [],
     filter: {},
@@ -33,6 +34,7 @@ const filters: Filter[] = [
   {
     pk: 2,
     name: "Filter2",
+    // @ts-ignore
     sourceSystemIds: [],
     tags: [],
     filter: {},

@@ -52,10 +52,12 @@ import { ErrorType, debuglog, formatTimestamp } from "../utils";
 import { BACKEND_URL, SHOW_SEVERITY_LEVELS } from "../config";
 import { getErrorCause } from "./utils";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function defaultResolver<T, P = T>(data: T): T {
   return data;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function paginationResponseResolver<T, P = CursorPaginationResponse<T>>(data: CursorPaginationResponse<T>): T[] {
   return data.results;
 }
@@ -754,6 +756,7 @@ class ApiClient {
     return this.api.get(url, config);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private delete<T, B, R = AxiosResponse<T>>(url: string, config?: AxiosRequestConfig): Promise<R> {
     return this.api.delete(url, config);
   }
@@ -788,6 +791,7 @@ class ApiClient {
     return this.mustBeAuthenticated((token: Token) => this.api.get(url, configWithAuth(config || this.config, token)));
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private authDelete<T, B, R = AxiosResponse<T>>(url: string, config?: AxiosRequestConfig): Promise<R> {
     return this.mustBeAuthenticated((token: Token) =>
       this.api.delete(url, configWithAuth(config || this.config, token)),
@@ -795,4 +799,5 @@ class ApiClient {
   }
 }
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default new ApiClient(apiConfig);
