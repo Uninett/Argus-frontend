@@ -467,7 +467,7 @@ The notification media that are available in Argus by default are:
 - SMS
 - Email
 
-If you wish to receive notifications to other media, read about configurable media types [here](https://argus-server.readthedocs.io/en/latest/notifications.html#other-notification-plugins).
+If you wish to receive notifications to other media, read about configurable media types in the [Argus documentation for notification plugins](https://argus-server.readthedocs.io/en/latest/notifications.html#other-notification-plugins).
 
 
 ### Access your notification profiles
