@@ -15,6 +15,7 @@ const config: Config.InitialOptions = {
   ],
   displayName: 'dom',
   testEnvironment: 'jest-environment-jsdom',
+  setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
 }
 
 export default config;
