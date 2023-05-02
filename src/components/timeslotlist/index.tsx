@@ -63,7 +63,7 @@ const TimeslotList: React.FC<TimeslotListPropsType> = () => {
 
   const newTimeslotDefault: Partial<InternalTimeslot> = {
     pk: undefined,
-    // eslint-disable-next-line @typescript-eslint/camelcase
+    // eslint-disable-next-line
     time_recurrences: [{ days: [1, 2, 3, 4, 5], start: "08:00:00", end: "16:00:00", all_day: false }],
   };
   const [newTimeslot, setNewTimeslot] = useState<Partial<InternalTimeslot>>({ ...newTimeslotDefault });
@@ -192,7 +192,7 @@ const TimeslotList: React.FC<TimeslotListPropsType> = () => {
       key={`newtimeslot-${newTimeslot.revision}`}
       pk={newTimeslot.pk}
       name={newTimeslot.name}
-      // eslint-disable-next-line @typescript-eslint/camelcase
+      // eslint-disable-next-line
       recurrences={newTimeslot?.time_recurrences || []}
       unsavedChanges={true}
       onSave={handleSave}
