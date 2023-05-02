@@ -1,16 +1,13 @@
-/**  * @jest-environment jsdom-sixteen  */
+/**  * @jest-environment jsdom */
 
 import React from "react";
 import {render, screen, waitFor, within} from "@testing-library/react";
 
 import IncidentDetails from "../IncidentDetails";
 import {Incident, IncidentTag, IncidentTicketUrlBody, SourceSystem} from "../../../api/types";
-import * as utils from "../../../utils";
 import userEvent from "@testing-library/user-event";
 import client from "../../../api/client";
-
-// Utils
-const formatDurationSpy = jest.spyOn(utils, "formatDuration");
+import {formatDuration} from "../../../utils";
 
 // Mocks
 const onIncidentChange = jest.fn();
@@ -134,8 +131,8 @@ describe('Incident Details: end time and duration are displayed correctly, depen
         expect(durationItem).toBeInTheDocument()
 
         // Duration value is displayed correctly
-        const durationValue = formatDurationSpy
-            .getMockImplementation()(resolvedIncidentMock.start_time, resolvedIncidentMock.end_time);
+        const durationValue = formatDuration(resolvedIncidentMock.start_time, resolvedIncidentMock.end_time);
+
         // @ts-ignore
         expect(within(durationItem).getByText(durationValue)).toBeInTheDocument();
     });
@@ -166,8 +163,8 @@ describe('Incident Details: end time and duration are displayed correctly, depen
 
 
         // Duration value is displayed correctly
-        const durationValue = formatDurationSpy
-            .getMockImplementation()(openIncidentMock.start_time, openIncidentMock.end_time);
+        const durationValue = formatDuration(openIncidentMock.start_time, openIncidentMock.end_time);
+
         // @ts-ignore
         expect(within(durationItem).getByText(durationValue)).toBeInTheDocument();
     });

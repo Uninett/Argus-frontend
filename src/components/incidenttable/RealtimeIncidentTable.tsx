@@ -24,8 +24,6 @@ const defaultRtsConfig = {
   onIncidentsInitial: () => undefined,
 };
 
-type RealtimeIncidentTablePropsType = {};
-
 const RealtimeIncidentTable = () => {
   const displayAlert = useAlerts();
   const [{ incidentsFilter }] = useSelectedFilter();
