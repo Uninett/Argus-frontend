@@ -1,6 +1,6 @@
 import { useState, useEffect, Dispatch, SetStateAction } from "react";
 
-import type { Incident, PhoneNumber, PhoneNumberPK } from "./types.d";
+import type { Incident } from "./types.d";
 import type {
   Acknowledgement,
   ApiErrorType,
@@ -92,9 +92,6 @@ export const useApiFilters = (onResult?: (result: Map<FilterPK, Filter>) => void
 
 export const useApiTimeslots = (onResult?: (result: Map<TimeslotPK, Timeslot>) => void) =>
   createUsePromise<Timeslot[], Map<TimeslotPK, Timeslot>>(asMap, onResult);
-
-export const useApiPhoneNumbers = (onResult?: (result: Map<PhoneNumberPK, PhoneNumber>) => void) =>
-  createUsePromise<PhoneNumber[], Map<PhoneNumberPK, PhoneNumber>>(asMap, onResult);
 
 export const useApiIncidentAcks = createUsePromise<Acknowledgement[], Acknowledgement[]>(
   (acks: Acknowledgement[]) => acks,
