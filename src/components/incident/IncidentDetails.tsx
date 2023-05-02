@@ -256,11 +256,11 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
   const handleSaveTicket = (url?: string) => {
     api
         .patchIncidentTicketUrl(incident.pk, url || "")
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line
         .then(({ ticket_url }: IncidentTicketUrlBody) => {
           displayAlert(`Updated ticket URL for ${incident.pk}`, "success");
 
-          // eslint-disable-next-line @typescript-eslint/camelcase
+          // eslint-disable-next-line
           onIncidentChange({ ...incident, ticket_url });
         })
         .catch((error) => {
