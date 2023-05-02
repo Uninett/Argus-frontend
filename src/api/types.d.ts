@@ -26,6 +26,21 @@ export interface AuthTokenSuccessResponse {
 }
 
 /*
+ * Configured login methods
+ */
+
+export enum KnownLoginMethodName {
+  DEFAULT = "user_pw", // userpass login is always available
+  FEIDE = "dataporten_feide",
+}
+
+export type LoginMethod = {
+  type: string;
+  url: string;
+  name: string;
+}
+
+/*
  * Notification profiles
  */
 export type TimeRecurrenceDay = 1 | 2 | 3 | 4 | 5 | 6 | 7;
@@ -36,7 +51,7 @@ export interface TimeRecurrence {
   days: TimeRecurrenceDay[];
   start: string;
   end: string;
-  // eslint-disable-next-line @typescript-eslint/camelcase
+  // eslint-disable-next-line
   all_day: boolean;
 }
 
@@ -78,27 +93,13 @@ export interface FilterString {
   // show?: "open" | "closed" | "both";
 }
 
-export type MediaAlternative = "EM" | "SM";
-
-export type PhoneNumberPK = number;
-
-export interface PhoneNumber {
-  pk: PhoneNumberPK;
-  user: number;
-  phone_number: string;
-}
-
-export type PhoneNumberRequest = Omit<PhoneNumber, "pk" | "user">;
-export type PhoneNumberSuccessResponse = PhoneNumber;
-
 export type NotificationProfilePK = number;
 
 export interface NotificationProfileKeyed {
   timeslot: TimeslotPK;
   filters: FilterPK[];
-  media: MediaAlternative[];
   active: boolean;
-  phone_number: PhoneNumber["pk"] | null;
+  destinations: Destination[] | null;
   pk?: NotificationProfilePK;
 }
 
@@ -106,10 +107,16 @@ export interface NotificationProfile {
   pk: number;
   timeslot: Timeslot;
   filters: Filter[];
-  media: MediaAlternative[];
   active: boolean;
-  phone_number: PhoneNumber | null;
+  destinations: Destination[] | null;
 }
+
+export type NotificationProfileRequest = Omit<NotificationProfileKeyed, "destinations"> & {
+  destinations: DestinationPK[] | null;
+};
+export type NotificationProfileSuccessResponse = NotificationProfile;
+export type GetNotificationProfileRequest = Pick<NotificationProfile, "pk">;
+export type DeleteNotificationProfileRequest = Pick<NotificationProfile, "pk">;
 
 /*
  * Destinations
@@ -120,13 +127,20 @@ export type DestinationPK = number;
 export type Media = {
   slug: string;
   name: string;
-}
+};
 
 export type MediaProperty = {
   title: string;
   type: string; // value type
   description?: string;
   format?: string;
+};
+
+export enum KnownProperties {
+  PHONE_NUMBER = "phone_number",
+  EMAIL = "email_address",
+  SYNCED = "synced",
+  MS_TEAMS = "webhook",
 }
 
 export type MediaSchema = {
@@ -138,15 +152,15 @@ export type MediaSchema = {
     };
     required: KnownProperties[] | undefined;
     title: string;
-  }
-}
+  };
+};
 
 export type DestinationRequest = {
   pk: DestinationPK;
-  label?: string | undefined; // title given by user
+  label?: string | undefined | null; // title given by user
   media: string; // media slug
   settings?: DestinationSettings;
-}
+};
 
 export type DestinationSettings = {
   [property_name: string]: string | boolean;
@@ -154,18 +168,17 @@ export type DestinationSettings = {
 
 export type Destination = {
   pk: DestinationPK;
-  label: string | undefined; // title given by user
+  label: string | undefined | null; // title given by user
   media: Media;
-  settings: DestinationSettings
+  settings: DestinationSettings;
   suggested_label: string;
-}
+};
 
 export type NewDestination = {
-  label: string | undefined; // title given by user
+  label: string | undefined | null; // title given by user
   media: string; // media slug
   settings: DestinationSettings;
-}
-
+};
 
 /*
  * Incidents
@@ -242,7 +255,7 @@ export interface BulkEventResponse {
     timestamp: Timestamp;
     type: EventTypeTuple;
     description: string;
-  }
+  };
 }
 
 export type EventBody = {
@@ -255,7 +268,7 @@ export type BulkEventBody = {
   event: {
     type: EventType;
     description: string;
-  }
+  };
   timestamp: Timestamp;
 };
 
@@ -265,9 +278,9 @@ export type BulkEventWithoutDescriptionBody = {
   ids: IncidentPK[];
   event: {
     type: EventType;
-  },
+  };
   timestamp: Timestamp;
-}
+};
 
 export type IncidentTicketUrlBody = {
   ticket_url: string;
@@ -294,11 +307,6 @@ export type IncidentsFilterOptions = {
   // NOT COMPLETE
 };
 
-export type NotificationProfileRequest = NotificationProfileKeyed;
-export type NotificationProfileSuccessResponse = NotificationProfile;
-export type GetNotificationProfileRequest = Pick<NotificationProfileRequest, "timeslot">;
-export type DeleteNotificationProfileRequest = Pick<NotificationProfileRequest, "timeslot">;
-
 export type FilterRequest = {
   name: string;
   filter_string: string;
@@ -313,7 +321,6 @@ export interface Acknowledgement {
   expiration: Timestamp | undefined | null;
 }
 
-
 export type AcknowledgementEventBody = {
   description: string;
   timestamp: Timestamp;
@@ -327,7 +334,7 @@ export type AcknowledgementBody = {
 };
 
 export type BulkAcknowledgementBody = {
-  ids: IncidentPK[],
+  ids: IncidentPK[];
   event: AcknowledgementEventBody;
   expiration: Timestamp | undefined | null;
 };
@@ -365,14 +372,14 @@ export type CursorPaginationResponse<T> = {
 export type AutoUpdateMethod = "never" | "realtime" | "interval";
 
 export interface MetadataConfig {
-  'server-version': string;
-  'api-version': {
+  "server-version": string;
+  "api-version": {
     stable: string;
     unstable: string;
   };
-  'jsonapi-schema': {
+  "jsonapi-schema": {
     stable: string;
     v1: string;
     v2: string;
-  }
+  };
 }
