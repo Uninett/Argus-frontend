@@ -8,21 +8,20 @@ import { TextFieldProps } from "@material-ui/core/TextField";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 
 // Api
-import type { User } from "../../api/types.d";
+import type {LoginMethod, User} from "../../api/types.d";
 import api from "../../api";
 import auth from "../../auth";
 
-// Config
-import { BACKEND_URL } from "../../config";
-
 // Contexts/Hooks
-import { useUser } from "../../state/hooks";
+import {useApiState, useUser} from "../../state/hooks";
 
 // Components
 import OutlinedTextField from "../../components/textfields/OutlinedTextField";
 import Button from "../../components/buttons/OutlinedButton";
 import Logo from "../../components/logo/Logo";
 import {Cookies} from "react-cookie";
+import {useAlerts} from "../alertsnackbar";
+import {KnownLoginMethodName} from "../../api/types.d";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -35,7 +34,7 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: theme.spacing(4),
       borderRadius: "10px",
     },
-    loginWithFeideContainer: {
+    alternativeLoginContainer: {
       display: "flex",
       flexDirection: "column",
       flexWrap: "nowrap",
@@ -43,7 +42,7 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: 0,
       margin: 0,
     },
-    loginWithFeideButton: {
+    alternativeLoginButton: {
       padding: theme.spacing(0.5),
       backgroundColor: theme.palette.primary.dark,
       borderRadius: "5px",
@@ -93,17 +92,49 @@ const LoginForm: React.FC<{}> = () => {
   const history = useHistory();
 
   const [, { login, logout }] = useUser();
+  const [apiState] = useApiState();
+  const displayAlert = useAlerts();
 
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  const [loginFailed, setLoginFailed] = useState<boolean>(false);
+  const [isWrongCredentials, setIsWrongCredentials] = useState<boolean>(false);
+  const [isUserpassFailed, setIsUserpassFailed] = useState<boolean>(false);
+
+  const [configuredLoginMethods, setConfiguredLoginMethods] = useState<LoginMethod[]>([]);
+
+  // On mount
+  useEffect(() => {
+      api.getConfiguredLoginMethods()
+          .then((res: LoginMethod[]) => {
+              setConfiguredLoginMethods(res);
+          })
+          .catch((error) => {
+              setConfiguredLoginMethods([]);
+          })
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+
+    // On unmount
+  useEffect(() => () => {
+      setConfiguredLoginMethods([]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
 
   const logUserOut = async () => {
-    setLoginFailed(true);
     logout();
     auth.logout();
   }
+
+  useEffect(() => {
+    if (apiState.hasConnectionProblems) {
+      setIsWrongCredentials(false);
+    } else {
+      setIsWrongCredentials(isUserpassFailed);
+    }
+  }, [apiState.hasConnectionProblems, isUserpassFailed]);
 
   useEffect(() => {
     const token = cookies.get("token")
@@ -124,11 +155,13 @@ const LoginForm: React.FC<{}> = () => {
     } else {
       token = await api.userpassAuth(username, password)
         .catch(async () => {
+          setIsUserpassFailed(true);
           await logUserOut();
         });
     }
 
     if (token) {
+      setIsUserpassFailed(false);
       auth.login(token, async () => {
         await api
           .authGetCurrentUser()
@@ -136,9 +169,10 @@ const LoginForm: React.FC<{}> = () => {
             login(resUser);
             history.push("/");
           })
-          .catch(async () => {
+          .catch(async (error) => {
+            displayAlert(error.message, "error");
             await logUserOut();
-          });
+          })
       });
     } else {
       await logUserOut();
@@ -147,13 +181,13 @@ const LoginForm: React.FC<{}> = () => {
 
   return (
     <form onSubmit={onSubmit} id="login-form">
-      <div className={style.loginContainer}>
+      <div className={style.loginContainer} data-testid={"default-login-container"}>
         <div className={style.loginItem}>
           <Logo className={style.logo} />
         </div>
         <WhiteOutlinedTextField
           id="username-input"
-          error={loginFailed}
+          error={isWrongCredentials}
           className={style.loginItem}
           variant="outlined"
           label="Username"
@@ -165,8 +199,8 @@ const LoginForm: React.FC<{}> = () => {
         />
         <WhiteOutlinedTextField
           id="password-input"
-          error={loginFailed}
-          helperText={loginFailed && "Wrong username or password"}
+          error={isWrongCredentials}
+          helperText={isWrongCredentials && "Wrong username or password"}
           className={style.loginItem}
           variant="outlined"
           label="Password"
@@ -181,18 +215,22 @@ const LoginForm: React.FC<{}> = () => {
           Login
         </Button>
       </div>
-      <div className={style.divider}>
-        <Typography color="textSecondary">OR</Typography>
-      </div>
-      <div className={style.loginWithFeideContainer}>
-        <Button
-          className={style.loginWithFeideButton}
-          variant="outlined"
-          href={`${BACKEND_URL}/oidc/login/dataporten_feide/`}
-        >
-          Login with Feide
-        </Button>
-      </div>
+      {configuredLoginMethods.length > 1 && [
+        <div className={style.divider}>
+          <Typography color="textSecondary">OR</Typography>
+        </div>,
+        configuredLoginMethods
+          .filter((l) => l.name !== KnownLoginMethodName.DEFAULT)
+          .map(({ url, type }: LoginMethod) => {
+            return (
+              <div className={style.alternativeLoginContainer}>
+                <Button className={style.alternativeLoginButton} variant="outlined" href={url}>
+                  Login with {type}
+                </Button>
+              </div>
+            );
+          }),
+      ]}
     </form>
   );
 };
