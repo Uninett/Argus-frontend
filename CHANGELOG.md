@@ -3,6 +3,12 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 
 ## [Unreleased]
 
+## [v1.10.1] - 2023-05-02
+
+### Changed
+
+- Updated dependencies
+
 ## [v1.10.0] - 2023-04-28
 
 ### Added

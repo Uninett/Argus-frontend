@@ -1,6 +1,6 @@
 {
   "name": "Argus-frontend",
-  "version": "1.10.0",
+  "version": "1.10.1",
   "apiVersion": "v1",
   "private": true,
   "dependencies": {
