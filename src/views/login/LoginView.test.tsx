@@ -1,5 +1,3 @@
-/**  * @jest-environment jsdom-sixteen  */
-
 import React from "react";
 import api from "../../api";
 import MockAdapter from "axios-mock-adapter";

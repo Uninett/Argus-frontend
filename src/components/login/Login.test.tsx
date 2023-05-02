@@ -1,4 +1,4 @@
-/**  * @jest-environment jsdom-sixteen  */
+/**  * @jest-environment jsdom */
 
 import React from "react";
 import {render, screen, waitFor} from "@testing-library/react";
@@ -19,7 +19,6 @@ const authIsAuthenticatedSpy = jest.spyOn(auth, 'isAuthenticated');
 const getConfiguredLoginMethodsSpy = jest.spyOn(client, 'getConfiguredLoginMethods');
 
 const apiMock = new MockAdapter(api.api);
-const flushPromises = () => new Promise(setImmediate);
 
 const CONFIGURED_LOGIN_METHODS_MOCK: { [key: string]: LoginMethod } = {
   [KnownLoginMethodName.DEFAULT]: {
@@ -34,12 +33,12 @@ const CONFIGURED_LOGIN_METHODS_MOCK: { [key: string]: LoginMethod } = {
   },
 };
 
-beforeAll(() => {
+beforeEach(() => {
   getConfiguredLoginMethodsSpy
       .mockResolvedValue(Object.values(CONFIGURED_LOGIN_METHODS_MOCK) as LoginMethod[]);
 })
 
-afterAll(() => {
+afterEach(() => {
   jest.clearAllMocks();
   jest.resetAllMocks();
 })
@@ -170,7 +169,7 @@ describe("Functionality of LoginForm", () => {
     await userEvent.click(screen.getByRole("button"));
 
     // Waiting for all promises to resolve
-    await flushPromises();
+    await new Promise(process.nextTick);
 
     expect(history.length).toBe(3);
     expect(history.location.pathname).toBe("/");

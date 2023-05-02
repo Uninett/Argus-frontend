@@ -1,4 +1,4 @@
-/**  * @jest-environment jsdom-sixteen  */
+/**  * @jest-environment jsdom */
 
 import React from "react";
 import { render, screen, within } from "@testing-library/react";
@@ -26,6 +26,7 @@ const filters: Filter[] = [
   {
     pk: 1,
     name: "Filter1",
+    // @ts-ignore
     sourceSystemIds: [],
     tags: [],
     filter: {},
@@ -33,6 +34,7 @@ const filters: Filter[] = [
   {
     pk: 2,
     name: "Filter2",
+    // @ts-ignore
     sourceSystemIds: [],
     tags: [],
     filter: {},
@@ -385,7 +387,7 @@ describe("Functionality", () => {
   it("displays error message when save button is clicked if no filters are selected", () => {
     const saveButton = screen.getByRole("button", { name: /save/i });
     const filterSelector = screen.getByRole("combobox", { name: /filters/i });
-    const filterClearButton = within(filterSelector).getByRole("button", { name: /clear/i });
+    const filterClearButton = within(filterSelector).getByTitle(/clear/i);
 
     // Remove all filters and save
     userEvent.click(filterClearButton);

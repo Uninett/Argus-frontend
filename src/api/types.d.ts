@@ -51,7 +51,7 @@ export interface TimeRecurrence {
   days: TimeRecurrenceDay[];
   start: string;
   end: string;
-  // eslint-disable-next-line @typescript-eslint/camelcase
+  // eslint-disable-next-line
   all_day: boolean;
 }
 

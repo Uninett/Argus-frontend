@@ -12,7 +12,10 @@ const config: Config.InitialOptions = {
   collectCoverageFrom: [
     '<rootDir>/src/components/**/*.{ts,tsx}',
     '<rootDir>/src/components/*.{ts,tsx}'
-  ]
+  ],
+  displayName: 'dom',
+  testEnvironment: 'jest-environment-jsdom',
+  setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
 }
 
 export default config;
