@@ -83,16 +83,6 @@ export interface Filter {
   filter: FilterContent;
 }
 
-export interface FilterString {
-  sourceSystemIds: number[];
-  tags: string[];
-
-  // not supported by backend yet, not sure if it
-  // should either. Does it even make sense?
-  // show_acked?: boolean;
-  // show?: "open" | "closed" | "both";
-}
-
 export type NotificationProfilePK = number;
 
 export interface NotificationProfileKeyed {
@@ -309,7 +299,6 @@ export type IncidentsFilterOptions = {
 
 export type FilterRequest = {
   name: string;
-  filter_string: string;
   filter: FilterContent;
 };
 
