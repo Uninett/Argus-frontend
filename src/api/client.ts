@@ -41,6 +41,7 @@ import {
   BulkEventWithoutDescriptionBody,
   BulkEventBody,
   Timestamp,
+  LoginMethod,
 } from "./types.d";
 
 import auth from "../auth";
@@ -50,10 +51,12 @@ import { ErrorType, debuglog, formatTimestamp } from "../utils";
 import { BACKEND_URL, SHOW_SEVERITY_LEVELS } from "../config";
 import { getErrorCause } from "./utils";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function defaultResolver<T, P = T>(data: T): T {
   return data;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function paginationResponseResolver<T, P = CursorPaginationResponse<T>>(data: CursorPaginationResponse<T>): T[] {
   return data.results;
 }
@@ -183,6 +186,15 @@ class ApiClient {
     );
   }
 
+
+  public getConfiguredLoginMethods(): Promise<LoginMethod[]> {
+    return this.resolveOrReject(
+        this.get<LoginMethod[], never>("/login-methods/"),
+        (res: LoginMethod[]) => res,
+        defaultError,
+    );
+  }
+
   public postLogout(): Promise<void> {
     return this.resolveOrReject(this.authPost<void, {}>("/api/v1/auth/logout/"), defaultResolver, defaultError);
   }
@@ -230,7 +242,7 @@ class ApiClient {
     timeslot: TimeslotPK,
     filters: FilterPK[],
     active: boolean,
-    // eslint-disable-next-line @typescript-eslint/camelcase
+    // eslint-disable-next-line
     destinations?: DestinationPK[] | null,
   ): Promise<NotificationProfileSuccessResponse> {
     return this.resolveOrReject(
@@ -240,7 +252,7 @@ class ApiClient {
           timeslot: timeslot,
           filters,
           active,
-          // eslint-disable-next-line @typescript-eslint/camelcase
+          // eslint-disable-next-line
           destinations: destinations || null,
         },
       ),
@@ -381,7 +393,7 @@ class ApiClient {
   public patchIncidentTicketUrl(pk: number, ticketUrl: string): Promise<IncidentTicketUrlBody> {
     return this.resolveOrReject(
       this.authPut<IncidentTicketUrlBody, IncidentTicketUrlBody>(`/api/v1/incidents/${pk}/ticket_url/`, {
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line
         ticket_url: ticketUrl,
       }),
       defaultResolver,
@@ -449,7 +461,7 @@ class ApiClient {
       this.authPost<{ changes: IncidentTicketUrlBody }, IncidentTicketUrlBody & { ids: IncidentPK[] }>(
         `/api/v2/incidents/ticket_url/bulk/`,
         {
-          // eslint-disable-next-line @typescript-eslint/camelcase
+          // eslint-disable-next-line
           ids: pks,
           ticket_url: ticketUrl,
         },
@@ -658,7 +670,7 @@ class ApiClient {
     return this.resolveOrReject(
       this.authPut<Timeslot, Omit<Timeslot, "pk">>(`/api/v1/notificationprofiles/timeslots/${timeslotPK}/`, {
         name,
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line
         time_recurrences: timeRecurrences,
       }),
       defaultResolver,
@@ -670,7 +682,7 @@ class ApiClient {
     return this.resolveOrReject(
       this.authPost<Timeslot, Omit<Timeslot, "pk">>(`/api/v1/notificationprofiles/timeslots/`, {
         name,
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line
         time_recurrences: timeRecurrences,
       }),
       defaultResolver,
@@ -707,6 +719,7 @@ class ApiClient {
     return this.api.get(url, config);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private delete<T, B, R = AxiosResponse<T>>(url: string, config?: AxiosRequestConfig): Promise<R> {
     return this.api.delete(url, config);
   }
@@ -741,6 +754,7 @@ class ApiClient {
     return this.mustBeAuthenticated((token: Token) => this.api.get(url, configWithAuth(config || this.config, token)));
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private authDelete<T, B, R = AxiosResponse<T>>(url: string, config?: AxiosRequestConfig): Promise<R> {
     return this.mustBeAuthenticated((token: Token) =>
       this.api.delete(url, configWithAuth(config || this.config, token)),
@@ -748,4 +762,5 @@ class ApiClient {
   }
 }
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default new ApiClient(apiConfig);

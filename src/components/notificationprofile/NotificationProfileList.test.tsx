@@ -1,5 +1,3 @@
-/**  * @jest-environment jsdom-sixteen  */
-
 import React from "react";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -19,6 +17,7 @@ const filters: Filter[] = [
   {
     pk: 1,
     name: "Filter1",
+    // @ts-ignore
     sourceSystemIds: [],
     tags: [],
     filter: {},
@@ -26,6 +25,7 @@ const filters: Filter[] = [
   {
     pk: 2,
     name: "Filter2",
+    // @ts-ignore
     sourceSystemIds: [],
     tags: [],
     filter: {},

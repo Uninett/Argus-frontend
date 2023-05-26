@@ -4,15 +4,21 @@ This file documents changes to Argus-frontend that are important for the users t
 
 ## [Unreleased]
 
+## [v1.10.1] - 2023-05-02
+
+## [v1.10.0] - 2023-04-28
+
 ### Added
 - Handling of both network errors, and errors with fetching existing user in _Login view_ .
-
 
 ### Fixed
 - Bug with misleading error message in Login view on connection problems.
 
+### Changed
 
-
+- Made _LOGIN WITH FEIDE_ button more generic.
+- _LOGIN WITH FEIDE_ will not render by default anymore. Instead, _LOGIN WITH_ button will only render if there are configured login methods that are other than userpass.
+- Updated user manual
 
 ## [v1.9.0] - 2023-03-17
 

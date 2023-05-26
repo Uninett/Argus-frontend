@@ -188,7 +188,7 @@ export const TimeslotRecurrenceComponent: React.FC<TimeslotRecurrenceComponentPr
   };
 
 
-  // eslint-disable-next-line @typescript-eslint/camelcase
+  // eslint-disable-next-line
   const allDay = recurrence.all_day;
   const start = !allDay && dateFromTimeOfDayString(recurrence.start);
   const end = !allDay && dateFromTimeOfDayString(recurrence.end);
@@ -363,7 +363,7 @@ const TimeslotComponent: React.FC<TimeslotPropsType> = ({
 
   const handleAddRecurrence = () => {
     setRecurrences((prev: TimeRecurrence[]) => {
-      // eslint-disable-next-line @typescript-eslint/camelcase
+      // eslint-disable-next-line
       return [...prev, { days: [], all_day: false, start: "08:00:00", end: "16:00:00" }];
     });
     setHasChanged(true);

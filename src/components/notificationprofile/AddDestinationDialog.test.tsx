@@ -1,19 +1,13 @@
-/**  * @jest-environment jsdom-sixteen  */
-
 import React from "react";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import AddDestinationDialog from "./AddDestinationDialog";
-// @ts-ignore
 import {
-  Destination,
-  Filter,
   KnownProperties,
   Media,
   MediaSchema,
   NewDestination,
-  NotificationProfile,
-  Timeslot,
+  // @ts-ignore
 } from "../../api/types.d.ts";
 import MockAdapter from "axios-mock-adapter";
 import api from "../../api/client";

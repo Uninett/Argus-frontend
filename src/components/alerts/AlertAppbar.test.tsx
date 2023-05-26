@@ -1,5 +1,3 @@
-/**  * @jest-environment jsdom-sixteen  */
-
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import AlertAppbar from "./AlertAppbar";
