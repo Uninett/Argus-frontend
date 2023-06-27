@@ -17,7 +17,6 @@ import type {
   NotificationProfileKeyed,
   Filter,
   Timeslot,
-  Media,
   Destination,
 } from "../../api/types";
 import { useDestinations } from "../../state/hooks";
