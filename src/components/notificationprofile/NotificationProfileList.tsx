@@ -82,13 +82,6 @@ const NotificationProfileList = () => {
     };
   };
 
-  // On mount
-  useEffect(() => {
-    getConfiguredMedia();
-    fetchAllDestinations();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const getConfiguredMedia = () => {
     api
       .getAllMedia()
@@ -112,6 +105,18 @@ const NotificationProfileList = () => {
         setIsLoading(false);
       });
   };
+
+  // On mount
+  useEffect(() => {
+    getConfiguredMedia();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // On known media types update
+  useEffect(() => {
+    fetchAllDestinations();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [configuredMedia]);
 
   // Fetch data from API on mount
   useEffect(() => {
