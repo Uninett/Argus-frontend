@@ -95,7 +95,6 @@ const DestinationGroup: React.FC<DestinationGroupPropsType> = ({
       .getMediaSchemaBySlug(media.slug)
       .then((res: MediaSchema) => {
         setMediaSchema(res);
-        console.log("getMediaSchema res", res);
       })
       .catch(
         defaultErrorHandler((msg: string) => {
