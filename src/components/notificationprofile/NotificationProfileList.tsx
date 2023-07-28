@@ -17,7 +17,6 @@ import type {
   NotificationProfileKeyed,
   Filter,
   Timeslot,
-  Media,
   Destination,
 } from "../../api/types";
 import { useDestinations } from "../../state/hooks";
@@ -82,25 +81,6 @@ const NotificationProfileList = () => {
     };
   };
 
-  // On mount
-  useEffect(() => {
-    getConfiguredMedia();
-    fetchAllDestinations();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const getConfiguredMedia = () => {
-    api
-      .getAllMedia()
-      .then((res: Media[]) => {
-        fetchConfiguredMedia(res);
-      })
-      .catch((error) => {
-        displayAlert(error.message, "error");
-        setIsLoading(false);
-      });
-  };
-
   const fetchAllDestinations = () => {
     api
       .getAllDestinations()
@@ -113,12 +93,22 @@ const NotificationProfileList = () => {
       });
   };
 
+  // On known media types update
+  useEffect(() => {
+    fetchAllDestinations();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [configuredMedia, destinations]);
+
   // Fetch data from API on mount
   useEffect(() => {
-    Promise.all([api.getAllTimeslots(), api.getAllFilters(), api.getAllNotificationProfiles()])
-      .then(([timeslotResponse, filterResponse, profileResponse]) => {
+    Promise.all([api.getAllTimeslots(), api.getAllFilters(), api.getAllNotificationProfiles(), api.getAllMedia(), api.getAllDestinations()])
+      .then(([timeslotResponse, filterResponse, profileResponse, mediaResponse, destinationsResponse]) => {
         // Convert response to keyed profile
         const keyedProfileResponse = profileResponse.map((profile) => profileToKeyed(profile));
+
+        // Populate destinations global state
+        fetchConfiguredMedia(mediaResponse);
+        loadDestinations(destinationsResponse);
 
         setTimeslots(timeslotResponse);
         setFilters(filterResponse);
@@ -129,6 +119,7 @@ const NotificationProfileList = () => {
         displayAlert(error.message, "error");
         setIsLoading(false);
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [displayAlert]);
 
   // Action handlers

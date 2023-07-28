@@ -3,6 +3,13 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 
 ## [Unreleased]
 
+
+### Fixed
+- Bug with destinations not loading immediately on the _Notification profiles_ page.
+
+
+
+
 ## [v1.10.1] - 2023-05-02
 
 ### Changed
