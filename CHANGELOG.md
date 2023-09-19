@@ -4,10 +4,20 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 ## [Unreleased]
 
 
+## [v1.11.0] - 2023-09-19
+
+This version strongly prefers argus-server version 1.13 or newer.
+
 ### Fixed
-- Bug with destinations not loading immediately on the _Notification profiles_ page.
 
+- There was a race condition when looking at destinations in notification
+  profiles. This lead to weird behavior (rows loading in very late)
+  particularly on flaky networks.
 
+### Changed
+
+- How the actual filter is saved and used changed in the backend with v1.13, so
+  the frontend was updated to use the new method.
 
 
 ## [v1.10.1] - 2023-05-02
@@ -15,6 +25,7 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 ### Changed
 
 - Updated dependencies
+
 
 ## [v1.10.0] - 2023-04-28
 
@@ -29,6 +40,7 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 - Made _LOGIN WITH FEIDE_ button more generic. 
 - _LOGIN WITH FEIDE_ will not render by default anymore. Instead, _LOGIN WITH_ button will only render if there are configured login methods that are other than userpass.
 - Updated user manual
+
 
 ## [v1.9.0] - 2023-03-17
 
