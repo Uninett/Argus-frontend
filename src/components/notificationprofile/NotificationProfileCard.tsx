@@ -237,7 +237,7 @@ const NotificationProfileCard = ({
               ))}
             </Select>
           </Grid>
-          <Grid item xs={12} sm={6} md={3} className={style.gridItem}>
+          <Grid item xs={12} sm={6} md={4} lg={3} className={style.gridItem}>
             <Typography
               id={`filter-selector-${profileState.pk ? profileState.pk : "create"}-label`}
               className={style.itemHeader}
@@ -265,7 +265,7 @@ const NotificationProfileCard = ({
             />
           </Grid>
 
-          <Grid item xs={12} sm={6} md={6} className={style.gridItem}>
+          <Grid item xs={12} sm={6} md={12} lg={4} className={style.gridItem}>
             <Typography className={style.itemHeader}>Destinations</Typography>
             <div className={style.destination}>
               <Select
