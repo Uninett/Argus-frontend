@@ -78,6 +78,7 @@ const NotificationProfileList = () => {
       // eslint-disable-next-line
       destinations: profile.destinations ? profile.destinations : null,
       pk: profile.pk,
+      name: profile.name || null,
     };
   };
 
@@ -129,6 +130,7 @@ const NotificationProfileList = () => {
         profile.timeslot,
         profile.filters,
         profile.active,
+          profile.name || null,
         profile.destinations?.map((d) => d.pk),
       )
       .then((newProfile) => {
@@ -152,6 +154,7 @@ const NotificationProfileList = () => {
           profile.timeslot,
           profile.filters,
           profile.active,
+          profile.name || null,
           profile.destinations?.map((d) => d.pk),
         )
         .then(() => displayAlert("Notification profile successfully updated", "success"))
@@ -211,6 +214,7 @@ const NotificationProfileList = () => {
     // eslint-disable-next-line
     destinations: null,
     active: true,
+    name: null,
   };
 
   // Dialog shown if trying to create a new profile when all timeslots are in use

@@ -165,6 +165,11 @@ const NotificationProfileCard = ({
     setProfileState({ ...profileState, active: event.target.checked });
   };
 
+  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUnsavedChanges(true);
+    setProfileState({ ...profileState, name: event.target.value });
+  };
+
   const handleSave = () => {
     if (profileState.filters.length === 0) {
       setFilterError(true);
@@ -207,7 +212,22 @@ const NotificationProfileCard = ({
     <Card className={style.root}>
       <CardContent>
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={6} md={3} className={style.gridItem}>
+          <Grid item xs={12} sm={6} md={4} lg={2} className={style.gridItem}>
+            <Typography
+                id={`profile-title-${profileState.pk ? profileState.pk : "create"}-label`}
+                className={style.itemHeader}
+            >
+              Title
+            </Typography>
+            <TextField
+                value={profileState.name || null}
+                onChange={handleNameChange}
+                aria-labelledby={`profile-title-${profileState.pk ? profileState.pk : "create"}-label`}
+                variant="standard"
+                placeholder="Profile Name"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4} lg={3} className={style.gridItem}>
             <Typography className={style.itemHeader}>Timeslot</Typography>
             <Select value={getSelectedTimeslot(profileState.timeslot)} onChange={handleTimeslotChange}>
               {timeslots.map((timeslot: Timeslot) => (
