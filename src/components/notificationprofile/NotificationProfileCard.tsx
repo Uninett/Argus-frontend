@@ -221,7 +221,7 @@ const NotificationProfileCard = ({
               Title
             </Typography>
             <TextField
-                value={profileState.name || null}
+                value={profileState.name || ""}
                 onChange={handleNameChange}
                 aria-labelledby={`profile-title-${profileState.pk ? profileState.pk : "create"}-label`}
                 variant="standard"
