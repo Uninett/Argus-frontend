@@ -12,8 +12,7 @@ export const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       backgroundColor: theme.palette.background.paper,
-      boxShadow: theme.shadows[5],
-      padding: theme.spacing(2, 4, 3),
+      padding: theme.spacing(1, 2, 0),
     },
     closeIcon: {
       marginRight: theme.spacing(2),

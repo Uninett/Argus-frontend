@@ -313,7 +313,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
       <Grid container spacing={3} className={`${classes.grid} incident-detailed-lg`}>
         <Grid container item spacing={2} md alignItems="stretch" direction="column" className={classes.detailsRoot}>
           <Grid item>
-            <Card>
+            <Card raised>
               <CardContent>
                 <Typography color="textSecondary" gutterBottom>
                   Status
@@ -337,7 +337,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
           </Grid>
 
           <Grid item>
-            <Card>
+            <Card raised>
               <CardContent>
                 <Typography color="textSecondary" gutterBottom>
                   Tags
@@ -350,7 +350,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
           </Grid>
 
           <Grid item data-testid={"primary-details-container"}>
-            <Card>
+            <Card raised>
               <CardContent>
                 <Typography color="textSecondary" gutterBottom>
                   Primary details (#{incident.pk})
