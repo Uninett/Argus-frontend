@@ -209,7 +209,7 @@ const NotificationProfileCard = ({
   });
 
   return (
-    <Card className={style.root}>
+    <Card raised className={style.root}>
       <CardContent>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={4} lg={2} className={style.gridItem}>
