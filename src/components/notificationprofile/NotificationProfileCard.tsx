@@ -50,6 +50,7 @@ const useStyles = makeStyles(() =>
     itemHeader: {
       paddingBottom: "5px",
       fontWeight: 600,
+      height: "100%",
     },
     destination: {
       display: "flex",
