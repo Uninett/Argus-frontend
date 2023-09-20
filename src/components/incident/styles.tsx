@@ -23,9 +23,12 @@ export const useStyles = makeStyles((theme: Theme) =>
       flex: 1,
     },
     grid: {
+      "display": "flex",
       "flex-wrap": "wrap",
       "align-items": "stretch",
       "align-content": "stretch",
+      "justify-content": "space-evenly",
+      "flex-grow": 0,
     },
     dangerousButton: {
       background: theme.palette.warning.main,
@@ -81,8 +84,20 @@ export const useStyles = makeStyles((theme: Theme) =>
       borderLeftColor: red["300"],
     },
     feedRoot: {
+      display: "flex",
+      flexDirection: "column",
+      flexBasis: "33.333333%",
+    },
+    feedItems: {
       overflowY: "scroll",
-      maxHeight: 700,
+      overflowX: "auto",
+      flexGrow: 1,
+      flexBasis: "0px",
+    },
+    detailsRoot: {
+      display: "flex",
+      flexDirection: "column",
+      flexBasis: "33.333333%",
     },
   }),
 );
