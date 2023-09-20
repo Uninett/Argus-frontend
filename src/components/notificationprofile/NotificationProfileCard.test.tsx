@@ -80,6 +80,7 @@ const destinationsArray: Destination[] = [
 
 const existingProfile1: NotificationProfileKeyed = {
   pk: 1,
+  name: null,
   timeslot: 1,
   filters: [1, 2],
   active: true,
@@ -89,6 +90,7 @@ const existingProfile1: NotificationProfileKeyed = {
 
 const existingProfile2: NotificationProfileKeyed = {
   pk: 1,
+  name: null,
   timeslot: 1,
   filters: [1],
   active: true,
@@ -97,6 +99,7 @@ const existingProfile2: NotificationProfileKeyed = {
 };
 
 const newProfile: NotificationProfileKeyed = {
+  name: null,
   timeslot: 1,
   filters: [1, 2],
   active: true,
