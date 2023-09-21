@@ -88,10 +88,16 @@ export const useStyles = makeStyles((theme: Theme) =>
       flexBasis: "33.333333%",
     },
     feedItems: {
-      overflowY: "scroll",
-      overflowX: "auto",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "start",
+      overflow: "hidden",
       flexGrow: 1,
       flexBasis: "0px",
+    },
+    feedList: {
+      overflowY: "scroll",
+      overflowX: "auto",
     },
     detailsRoot: {
       display: "flex",

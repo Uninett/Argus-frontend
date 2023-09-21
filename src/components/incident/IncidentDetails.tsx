@@ -416,7 +416,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
             <Typography color="textSecondary" gutterBottom>
               Acknowledgements
             </Typography>
-            <List >
+            <List className={classes.feedList}>
               {chronoAcks
                 .map((ack: Acknowledgement) =>
                   <AckListItem key={ack.event.timestamp} ack={ack} />)
@@ -449,7 +449,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
             <Typography color="textSecondary" gutterBottom>
               Related events
             </Typography>
-            <List>
+            <List className={classes.feedList}>
               {
                 chronoEvents
                     .filter((event: Event) => event.type.value !== "ACK")
