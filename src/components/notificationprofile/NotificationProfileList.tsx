@@ -97,7 +97,7 @@ const NotificationProfileList = () => {
   useEffect(() => {
     fetchAllDestinations();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [configuredMedia, destinations]);
+  }, [configuredMedia]);
 
   // Fetch data from API on mount
   useEffect(() => {
