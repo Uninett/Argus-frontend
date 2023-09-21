@@ -602,7 +602,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
               <Typography color="textSecondary" gutterBottom>
                 Acknowledgements
               </Typography>
-              <List className={classes.feedRoot}>
+              <List>
                 {(isAcksLoading &&
                   Array.from(new Array(3)).map((item: number, index: number) => (
                     <Skeleton key={index} variant="rect" animation="wave">
@@ -618,7 +618,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
               <Typography color="textSecondary" gutterBottom>
                 Related events
               </Typography>
-              <List className={classes.feedRoot}>
+              <List>
                 {(isEventsLoading &&
                   Array.from(new Array(3)).map((item: number, index: number) => (
                     <Skeleton key={index} variant="rect" animation="wave">
