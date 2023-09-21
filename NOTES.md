@@ -4,6 +4,11 @@ This file documents changes to Argus-frontend that are important for the users t
 
 ## [Unreleased]
 
+### Added
+
+- Scrollbar to the _Acknowledgements_- and _Events_-feed in the detailed incident view.
+
+
 
 ## [v1.11.0] - 2023-09-19
 
