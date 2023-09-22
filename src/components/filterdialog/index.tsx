@@ -72,7 +72,7 @@ export const FilterDialog = ({ open, onClose }: FilterDialogPropsType) => {
       open={open}
       onClose={onClose}
       content={
-        <List component="nav" className={style.root}>
+        <List className={style.root}>
           {filters.map((filter: Filter) => {
             return (
               <ListItem key={filter.name}>
