@@ -8,9 +8,9 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 - Error handling on filter deletion.
 
 
-
 ### Added
 - Users can give custom names to Notification profiles via _Title_ input field.
+- Scrollbar to the _Acknowledgements_- and _Events_-feed in the detailed incident view.
 
 ### Fixed
 - Uniform alignment of the input fields in the notification profiles.

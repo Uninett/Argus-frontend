@@ -12,8 +12,7 @@ export const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       backgroundColor: theme.palette.background.paper,
-      boxShadow: theme.shadows[5],
-      padding: theme.spacing(2, 4, 3),
+      padding: theme.spacing(1, 2, 0),
     },
     closeIcon: {
       marginRight: theme.spacing(2),
@@ -23,9 +22,12 @@ export const useStyles = makeStyles((theme: Theme) =>
       flex: 1,
     },
     grid: {
+      "display": "flex",
       "flex-wrap": "wrap",
       "align-items": "stretch",
       "align-content": "stretch",
+      "justify-content": "space-evenly",
+      "flex-grow": 0,
     },
     dangerousButton: {
       background: theme.palette.warning.main,
@@ -79,6 +81,29 @@ export const useStyles = makeStyles((theme: Theme) =>
     },
     tableRowOpenUnacked: {
       borderLeftColor: red["300"],
+    },
+    feedRoot: {
+      display: "flex",
+      flexDirection: "column",
+      flexBasis: "33.333333%",
+    },
+    feedItems: {
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "start",
+      overflow: "hidden",
+      flexGrow: 1,
+      flexBasis: "0px",
+      gap: "0.375rem",
+    },
+    feedList: {
+      overflowY: "scroll",
+      overflowX: "auto",
+    },
+    detailsRoot: {
+      display: "flex",
+      flexDirection: "column",
+      flexBasis: "33.333333%",
     },
   }),
 );

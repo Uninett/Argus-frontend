@@ -311,9 +311,9 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
       )}
 
       <Grid container spacing={3} className={`${classes.grid} incident-detailed-lg`}>
-        <Grid container item spacing={2} md alignItems="stretch" direction="column">
+        <Grid container item spacing={2} md alignItems="stretch" direction="column" className={classes.detailsRoot}>
           <Grid item>
-            <Card>
+            <Card raised>
               <CardContent>
                 <Typography color="textSecondary" gutterBottom>
                   Status
@@ -337,7 +337,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
           </Grid>
 
           <Grid item>
-            <Card>
+            <Card raised>
               <CardContent>
                 <Typography color="textSecondary" gutterBottom>
                   Tags
@@ -350,7 +350,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
           </Grid>
 
           <Grid item data-testid={"primary-details-container"}>
-            <Card>
+            <Card raised>
               <CardContent>
                 <Typography color="textSecondary" gutterBottom>
                   Primary details (#{incident.pk})
@@ -411,12 +411,12 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
           </Grid>
         </Grid>
 
-        <Grid container item spacing={2} md direction="column">
-          <Grid item>
-            <Typography color="textSecondary" gutterBottom>
+        <Grid container item spacing={2} md direction="column" className={classes.feedRoot}>
+          <Grid item className={classes.feedItems}>
+            <Typography color="textSecondary">
               Acknowledgements
             </Typography>
-            <List>
+            <List className={classes.feedList}>
               {chronoAcks
                 .map((ack: Acknowledgement) =>
                   <AckListItem key={ack.event.timestamp} ack={ack} />)
@@ -444,12 +444,12 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
             </CenterContainer>
           </Grid>
         </Grid>
-        <Grid container item spacing={2} md direction="column">
-          <Grid item>
-            <Typography color="textSecondary" gutterBottom>
+        <Grid container item spacing={2} md direction="column" className={classes.feedRoot}>
+          <Grid item className={classes.feedItems}>
+            <Typography color="textSecondary">
               Related events
             </Typography>
-            <List>
+            <List className={classes.feedList}>
               {
                 chronoEvents
                     .filter((event: Event) => event.type.value !== "ACK")
