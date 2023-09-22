@@ -86,6 +86,7 @@ export interface Filter {
 export type NotificationProfilePK = number;
 
 export interface NotificationProfileKeyed {
+  name: string | null;
   timeslot: TimeslotPK;
   filters: FilterPK[];
   active: boolean;
@@ -95,6 +96,7 @@ export interface NotificationProfileKeyed {
 
 export interface NotificationProfile {
   pk: number;
+  name: string | null;
   timeslot: Timeslot;
   filters: Filter[];
   active: boolean;

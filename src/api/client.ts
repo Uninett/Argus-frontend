@@ -242,6 +242,7 @@ class ApiClient {
     timeslot: TimeslotPK,
     filters: FilterPK[],
     active: boolean,
+    name: string | null,
     // eslint-disable-next-line
     destinations?: DestinationPK[] | null,
   ): Promise<NotificationProfileSuccessResponse> {
@@ -252,6 +253,7 @@ class ApiClient {
           timeslot: timeslot,
           filters,
           active,
+          name: name || null,
           // eslint-disable-next-line
           destinations: destinations || null,
         },
@@ -265,6 +267,7 @@ class ApiClient {
     timeslot: TimeslotPK,
     filters: FilterPK[],
     active: boolean,
+    name: string | null,
     // eslint-disable-next-line
     destinations?: DestinationPK[] | null,
   ): Promise<NotificationProfileSuccessResponse> {
@@ -274,6 +277,7 @@ class ApiClient {
         timeslot: timeslot,
         filters,
         active,
+        name: name || null,
         // eslint-disable-next-line
         destinations: destinations || null,
       }),

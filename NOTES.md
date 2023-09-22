@@ -4,8 +4,13 @@ This file documents changes to Argus-frontend that are important for the users t
 
 ## [Unreleased]
 
-### Fixed
 
+### Added
+- Users can give custom names to Notification profiles via _Title_ input field. 
+
+
+### Fixed
+- Uniform alignment of the input fields in the notification profiles.
 - Bug with endless calls to destinations endpoint from the /notificationprofiles page. Bug did not create any noticeable lag in the browser.
 
 

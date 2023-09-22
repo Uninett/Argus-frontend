@@ -80,6 +80,7 @@ const destinationsArray: Destination[] = [
 
 const existingProfile1: NotificationProfileKeyed = {
   pk: 1,
+  name: "Profile 1",
   timeslot: 1,
   filters: [1, 2],
   active: true,
@@ -89,6 +90,7 @@ const existingProfile1: NotificationProfileKeyed = {
 
 const existingProfile2: NotificationProfileKeyed = {
   pk: 1,
+  name: "Profile 2",
   timeslot: 1,
   filters: [1],
   active: true,
@@ -97,6 +99,7 @@ const existingProfile2: NotificationProfileKeyed = {
 };
 
 const newProfile: NotificationProfileKeyed = {
+  name: null,
   timeslot: 1,
   filters: [1, 2],
   active: true,
@@ -133,6 +136,13 @@ describe("Rendering existing profile", () => {
         onAddDestination={onAddDestinationMock}
       />,
     );
+  });
+
+  it("renders the title input field correctly",  () => {
+    const titleField = screen.getByPlaceholderText(/profile name/i);
+
+    expect(titleField).toBeInTheDocument();
+    expect(titleField).toHaveValue(existingProfile1.name);
   });
 
   it("renders the timeslot selector correctly", () => {
@@ -218,6 +228,14 @@ describe("Rendering new profile", () => {
         onAddDestination={onAddDestinationMock}
       />,
     );
+  });
+
+  it("renders the title input field correctly",  () => {
+    const titleField = screen.getByPlaceholderText(/profile name/i);
+
+    expect(titleField).toBeInTheDocument();
+    // Input field is empty
+    expect(titleField).toHaveValue(newProfile.name || "");
   });
 
   it("renders the timeslot selector correctly", () => {
@@ -306,26 +324,32 @@ describe("Functionality", () => {
     );
   });
 
-  it("calls onSave() when save button is clicked", () => {
+  it("calls onSave() with correct values when save button is clicked", () => {
     const expectedProfile = {
       ...existingProfile2,
+      name: "Existing Profile 2",
       filters: [1, 2],
       // eslint-disable-next-line @typescript-eslint/camelcase
       destinations: [destinationsArray[0], destinationsArray[1], destinationsArray[2]],
       active: false,
     };
 
-    const saveButton = screen.getByRole("button", { name: /save/i });
-    const filterSelector = screen.getByRole("combobox", { name: /filters/i });
+    const saveButton = screen.getByRole("button", {name: /save/i});
+    const titleField = screen.getByPlaceholderText(/profile name/i);
+    const filterSelector = screen.getByRole("combobox", {name: /filters/i});
     const destinationsSelector = screen.getByRole("button", {
       name: `${destinationsArray[1].suggested_label}, ${destinationsArray[2].suggested_label}`,
     });
-    const filterDropdownButton = within(filterSelector).getByRole("button", { name: /open/i });
-    const activeCheckbox = screen.getByRole("checkbox", { name: /active/i });
+    const filterDropdownButton = within(filterSelector).getByRole("button", {name: /open/i});
+    const activeCheckbox = screen.getByRole("checkbox", {name: /active/i});
+
+    // Change title
+    userEvent.clear(titleField)
+    userEvent.type(titleField, expectedProfile.name)
 
     // Add filter
     userEvent.click(filterDropdownButton);
-    const filterOption2 = screen.getByRole("option", { name: filters[1].name });
+    const filterOption2 = screen.getByRole("option", {name: filters[1].name});
     userEvent.click(filterOption2);
 
     // Change destination
@@ -395,5 +419,49 @@ describe("Functionality", () => {
 
     screen.findByText(/this field cannot be empty/i);
     expect(onSaveMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("correctly updates profile name", () => {
+    const expectedProfile = {
+      ...existingProfile2,
+      name: "Test",
+    };
+
+    const saveButton = screen.getByRole("button", { name: /save/i });
+    const titleField = screen.getByPlaceholderText(/profile name/i);
+    expect(titleField).toHaveValue(existingProfile2.name)
+
+    // Change title
+    userEvent.clear(titleField)
+    userEvent.type(titleField, expectedProfile.name)
+    // fireEvent.change(titleField, {target: {value: expectedProfile.name}})
+    expect(titleField).toHaveValue(expectedProfile.name)
+
+    // Save changes
+    userEvent.click(saveButton);
+
+    expect(onSaveMock).toHaveBeenCalledTimes(1);
+    expect(onSaveMock).toHaveBeenCalledWith(expectedProfile);
+  });
+
+  it("successfully removes existing profile name", () => {
+    const expectedProfile = {
+      ...existingProfile2,
+      name: "",
+    };
+
+    const saveButton = screen.getByRole("button", { name: /save/i });
+    const titleField = screen.getByPlaceholderText(/profile name/i);
+    expect(titleField).toHaveValue(existingProfile2.name)
+
+    // Remove title
+    userEvent.clear(titleField)
+    expect(titleField).toHaveValue(expectedProfile.name)
+
+    // Save changes
+    userEvent.click(saveButton);
+
+    expect(onSaveMock).toHaveBeenCalledTimes(1);
+    expect(onSaveMock).toHaveBeenCalledWith(expectedProfile);
   });
 });
