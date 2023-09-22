@@ -93,14 +93,7 @@ const NotificationProfileList = () => {
       });
   };
 
-  // On known media types update
-  useEffect(() => {
-    fetchAllDestinations();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [configuredMedia, destinations]);
-
-  // Fetch data from API on mount
-  useEffect(() => {
+  const fetchAllData = () => {
     Promise.all([api.getAllTimeslots(), api.getAllFilters(), api.getAllNotificationProfiles(), api.getAllMedia(), api.getAllDestinations()])
       .then(([timeslotResponse, filterResponse, profileResponse, mediaResponse, destinationsResponse]) => {
         // Convert response to keyed profile
@@ -119,6 +112,17 @@ const NotificationProfileList = () => {
         displayAlert(error.message, "error");
         setIsLoading(false);
       });
+  };
+
+  // On known media types update
+  useEffect(() => {
+    fetchAllDestinations();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [configuredMedia]);
+
+  // Fetch data from API on mount
+  useEffect(() => {
+    fetchAllData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [displayAlert]);
 
@@ -140,6 +144,7 @@ const NotificationProfileList = () => {
         displayAlert("Notification profile successfully created", "success");
       })
       .catch((error: Error) => {
+        fetchAllData();
         displayAlert(error.message, "error");
       });
   };
@@ -155,7 +160,10 @@ const NotificationProfileList = () => {
           profile.destinations?.map((d) => d.pk),
         )
         .then(() => displayAlert("Notification profile successfully updated", "success"))
-        .catch((error: Error) => displayAlert(error.message, "error"));
+        .catch((error: Error) => {
+          fetchAllData();
+          displayAlert(error.message, "error")
+        });
     }
   };
 
@@ -170,6 +178,7 @@ const NotificationProfileList = () => {
           displayAlert("Notification profile successfully deleted", "success");
         })
         .catch((error: Error) => {
+          fetchAllData();
           displayAlert(error.message, "error");
         });
     }

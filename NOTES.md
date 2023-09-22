@@ -4,6 +4,11 @@ This file documents changes to Argus-frontend that are important for the users t
 
 ## [Unreleased]
 
+### Fixed
+
+- Bug with endless calls to destinations endpoint from the /notificationprofiles page. Bug did not create any noticeable lag in the browser.
+
+
 
 ## [v1.11.0] - 2023-09-19
 
