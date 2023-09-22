@@ -57,9 +57,13 @@ export const FilterDialog = ({ open, onClose }: FilterDialogPropsType) => {
   const displayAlert = useAlerts();
 
   const onDelete = (filter: Filter) => {
-    deleteFilter(filter.pk).then(() => {
-      displayAlert(`Deleted filter ${filter.name}`, "warning");
-    });
+    deleteFilter(filter.pk)
+      .then(() => {
+        displayAlert(`Deleted filter ${filter.name}`, "warning");
+      })
+      .catch((error) => {
+        displayAlert(`${error.message}`, "error")
+      });
   };
 
   return (
@@ -68,7 +72,7 @@ export const FilterDialog = ({ open, onClose }: FilterDialogPropsType) => {
       open={open}
       onClose={onClose}
       content={
-        <List component="nav" className={style.root}>
+        <List className={style.root}>
           {filters.map((filter: Filter) => {
             return (
               <ListItem key={filter.name}>

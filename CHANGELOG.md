@@ -3,6 +3,11 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 
 ## [Unreleased]
 
+### Fixed
+
+- Error handling on filter deletion.
+
+
 
 ### Added
 - Users can give custom names to Notification profiles via _Title_ input field.
