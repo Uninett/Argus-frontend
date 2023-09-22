@@ -413,7 +413,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
 
         <Grid container item spacing={2} md direction="column" className={classes.feedRoot}>
           <Grid item className={classes.feedItems}>
-            <Typography color="textSecondary" gutterBottom>
+            <Typography color="textSecondary">
               Acknowledgements
             </Typography>
             <List className={classes.feedList}>
@@ -446,7 +446,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
         </Grid>
         <Grid container item spacing={2} md direction="column" className={classes.feedRoot}>
           <Grid item className={classes.feedItems}>
-            <Typography color="textSecondary" gutterBottom>
+            <Typography color="textSecondary">
               Related events
             </Typography>
             <List className={classes.feedList}>

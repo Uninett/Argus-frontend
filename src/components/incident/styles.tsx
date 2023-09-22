@@ -94,6 +94,7 @@ export const useStyles = makeStyles((theme: Theme) =>
       overflow: "hidden",
       flexGrow: 1,
       flexBasis: "0px",
+      gap: "0.375rem",
     },
     feedList: {
       overflowY: "scroll",
