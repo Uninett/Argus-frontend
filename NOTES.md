@@ -4,21 +4,19 @@ This file documents changes to Argus-frontend that are important for the users t
 
 ## [Unreleased]
 
+## [v1.12.0] - 2023-09-28
+
 ### Fixed
 
 - Error handling on filter deletion.
-
 
 ### Added
 - Users can give custom names to Notification profiles via _Title_ input field. 
 - Scrollbar to the _Acknowledgements_- and _Events_-feed in the detailed incident view.
 
-
 ### Fixed
 - Uniform alignment of the input fields in the notification profiles.
 - Bug with endless calls to destinations endpoint from the /notificationprofiles page. Bug did not create any noticeable lag in the browser.
-
-
 
 
 ## [v1.11.0] - 2023-09-19

@@ -3,10 +3,12 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 
 ## [Unreleased]
 
+
+## [v1.12.0] - 2023-09-28
+
 ### Fixed
 
 - Error handling on filter deletion.
-
 
 ### Added
 - Users can give custom names to Notification profiles via _Title_ input field.
@@ -15,8 +17,6 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 ### Fixed
 - Uniform alignment of the input fields in the notification profiles.
 - Bug with endless calls to destinations endpoint from the /notificationprofiles page. 
-
-
 
 
 ## [v1.11.0] - 2023-09-19
