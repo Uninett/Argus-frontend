@@ -267,3 +267,68 @@ Lint errors will be displayed on the console while the app is running.
 
 The file `ColorScheme.css` defines the colors used in the project.
 Additionally, there is one CSS file for each component.
+
+
+## Using towncrier to automatically produce the changelog
+To install towncrier using `pip` run
+```console 
+$ pip install towncrier
+```
+
+Alternatively you can also use `pipx` and run
+```console 
+$ pipx install towncrier
+```
+
+Or for Ubuntu 22.04 LTS or later run
+```console
+$ sudo apt-get update
+$ sudo apt-get install towncrier
+```
+
+If it is not possible to install towncrier in the desired environment the files needed
+to later automatically generate the changelog from can also be created using the editor
+of one's choice as long as the [naming conventions](#before-merging-a-pull-request) are followed.
+
+### Before merging a pull request
+To be able to automatically produce the changelog for a release one file for each
+pull request (also called news fragment) needs to be added to the folder
+`changelog.d/`.
+
+The name of the file consists of three parts separated by a period:
+1. The identifier: either the issue number (in case the pull request fixes that issue)
+or the pull request number. If we don't want to add a link to the resulting changelog
+entry then a `+` followed by a unique short description.
+2. The type of the change: we use `security`, `removed`, `deprecated`, `added`,
+`changed` and `fixed`.
+3. The file suffix, e.g. `.md`, towncrier does not care which suffix a fragment has.
+
+So an example for a file name related to an issue/pull request would be `214.added.md`
+or for a file without corresponding issue `+fixed-pagination-bug.fixed.md`.
+
+This file can either be created manually with a file name as specified above and the
+changelog text as content or one can use towncrier to create such a file as following:
+
+```console
+$ towncrier create -c "Changelog content" 214.added.md
+```
+
+When opening a pull request there will be a check to make sure that a news fragment is
+added and it will fail if it is missing.
+
+### Before a release
+To add all content from the `changelog.d/` folder to the changelog file simply run
+```console
+$ towncrier build --version {version}
+```
+This will also delete all files in `changelog.d/`.
+
+To preview what the addition to the changelog file would look like add the flag
+`--draft`. This will not delete any files or change `CHANGELOG.md`. It will only output
+the preview in the terminal.
+
+A few other helpful flags:
+- `date DATE` - set the date of the release, default is today
+- `keep` - do not delete the files in `changelog.d/`
+
+More information about [towncrier](https://towncrier.readthedocs.io).
