@@ -1,8 +1,0 @@
-{
-  "BACKEND_URL": "http://localhost:8000",
-  "ENABLE_WEBSOCKETS_SUPPORT": true,
-  "BACKEND_WS_URL": "ws://localhost:8000/ws",
-  "USE_SECURE_COOKIE": false,
-  "DEBUG": true,
-  "DEFAULT_AUTO_REFRESH_INTERVAL": 15
-}

@@ -1,0 +1,20 @@
+{
+  "backendUrl": "http://localhost:8000",
+  "enableWebsocketSupport": true,
+  "backendWSUrl": "ws://localhost:8000/ws",
+  "useSecureCookie": true,
+  "debug": true,
+  "cookieDomain": "localhost",
+
+  "defaultAutoRefreshInterval": 60,
+  "realtimeServiceMaxRetries": 7,
+
+  "use24hTime": true,
+  "timestampDateFormat": "yyyy-MM-dd",
+  "timestampTimeFormat": "HH:mm:ss",
+  "timestampTimeNoSeconds": "HH:mm",
+  "timestampTimezoneOffsetFormat": "xxx",
+  "timestampFormat": "{date} {time}{timezone_offset}",
+
+  "showSeverityLevels": true
+}

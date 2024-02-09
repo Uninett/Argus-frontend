@@ -38,7 +38,7 @@ import IncidentTableToolbar from "../../components/incidenttable/IncidentTableTo
 // Contexts/Hooks
 import { useIncidentsContext } from "../incidentsprovider";
 import { useAlerts } from "../alertsnackbar";
-import { SHOW_SEVERITY_LEVELS } from "../../config";
+import { globalConfig } from "../../config";
 import {Collapse, Hidden, Box} from "@material-ui/core";
 import {KeyboardArrowDown, KeyboardArrowUp} from "@material-ui/icons";
 
@@ -211,7 +211,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
 
                 <TableCell className="timestamp-cell">Timestamp</TableCell>
                 <TableCell>Status</TableCell>
-                {SHOW_SEVERITY_LEVELS && <TableCell>Severity level</TableCell>}
+                {globalConfig.get().showSeverityLevels && <TableCell>Severity level</TableCell>}
                 <TableCell>Source</TableCell>
                 <TableCell>Description</TableCell>
                 <TableCell>Actions</TableCell>
@@ -361,7 +361,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                             {/* <TicketItem small ticketUrl={incident.ticket_url} /> */}
                             <AckedItem small acked={incident.acked} />
                           </ClickableCell>
-                          {SHOW_SEVERITY_LEVELS && (
+                          {globalConfig.get().showSeverityLevels && (
                             <ClickableCell>
                               <LevelItem small level={incident.level} />
                             </ClickableCell>
@@ -405,7 +405,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                           <ClickableCell className="timestamp-cell">{formatTimestamp(incident.start_time)}</ClickableCell>
                           <ClickableCell className="state-cell" component="th" scope="row">
                             <div className="state-cell-contents">
-                              {SHOW_SEVERITY_LEVELS && (
+                              {globalConfig.get().showSeverityLevels && (
                                 <LevelItem small level={incident.level} />
                               )}
                               <OpenItem small open={incident.open} />
@@ -453,7 +453,7 @@ const MUIIncidentTable: React.FC<MUIIncidentTablePropsType> = ({
                           <ClickableCell className="timestamp-cell">{formatTimestamp(incident.start_time)}</ClickableCell>
                           <ClickableCell className="state-cell" component="th" scope="row">
                             <div className="state-cell-contents">
-                              {SHOW_SEVERITY_LEVELS && (
+                              {globalConfig.get().showSeverityLevels && (
                                 <LevelItem small level={incident.level} />
                               )}
                               <OpenItem small open={incident.open} />
