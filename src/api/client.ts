@@ -123,6 +123,7 @@ class ApiClient {
     this.config =  updatedConfig ||
       {...apiConfig, baseURL: newBaseUrl} ||
       {...apiConfig, baseURL: globalConfig.get().backendUrl};
+    this.api = axios.create(this.config);
     console.log('API CONFIG', this.config)
   }
 
