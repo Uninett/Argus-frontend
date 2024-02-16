@@ -118,13 +118,11 @@ class ApiClient {
       });
   }
 
-  // todo add getter for this.config?
   public updateBaseUrl(newBaseUrl?: string, updatedConfig?: AxiosRequestConfig) {
     this.config =  updatedConfig ||
       {...apiConfig, baseURL: newBaseUrl} ||
       {...apiConfig, baseURL: globalConfig.get().backendUrl};
     this.api = axios.create(this.config);
-    console.log('API CONFIG', this.config)
   }
 
   public registerInterceptors(unauthorizedCallback: CB, serverErrorCallback: CB, pluginErrorCallback: CB) {
