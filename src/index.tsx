@@ -3,15 +3,25 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
-import { AppProvider } from "./state/contexts";
-import { BrowserRouter } from "react-router-dom";
-import { globalConfig, globalConfigUrl } from "./config";
+import {AppProvider} from "./state/contexts";
+import {BrowserRouter} from "react-router-dom";
+import {defaultRequiredConfigValues, globalConfig, globalConfigUrl} from "./config";
 import api from "./api";
+
+// Before rendering, first fetch the global config:
+const app: ReactElement =
+  <BrowserRouter>
+    <AppProvider>
+      <App/>
+    </AppProvider>
+  </BrowserRouter>
+
+console.log("index.tsx, fetching global config from", globalConfigUrl);
 
 fetch(
   globalConfigUrl
-  ,{
-    headers : {
+  , {
+    headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     }
@@ -21,13 +31,7 @@ fetch(
   .then((response) => {
     globalConfig.set({...response})
     api.updateBaseUrl(response.backendUrl)
-    return (
-      <BrowserRouter>
-        <AppProvider>
-          <App/>
-        </AppProvider>
-      </BrowserRouter>
-    );
+    return app;
   })
   .then((reactElement: ReactElement) => {
     ReactDOM.render(
@@ -36,7 +40,16 @@ fetch(
     );
   })
   .catch(e => {
-    return <p style={{color: "red", textAlign: "center"}}>Error while fetching global config</p>;
+    if (process.env.NODE_ENV === "development") {
+      globalConfig.set(defaultRequiredConfigValues)
+      api.updateBaseUrl(defaultRequiredConfigValues.backendUrl)
+      ReactDOM.render(
+        app,
+        document.getElementById("root"),
+      );
+    } else {
+      console.log(e);
+    }
   })
 ;
 
