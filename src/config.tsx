@@ -56,7 +56,7 @@ export class Config {
     } else throw new Error("Missing one or more of the required configuration values.")
 
     this.useSecureCookie = config.useSecureCookie || process.env.REACT_APP_USE_SECURE_COOKIE !== "false";
-    this.showSeverityLevels = config.showSeverityLevels || true;
+    this.showSeverityLevels = config.showSeverityLevels !== undefined ? config.showSeverityLevels : true;
     this.backendWSUrl = config.backendWSUrl || process.env.REACT_APP_BACKEND_WS_URL || "";
     this.debug = config.debug || process.env.REACT_APP_DEBUG === "true" || false;
     this.defaultAutoRefreshInterval = config.defaultAutoRefreshInterval || refreshInterval;
@@ -67,7 +67,7 @@ export class Config {
     this.timestampDateFormat = config.timestampDateFormat || "yyyy-MM-dd";
     this.timestampTimeFormat = config.timestampTimeFormat || "HH:mm:ss";
     this.timestampTimezoneOffsetFormat = config.timestampTimezoneOffsetFormat || "xxx";
-    this.use24hTime = config.use24hTime || true;
+    this.use24hTime = config.use24hTime !== undefined ? config.use24hTime : true;
   }
 }
 
