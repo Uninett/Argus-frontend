@@ -85,9 +85,16 @@ Note that the website will automatically reload as you edit the code.
 
 ### Configuration
 
-Configuration options for the Argus frontend are located in `src/config.tsx`. All of these options can be set using environment variables when running the frontend under the Node server (or in Docker Compose). However, for production deployment, you would normally build the application and serve all the resulting static files using a regular web server, like Apache or Nginx; in this case, `config.tsx` cannot read server environment varibles, and should be hard coded instead.
+Default configuration options for the Argus frontend are located in `src/config.tsx`. All of these options can be set using **environment** variables when running the frontend under the Node server (or in Docker Compose), or by providing **configuration** variables in `runtime-config.json` file.
 
-These environment variables are available:
+#### Development environment
+Either provide **environment** variables when running the frontend under the Node server (or in Docker Compose), or add `runtime-config.json` file with the **configuration** variables to the `/public` folder.
+
+#### Production environment
+Serve `./runtime-config.json` file with the **configuration** variables. 
+
+#### Variables
+These **environment** variables are available:
 
 <dl>
   <dt>REACT_APP_BACKEND_URL</dt>
@@ -112,6 +119,55 @@ These environment variables are optional:
 
   <dt>REACT_APP_COOKIE_DOMAIN</dt>
   <dd>Ignore it if Argus frontend and backend are deployed on the same domain. Otherwise, set it to the same value as <code>ARGUS_COOKIE_DOMAIN</code> variable on the backend.</dd>
+</dl>
+
+**Configuartion** variables can be provided in `runtime-config.json` file and will take precedence over the **environment** variables. These **configuartion** variables are available:
+
+<dl>
+  <dt>backendUrl</dt>
+  <dd>Format: string. The base URL to the Argus API server. MUST be provided in production environment, optional otherwise. </dd>
+
+  <dt>cookieDomain</dt>
+  <dd>Format: string. MUST be provided in production environment, optional otherwise.</dd>
+
+  <dt>enableWebsocketSupport</dt>
+  <dd>Format: boolean. Set to <code>true</code> to enable subscriptions to realtime incident updates.</dd>
+
+  <dt>backendWSUrl</dt>
+  <dd>Format: string. If you enable websocket support, this must be set to the backend's websocket URL. This value may depend on whether your deployment splits the HTTP server and the Web Socket servers into two components. Typically, if the backend HTTP server is <code>https://argus-api.example.org/</code>, this value could be <code>wss://argus-api.example.org/ws</code>.</dd>
+
+  <dt>realtimeServiceMaxRetries</dt>
+  <dd>Format: integer. If you enable websocket support, and it fails, this specifies how many times the application will retry connection before closing the socket.</dd>
+
+  <dt>defaultAutoRefreshInterval</dt>
+  <dd>Format: integer. Set to the default number of seconds between each auto refresh.</dd>
+
+  <dt>debug</dt>
+  <dd>Format: boolean. Set to <code>true</code> if you want debug output from the application.</dd>
+
+  <dt>showSeverityLevels/dt>
+  <dd>Format: boolean. Set to <code>true</code> if you want to enable filtering of incidents by severity levels.</dd>
+
+  <dt>useSecureCookie</dt>
+  <dd>Format: boolean. Set explicitly to <code>false</code> to disable the use of secure cookies. Typically only useful when deploying the development environment using non-TLS servers/regular HTTP.</dd>
+
+  <dt>timestampFormat</dt>
+  <dd>Format: string (valid ISO timestamp format). Specifies how a complete timestamp should be displayed.</dd>
+
+  <dt>timestampDateFormat</dt>
+  <dd>Format: string (valid ISO timestamp format). Specifies how dates should be displayed.</dd>
+  
+  <dt>timestampTimeFormat</dt>
+  <dd>Format: string (valid ISO timestamp format). Specifies how time values should be displayed.</dd>
+
+  <dt>timestampTimeNoSeconds</dt>
+  <dd>Format: string (valid ISO timestamp format). Specifies how time values without seconds should be displayed.</dd>
+
+  <dt>timestampTimezoneOffsetFormat</dt>
+  <dd>Format: string (valid ISO timestamp format). Specifies how timezone should be displayed.</dd>
+
+  <dt>use24hTime</dt>
+  <dd>Format: boolean. Set to <code>true</code> if you want time values to be displayed in 24-hours-day format.</dd>
 </dl>
 
 
