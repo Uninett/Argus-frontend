@@ -1,31 +1,75 @@
-export interface DynamicConfig {
+// Config values that must be explicitly provided in runtime-config.json
+export interface RequiredConfigValues {
   backendUrl: string;
+  cookieDomain: string;
+}
+
+// Config values that could be omitted in runtime-config.json and will be set to reasonable default values
+export interface OptionalConfigValues {
+  useSecureCookie: boolean;
+  showSeverityLevels: boolean;
   enableWebsocketSupport: boolean;
   backendWSUrl: string;
-  useSecureCookie: boolean;
   debug: boolean;
-  cookieDomain: string;
-
   defaultAutoRefreshInterval: number;
   realtimeServiceMaxRetries: number;
-
   use24hTime: boolean;
   timestampDateFormat: string;
   timestampTimeFormat: string;
   timestampTimeNoSeconds: string;
   timestampTimezoneOffsetFormat: string;
   timestampFormat: string;
+}
 
+export type EditableConfig = RequiredConfigValues & Partial<OptionalConfigValues>
+
+export class Config {
+  // Fixed values
+  readonly apiVersion: string = require('../package.json').version;
+  readonly frontendVersion: string = require('../package.json').version;
+
+  // Required values
+  backendUrl: string;
+  cookieDomain: string;
+
+  // Optional values
+  backendWSUrl: string;
+  debug: boolean;
+  defaultAutoRefreshInterval: number;
+  enableWebsocketSupport: boolean;
   showSeverityLevels: boolean;
-}
+  useSecureCookie: boolean;
+  realtimeServiceMaxRetries: number;
+  timestampDateFormat: string;
+  timestampFormat: string;
+  timestampTimeFormat: string;
+  timestampTimeNoSeconds: string;
+  timestampTimezoneOffsetFormat: string;
+  use24hTime: boolean;
 
-// Config values that are set by devs as they are determined by the state of Argus development
-interface FixedConfig {
-  frontendVersion: string;
-  apiVersion: string;
-}
+  constructor(config: EditableConfig) {
 
-export type GlobalConfigType = DynamicConfig & FixedConfig;
+    if (config.backendUrl !== undefined &&
+      config.cookieDomain !== undefined) {
+      this.backendUrl = config.backendUrl;
+      this.cookieDomain = config.cookieDomain;
+    } else throw new Error("Missing one or more of the required configuration values.")
+
+    this.useSecureCookie = config.useSecureCookie || process.env.REACT_APP_USE_SECURE_COOKIE !== "false";
+    this.showSeverityLevels = config.showSeverityLevels || true;
+    this.backendWSUrl = config.backendWSUrl || process.env.REACT_APP_BACKEND_WS_URL || "";
+    this.debug = config.debug || process.env.REACT_APP_DEBUG === "true" || false;
+    this.defaultAutoRefreshInterval = config.defaultAutoRefreshInterval || refreshInterval;
+    this.enableWebsocketSupport = config.enableWebsocketSupport || process.env.REACT_APP_ENABLE_WEBSOCKETS_SUPPORT === "true" || false;
+    this.realtimeServiceMaxRetries = config.realtimeServiceMaxRetries || rtsRetries;
+    this.timestampFormat = config.timestampFormat || "{date} {time}{timezone_offset}";
+    this.timestampTimeNoSeconds = config.timestampTimeNoSeconds || "HH:mm";
+    this.timestampDateFormat = config.timestampDateFormat || "yyyy-MM-dd";
+    this.timestampTimeFormat = config.timestampTimeFormat || "HH:mm:ss";
+    this.timestampTimezoneOffsetFormat = config.timestampTimezoneOffsetFormat || "xxx";
+    this.use24hTime = config.use24hTime || true;
+  }
+}
 
 let refreshInterval = 30;
 if (process.env.REACT_APP_DEFAULT_AUTO_REFRESH_INTERVAL) {
@@ -39,44 +83,22 @@ if (process.env.REACT_APP_REALTIME_SERVICE_MAX_RETRIES) {
   if (parsedRetries > 0) rtsRetries = parsedRetries;
 }
 
-const fixedConfig: FixedConfig = {
-  frontendVersion: require('../package.json').version,
-  apiVersion: require('../package.json').apiVersion,
+export const defaultRequiredConfigValues: RequiredConfigValues = {
+  backendUrl: process.env.REACT_APP_BACKEND_URL || "",
+  cookieDomain: process.env.REACT_APP_COOKIE_DOMAIN || document.createElement('a').hostname
 }
 
-export const defaultConfig: GlobalConfigType = {
-  ...fixedConfig,
-  backendUrl: process.env.REACT_APP_BACKEND_URL || "",
-  enableWebsocketSupport: process.env.REACT_APP_ENABLE_WEBSOCKETS_SUPPORT === "true" || false,
-  backendWSUrl: process.env.REACT_APP_BACKEND_WS_URL || "",
-  useSecureCookie: process.env.REACT_APP_USE_SECURE_COOKIE !== "false",
-  debug: process.env.REACT_APP_DEBUG === "true" || false,
-  cookieDomain: process.env.REACT_APP_COOKIE_DOMAIN || document.createElement('a').hostname,
-
-  defaultAutoRefreshInterval: refreshInterval,
-  realtimeServiceMaxRetries: rtsRetries,
-
-  use24hTime: true,
-  timestampDateFormat: "yyyy-MM-dd",
-  timestampTimeFormat: "HH:mm:ss",
-  timestampTimeNoSeconds: "HH:mm",
-  timestampTimezoneOffsetFormat: "xxx",
-  timestampFormat: "{date} {time}{timezone_offset}",
-
-  showSeverityLevels: true,
-};
-
 class GlobalConfig {
-  config: GlobalConfigType = defaultConfig;
+  config: Config = new Config(defaultRequiredConfigValues);
 
-  public get(): GlobalConfigType {
+  public get(): Config {
     return this.config;
   }
 
-  public set(value: DynamicConfig): void {
-    this.config = {...defaultConfig, ...value};
+  public set(value: EditableConfig) {
+    this.config = new Config(value);
   }
 }
 
 export let globalConfig = new GlobalConfig();
-export const globalConfigUrl = "./runtime-config.json";
+export const globalConfigUrl = "runtime-config.json";
