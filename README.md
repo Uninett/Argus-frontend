@@ -116,6 +116,8 @@ Either provide **environment** variables when running the frontend under the Nod
 #### Production environment
 Serve `runtime-config.json` file with the **configuration** variables. It must be accessible as `%YOUR_FRONTEND_BASE_URL%/runtime-config.json`.
 
+Alternatively, you can configure the application via **environment** variables if using the production-oriented Docker image defined in `./docker/Dockerfile`. This image will automatically produce a `runtime-config.json` from the environment variables exported to the container, as well as other variables provided in the `./docker/runtime-config-template.json`. Read more in the [docker/README.md](docker/README.md).
+
 #### Variables
 These **environment** variables are available:
 
