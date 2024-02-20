@@ -87,11 +87,34 @@ Note that the website will automatically reload as you edit the code.
 
 Default configuration options for the Argus frontend are located in `src/config.tsx`. All of these options can be set using **environment** variables when running the frontend under the Node server (or in Docker Compose), or by providing **configuration** variables in `runtime-config.json` file.
 
+**Configuration** variables can be provided by adding a `public/runtime-config.json` file when in development environment, or by serving a `/runtime-config.json` file when in production environment. Example configuration file looks like this:
+
+```json
+{
+  "backendUrl": "http://localhost:8000",
+  "enableWebsocketSupport": true,
+  "backendWSUrl": "ws://localhost:8000/ws",
+  "useSecureCookie": true,
+  "debug": true,
+  "cookieDomain": "localhost",
+  "defaultAutoRefreshInterval": 40,
+  "realtimeServiceMaxRetries": 7,
+  "use24hTime": true,
+  "timestampDateFormat": "yyyy-MM-dd",
+  "timestampTimeFormat": "HH:mm:ss",
+  "timestampTimeNoSeconds": "HH:mm",
+  "timestampTimezoneOffsetFormat": "xxx",
+  "timestampFormat": "{date} {time}{timezone_offset}",
+  "showSeverityLevels": true
+}
+
+```
+
 #### Development environment
 Either provide **environment** variables when running the frontend under the Node server (or in Docker Compose), or add `runtime-config.json` file with the **configuration** variables to the `/public` folder.
 
 #### Production environment
-Serve `./runtime-config.json` file with the **configuration** variables. 
+Serve `/runtime-config.json` file with the **configuration** variables.
 
 #### Variables
 These **environment** variables are available:
