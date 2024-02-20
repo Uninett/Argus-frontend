@@ -121,7 +121,7 @@ These environment variables are optional:
   <dd>Ignore it if Argus frontend and backend are deployed on the same domain. Otherwise, set it to the same value as <code>ARGUS_COOKIE_DOMAIN</code> variable on the backend.</dd>
 </dl>
 
-**Configuartion** variables can be provided in `runtime-config.json` file and will take precedence over the **environment** variables. These **configuartion** variables are available:
+**Configuration** variables can be provided in `runtime-config.json` file and will take precedence over the **environment** variables. These **configuration** variables are available:
 
 <dl>
   <dt>backendUrl</dt>
