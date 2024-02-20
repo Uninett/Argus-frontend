@@ -114,7 +114,7 @@ Default configuration options for the Argus frontend are located in `src/config.
 Either provide **environment** variables when running the frontend under the Node server (or in Docker Compose), or add `runtime-config.json` file with the **configuration** variables to the `/public` folder.
 
 #### Production environment
-Serve `/runtime-config.json` file with the **configuration** variables.
+Serve `runtime-config.json` file with the **configuration** variables. It must be accessible as `%YOUR_FRONTEND_BASE_URL%/runtime-config.json`.
 
 #### Variables
 These **environment** variables are available:
