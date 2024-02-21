@@ -5,19 +5,13 @@ import formatDistance from "date-fns/formatDistance";
 
 // Api
 import type {Incident, User, Token} from "./api/types.d";
-import api from "./api";
-import auth from "./auth";
 
 // Config
-import {
-  DEBUG,
-  TIMESTAMP_FORMAT,
-  TIMESTAMP_DATE_FORMAT,
-  TIMESTAMP_TIME_FORMAT,
-  TIMESTAMP_TIME_NO_SECONDS,
-  TIMESTAMP_TIMEZONE_OFFSET_FORMAT,
-} from "./config";
+import { globalConfig } from "./config";
 import {Destination, DestinationPK, KnownProperties, Media} from "./api/types.d";
+
+import api from "./api";
+import auth from "./auth";
 
 export type ErrorType = string | Error;
 
@@ -71,8 +65,7 @@ export function getPropertyByPath<T>(obj: T, path: string): any {
   return objectGetPropertyByPathArray(obj, path.split("."));
 }
 
-// eslint-disable-next-line
-export const debuglog = DEBUG ? console.log.bind(null, "[DEBUG]") : () => {};
+export const debuglog = console.log.bind(null, "[DEBUG]");
 
 export function identity<T>(inp: T): T {
   return inp;
@@ -180,17 +173,17 @@ export type FormatTimestampOptions = Partial<{
 export function formatTimestamp(timestamp: Date | string, options?: FormatTimestampOptions): string {
   const dateTimestamp = new Date(timestamp);
 
-  let formatString = TIMESTAMP_FORMAT;
-  formatString = formatString.replace("{date}", TIMESTAMP_DATE_FORMAT);
+  let formatString = globalConfig.get().timestampFormat;
+  formatString = formatString.replace("{date}", globalConfig.get().timestampDateFormat);
 
   if (options?.withSeconds) {
-    formatString = formatString.replace("{time}", TIMESTAMP_TIME_FORMAT);
+    formatString = formatString.replace("{time}", globalConfig.get().timestampTimeFormat);
   } else {
-    formatString = formatString.replace("{time}", TIMESTAMP_TIME_NO_SECONDS);
+    formatString = formatString.replace("{time}", globalConfig.get().timestampTimeNoSeconds);
   }
 
   if (options?.withTimezoneOffset) {
-    formatString = formatString.replace("{timezone_offset}", TIMESTAMP_TIMEZONE_OFFSET_FORMAT);
+    formatString = formatString.replace("{timezone_offset}", globalConfig.get().timestampTimezoneOffsetFormat);
   } else {
     formatString = formatString.replace("{timezone_offset}", "");
   }

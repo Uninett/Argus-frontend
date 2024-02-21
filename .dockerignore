@@ -2,3 +2,5 @@ node_modules
 build
 .dockerignore
 Dockerfile
+docker/Dockerfile
+docker/README.md

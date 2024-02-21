@@ -43,7 +43,7 @@ import { AckedItem, LevelItem, OpenItem, TicketItem } from "./Chips";
 // Contexts/Hooks
 import { useAlerts } from "../alertsnackbar";
 import { useApiIncidentAcks, useApiIncidentEvents } from "../../api/hooks";
-import { SHOW_SEVERITY_LEVELS } from "../../config";
+import { globalConfig } from "../../config";
 
 import "./IncidentDetails.css";
 import {Hidden} from "@material-ui/core";
@@ -319,7 +319,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                   Status
                 </Typography>
                 <Grid container spacing={1} direction="column">
-                  {SHOW_SEVERITY_LEVELS && (
+                  {globalConfig.get().showSeverityLevels && (
                     <Grid item>
                       <LevelItem level={incident.level} />
                     </Grid>
@@ -468,7 +468,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                 Status
               </Typography>
               <Grid container spacing={0} direction="row" wrap="wrap" alignItems="baseline" alignContent="stretch">
-                {SHOW_SEVERITY_LEVELS && (
+                {globalConfig.get().showSeverityLevels && (
                   <Grid item>
                     <LevelItem level={incident.level} />
                   </Grid>

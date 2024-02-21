@@ -46,9 +46,9 @@ import {
 
 import auth from "../auth";
 
-import { ErrorType, debuglog, formatTimestamp } from "../utils";
+import {ErrorType, debuglog, formatTimestamp} from "../utils";
 
-import { BACKEND_URL, SHOW_SEVERITY_LEVELS } from "../config";
+import { globalConfig } from "../config";
 import { getErrorCause } from "./utils";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -75,7 +75,6 @@ type CB = (response: AxiosResponse, error: ErrorType) => void;
 
 const apiConfig = {
   returnRejectedPromiseOnError: false,
-  baseURL: BACKEND_URL,
 };
 
 class ApiClient {
@@ -86,8 +85,8 @@ class ApiClient {
   _listenersId: number;
   _listeners: [number, ApiListener][];
 
-  public constructor(config?: AxiosRequestConfig) {
-    this.config = config || apiConfig;
+  public constructor(config: AxiosRequestConfig) {
+    this.config = config || {...apiConfig, baseURL: globalConfig.get().backendUrl};
     this.api = axios.create(this.config);
     this.token = auth.token();
 
@@ -119,13 +118,19 @@ class ApiClient {
       });
   }
 
+  public updateBaseUrl(newBaseUrl?: string, updatedConfig?: AxiosRequestConfig) {
+    this.config =  updatedConfig ||
+      {...apiConfig, baseURL: newBaseUrl} ||
+      {...apiConfig, baseURL: globalConfig.get().backendUrl};
+    this.api = axios.create(this.config);
+  }
+
   public registerInterceptors(unauthorizedCallback: CB, serverErrorCallback: CB, pluginErrorCallback: CB) {
     this.api.interceptors.response.use(
       (response) => response,
       (error) => {
         if (error && error.response) {
-          debuglog(error);
-
+          if (globalConfig.get().debug) debuglog(error);
           const { status } = error.response;
           const { url } = error.response.config; // endpoint relative url that was requested
           const { data } = error.response; // error cause message
@@ -506,7 +511,7 @@ class ApiClient {
       if (filter.filter.stateful !== undefined) {
         params.push(`stateful=${filter.filter.stateful}`);
       }
-      if (SHOW_SEVERITY_LEVELS && filter.filter.maxlevel !== undefined) {
+      if (globalConfig.get().showSeverityLevels && filter.filter.maxlevel !== undefined) {
         params.push(`level__lte=${filter.filter.maxlevel}`);
       }
       if (filter.filter.sourceSystemIds !== undefined) {
@@ -767,4 +772,4 @@ class ApiClient {
 }
 
 // eslint-disable-next-line import/no-anonymous-default-export
-export default new ApiClient(apiConfig);
+export default new ApiClient({...apiConfig, baseURL: globalConfig.get().backendUrl});

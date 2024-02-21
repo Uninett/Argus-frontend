@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useState, useMemo } from "react";
 import TablePagination from "@material-ui/core/TablePagination";
 
 // Config
-import { DEFAULT_AUTO_REFRESH_INTERVAL } from "../../config";
+import {globalConfig} from "../../config";
 
 // Api
 import type { Filter, Incident, CursorPaginationResponse, AutoUpdateMethod } from "../../api/types.d";
@@ -256,7 +256,7 @@ const FilteredIncidentTable = () => {
     if (autoUpdateMethod === "interval") {
       const interval = setInterval(() => {
         refresh();
-      }, 1000 * DEFAULT_AUTO_REFRESH_INTERVAL);
+      }, 1000 * globalConfig.get().defaultAutoRefreshInterval);
       return () => clearInterval(interval);
     }
   }, [refresh, autoUpdateMethod]);
@@ -264,7 +264,7 @@ const FilteredIncidentTable = () => {
   const autoUpdateTextOpts: Record<AutoUpdateMethod, string> = {
     never: "not updating automatically",
     realtime: "updating in real time",
-    interval: `updating every ${DEFAULT_AUTO_REFRESH_INTERVAL}`,
+    interval: `updating every ${globalConfig.get().defaultAutoRefreshInterval}`,
   };
 
   const autoUpdateText = autoUpdateTextOpts[autoUpdateMethod as AutoUpdateMethod];

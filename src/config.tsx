@@ -1,13 +1,75 @@
-export const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "";
-export const ENABLE_WEBSOCKETS_SUPPORT = process.env.REACT_APP_ENABLE_WEBSOCKETS_SUPPORT === "true" || false;
-export const BACKEND_WS_URL = process.env.REACT_APP_BACKEND_WS_URL || "";
-export const USE_SECURE_COOKIE = process.env.REACT_APP_USE_SECURE_COOKIE !== "false";
-export const DEBUG = process.env.REACT_APP_DEBUG === "true" || false;
-export const FRONTEND_VERSION = require('../package.json').version;
-export const API_VERSION = require('../package.json').apiVersion;
+// Config values that must be explicitly provided in runtime-config.json
+export interface RequiredConfigValues {
+  backendUrl: string;
+  cookieDomain: string;
+}
 
-// Inspired by https://stackoverflow.com/a/8498668
-export const COOKIE_DOMAIN = process.env.REACT_APP_COOKIE_DOMAIN || document.createElement('a').hostname;
+// Config values that could be omitted in runtime-config.json and will be set to reasonable default values
+export interface OptionalConfigValues {
+  useSecureCookie: boolean;
+  showSeverityLevels: boolean;
+  enableWebsocketSupport: boolean;
+  backendWSUrl: string;
+  debug: boolean;
+  defaultAutoRefreshInterval: number;
+  realtimeServiceMaxRetries: number;
+  use24hTime: boolean;
+  timestampDateFormat: string;
+  timestampTimeFormat: string;
+  timestampTimeNoSeconds: string;
+  timestampTimezoneOffsetFormat: string;
+  timestampFormat: string;
+}
+
+export type EditableConfig = RequiredConfigValues & Partial<OptionalConfigValues>
+
+export class Config {
+  // Fixed values
+  readonly apiVersion: string = require('../package.json').version;
+  readonly frontendVersion: string = require('../package.json').version;
+
+  // Required values
+  backendUrl: string;
+  cookieDomain: string;
+
+  // Optional values
+  backendWSUrl: string;
+  debug: boolean;
+  defaultAutoRefreshInterval: number;
+  enableWebsocketSupport: boolean;
+  showSeverityLevels: boolean;
+  useSecureCookie: boolean;
+  realtimeServiceMaxRetries: number;
+  timestampDateFormat: string;
+  timestampFormat: string;
+  timestampTimeFormat: string;
+  timestampTimeNoSeconds: string;
+  timestampTimezoneOffsetFormat: string;
+  use24hTime: boolean;
+
+  constructor(config: EditableConfig) {
+
+    if (config.backendUrl !== undefined &&
+      config.cookieDomain !== undefined) {
+      this.backendUrl = config.backendUrl;
+      this.cookieDomain = config.cookieDomain;
+    } else throw new Error("Missing one or more of the required configuration values.")
+
+    this.useSecureCookie = config.useSecureCookie || process.env.REACT_APP_USE_SECURE_COOKIE !== "false";
+    this.showSeverityLevels = config.showSeverityLevels !== undefined ? config.showSeverityLevels : true;
+    this.backendWSUrl = config.backendWSUrl || process.env.REACT_APP_BACKEND_WS_URL || "";
+    this.debug = config.debug || process.env.REACT_APP_DEBUG === "true" || false;
+    this.defaultAutoRefreshInterval = config.defaultAutoRefreshInterval || refreshInterval;
+    this.enableWebsocketSupport = config.enableWebsocketSupport || process.env.REACT_APP_ENABLE_WEBSOCKETS_SUPPORT === "true" || false;
+    this.realtimeServiceMaxRetries = config.realtimeServiceMaxRetries || rtsRetries;
+    this.timestampFormat = config.timestampFormat || "{date} {time}{timezone_offset}";
+    this.timestampTimeNoSeconds = config.timestampTimeNoSeconds || "HH:mm";
+    this.timestampDateFormat = config.timestampDateFormat || "yyyy-MM-dd";
+    this.timestampTimeFormat = config.timestampTimeFormat || "HH:mm:ss";
+    this.timestampTimezoneOffsetFormat = config.timestampTimezoneOffsetFormat || "xxx";
+    this.use24hTime = config.use24hTime !== undefined ? config.use24hTime : true;
+  }
+}
 
 let refreshInterval = 30;
 if (process.env.REACT_APP_DEFAULT_AUTO_REFRESH_INTERVAL) {
@@ -15,37 +77,28 @@ if (process.env.REACT_APP_DEFAULT_AUTO_REFRESH_INTERVAL) {
   if (parsedInterval > 0) refreshInterval = parsedInterval;
 }
 
-export const DEFAULT_AUTO_REFRESH_INTERVAL = refreshInterval; // seconds
-
 let rtsRetries = 7;
 if (process.env.REACT_APP_REALTIME_SERVICE_MAX_RETRIES) {
   const parsedRetries = Number.parseInt(process.env.REACT_APP_REALTIME_SERVICE_MAX_RETRIES);
   if (parsedRetries > 0) rtsRetries = parsedRetries;
 }
 
-// The number of times the realtime service will try to establish
-// a websocket connection, with exponential backoff, before declaring
-// it a failure, and stops retrying.
-export const REALTIME_SERVICE_MAX_RETRIES = rtsRetries;
+export const defaultRequiredConfigValues: RequiredConfigValues = {
+  backendUrl: process.env.REACT_APP_BACKEND_URL || "",
+  cookieDomain: process.env.REACT_APP_COOKIE_DOMAIN || document.createElement('a').hostname
+}
 
-// Will be replaced by user-settable config later
-// NOTE: You need to update the TIMESTAMP_TIME_FORMAT
-// if you want timestamps to be 24h/AM-PM
-export const USE_24H_TIME = true;
+class GlobalConfig {
+  config: Config = new Config(defaultRequiredConfigValues);
 
-// The full timestamp format should include seconds and timezone offset
-// See here for format syntax: https://date-fns.org/v2.17.0/docs/format
-export const TIMESTAMP_DATE_FORMAT = "yyyy-MM-dd";
-export const TIMESTAMP_TIME_FORMAT = "HH:mm:ss";
-export const TIMESTAMP_TIME_NO_SECONDS = "HH:mm";
-export const TIMESTAMP_TIMEZONE_OFFSET_FORMAT = "xxx";
+  public get(): Config {
+    return this.config;
+  }
 
-// String replacements are used on this format string to build
-// the timestamp. This allows for switching of time, and disabling
-// of timezone offset, etc.
-export const TIMESTAMP_FORMAT = "{date} {time}{timezone_offset}";
+  public set(value: EditableConfig) {
+    this.config = new Config(value);
+  }
+}
 
-// Flag used to toggle whether severity levels will be shown in the frontend or not
-export const SHOW_SEVERITY_LEVELS = true;
-
-
+export let globalConfig = new GlobalConfig();
+export const globalConfigUrl = "runtime-config.json";

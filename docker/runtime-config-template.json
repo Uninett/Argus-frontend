@@ -1,0 +1,17 @@
+{
+    "backendUrl": "${REACT_APP_BACKEND_URL}",
+    "backendWSUrl": "${REACT_APP_BACKEND_WS_URL}",
+    "enableWebsocketSupport": ${REACT_APP_ENABLE_WEBSOCKETS_SUPPORT},
+    "useSecureCookie": ${REACT_APP_USE_SECURE_COOKIE},
+    "debug": ${REACT_APP_DEBUG},
+    "cookieDomain": "${REACT_APP_COOKIE_DOMAIN}",
+    "defaultAutoRefreshInterval": ${REACT_APP_DEFAULT_AUTO_REFRESH_INTERVAL},
+    "realtimeServiceMaxRetries": ${REACT_APP_REALTIME_SERVICE_MAX_RETRIES},
+    "use24hTime": true,
+    "timestampDateFormat": "yyyy-MM-dd",
+    "timestampTimeFormat": "HH:mm:ss",
+    "timestampTimeNoSeconds": "HH:mm",
+    "timestampTimezoneOffsetFormat": "xxx",
+    "timestampFormat": "{date} {time}{timezone_offset}",
+    "showSeverityLevels": true
+}

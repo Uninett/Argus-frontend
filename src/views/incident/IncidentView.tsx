@@ -17,7 +17,7 @@ import {useApiState} from "../../state/hooks";
 import SelectedFilterProvider from "../../components/filterprovider";
 import IncidentsProvider from "../../components/incidentsprovider";
 import {Helmet} from "react-helmet";
-import {FRONTEND_VERSION, API_VERSION} from "../../config";
+import { globalConfig } from "../../config";
 import {useBackground} from "../../hooks";
 
 const IncidentComponent = ({ autoUpdateMethod }: { autoUpdateMethod: AutoUpdateMethod }) => {
@@ -77,14 +77,14 @@ const IncidentView: React.FC<IncidentViewPropsType> = () => {
       </SelectedFilterProvider>
         { isMetadataFetchError ?
             <p>
-                API {API_VERSION},
-                frontend v.{FRONTEND_VERSION}
+                API {globalConfig.get().apiVersion},
+                frontend v.{globalConfig.get().frontendVersion}
             </p>
             :
             <p>
                 Backend v.{backendVersion},
                 API {apiVersion},
-                frontend v.{FRONTEND_VERSION}
+                frontend v.{globalConfig.get().frontendVersion}
             </p>
         }
 

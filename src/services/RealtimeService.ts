@@ -1,4 +1,4 @@
-import { BACKEND_WS_URL, REALTIME_SERVICE_MAX_RETRIES } from "../config";
+import { globalConfig } from "../config";
 
 import type { Incident } from "../api/types.d";
 
@@ -123,9 +123,9 @@ export class RealtimeService {
       return;
     }
 
-    if (this.retries > REALTIME_SERVICE_MAX_RETRIES) {
+    if (this.retries > globalConfig.get().realtimeServiceMaxRetries) {
       console.error(
-        `[RealtimeService ${this.id}] refusing to connected, exceeded ${REALTIME_SERVICE_MAX_RETRIES} retires`,
+        `[RealtimeService ${this.id}] refusing to connected, exceeded ${globalConfig.get().realtimeServiceMaxRetries} retires`,
       );
       this.setState("failed");
       return;
@@ -136,7 +136,7 @@ export class RealtimeService {
 
     this.retries++;
 
-    this.ws = new WebSocket(`${BACKEND_WS_URL}/open/`);
+    this.ws = new WebSocket(`${globalConfig.get().backendWSUrl}/open/`);
     this.ws.onmessage = (event: MessageEvent) => {
       const data = JSON.parse(event.data);
 

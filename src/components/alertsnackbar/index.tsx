@@ -4,6 +4,7 @@ import Alert from "@material-ui/lab/Alert";
 import MaterialUISnackbar from "@material-ui/core/Snackbar";
 
 import { debuglog } from "../../utils";
+import {globalConfig} from "../../config";
 
 export type AlertSnackbarSeverity = "error" | "warning" | "info" | "success";
 
@@ -89,7 +90,7 @@ export const useAlertSnackbar = (): UseAlertSnackbarResultType => {
   const displayAlertSnackbar = (message: string, severity?: AlertSnackbarSeverity) => {
     if (message === state.message && severity === state.severity && state.open) return;
 
-    debuglog(`Displaying message with severity ${severity}: ${message}`);
+    if (globalConfig.get().debug) debuglog(`Displaying message with severity ${severity}: ${message}`);
     setState((state: AlertSnackbarState) => {
       return { ...state, open: true, message, severity: severity || "success", keepOpen: severity === "error" };
     });
@@ -118,7 +119,7 @@ export const AlertSnackbarProvider = ({ children }: { children?: React.ReactNode
   const component = <AlertSnackbar onOpen={onOpen} onClose={onClose} {...state} />;
 
   const displayAlertSnackbar = useCallback((message: string, severity?: AlertSnackbarSeverity) => {
-    debuglog(`Displaying message with severity ${severity}: ${message}`);
+    if (globalConfig.get().debug) debuglog(`Displaying message with severity ${severity}: ${message}`);
     setState((state: AlertSnackbarState) => {
       return { ...state, open: true, message, severity: severity || "success", keepOpen: severity === "error" };
     });

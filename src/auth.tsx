@@ -1,5 +1,5 @@
 import { Cookies } from "react-cookie";
-import {COOKIE_DOMAIN, USE_SECURE_COOKIE} from "./config";
+import { globalConfig } from "./config";
 
 const cookies = new Cookies();
 
@@ -15,14 +15,14 @@ class Auth {
     this.authenticated = true;
     this._token = token;
 
-    cookies.set("token", token, { path: "/", secure: USE_SECURE_COOKIE });
+    cookies.set("token", token, { path: "/", secure: globalConfig.get().useSecureCookie });
 
     if (callback) callback();
   }
 
   logout(callback?: () => void) {
     try {
-      cookies.remove("token", {path: "/", domain: `.${COOKIE_DOMAIN}`})
+      cookies.remove("token", {path: "/", domain: `.${globalConfig.get().cookieDomain}`})
       cookies.remove("token", {path: "/"})
       localStorage.removeItem("user");
     } catch (e) { }

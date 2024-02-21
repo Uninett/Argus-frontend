@@ -11,7 +11,7 @@ import { IncidentsStateType, IncidentsContext, createIncidentsIndex } from "../c
 
 // Components
 import { Tag, originalToTag } from "../components/tagselector";
-import { SHOW_SEVERITY_LEVELS } from "../config";
+import {globalConfig} from "../config";
 
 // for all different tags "keys", THERE HAS TO BE ONE tag with
 // matching value in incident.tags
@@ -49,7 +49,7 @@ export const matchesAcked = (incident: Incident, acked?: boolean): boolean => {
 };
 
 export const matchesMaxlevel = (incident: Incident, maxlevel?: SeverityLevelNumber): boolean => {
-  if (!SHOW_SEVERITY_LEVELS || maxlevel === undefined) return true;
+  if (!globalConfig.get().showSeverityLevels || maxlevel === undefined) return true;
   return incident.level <= maxlevel;
 };
 

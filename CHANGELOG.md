@@ -3,6 +3,12 @@ This file documents all changes to Argus-frontend. This file is primarily meant 
 
 ## [Unreleased]
 
+### Changed
+
+- Configuration values can now be changed at runtime in development and production environments. See the docs for info about how to properly configure the frontend application in production.
+
+
+
 
 ## [v1.12.0] - 2023-09-28
 
