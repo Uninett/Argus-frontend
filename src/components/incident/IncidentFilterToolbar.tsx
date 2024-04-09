@@ -44,7 +44,7 @@ import { SeverityLevelNumberNameMap } from "../../api/consts";
 import api from "../../api";
 
 // Config
-import { ENABLE_WEBSOCKETS_SUPPORT, SHOW_SEVERITY_LEVELS } from "../../config";
+import {globalConfig} from "../../config";
 
 // Utils
 import {
@@ -496,7 +496,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
     }
   }, [autoUpdateMethod, prevAutoUpdateMethod, displayAlert]);
 
-  const autoUpdateOptions: AutoUpdateMethod[] = ENABLE_WEBSOCKETS_SUPPORT
+  const autoUpdateOptions: AutoUpdateMethod[] = globalConfig.get().enableWebsocketSupport
     ? ["never", "realtime", "interval"]
     : ["never", "interval"];
 
@@ -518,7 +518,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
         }
         getColor={(selected: boolean) => (selected ? "primary" : "default")}
         onSelect={(autoUpdate: AutoUpdateMethod) =>
-          (autoUpdate === "realtime" ? ENABLE_WEBSOCKETS_SUPPORT : true) && setAutoUpdateMethod(autoUpdate)
+          (autoUpdate === "realtime" ? globalConfig.get().enableWebsocketSupport : true) && setAutoUpdateMethod(autoUpdate)
         }
       />
     </ToolbarItem>
@@ -601,7 +601,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
             />
           </ToolbarItem>
 
-          {SHOW_SEVERITY_LEVELS && (
+          {globalConfig.get().showSeverityLevels && (
             <ToolbarItem title="Max severity level selector" name="Max severity level" className={`${classNames(style.medium)} lg-xl-severity-selector`}>
               <DropdownMenu
                 selected={optionalOr(selectedFilter?.incidentsFilter?.filter?.maxlevel, 5)}
@@ -718,7 +718,7 @@ export const IncidentFilterToolbar: React.FC<IncidentFilterToolbarPropsType> = (
                     </ToolbarItem>
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    {SHOW_SEVERITY_LEVELS && (
+                    {globalConfig.get().showSeverityLevels && (
                       <ToolbarItem title="Max severity level selector" name="Max severity level" className={classNames(style.medium)}>
                         <DropdownMenu
                           selected={optionalOr(selectedFilter?.incidentsFilter?.filter?.maxlevel, 5)}
