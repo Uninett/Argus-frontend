@@ -216,12 +216,22 @@ const Header: React.FC<HeaderPropsType> = () => {
     })
   };
 
+  const handleGoToAdminUrl = () => {
+    handleMenuClose();
+    window.open(user.admin_url, '_blank', 'noopener,noreferrer')
+  };
+
   const menuId = "primary-search-account-menu";
   const renderMenu = (
     <Menu anchorEl={anchorEl} id={menuId} open={isMenuOpen} onClose={handleMenuClose}>
       <MenuItem onClick={handleMenuClose} component={Link} to="/destinations">
           Destinations
       </MenuItem>
+      {user.admin_url &&
+        <MenuItem onClick={handleGoToAdminUrl}>
+          Go to Admin
+        </MenuItem>
+      }
       <MenuItem onClick={handleLogout}>Logout</MenuItem>
     </Menu>
   );
