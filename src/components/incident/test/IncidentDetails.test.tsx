@@ -260,7 +260,7 @@ describe('Incident Details: Create Ticket button',() => {
         // Create Ticket confirmation dialog appears on the screen
         const createTicketDialog = screen.getByRole('dialog')
         expect(createTicketDialog).toBeInTheDocument();
-        expect(within(createTicketDialog).getByText(/are you sure you want to automatically generate ticket from this incident?/i)).toBeInTheDocument();
+        expect(within(createTicketDialog).getByText(/are you sure you want to automatically generate a ticket from this incident?/i)).toBeInTheDocument();
         const dialogSubmitButton = within(createTicketDialog).getByRole('button', {name: /yes/i});
         expect(dialogSubmitButton).toBeInTheDocument();
 
@@ -303,7 +303,7 @@ describe('Incident Details: Create Ticket button',() => {
         // Create Ticket confirmation dialog appears on the screen
         const createTicketDialog = screen.getByRole('dialog')
         expect(createTicketDialog).toBeInTheDocument();
-        expect(within(createTicketDialog).getByText(/are you sure you want to automatically generate ticket from this incident?/i)).toBeInTheDocument();
+        expect(within(createTicketDialog).getByText(/are you sure you want to automatically generate a ticket from this incident?/i)).toBeInTheDocument();
         const dialogCancelButton = within(createTicketDialog).getByRole('button', {name: /no/i});
         expect(dialogCancelButton).toBeInTheDocument();
 
