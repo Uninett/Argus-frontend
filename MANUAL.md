@@ -451,7 +451,7 @@ Argus supports automatic ticket generation from the incident. This feature needs
 
 3. Confirm automatic ticket generation.
 
-     <img src="public/screenshots/manual/Screenshot 2023-04-14 at 10.36.21.png"/>
+     <img src="public/screenshots/manual/Screenshot 2024-04-10 at 16.36.51.png"/>
 
 
 4. When ticket is successfully generated, the _Ticket input field_ is updated with a new ticket URL, and the ticket itself is opened in a new browser tab.
