@@ -4,6 +4,15 @@ This file documents changes to Argus-frontend that are important for the users t
 
 ## [Unreleased]
 
+## [v1.13.0] - 20204-04-10
+
+Configuration values can now be changed at runtime in development and production
+environments. The defaults are as before in `src/config.tsx` but now all of the
+options can be set via **environment** variables.
+
+See the Configuration-section in the README for more details.
+
+
 ## [v1.12.0] - 2023-09-28
 
 ### Fixed
