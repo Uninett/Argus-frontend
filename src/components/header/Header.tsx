@@ -227,6 +227,9 @@ const Header: React.FC<HeaderPropsType> = () => {
       <MenuItem onClick={handleMenuClose} component={Link} to="/destinations">
           Destinations
       </MenuItem>
+
+      <hr/>
+
       {user.admin_url &&
         <MenuItem onClick={handleGoToAdminUrl}>
           Go to Admin
