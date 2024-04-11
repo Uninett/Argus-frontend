@@ -18,6 +18,8 @@ import List from "@material-ui/core/List";
 import IconButton from "@material-ui/core/IconButton";
 import Skeleton from "@material-ui/lab/Skeleton";
 import MenuIcon from "@material-ui/icons/Menu";
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 
 // Api
 import api from "../../api";
@@ -99,6 +101,11 @@ const useStyles = makeStyles((theme: Theme) =>
         cursor: "pointer",
       },
     },
+    menuItemWithIcon: {
+      display: "flex",
+      gap: "1rem",
+      flexWrap: 'nowrap',
+    }
   }),
 );
 
@@ -231,11 +238,15 @@ const Header: React.FC<HeaderPropsType> = () => {
       <hr/>
 
       {user.admin_url &&
-        <MenuItem onClick={handleGoToAdminUrl}>
-          Go to Admin
+        <MenuItem className={classNames(style.menuItemWithIcon)} onClick={handleGoToAdminUrl}>
+          <OpenInNewIcon />
+          Site Administration
         </MenuItem>
       }
-      <MenuItem onClick={handleLogout}>Logout</MenuItem>
+      <MenuItem className={classNames(style.menuItemWithIcon)} onClick={handleLogout}>
+        <ExitToAppIcon />
+        Logout
+      </MenuItem>
     </Menu>
   );
 
