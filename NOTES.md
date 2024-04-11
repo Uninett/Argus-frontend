@@ -7,6 +7,13 @@ This file documents changes to Argus-frontend that are important for the users t
 ### Added
 
 - Missing article in ticket generation modal.
+- Link to Django administration site for users with admin permissions. Link is available in the user menu dropdown. 
+
+
+### Changed
+
+- Styling in the user menu dropdown: added a horizontal divider and icons.
+
 
 
 
