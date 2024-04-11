@@ -4,6 +4,12 @@ This file documents changes to Argus-frontend that are important for the users t
 
 ## [Unreleased]
 
+### Added
+
+- Missing article in ticket generation modal.
+
+
+
 ## [v1.13.0] - 20204-04-10
 
 Configuration values can now be changed at runtime in development and production
