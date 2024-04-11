@@ -194,7 +194,7 @@ beforeEach(() => {
   apiMock
     .onPost("/api/v1/token-auth/")
     .reply(200, { token: "token" })
-    .onGet("/api/v1/auth/user/")
+    .onGet("/api/v2/auth/user/")
     // eslint-disable-next-line @typescript-eslint/camelcase
     .reply(200, { username: "test", first_name: "test", last_name: "test", email: "test" })
     .onGet("/api/v1/incidents/metadata/")
