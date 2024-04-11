@@ -39,7 +39,7 @@ describe('Singular Create Ticket confirmation dialog test suite', () => {
         expect(dialogTitle).toBeInTheDocument();
         expect(dialogTitle).toBeVisible();
 
-        const dialogQuestion = within(createTicketDialog).getByText(/are you sure you want to automatically generate ticket from this incident?/i);
+        const dialogQuestion = within(createTicketDialog).getByText(/are you sure you want to automatically generate a ticket from this incident?/i);
         expect(dialogQuestion).toBeInTheDocument();
         expect(dialogQuestion).toBeVisible();
 

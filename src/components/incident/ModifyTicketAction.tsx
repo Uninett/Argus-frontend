@@ -144,7 +144,7 @@ export const ModifyTicketButton: React.FC<ModifyTicketButtonPropsType> = ({
 
     const createTicketButtonDefaultProps = {
         title: "Create ticket",
-        question: "Are you sure you want to automatically generate ticket from this incident?",
+        question: "Are you sure you want to automatically generate a ticket from this incident?",
         onConfirm: handleCreateTicket,
         ButtonComponent: ButtonComponent,
     }
