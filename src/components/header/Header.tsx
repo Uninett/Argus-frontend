@@ -269,7 +269,8 @@ const Header: React.FC<HeaderPropsType> = () => {
 
         <div className={style.grow} />
         <div>
-          <div className={classNames(style.navItem, style.navItemSelected)} onClick={handleMenuOpen}>
+          <div role="button" aria-label="User menu" aria-controls={menuId} aria-haspopup="true"
+               className={classNames(style.navItem, style.navItemSelected)} onClick={handleMenuOpen}>
             {user.isAuthenticated ? (
               <div className={style.avatarContainer}>
                 <Avatar>{user.displayName[0]}</Avatar>
@@ -314,7 +315,8 @@ const Header: React.FC<HeaderPropsType> = () => {
         </Link>
         <div className={style.grow} />
         <div>
-          <div className={classNames(style.navItem, style.navItemSelected)} onClick={handleMenuOpen}>
+          <div role="button" aria-label="User menu" aria-controls={menuId} aria-haspopup="true"
+               className={classNames(style.navItem, style.navItemSelected)} onClick={handleMenuOpen}>
             {user.isAuthenticated ? (
               <div className={style.avatarContainer}>
                 <Avatar>{user.displayName[0]}</Avatar>
