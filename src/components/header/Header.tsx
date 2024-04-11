@@ -223,7 +223,8 @@ const Header: React.FC<HeaderPropsType> = () => {
     })
   };
 
-  const handleGoToAdminUrl = () => {
+  const handleGoToAdminUrl = (event: React.MouseEvent) => {
+    event.preventDefault();
     handleMenuClose();
     window.open(user.admin_url, '_blank', 'noopener,noreferrer')
   };
@@ -238,7 +239,13 @@ const Header: React.FC<HeaderPropsType> = () => {
       <hr/>
 
       {user.admin_url &&
-        <MenuItem className={classNames(style.menuItemWithIcon)} onClick={handleGoToAdminUrl}>
+        <MenuItem className={classNames(style.menuItemWithIcon)}
+                  component={Link}
+                  to={user.admin_url}
+                  target="_blank"
+                  referrerPolicy="noreferrer"
+                  onClick={handleGoToAdminUrl}
+        >
           <OpenInNewIcon />
           Site Administration
         </MenuItem>
