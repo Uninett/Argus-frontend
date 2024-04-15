@@ -234,6 +234,7 @@ const Header: React.FC<HeaderPropsType> = () => {
 
       {user.admin_url &&
         <MenuItem className={classNames(style.menuItemWithIcon)}
+                  aria-label="Link to site administartion"
                   component="a"
                   href={user.admin_url}
                   target='_blank'
