@@ -223,12 +223,6 @@ const Header: React.FC<HeaderPropsType> = () => {
     })
   };
 
-  const handleGoToAdminUrl = (event: React.MouseEvent) => {
-    event.preventDefault();
-    handleMenuClose();
-    window.open(user.admin_url, '_blank', 'noopener,noreferrer')
-  };
-
   const menuId = "primary-search-account-menu";
   const renderMenu = (
     <Menu anchorEl={anchorEl} id={menuId} open={isMenuOpen} onClose={handleMenuClose}>
@@ -240,11 +234,11 @@ const Header: React.FC<HeaderPropsType> = () => {
 
       {user.admin_url &&
         <MenuItem className={classNames(style.menuItemWithIcon)}
-                  component={Link}
-                  to={user.admin_url}
-                  target="_blank"
-                  referrerPolicy="noreferrer"
-                  onClick={handleGoToAdminUrl}
+                  component="a"
+                  href={user.admin_url}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  onClick={handleMenuClose}
         >
           <OpenInNewIcon />
           Site Administration
