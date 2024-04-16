@@ -377,6 +377,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                     />
                   )}
                   <IncidentDetailsListItem title="Source" detail={incident.source.name} html_title_attr={"source-item"}/>
+                  <IncidentDetailsListItem title={`Incident ID in ${incident.source.name || "source system"}`} detail={incident.source_incident_id || "–"} html_title_attr={"source-internal-id-item"}/>
                   <IncidentDetailsListItem
                     title="Details URL"
                     detail={hyperlinkIfAbsoluteUrl(incident.details_url) || "–"}
@@ -533,6 +534,9 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                 )}
                 <Grid item sm={6} xs={12}>
                   <IncidentDetailsListItem title="Source" detail={incident.source.name} html_title_attr={"source-sm-item"}/>
+                </Grid>
+                <Grid item sm={6} xs={12}>
+                  <IncidentDetailsListItem title={`Incident ID in ${incident.source.name || "source system"}`} detail={incident.source_incident_id || "–"} html_title_attr={"source-internal-id-sm-item"}/>
                 </Grid>
                 <Grid item sm={6} xs={12}>
                   <IncidentDetailsListItem
