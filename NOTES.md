@@ -8,6 +8,9 @@ This file documents changes to Argus-frontend that are important for the users t
 
 - Missing article in ticket generation modal.
 
+- _Incident ID in \<its source system\>_ field to incident details view, which displays ID by which incident is referenced internally in its source system.
+
+
 
 
 ## [v1.13.0] - 20204-04-10
