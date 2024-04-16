@@ -321,3 +321,97 @@ describe('Incident Details: Create Ticket button',() => {
     });
 });
 
+describe('Primary Details section: Source internal incident ID',() => {
+    const defaultIncidentMock: Incident = {
+        level: 1,
+        pk: 5000,
+        start_time: '2021-06-28 08:29:06',
+        end_time: 'infinity',
+        stateful: true,
+        details_url: '',
+        description: 'Test default incident',
+        ticket_url: '',
+        open: true,
+        acked: false,
+
+        source: {...sourceSystemMock, name: 'test argus'},
+        source_incident_id: '5001',
+
+        tags: incidentTagsMock
+    };
+
+    const incidentWithoutSourceSystemNameMock : Incident = {
+        ...defaultIncidentMock,
+        pk: 6000,
+        description: 'Test incident without source system name',
+        source: {...sourceSystemMock, name: ''},
+        source_incident_id: '6001',
+    };
+
+    const incidentWithoutSourceInternalIDMock: Incident = {
+        ...defaultIncidentMock,
+        pk: 7000,
+        description: 'Test incident without source internal ID',
+        source_incident_id: '',
+    };
+
+    it("should correctly render detail item when valid incident is provided", async () => {
+        await waitFor(() => {
+            render(
+              <IncidentDetails
+                incident={defaultIncidentMock}
+                onIncidentChange={onIncidentChange}
+              />
+            )
+        });
+
+        const sourceInternalIDItem = screen.getByRole('listitem', {name: /source-internal-id-item/i});
+        expect(sourceInternalIDItem).toBeInTheDocument();
+
+        // Primary text includes incident's source system name
+        expect(sourceInternalIDItem).toHaveTextContent(`Incident ID in ${defaultIncidentMock.source.name}`);
+
+        // Secondary text displays incident's source internal ID
+        expect(sourceInternalIDItem).toHaveTextContent(defaultIncidentMock.source_incident_id);
+    });
+
+    it("should render generic description and ID info when incident with no source system name is provided", async () => {
+        await waitFor(() => {
+            render(
+              <IncidentDetails
+                incident={incidentWithoutSourceSystemNameMock}
+                onIncidentChange={onIncidentChange}
+              />
+            )
+        });
+
+        const sourceInternalIDItem = screen.getByRole('listitem', {name: /source-internal-id-item/i});
+        expect(sourceInternalIDItem).toBeInTheDocument();
+
+        // Primary text contains a generic description
+        expect(sourceInternalIDItem).toHaveTextContent(/incident id in source system/i);
+
+        // Secondary text displays incident's source internal ID
+        expect(sourceInternalIDItem).toHaveTextContent(incidentWithoutSourceSystemNameMock.source_incident_id);
+    });
+
+    it("should render correct description and dash instead of ID when incident with no source internal ID info is provided", async () => {
+        await waitFor(() => {
+            render(
+              <IncidentDetails
+                incident={incidentWithoutSourceInternalIDMock}
+                onIncidentChange={onIncidentChange}
+              />
+            )
+        });
+
+        const sourceInternalIDItem = screen.getByRole('listitem', {name: /source-internal-id-item/i});
+        expect(sourceInternalIDItem).toBeInTheDocument();
+
+        // Primary text includes incident's source system name
+        expect(sourceInternalIDItem).toHaveTextContent(`Incident ID in ${incidentWithoutSourceInternalIDMock.source.name}`);
+
+        // Secondary text displays dash
+        expect(sourceInternalIDItem).toHaveTextContent("–");
+    });
+});
