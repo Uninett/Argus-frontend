@@ -38,7 +38,7 @@ describe("Login Page: error handling", () => {
   });
 
   it("should not display wrong credentials helper text when request to fetch user fails", async () => {
-    apiMock.onGet("/api/v1/auth/user/").reply(404);
+    apiMock.onGet("/api/v2/auth/user/").reply(404);
 
     render(<LoginView />);
 

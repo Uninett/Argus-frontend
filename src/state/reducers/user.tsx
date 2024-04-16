@@ -10,6 +10,7 @@ export type UserStateType = {
   isAuthenticated: boolean;
   isTokenAuthenticated: boolean;
   token: string | undefined;
+  admin_url?: string;
 };
 
 export enum UserType {
@@ -42,6 +43,7 @@ export const userReducer = (state: UserStateType, action: UserActions) => {
         isAuthenticated: true,
         isTokenAuthenticated: false,
         token: undefined,
+        admin_url: action.payload.admin_url,
       };
     case UserType.LoginToken:
       const { user, token } = action.payload;
@@ -51,6 +53,7 @@ export const userReducer = (state: UserStateType, action: UserActions) => {
         displayName: user.first_name,
         isAuthenticated: true,
         isTokenAuthenticated: true,
+        admin_url: user.admin_url,
       };
     case UserType.Logout: {
       return {...initialUserState};

@@ -18,6 +18,8 @@ import List from "@material-ui/core/List";
 import IconButton from "@material-ui/core/IconButton";
 import Skeleton from "@material-ui/lab/Skeleton";
 import MenuIcon from "@material-ui/icons/Menu";
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 
 // Api
 import api from "../../api";
@@ -99,6 +101,11 @@ const useStyles = makeStyles((theme: Theme) =>
         cursor: "pointer",
       },
     },
+    menuItemWithIcon: {
+      display: "flex",
+      gap: "1rem",
+      flexWrap: 'nowrap',
+    }
   }),
 );
 
@@ -222,7 +229,26 @@ const Header: React.FC<HeaderPropsType> = () => {
       <MenuItem onClick={handleMenuClose} component={Link} to="/destinations">
           Destinations
       </MenuItem>
-      <MenuItem onClick={handleLogout}>Logout</MenuItem>
+
+      <hr/>
+
+      {user.admin_url &&
+        <MenuItem className={classNames(style.menuItemWithIcon)}
+                  aria-label="Link to site administartion"
+                  component="a"
+                  href={user.admin_url}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  onClick={handleMenuClose}
+        >
+          <OpenInNewIcon />
+          Site Administration
+        </MenuItem>
+      }
+      <MenuItem className={classNames(style.menuItemWithIcon)} onClick={handleLogout}>
+        <ExitToAppIcon />
+        Logout
+      </MenuItem>
     </Menu>
   );
 
@@ -238,7 +264,8 @@ const Header: React.FC<HeaderPropsType> = () => {
 
         <div className={style.grow} />
         <div>
-          <div className={classNames(style.navItem, style.navItemSelected)} onClick={handleMenuOpen}>
+          <div role="button" aria-label="User menu" aria-controls={menuId} aria-haspopup="true"
+               className={classNames(style.navItem, style.navItemSelected)} onClick={handleMenuOpen}>
             {user.isAuthenticated ? (
               <div className={style.avatarContainer}>
                 <Avatar>{user.displayName[0]}</Avatar>
@@ -283,7 +310,8 @@ const Header: React.FC<HeaderPropsType> = () => {
         </Link>
         <div className={style.grow} />
         <div>
-          <div className={classNames(style.navItem, style.navItemSelected)} onClick={handleMenuOpen}>
+          <div role="button" aria-label="User menu" aria-controls={menuId} aria-haspopup="true"
+               className={classNames(style.navItem, style.navItemSelected)} onClick={handleMenuOpen}>
             {user.isAuthenticated ? (
               <div className={style.avatarContainer}>
                 <Avatar>{user.displayName[0]}</Avatar>

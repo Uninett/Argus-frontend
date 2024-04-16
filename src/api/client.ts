@@ -207,7 +207,7 @@ class ApiClient {
   // authUser: returns the information about an authenticated user
   public authGetCurrentUser(): Promise<User> {
     return this.resolveOrReject(
-      this.authGet<User, {}>("/api/v1/auth/user/"),
+      this.authGet<User, {}>("/api/v2/auth/user/"),
       defaultResolver,
       (error) => new Error(`Failed to get current user: ${getErrorCause(error)}`),
     );
@@ -215,7 +215,7 @@ class ApiClient {
 
   public getUser(userPK: number): Promise<User> {
     return this.resolveOrReject(
-      this.authGet<User, {}>(`/api/v1/auth/users/${userPK}/`),
+      this.authGet<User, {}>(`/api/v2/auth/users/${userPK}/`),
       defaultResolver,
       (error) => new Error(`Failed to get user: ${getErrorCause(error)}`),
     );
