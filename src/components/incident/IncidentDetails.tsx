@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import "react-table/react-table.css";
 
 import Grid from "@material-ui/core/Grid";
@@ -48,6 +48,7 @@ import { globalConfig } from "../../config";
 import "./IncidentDetails.css";
 import {Hidden} from "@material-ui/core";
 import {ModifyTicketButton, TicketModifiableField} from "./ModifyTicketAction";
+import Spinning from "../spinning";
 type IncidentDetailsListItemPropsType = {
   title: string;
   detail: string | React.ReactNode;
@@ -174,6 +175,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
 
   const [{ result: acks, isLoading: isAcksLoading }, setAcksPromise] = useApiIncidentAcks();
   const [{ result: events, isLoading: isEventsLoading }, setEventsPromise] = useApiIncidentEvents();
+  const [isGenerateTicketLoading, setIsGenerateTicketLoading] = useState<boolean>(false);
 
   useEffect(() => {
     setAcksPromise(api.getIncidentAcks(incident.pk));
@@ -242,15 +244,19 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
   };
 
   const handleCreateTicket = () => {
+    setIsGenerateTicketLoading(true);
     api
         .putCreateTicketEvent(incident.pk)
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         .then(({ ticket_url }: IncidentTicketUrlBody) => {
           displayAlert(`Created ticket from incident ${incident.pk}`, "success");
           onIncidentChange({ ...incident, ticket_url });
+          setIsGenerateTicketLoading(false);
           window.open(ticket_url, '_blank', 'noopener,noreferrer');
         })
-        .catch((error) => {});
+        .catch((error) => {
+          setIsGenerateTicketLoading(false);
+        });
   };
 
   const handleSaveTicket = (url?: string) => {
@@ -401,7 +407,11 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                           onCreateTicket={handleCreateTicket}
                           onSaveTicket={handleSaveTicket}
                           ticketUrl={incident.ticket_url}
-                          isBulk={false}>
+                          isBulk={false}
+                          modifyTicketButtonProps={{
+                            startIcon: isGenerateTicketLoading ? <Spinning shouldSpin /> : null,
+                          }}
+                      >
 
                       </ModifyTicketButton>
                     </CenterContainer>
@@ -566,7 +576,11 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                           onCreateTicket={handleCreateTicket}
                           onSaveTicket={handleSaveTicket}
                           ticketUrl={incident.ticket_url}
-                          isBulk={false}>
+                          isBulk={false}
+                          modifyTicketButtonProps={{
+                            startIcon: isGenerateTicketLoading ? <Spinning shouldSpin /> : null,
+                          }}
+                      >
                       </ModifyTicketButton>
                     </Grid>
                     <Grid item className="close-button-container" data-testid={"details-button-sm-interactive-item"}>
