@@ -30,16 +30,16 @@ export const useStyles = makeStyles((theme: Theme) =>
       "flex-grow": 0,
     },
     dangerousButton: {
-      background: theme.palette.warning.main,
-      color: "#FFFFFF !important",
+      background: `${theme.palette.warning.main} !important`,
+      color: `${WHITE} !important`,
         '&:hover': {
             backgroundColor: `${theme.palette.warning.main} !important`,
             opacity: 0.7
         },
     },
     safeButton: {
-      background: theme.palette.primary.main,
-      color: "#FFFFFF !important",
+      background: `${theme.palette.primary.main} !important`,
+      color: `${WHITE} !important`,
         '&:hover': {
             backgroundColor: `${theme.palette.primary.main} !important`,
             opacity: 0.7
