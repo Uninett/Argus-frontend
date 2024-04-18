@@ -401,16 +401,16 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                         onManualOpen={handleManualOpen}
                         isBulk={false}
                       />
-                    </CenterContainer>
-                    <CenterContainer>
+
                       <ModifyTicketButton
-                          onCreateTicket={handleCreateTicket}
-                          onSaveTicket={handleSaveTicket}
-                          ticketUrl={incident.ticket_url}
-                          isBulk={false}
-                          modifyTicketButtonProps={{
-                            startIcon: isGenerateTicketLoading ? <Spinning shouldSpin /> : null,
-                          }}
+                        onCreateTicket={handleCreateTicket}
+                        onSaveTicket={handleSaveTicket}
+                        ticketUrl={incident.ticket_url}
+                        isBulk={false}
+                        modifyTicketButtonProps={{
+                          startIcon: isGenerateTicketLoading ? <Spinning shouldSpin /> : null,
+                          variant: "contained",
+                        }}
                       >
 
                       </ModifyTicketButton>
@@ -579,6 +579,7 @@ const IncidentDetails: React.FC<IncidentDetailsPropsType> = ({
                           isBulk={false}
                           modifyTicketButtonProps={{
                             startIcon: isGenerateTicketLoading ? <Spinning shouldSpin /> : null,
+                            variant: "contained",
                           }}
                       >
                       </ModifyTicketButton>
