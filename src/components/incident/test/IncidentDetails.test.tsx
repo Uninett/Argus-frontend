@@ -1,7 +1,7 @@
 /**  * @jest-environment jsdom */
 
 import React from "react";
-import {render, screen, waitFor, within} from "@testing-library/react";
+import {render, screen, waitFor, waitForElementToBeRemoved, within} from "@testing-library/react";
 
 import IncidentDetails from "../IncidentDetails";
 import {Incident, IncidentTag, IncidentTicketUrlBody, SourceSystem} from "../../../api/types";
@@ -318,6 +318,136 @@ describe('Incident Details: Create Ticket button',() => {
 
         // Create ticket endpoint was not called
         expect(createTicketSpy).toHaveBeenCalledTimes(0);
+    });
+
+    it("should not display spinner within create ticket button by default in the incident details view", async () => {
+        await waitFor(() => {
+            render(
+              <IncidentDetails
+                incident={incidentWithoutTicketMock}
+                onIncidentChange={onIncidentChange}
+              />
+            )
+        });
+
+        // Create ticket button is rendered
+        const createTicketButton = screen.getByRole('button', {name: /create ticket/i});
+        expect(createTicketButton).toBeInTheDocument();
+
+        // Spinner is not present within create ticket button
+        expect(within(createTicketButton).queryByRole('progressbar')).not.toBeInTheDocument();
+    });
+
+    it("should display spinner within create ticket button after user confirms create ticket action in the dialog", async () => {
+        await waitFor(() => {
+            render(
+              <IncidentDetails
+                incident={incidentWithoutTicketMock}
+                onIncidentChange={onIncidentChange}
+              />
+            )
+        });
+
+        // User clicks on the Create Ticket button
+        const createTicketButton = screen.getByRole('button', {name: /create ticket/i});
+        userEvent.click(createTicketButton);
+
+        // User confirms create ticket action in the dialog
+        const dialogSubmitButton = screen.getByRole('button', {name: /yes/i});
+        expect(dialogSubmitButton).toBeInTheDocument();
+        userEvent.click(dialogSubmitButton);
+
+        // Spinner appears within create ticket button
+        const createTicketProgress = within(createTicketButton).getByRole('progressbar');
+        expect(createTicketProgress).toBeInTheDocument();
+    });
+
+    it("should not display spinner within create ticket button after user cancels create ticket action in the dialog", async () => {
+        await waitFor(() => {
+            render(
+              <IncidentDetails
+                incident={incidentWithoutTicketMock}
+                onIncidentChange={onIncidentChange}
+              />
+            )
+        });
+
+        // User clicks on the Create Ticket button
+        const createTicketButton = screen.getByRole('button', {name: /create ticket/i});
+        userEvent.click(createTicketButton);
+
+        // User cancels create ticket action in the dialog
+        const dialogCancelButton = screen.getByRole('button', {name: /no/i});
+        expect(dialogCancelButton).toBeInTheDocument();
+        userEvent.click(dialogCancelButton);
+
+        // Spinner is not present within create ticket button
+        expect(within(createTicketButton).queryByRole('progressbar')).not.toBeInTheDocument();
+    });
+
+    it("should stop displaying spinner within create ticket button after error on create ticket operation", async () => {
+        createTicketSpy.mockRejectedValue(new Error("Create ticket test error"));
+
+        await waitFor(() => {
+            render(
+              <IncidentDetails
+                incident={incidentWithoutTicketMock}
+                onIncidentChange={onIncidentChange}
+              />
+            )
+        });
+
+        // User clicks on the Create Ticket button
+        const createTicketButton = screen.getByRole('button', {name: /create ticket/i});
+        userEvent.click(createTicketButton);
+
+        // User confirms create ticket action
+        const dialogSubmitButton = screen.getByRole('button', {name: /yes/i});
+        expect(dialogSubmitButton).toBeInTheDocument();
+        userEvent.click(dialogSubmitButton);
+
+        // Spinner appears within create ticket button
+        const createTicketProgress = within(createTicketButton).getByRole('progressbar');
+        expect(createTicketProgress).toBeInTheDocument();
+
+        // Create ticket endpoint was called with correct incident pk
+        expect(createTicketSpy).toHaveBeenCalledTimes(1)
+        expect(createTicketSpy).toHaveBeenCalledWith(4000)
+
+        // Spinner within create ticket button disappears
+        await waitForElementToBeRemoved(createTicketProgress);
+    });
+
+    it("should stop displaying spinner within create ticket button after success on create ticket operation", async () => {
+        await waitFor(() => {
+            render(
+              <IncidentDetails
+                incident={incidentWithoutTicketMock}
+                onIncidentChange={onIncidentChange}
+              />
+            )
+        });
+
+        // User clicks on the Create Ticket button
+        const createTicketButton = screen.getByRole('button', {name: /create ticket/i});
+        userEvent.click(createTicketButton);
+
+        // User confirms create ticket action
+        const dialogSubmitButton = screen.getByRole('button', {name: /yes/i});
+        expect(dialogSubmitButton).toBeInTheDocument();
+        userEvent.click(dialogSubmitButton);
+
+        // Spinner appears within create ticket button
+        const createTicketProgress = within(createTicketButton).getByRole('progressbar');
+        expect(createTicketProgress).toBeInTheDocument();
+
+        // Create ticket endpoint was called with correct incident pk
+        expect(createTicketSpy).toHaveBeenCalledTimes(1)
+        expect(createTicketSpy).toHaveBeenCalledWith(4000)
+        expect(createTicketSpy).toHaveReturnedWith(Promise.resolve({ticket_url: generatedTicketUrlMockValue}))
+
+        // Spinner within create ticket button disappears
+        await waitForElementToBeRemoved(createTicketProgress);
     });
 });
 
