@@ -7,10 +7,12 @@ import SaveIcon from "@material-ui/icons/Save";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { Theme, createStyles, makeStyles } from "@material-ui/core/styles";
 
-import { WHITE } from "../../colorscheme";
+import {BEIGE, WHITE} from "../../colorscheme";
 import { Destination, DestinationRequest, DestinationSettings } from "../../api/types";
 import { makeConfirmationButton } from "../buttons/ConfirmationButton";
 import Tooltip from "@material-ui/core/Tooltip";
+import Skeleton from "@material-ui/lab/Skeleton";
+import Typography from "@material-ui/core/Typography";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -83,6 +85,8 @@ const DestinationComponent: React.FC<DestinationComponentPropsType> = ({
   const [hasTitleChanges, setHasTitleChanges] = useState<boolean>(false);
   const [hasPropertyValueChanges, setHasPropertyValueChanges] = useState<boolean>(false);
 
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
   // On destination update
   useEffect(() => {
     setTitle(destination.label === null ? "" : destination.label);
@@ -96,6 +100,13 @@ const DestinationComponent: React.FC<DestinationComponentPropsType> = ({
       return newValues;
     });
   }, [destination]);
+
+  // On properties
+  useEffect(() => {
+    if (properties.length > 0) {
+      setIsLoading(false);
+    }
+  }, [properties]);
 
   // On property values update
   useEffect(() => {
@@ -179,62 +190,106 @@ const DestinationComponent: React.FC<DestinationComponentPropsType> = ({
 
   return (
     <Paper className={classes.paper}>
-      <form
-        className={classes.form}
-        noValidate
-        autoComplete="off"
-        onSubmit={(event) => {
-          event.preventDefault();
-        }}
-      >
-        <Tooltip title={"Must be unique per media type"} arrow placement="top" disableHoverListener>
-          <TextField
-            label="Title"
-            variant="standard"
-            className={classes.propertyField}
-            value={title}
-            onChange={onTitleChange}
-            key={`title-of-${destination.pk}`}
-            id={`title-of-${destination.pk}`}
-          />
-        </Tooltip>
-
-        {[...properties.values()].map((property: DestinationComponentMediaProperty) => {
-          return (
+      {isLoading
+        ?
+        <div className={classes.form} style={{backgroundColor: BEIGE}}>
+          <Skeleton animation="wave" className={classes.propertyField} >
             <TextField
-              error={{ ...propertyValues.get(property.property_name) }.isInvalid}
-              required={property.required}
-              label={property.title}
+              label="Title"
+              variant="standard"
+            />
+          </Skeleton>
+
+          <Skeleton animation="wave" className={classes.propertyField} >
+            <TextField
+              label="Value"
+              variant="standard"
+            />
+          </Skeleton>
+            <Button
+              variant="contained"
+              size="small"
+              className={classes.saveButton}
+              disabled={true}
+              startIcon={<SaveIcon />}
+            >
+              <Skeleton animation="wave">
+                <Typography>
+                  Save
+                </Typography>
+              </Skeleton>
+            </Button>
+            <Button
+              variant="contained"
+              size="small"
+              className={classes.dangerousButton}
+              disabled={true}
+              startIcon={<DeleteIcon/>}
+            >
+              <Skeleton animation="wave">
+                <Typography>
+                  Delete
+                </Typography>
+              </Skeleton>
+            </Button>
+        </div>
+        :
+        <form
+          className={classes.form}
+          noValidate
+          autoComplete="off"
+          onSubmit={(event) => {
+            event.preventDefault();
+          }}
+        >
+          <Tooltip title={"Must be unique per media type"} arrow placement="top" disableHoverListener>
+            <TextField
+              label="Title"
               variant="standard"
               className={classes.propertyField}
-              value={{ ...propertyValues.get(property.property_name) }.value}
-              onChange={(event) => {
-                handlePropertyChange(event, property.property_name, property.required);
-              }}
-              key={`${property.property_name}-of-${destination.pk}`}
-              id={`${property.property_name}-of-${destination.pk}`}
+              value={title}
+              onChange={onTitleChange}
+              key={`title-of-${destination.pk}`}
+              id={`title-of-${destination.pk}`}
             />
-          );
-        })}
-        <Button
-          variant="contained"
-          size="small"
-          className={classes.saveButton}
-          disabled={(!hasTitleChanges && !hasPropertyValueChanges) || isInvalidDestination}
-          startIcon={<SaveIcon />}
-          onClick={handleSaveClick}
-        >
-          Save
-        </Button>
-        <Tooltip
-          disableFocusListener
-          disableTouchListener
-          title={
-            destination.settings.synced === true
-              ? "This destination is synchronized with your account and can not be deleted"
-              : ""
-          }
-        >
+          </Tooltip>
+
+          {[...properties.values()].map((property: DestinationComponentMediaProperty) => {
+            return (
+              <TextField
+                error={{ ...propertyValues.get(property.property_name) }.isInvalid}
+                required={property.required}
+                label={property.title}
+                variant="standard"
+                className={classes.propertyField}
+                value={{ ...propertyValues.get(property.property_name) }.value}
+                onChange={(event) => {
+                  handlePropertyChange(event, property.property_name, property.required);
+                }}
+                key={`${property.property_name}-of-${destination.pk}`}
+                id={`${property.property_name}-of-${destination.pk}`}
+              />
+            );
+          })}
+          <Button
+            variant="contained"
+            size="small"
+            className={classes.saveButton}
+            disabled={(!hasTitleChanges && !hasPropertyValueChanges) || isInvalidDestination}
+            startIcon={<SaveIcon />}
+            onClick={handleSaveClick}
+          >
+            Save
+          </Button>
+          <Tooltip
+            disableFocusListener
+            disableTouchListener
+            title={
+              destination.settings.synced === true
+                ? "This destination is synchronized with your account and can not be deleted"
+                : ""
+            }
+          >
           <span>
             <RemoveDestinationButton
               variant="contained"
@@ -246,8 +301,9 @@ const DestinationComponent: React.FC<DestinationComponentPropsType> = ({
               Delete
             </RemoveDestinationButton>
           </span>
-        </Tooltip>
-      </form>
+          </Tooltip>
+        </form>
+      }
     </Paper>
   );
 };
