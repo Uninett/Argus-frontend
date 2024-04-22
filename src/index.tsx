@@ -16,10 +16,12 @@ const app: ReactElement =
     </AppProvider>
   </BrowserRouter>
 
-console.log("index.tsx, fetching global config from", globalConfigUrl);
+const absoluteConfigUrl = `${process.env.PUBLIC_URL}/${globalConfigUrl}`
+
+console.log("index.tsx, fetching global config from", absoluteConfigUrl);
 
 fetch(
-  globalConfigUrl
+  absoluteConfigUrl
   , {
     headers: {
       'Content-Type': 'application/json',
