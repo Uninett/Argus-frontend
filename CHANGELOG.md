@@ -7,6 +7,33 @@ This project uses [*towncrier*](https://towncrier.readthedocs.io/) and the chang
 
 <!-- towncrier release notes start -->
 
+## [v1.14.0] - 2024-04-22
+
+
+### Added
+
+- Missing article in ticket generation modal.
+  ([#552](https://github.com/Uninett/Argus-frontend/issues/552))
+- Link to Django administration site for users with admin permissions. Link is
+  available in the user menu dropdown.
+  ([#553](https://github.com/Uninett/Argus-frontend/issues/553))
+- Added towncrier to automatically produce changelog
+
+### Changed
+
+- Styling in the user menu dropdown: added a horizontal divider and icons.
+  ([#553](https://github.com/Uninett/Argus-frontend/issues/553))
+- _Incident ID in \<its source system\>_ field to incident details view, which
+  displays ID by which incident is referenced internally in its source system.
+  ([#557](https://github.com/Uninett/Argus-frontend/issues/557))
+
+### Fixed
+
+- Bug with blank page being rendered when manually refreshing, or copy-pasting
+  incident permalinks
+  ([#562](https://github.com/Uninett/Argus-frontend/issues/562))
+
+
 ## [v1.13.0] - 2024-04-10
 
 ### Changed
