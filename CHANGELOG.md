@@ -7,6 +7,12 @@ This project uses [*towncrier*](https://towncrier.readthedocs.io/) and the chang
 
 <!-- towncrier release notes start -->
 
+## [v1.14.1] - 2024-04-24
+
+### Fixed
+
+- Updated package-lock.json
+
 ## [v1.14.0] - 2024-04-22
 
 
