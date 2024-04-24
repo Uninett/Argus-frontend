@@ -13,9 +13,14 @@
     Feel free to massage the generated text!
 7.  Commit the changes from steps 4 to 6 in the same commit.
 8.  Tag the commit made in step 7 with an annotated tag with the new version
-    number. "Annotated" means it needs the `-a` flag, and a message. You can
-    give the message in the same go with the `-m`-flag. Sum up the most
-    important thing in the release in the message.
+    number.
+
+    ```
+    git tag -a -m "Mainly bugfixes" v1.5.1
+    ```
+
+    Sum up the most important changes in the release in the max. 50 characters
+    long message.
 9.  Push everything to github
 10. Make a new release on github, this is needed for some automation that
     generates a new version in other repos.
