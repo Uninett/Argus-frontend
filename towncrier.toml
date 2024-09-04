@@ -6,7 +6,6 @@ underlines = ["", "", ""]
 title_format = "## [v{version}] - {project_date}"
 issue_format = "[#{issue}](https://github.com/Uninett/Argus-frontend/issues/{issue})"
 wrap = true
-ignore = [".gitkeep"]
 
 [[tool.towncrier.type]]
 directory = "security"
