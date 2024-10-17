@@ -1,6 +1,6 @@
 # Defines a simple Argus API server running from a configurable branch or tag
 # in the upstream repo
-FROM python:3.8
+FROM python:3.10
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y --no-install-recommends tini build-essential
