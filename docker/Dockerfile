@@ -19,7 +19,7 @@ FROM ghcr.io/nginxinc/nginx-unprivileged:stable-alpine
 COPY --from=build /app/build /usr/share/nginx/html
 
 USER root
-RUN apk add --update tini tree
+RUN apk add --update tini
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 COPY docker/docker-entrypoint.sh /
 COPY docker/runtime-config-template.json /
