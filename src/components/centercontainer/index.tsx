@@ -6,7 +6,7 @@ type CenterContainerPropsType = { children: React.Props<{}>["children"] };
 const CenterContainer: React.FC<CenterContainerPropsType> = ({ children }: CenterContainerPropsType) => {
   return (
     <Grid container alignItems="center" justify="space-evenly" direction="row">
-      <Grid item>{children}</Grid>
+      {children}
     </Grid>
   );
 };
