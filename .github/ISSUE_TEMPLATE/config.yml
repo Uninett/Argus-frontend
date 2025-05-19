@@ -1,5 +1,5 @@
 blank_issues_enabled: false
 contact_links:
   - name: Argus issue tracker
-    url: https://github.com/Uninett/Argus
+    url: https://github.com/Uninett/Argus/issues
     about: Add your issues here
