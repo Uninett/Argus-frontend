@@ -3,8 +3,8 @@
 [![codecov](https://codecov.io/gh/Uninett/Argus-frontend/branch/master/graph/badge.svg)](https://codecov.io/gh/Uninett/Argus-frontend)
 
 > [!WARNING]
-> This project is no longer under active development and will be mothballed
-> this year. Make an issue in https://github.com/Uninett/Argus if you want to
+> This project is no longer under active development and has been mothballed. 
+> Make an issue in https://github.com/Uninett/Argus if you want to
 > take over development. Note also that it needs to be upgraded to use API v2
 > as API v1 will also be mothballed this year.
 
